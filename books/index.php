@@ -110,494 +110,268 @@ $totalCategories = count($categories);
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Browse Books - OpenShelf</title>
     <link rel="stylesheet" href="/assets/css/style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
     <style>
         /* ========================================
-           MODERN BOOKS PAGE - AMAZON/GOOGLE STYLE
+           ULTRA MODERN BOOKS PAGE 
         ======================================== */
         
         :root {
-            --primary: #2563eb;
-            --primary-dark: #1d4ed8;
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #8b5cf6;
             --success: #10b981;
-            --success-dark: #059669;
-            --warning: #f59e0b;
-            --danger: #ef4444;
+            --danger: #f43f5e;
             --gray-50: #f8fafc;
             --gray-100: #f1f5f9;
             --gray-200: #e2e8f0;
-            --gray-300: #cbd5e1;
+            --gray-500: #64748b;
             --gray-600: #475569;
-            --gray-700: #334155;
             --gray-800: #1e293b;
             --gray-900: #0f172a;
-            --radius-sm: 8px;
-            --radius-md: 12px;
-            --radius-lg: 16px;
-            --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
-            --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1);
-            --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1);
-            --shadow-xl: 0 20px 25px -5px rgba(0,0,0,0.1);
-            --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+            --glass-bg: rgba(255, 255, 255, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.5);
+            --shadow-soft: 0 10px 40px -10px rgba(0,0,0,0.05);
+            --shadow-hover: 0 20px 40px -10px rgba(99,102,241,0.15);
+            --radius-xl: 1.5rem;
+            --radius-lg: 1rem;
+            --radius-md: 0.75rem;
+            --transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
         body {
             background: var(--gray-50);
-            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
             color: var(--gray-800);
-            line-height: 1.5;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
         }
 
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 0 1rem;
-        }
-
-        /* ========== PAGE HEADER ========== */
-        .hero {
-            background: linear-gradient(135deg, var(--primary) 0%, #1e3a8a 100%);
-            border-radius: 0 0 2rem 2rem;
-            padding: 2.5rem 1.5rem;
-            margin-bottom: 2rem;
-            text-align: center;
+        /* Hero Section */
+        .books-hero {
             position: relative;
+            padding: 6rem 1rem 5rem;
+            text-align: center;
+            background: linear-gradient(135deg, #e0e7ff 0%, #ede9fe 100%);
             overflow: hidden;
-        }
-
-        .hero::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            right: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
-            animation: rotate 30s linear infinite;
-        }
-
-        @keyframes rotate {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-
-        .hero h1 {
-            font-size: 2rem;
-            font-weight: 700;
-            color: white;
-            margin-bottom: 0.5rem;
-            position: relative;
-        }
-
-        .hero p {
-            color: rgba(255,255,255,0.85);
-            font-size: 1rem;
-            position: relative;
-        }
-
-        /* ========== STATS CARDS ========== */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 1rem;
             margin-bottom: 2rem;
         }
 
-        .stat-card {
-            background: white;
-            padding: 1.25rem 0.75rem;
-            border-radius: var(--radius-lg);
-            text-align: center;
-            box-shadow: var(--shadow-sm);
-            transition: var(--transition);
-            border: 1px solid var(--gray-200);
+        .hero-shape-1 {
+            position: absolute; width: 400px; height: 400px;
+            background: radial-gradient(circle, rgba(99,102,241,0.3) 0%, transparent 70%);
+            top: -10%; left: -5%; filter: blur(40px); animation: float 10s infinite;
+        }
+        .hero-shape-2 {
+            position: absolute; width: 500px; height: 500px;
+            background: radial-gradient(circle, rgba(139,92,246,0.3) 0%, transparent 70%);
+            bottom: -20%; right: -10%; filter: blur(50px); animation: float 12s infinite reverse;
         }
 
-        .stat-card:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-md);
+        .books-hero h1 {
+            font-size: 3.5rem; font-weight: 800;
+            background: linear-gradient(135deg, var(--gray-900), var(--primary));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem; position: relative; z-index: 2;
+            animation: fadeUp 0.8s ease-out;
+        }
+        .books-hero p {
+            font-size: 1.2rem; color: var(--gray-600); max-width: 600px; margin: 0 auto;
+            position: relative; z-index: 2; animation: fadeUp 1s ease-out 0.2s both;
         }
 
-        .stat-value {
-            font-size: 1.75rem;
-            font-weight: 700;
-            margin-bottom: 0.25rem;
+        /* Stats Bar */
+        .stats-bar {
+            display: flex; justify-content: center; flex-wrap: wrap; gap: 2rem;
+            margin: -3.5rem auto 3rem; position: relative; z-index: 10;
+            max-width: 900px; padding: 0 1.5rem;
+            animation: fadeUp 1s ease-out 0.4s both;
+        }
+        .stat-item {
+            background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border); border-radius: var(--radius-lg);
+            padding: 1.5rem 2rem; text-align: center; flex: 1; min-width: 200px;
+            box-shadow: 0 10px 30px -10px rgba(0,0,0,0.1); transition: var(--transition);
+        }
+        .stat-item:hover { transform: translateY(-5px); box-shadow: var(--shadow-hover); }
+        .stat-value { font-size: 2.5rem; font-weight: 800; color: var(--primary); margin-bottom: 0.25rem; }
+        .stat-label { font-size: 0.85rem; font-weight: 600; color: var(--gray-600); text-transform: uppercase; letter-spacing: 1px; }
+
+        /* Main Container */
+        .books-main {
+            max-width: 1400px; margin: 0 auto; padding: 0 1.5rem 4rem;
         }
 
-        .stat-label {
-            font-size: 0.8rem;
-            color: var(--gray-600);
-            font-weight: 500;
-        }
-
-        /* ========== FILTER CARD ========== */
-        .filter-card {
-            background: white;
-            border-radius: var(--radius-lg);
-            padding: 1.25rem;
-            box-shadow: var(--shadow-sm);
+        /* Filter Section */
+        .filter-glass {
+            background: white; border-radius: var(--radius-xl);
+            padding: 1.5rem; display: flex; gap: 1rem; align-items: center; justify-content: space-between;
+            box-shadow: var(--shadow-soft); flex-wrap: wrap; border: 1px solid var(--gray-200);
             margin-bottom: 2rem;
-            border: 1px solid var(--gray-200);
         }
-
-        .filter-form {
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
+        .search-box {
+            position: relative; flex: 1; min-width: 250px;
         }
-
-        .search-wrapper {
-            position: relative;
+        .search-box i { position: absolute; left: 1.25rem; top: 50%; transform: translateY(-50%); color: var(--gray-500); }
+        .search-input {
+            width: 100%; padding: 1rem 1rem 1rem 3rem; border: 2px solid transparent;
+            border-radius: var(--radius-lg); background: var(--gray-50);
+            font-size: 1rem; transition: all 0.3s ease; color: var(--gray-800);
         }
-
-        .search-icon {
-            position: absolute;
-            left: 1rem;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--gray-400);
-            font-size: 0.9rem;
+        .search-input:focus { background: white; border-color: var(--primary); outline: none; box-shadow: 0 0 0 4px rgba(99,102,241,0.1); }
+        .filter-controls { display: flex; gap: 1rem; flex-wrap: wrap; flex: 1; justify-content: flex-end; }
+        .styled-select {
+            padding: 1rem 1.5rem; border: 2px solid transparent; border-radius: var(--radius-lg);
+            background: var(--gray-50); font-size: 0.95rem; font-weight: 500; color: var(--gray-800);
+            cursor: pointer; transition: all 0.3s ease; outline: none; appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23475569' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat; background-position: right 1rem center; padding-right: 3rem;
+            min-width: 160px;
         }
+        .styled-select:focus { background-color: white; border-color: var(--primary); box-shadow: 0 0 0 4px rgba(99,102,241,0.1); }
+        .clear-btn { display: inline-flex; align-items: center; gap: 0.5rem; color: var(--danger); font-size: 0.9rem; font-weight: 500; text-decoration: none; padding: 0.5rem 1rem; border-radius: 2rem; background: rgba(244,63,94,0.1); transition: all 0.2s; }
+        .clear-btn:hover { background: rgba(244,63,94,0.2); }
 
-        .form-input, .form-select {
-            width: 100%;
-            padding: 0.75rem 1rem 0.75rem 2.75rem;
-            border: 1.5px solid var(--gray-200);
-            border-radius: 2rem;
-            font-size: 0.9rem;
-            transition: var(--transition);
-            background: white;
-        }
+        /* Books Header */
+        .books-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem; }
+        .books-count { font-size: 1.1rem; color: var(--gray-600); }
+        .books-count strong { color: var(--gray-900); font-weight: 700; font-size: 1.25rem; }
 
-        .form-input:focus, .form-select:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
-        }
-
-        .filter-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
-        }
-
-        .clear-btn {
-            text-align: center;
-            margin-top: 0.5rem;
-        }
-
-        .clear-btn a {
-            color: var(--gray-500);
-            font-size: 0.85rem;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.25rem;
-            transition: var(--transition);
-        }
-
-        .clear-btn a:hover {
-            color: var(--danger);
-        }
-
-        /* ========== RESULTS HEADER ========== */
-        .results-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1.5rem;
-            flex-wrap: wrap;
-            gap: 1rem;
-        }
-
-        .results-count {
-            font-size: 0.9rem;
-            color: var(--gray-600);
-        }
-
-        .results-count strong {
-            color: var(--gray-800);
-            font-weight: 600;
-        }
-
-        .sort-select {
-            padding: 0.5rem 1rem;
-            border: 1px solid var(--gray-200);
-            border-radius: 2rem;
-            font-size: 0.85rem;
-            background: white;
-            cursor: pointer;
-        }
-
-        /* ========== BOOK GRID - MOBILE FIRST ========== */
-        .book-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 1rem;
-            margin-bottom: 3rem;
-        }
-
-        /* ========== MODERN BOOK CARD ========== */
+        /* Book Grid */
+        .book-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 2rem; }
         .book-card {
-            background: white;
-            border-radius: var(--radius-md);
-            overflow: hidden;
-            box-shadow: var(--shadow-sm);
-            transition: var(--transition);
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            border: 1px solid var(--gray-200);
-            position: relative;
+            background: white; border-radius: var(--radius-xl); overflow: hidden;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); transition: var(--transition);
+            display: flex; flex-direction: column; position: relative; border: 1px solid var(--gray-100);
+            animation: fadeUp 0.6s ease-out backwards;
         }
+        .book-card:hover { transform: translateY(-10px) scale(1.02); box-shadow: var(--shadow-hover); border-color: #c7d2fe; z-index: 2; }
 
-        .book-card:hover {
-            transform: translateY(-4px);
-            box-shadow: var(--shadow-xl);
-            border-color: var(--primary);
+        .book-cover-container { position: relative; padding-top: 140%; overflow: hidden; background: #f1f5f9; }
+        .book-cover-container img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s ease; }
+        .book-card:hover .book-cover-container img { transform: scale(1.08); }
+
+        .book-badge {
+            position: absolute; top: 1rem; right: 1rem; padding: 0.4rem 1rem;
+            border-radius: 2rem; font-size: 0.75rem; font-weight: 700; text-transform: uppercase;
+            letter-spacing: 0.5px; z-index: 2; backdrop-filter: blur(8px);
         }
+        .badge-available { background: rgba(16, 185, 129, 0.9); color: white; box-shadow: 0 4px 10px rgba(16,185,129,0.3); }
+        .badge-borrowed { background: rgba(244, 63, 94, 0.9); color: white; box-shadow: 0 4px 10px rgba(244,63,94,0.3); }
 
-        /* Book Cover */
-        .book-cover {
-            position: relative;
-            aspect-ratio: 2 / 3;
-            background: linear-gradient(135deg, var(--gray-100), var(--gray-200));
-            overflow: hidden;
+        .book-info { padding: 1.5rem; flex: 1; display: flex; flex-direction: column; }
+        .book-category-tag {
+            font-size: 0.75rem; font-weight: 600; color: var(--primary); text-transform: uppercase;
+            letter-spacing: 0.5px; margin-bottom: 0.5rem; background: rgba(99,102,241,0.1); padding: 0.2rem 0.6rem; border-radius: 4px; display: inline-block; width: fit-content;
         }
-
-        .book-cover img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.4s ease;
-        }
-
-        .book-card:hover .book-cover img {
-            transform: scale(1.05);
-        }
-
-        /* Status Badge */
-        .book-status {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 0.65rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.3px;
-            background: rgba(0,0,0,0.7);
-            backdrop-filter: blur(4px);
-            color: white;
-            z-index: 2;
-        }
-
-        .status-available { background: var(--success); }
-        .status-borrowed { background: var(--danger); }
-        .status-reserved { background: var(--warning); }
-
-        /* Book Info */
-        .book-info {
-            padding: 0.9rem;
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-        }
-
         .book-title {
-            font-size: 0.9rem;
-            font-weight: 600;
-            line-height: 1.35;
-            color: var(--gray-800);
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
+            font-size: 1.15rem; font-weight: 700; margin-bottom: 0.5rem; line-height: 1.4;
+            color: var(--gray-900); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
         }
+        .book-title a { color: inherit; text-decoration: none; transition: color 0.2s; }
+        .book-title a:hover { color: var(--primary); }
+        .book-author { font-size: 0.9rem; color: var(--gray-500); margin-bottom: 1.5rem; font-weight: 500; }
 
-        .book-title a {
-            color: inherit;
-            text-decoration: none;
-            transition: color var(--transition);
+        .book-footer {
+            margin-top: auto; padding-top: 1rem; border-top: 1px solid var(--gray-100);
+            display: flex; align-items: center; justify-content: space-between;
         }
+        .owner-info { display: flex; align-items: center; gap: 0.75rem; }
+        .owner-avatar { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 2px solid white; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .owner-name { font-size: 0.85rem; font-weight: 500; color: var(--gray-800); }
 
-        .book-title a:hover {
-            color: var(--primary);
+        /* Empty state */
+        .empty-glass {
+            text-align: center; padding: 5rem 2rem; background: white;
+            border-radius: var(--radius-xl); border: 1px solid var(--gray-200); margin: 0 auto; max-width: 600px;
+            box-shadow: 0 10px 30px -10px rgba(0,0,0,0.05);
         }
-
-        .book-author {
-            font-size: 0.75rem;
-            color: var(--gray-500);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+        .empty-icon-box {
+            width: 100px; height: 100px; background: rgba(99,102,241,0.1); border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem;
+            color: var(--primary); font-size: 3rem;
         }
-
-        .book-category {
-            display: inline-block;
-            background: var(--gray-100);
-            color: var(--gray-600);
-            font-size: 0.7rem;
-            padding: 0.2rem 0.7rem;
-            border-radius: 20px;
-            font-weight: 500;
+        .empty-glass h3 { font-size: 1.5rem; font-weight: 700; margin-bottom: 0.75rem; color: var(--gray-900); }
+        .empty-glass p { color: var(--gray-500); margin-bottom: 2rem; font-size: 1.1rem; }
+        .btn-elegant {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white; padding: 0.75rem 2rem; border-radius: 2rem; text-decoration: none;
+            font-weight: 600; transition: var(--transition); display: inline-block; box-shadow: 0 4px 15px rgba(99,102,241,0.3);
         }
+        .btn-elegant:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(99,102,241,0.4); color: white; }
 
-        .book-owner {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            margin-top: 0.25rem;
-            padding-top: 0.5rem;
-            border-top: 1px solid var(--gray-200);
-            font-size: 0.7rem;
-            color: var(--gray-500);
-        }
+        /* Staggered animation delays for grid items */
+        .book-card:nth-child(1) { animation-delay: 0.1s; }
+        .book-card:nth-child(2) { animation-delay: 0.15s; }
+        .book-card:nth-child(3) { animation-delay: 0.2s; }
+        .book-card:nth-child(4) { animation-delay: 0.25s; }
+        .book-card:nth-child(5) { animation-delay: 0.3s; }
+        .book-card:nth-child(6) { animation-delay: 0.35s; }
+        .book-card:nth-child(7) { animation-delay: 0.4s; }
+        .book-card:nth-child(8) { animation-delay: 0.45s; }
 
-        .owner-avatar {
-            width: 22px;
-            height: 22px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 1px solid var(--gray-200);
-        }
+        @keyframes float { 0%, 100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-20px) scale(1.05); } }
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* ========== EMPTY STATE ========== */
-        .empty-state {
-            text-align: center;
-            padding: 3rem 1.5rem;
-            background: white;
-            border-radius: var(--radius-lg);
-            border: 1px solid var(--gray-200);
-            margin: 2rem 0;
-        }
-
-        .empty-state i {
-            font-size: 3.5rem;
-            color: var(--gray-300);
-            margin-bottom: 1rem;
-        }
-
-        .empty-state h3 {
-            font-size: 1.2rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .empty-state p {
-            color: var(--gray-500);
-            margin-bottom: 1.5rem;
-        }
-
-        .btn-primary {
-            display: inline-block;
-            padding: 0.6rem 1.5rem;
-            background: var(--primary);
-            color: white;
-            border-radius: 2rem;
-            text-decoration: none;
-            font-weight: 500;
-            transition: var(--transition);
-        }
-
-        .btn-primary:hover {
-            background: var(--primary-dark);
-            transform: translateY(-2px);
-        }
-
-        /* ========== RESPONSIVE BREAKPOINTS ========== */
-        @media (min-width: 480px) {
-            .hero h1 { font-size: 2.2rem; }
-            .book-grid { gap: 1.25rem; }
-        }
-
-        @media (min-width: 640px) {
-            .book-grid { grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
-            .book-info { padding: 1rem; }
-            .book-title { font-size: 0.95rem; }
-        }
-
-        @media (min-width: 768px) {
-            .hero { padding: 3rem 2rem; }
-            .hero h1 { font-size: 2.5rem; }
-            .stats-grid { gap: 1.5rem; }
+        /* Responsive */
+        @media (max-width: 768px) {
+            .books-hero { padding: 4rem 1rem 3rem; }
+            .books-hero h1 { font-size: 2.5rem; }
+            .stats-bar { padding: 0 1rem; gap: 1rem; margin-top: -2rem; }
+            .stat-item { min-width: 140px; padding: 1rem; }
             .stat-value { font-size: 2rem; }
-            .book-grid { grid-template-columns: repeat(4, 1fr); }
+            .filter-glass { flex-direction: column; align-items: stretch; }
+            .filter-controls { flex-direction: column; }
+            .search-box { min-width: 100%; }
+            .book-grid { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1.5rem; }
         }
-
-        @media (min-width: 1024px) {
-            .book-grid { grid-template-columns: repeat(5, 1fr); gap: 1.75rem; }
-            .filter-form { flex-direction: row; align-items: center; gap: 1rem; }
-            .search-wrapper { flex: 2; }
-            .filter-row { flex: 2; }
-        }
-
-        @media (min-width: 1280px) {
-            .book-grid { grid-template-columns: repeat(6, 1fr); }
-        }
-
-        /* Animation */
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .book-card {
-            animation: fadeInUp 0.4s ease forwards;
+        @media (max-width: 480px) {
+            .book-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
 
-<div class="container">
     <!-- Hero Section -->
-    <div class="hero">
-        <h1><i class="fas fa-book-open"></i> Browse Books</h1>
-        <p>Discover your next favorite read from our community</p>
-    </div>
+    <section class="books-hero">
+        <div class="hero-shape-1"></div>
+        <div class="hero-shape-2"></div>
+        <h1><i class="fas fa-layer-group"></i> Library Collection</h1>
+        <p>Explore thousands of books shared by the community. Find your next great read tailored to your interests.</p>
+    </section>
     
     <!-- Quick Stats -->
-    <div class="stats-grid">
-        <div class="stat-card">
-            <div class="stat-value" style="color: var(--primary);"><?php echo $totalBooks; ?></div>
+    <div class="stats-bar">
+        <div class="stat-item">
+            <div class="stat-value"><?php echo $totalBooks; ?></div>
             <div class="stat-label">Total Books</div>
         </div>
-        <div class="stat-card">
+        <div class="stat-item">
             <div class="stat-value" style="color: var(--success);"><?php echo $availableBooks; ?></div>
             <div class="stat-label">Available Now</div>
         </div>
-        <div class="stat-card">
-            <div class="stat-value" style="color: var(--warning);"><?php echo $totalCategories; ?></div>
+        <div class="stat-item">
+            <div class="stat-value" style="color: var(--secondary);"><?php echo $totalCategories; ?></div>
             <div class="stat-label">Categories</div>
         </div>
     </div>
+
+<main class="books-main">
     
     <!-- Search and Filter -->
-    <div class="filter-card">
-        <form method="GET" class="filter-form">
-            <div class="search-wrapper">
-                <i class="fas fa-search search-icon"></i>
-                <input type="text" name="search" class="form-input" 
-                       placeholder="Search by title or author..." 
+    <div class="filter-glass">
+        <form method="GET" style="display: contents;">
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" name="search" class="search-input" 
+                       placeholder="Search by book title or author..." 
                        value="<?php echo htmlspecialchars($search); ?>">
             </div>
             
-            <div class="filter-row">
-                <select name="category" class="form-select" onchange="this.form.submit()">
+            <div class="filter-controls">
+                <select name="category" class="styled-select" onchange="this.form.submit()">
                     <option value="">All Categories</option>
                     <?php foreach ($categories as $cat): ?>
                         <option value="<?php echo htmlspecialchars($cat); ?>" <?php echo $category === $cat ? 'selected' : ''; ?>>
@@ -606,42 +380,42 @@ $totalCategories = count($categories);
                     <?php endforeach; ?>
                 </select>
                 
-                <select name="availability" class="form-select" onchange="this.form.submit()">
-                    <option value="">All Books</option>
-                    <option value="available" <?php echo $availability === 'available' ? 'selected' : ''; ?>>Available Only</option>
-                    <option value="borrowed" <?php echo $availability === 'borrowed' ? 'selected' : ''; ?>>Borrowed</option>
+                <select name="availability" class="styled-select" onchange="this.form.submit()">
+                    <option value="">Status: All</option>
+                    <option value="available" <?php echo $availability === 'available' ? 'selected' : ''; ?>>Available Now</option>
+                    <option value="borrowed" <?php echo $availability === 'borrowed' ? 'selected' : ''; ?>>Currently Borrowed</option>
                 </select>
             </div>
             
             <?php if (!empty($search) || !empty($category) || !empty($availability)): ?>
-                <div class="clear-btn">
-                    <a href="/books/"><i class="fas fa-times-circle"></i> Clear all filters</a>
-                </div>
+                <a href="/books/" class="clear-btn"><i class="fas fa-times"></i> Clear Filters</a>
             <?php endif; ?>
         </form>
     </div>
     
     <!-- Results Header -->
-    <div class="results-header">
-        <div class="results-count">
-            <strong><?php echo count($filteredBooks); ?></strong> books found
+    <div class="books-header">
+        <div class="books-count">
+            Showing <strong><?php echo count($filteredBooks); ?></strong> books
         </div>
         <div>
-            <select class="sort-select" onchange="sortBooks(this.value)">
-                <option value="newest">Newest First</option>
-                <option value="title">Title A-Z</option>
-                <option value="author">Author A-Z</option>
+            <select class="styled-select" onchange="sortBooks(this.value)" style="padding: 0.6rem 2.5rem 0.6rem 1rem; min-width: auto; font-size: 0.9rem;">
+                <option value="newest">Sort: Newest First</option>
+                <option value="title">Sort: Title A-Z</option>
+                <option value="author">Sort: Author A-Z</option>
             </select>
         </div>
     </div>
     
     <!-- Books Grid -->
     <?php if (empty($filteredBooks)): ?>
-        <div class="empty-state">
-            <i class="fas fa-book-open"></i>
+        <div class="empty-glass">
+            <div class="empty-icon-box">
+                <i class="fas fa-book-open"></i>
+            </div>
             <h3>No Books Found</h3>
-            <p>Try adjusting your search or explore different categories</p>
-            <a href="/books/" class="btn-primary">View All Books</a>
+            <p>We couldn't find any books matching your current filters. Try adjusting your search or explore different categories.</p>
+            <a href="/books/" class="btn-elegant">View All Books</a>
         </div>
     <?php else: ?>
         <div class="book-grid" id="booksGrid">
@@ -653,45 +427,46 @@ $totalCategories = count($categories);
                     : '/assets/images/default-book-cover.jpg';
                 $status = strtolower($book['status'] ?? 'available');
             ?>
-                <div class="book-card" data-title="<?php echo strtolower($book['title'] ?? ''); ?>" 
-                     data-author="<?php echo strtolower($book['author'] ?? ''); ?>" 
+                <div class="book-card" data-title="<?php echo htmlspecialchars(strtolower($book['title'] ?? '')); ?>" 
+                     data-author="<?php echo htmlspecialchars(strtolower($book['author'] ?? '')); ?>" 
                      data-date="<?php echo $book['created_at'] ?? ''; ?>">
                     
-                    <div class="book-cover">
+                    <div class="book-cover-container">
                         <img src="<?php echo htmlspecialchars($coverImage); ?>" 
                              alt="<?php echo htmlspecialchars($book['title'] ?? 'Book'); ?>"
                              loading="lazy"
                              onerror="this.src='/assets/images/default-book-cover.jpg';">
-                        <span class="book-status status-<?php echo $status; ?>">
+                        <span class="book-badge badge-<?php echo $status; ?>">
                             <?php echo ucfirst($status); ?>
                         </span>
                     </div>
                     
                     <div class="book-info">
+                        <div class="book-category-tag">
+                            <?php echo htmlspecialchars($book['category'] ?? 'General'); ?>
+                        </div>
                         <h3 class="book-title">
                             <a href="/book/?id=<?php echo htmlspecialchars($book['id'] ?? ''); ?>">
                                 <?php echo htmlspecialchars($book['title'] ?? 'Untitled'); ?>
                             </a>
                         </h3>
-                        <p class="book-author">by <?php echo htmlspecialchars($book['author'] ?? 'Unknown'); ?></p>
+                        <p class="book-author">By <?php echo htmlspecialchars($book['author'] ?? 'Unknown'); ?></p>
                         
-                        <div class="book-category">
-                            <?php echo htmlspecialchars($book['category'] ?? 'General'); ?>
-                        </div>
-                        
-                        <div class="book-owner">
-                            <img src="/uploads/profile/<?php echo $ownerAvatar; ?>" 
-                                 alt="<?php echo htmlspecialchars($ownerName); ?>" 
-                                 class="owner-avatar"
-                                 onerror="this.src='/assets/images/avatars/default.jpg';">
-                            <span><?php echo htmlspecialchars($ownerName); ?></span>
+                        <div class="book-footer">
+                            <div class="owner-info">
+                                <img src="/uploads/profile/<?php echo $ownerAvatar; ?>" 
+                                     alt="<?php echo htmlspecialchars($ownerName); ?>" 
+                                     class="owner-avatar"
+                                     onerror="this.src='/assets/images/avatars/default.jpg';">
+                                <span class="owner-name"><?php echo htmlspecialchars($ownerName); ?></span>
+                            </div>
                         </div>
                     </div>
                 </div>
             <?php endforeach; ?>
         </div>
     <?php endif; ?>
-</div>
+</main>
 
 <script>
 function sortBooks(criteria) {
@@ -705,10 +480,15 @@ function sortBooks(criteria) {
         return new Date(b.dataset.date || 0) - new Date(a.dataset.date || 0);
     });
     
-    books.forEach(book => grid.appendChild(book));
+    // Animate reordering
+    grid.style.opacity = '0';
+    setTimeout(() => {
+        books.forEach(book => grid.appendChild(book));
+        grid.style.opacity = '1';
+    }, 200);
 }
 
-// Debounced search
+// Debounce search input for automatic submission
 let searchTimeout;
 const searchInput = document.querySelector('input[name="search"]');
 if (searchInput) {
