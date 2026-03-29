@@ -13,8 +13,8 @@ return [
         'port' => 587,                            // TLS port
         'secure' => 'tls',                         // tls or ssl
         'auth' => true,                            // Enable SMTP authentication
-        'username' => 'a15ef4001@smtp-brevo.com',     // SMTP username
-        'password' => 'YOUR_SMTP_PASSWORD_HERE',         // SMTP password (use app password for Gmail)
+        'username' => getenv('SMTP_USERNAME') ?: 'a15ef4001@smtp-brevo.com',     // SMTP username
+        'password' => getenv('SMTP_PASSWORD') ?: '',         // SMTP password (use environment variable)
         'timeout' => 30,                            // Connection timeout
         'debug' => 0                                 // Debug level (0 = off, 1 = client, 2 = client & server)
     ],
