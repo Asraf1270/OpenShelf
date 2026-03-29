@@ -393,333 +393,360 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['ajax_action']) && $_P
     <link rel="stylesheet" href="/assets/css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
+
         :root {
-            --primary: #2563eb;
-            --primary-dark: #1d4ed8;
-            --surface: #ffffff;
-            --surface-hover: #f8fafc;
-            --text-primary: #0f172a;
-            --text-secondary: #64748b;
-            --text-tertiary: #94a3b8;
-            --border: #e2e8f0;
-            --radius-md: 12px;
-            --radius-lg: 16px;
-            --radius-xl: 20px;
-            --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.08);
-            --shadow-md: 0 10px 15px -3px rgba(15, 23, 42, 0.1);
-            --space-1: 0.25rem;
-            --space-2: 0.5rem;
-            --space-3: 0.75rem;
-            --space-4: 1rem;
-            --space-5: 1.5rem;
-            --space-6: 2rem;
+            --primary-h: 263;
+            --primary-s: 70%;
+            --primary-l: 50%;
+            --primary: hsl(var(--primary-h), var(--primary-s), var(--primary-l));
+            --primary-light: hsl(var(--primary-h), var(--primary-s), 95%);
+            --primary-dark: hsl(var(--primary-h), var(--primary-s), 40%);
+            --accent: hsl(199, 89%, 48%);
+            --bg: hsl(210, 40%, 98%);
+            --surface: hsla(0, 0%, 100%, 0.7);
+            --surface-solid: #ffffff;
+            --text-main: hsl(222, 47%, 11%);
+            --text-muted: hsl(215, 16%, 47%);
+            --border: hsla(214, 32%, 91%, 0.8);
+            --glass-border: hsla(0, 0%, 100%, 0.4);
+            --shadow-premium: 0 20px 40px -15px rgba(0, 0, 0, 0.05);
+            --radius-lg: 24px;
+            --radius-md: 16px;
         }
 
-        * { box-sizing: border-box; }
-        body { font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; line-height: 1.5; background: #f8fafc; }
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { 
+            font-family: 'Outfit', 'Inter', system-ui, -apple-system, sans-serif; 
+            background: var(--bg); 
+            color: var(--text-main);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
 
-        .book-detail { max-width: 1200px; margin: 0 auto; padding: var(--space-4); }
+        .book-detail { 
+            max-width: 1200px; 
+            margin: 0 auto; 
+            padding: 2rem 1.5rem; 
+            animation: fadeIn 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         /* Breadcrumb */
         .breadcrumb {
             display: flex;
             align-items: center;
-            gap: var(--space-2);
-            font-size: 0.875rem;
-            color: var(--text-secondary);
-            margin-bottom: var(--space-5);
-            flex-wrap: wrap;
+            gap: 0.75rem;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+            padding: 0.5rem 0;
         }
-        .breadcrumb a { color: var(--primary); text-decoration: none; }
-        .breadcrumb a:hover { text-decoration: underline; }
-
-        /* Alerts */
-        .alert {
-            padding: var(--space-3) var(--space-4);
-            border-radius: var(--radius-md);
-            margin-bottom: var(--space-5);
-            font-size: 0.95rem;
+        .breadcrumb a { 
+            color: var(--text-muted); 
+            text-decoration: none; 
+            transition: color 0.2s;
         }
-        .alert-success { background: #ecfdf5; color: #10b981; border: 1px solid #a7f3d0; }
-        .alert-danger { background: #fef2f2; color: #ef4444; border: 1px solid #fecaca; }
+        .breadcrumb a:hover { color: var(--primary); }
 
-        /* Book Layout - MOBILE FIRST */
-        .book-layout { display: flex; flex-direction: column; gap: var(--space-6); }
-        @media (min-width: 768px) { .book-layout { flex-direction: row; gap: var(--space-8); } }
+        /* Book Layout */
+        .book-layout { 
+            display: grid; 
+            grid-template-columns: 1fr; 
+            gap: 3rem; 
+            align-items: start;
+        }
+        @media (min-width: 992px) { 
+            .book-layout { grid-template-columns: 350px 1fr; } 
+        }
 
         /* Cover Section */
         .book-cover-section {
-            background: var(--surface);
-            border-radius: var(--radius-lg);
-            padding: var(--space-4);
-            box-shadow: var(--shadow-md);
-            text-align: center;
-            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
         }
+        
         .cover-wrapper {
-            aspect-ratio: 3 / 4;
-            width: 100%;
-            max-width: 280px;
-            margin: 0 auto;
+            position: relative;
+            aspect-ratio: 3 / 4.5;
             border-radius: var(--radius-lg);
             overflow: hidden;
-            box-shadow: var(--shadow-md);
-            background: #f1f5f9;
+            box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.25);
+            background: #fff;
+            transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
+        .cover-wrapper:hover { transform: scale(1.02); }
+
         .book-cover-image {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            display: block;
         }
+
         .status-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: var(--space-1);
-            padding: 6px 16px;
-            border-radius: 9999px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            margin-top: var(--space-4);
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            padding: 0.6rem 1.2rem;
+            border-radius: 99px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            backdrop-filter: blur(12px);
+            z-index: 2;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
-        .status-badge.available { background: #10b981; color: white; }
-        .status-badge.reserved, .status-badge.borrowed { background: #f59e0b; color: white; }
+        .status-badge.available { background: rgba(16, 185, 129, 0.9); color: white; }
+        .status-badge.reserved, .status-badge.borrowed { background: rgba(245, 158, 11, 0.9); color: white; }
 
         /* Info Section */
         .book-info-section {
-            background: var(--surface);
-            border-radius: var(--radius-lg);
-            padding: var(--space-5);
-            box-shadow: var(--shadow-md);
-            flex: 1;
+            padding: 1rem 0;
         }
-        @media (max-width: 640px) { .book-info-section { padding: var(--space-4); } }
 
+        .book-header { margin-bottom: 2.5rem; }
         .book-title {
-            font-size: 1.75rem;
-            font-weight: 700;
-            line-height: 1.2;
-            color: var(--text-primary);
-            margin-bottom: var(--space-2);
+            font-size: clamp(2rem, 5vw, 3.2rem);
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 0.5rem;
+            letter-spacing: -1px;
+            color: #1a1a1a;
         }
-        @media (min-width: 768px) { .book-title { font-size: 2.25rem; } }
-
         .book-author {
-            font-size: 1.25rem;
+            font-size: 1.35rem;
             color: var(--primary);
-            margin-bottom: var(--space-5);
+            font-weight: 500;
+            opacity: 0.9;
         }
 
-        /* Meta */
+        /* Meta Grid */
         .meta-grid {
-            display: flex;
-            flex-wrap: wrap;
-            gap: var(--space-3);
-            margin-bottom: var(--space-6);
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2.5rem;
         }
         .meta-item {
+            background: var(--surface-solid);
+            padding: 1.25rem;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border);
             display: flex;
-            align-items: center;
-            background: var(--surface-hover);
-            padding: 8px 16px;
-            border-radius: 9999px;
-            font-size: 0.875rem;
-            color: var(--text-secondary);
-            gap: var(--space-2);
+            flex-direction: column;
+            gap: 0.5rem;
+            transition: all 0.3s;
         }
+        .meta-item:hover { transform: translateY(-3px); border-color: var(--primary); box-shadow: var(--shadow-premium); }
         .meta-icon {
-            width: 28px;
-            height: 28px;
-            background: rgba(37, 99, 235, 0.1);
+            width: 36px;
+            height: 36px;
+            background: var(--primary-light);
             color: var(--primary);
-            border-radius: 50%;
+            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
+            font-size: 1rem;
         }
+        .meta-label { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
+        .meta-value { font-weight: 600; font-size: 0.95rem; }
 
         /* Owner Card */
         .owner-card {
             display: flex;
             align-items: center;
-            gap: var(--space-4);
-            background: var(--surface-hover);
-            padding: var(--space-4);
-            border-radius: var(--radius-lg);
-            margin-bottom: var(--space-6);
+            gap: 1.25rem;
+            background: var(--surface-solid);
+            padding: 1.25rem;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border);
+            text-decoration: none;
+            color: inherit;
+            margin-bottom: 2.5rem;
+            transition: all 0.3s ease;
         }
+        .owner-card:hover { 
+            border-color: var(--primary); 
+            box-shadow: var(--shadow-premium);
+            transform: scale(1.01);
+        }
+        .owner-avatar-container { position: relative; }
         .owner-avatar-large {
-            width: 52px;
-            height: 52px;
-            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            border-radius: 18px;
             object-fit: cover;
-            border: 3px solid var(--primary);
-            flex-shrink: 0;
+            border: 2px solid var(--primary-light);
         }
-        .owner-name { font-weight: 600; font-size: 1.1rem; }
-        .owner-details { font-size: 0.85rem; color: var(--text-tertiary); display: flex; gap: var(--space-3); }
+        .owner-name { font-weight: 700; font-size: 1.1rem; margin-bottom: 0.25rem; }
+        .owner-details { display: flex; gap: 1rem; font-size: 0.85rem; color: var(--text-muted); }
+        .owner-details i { color: var(--primary); opacity: 0.7; }
 
         /* Action Buttons */
-        .action-buttons {
+        .action-group {
             display: flex;
-            flex-direction: column;
-            gap: var(--space-3);
+            gap: 1rem;
+            flex-wrap: wrap;
         }
-        @media (min-width: 768px) { .action-buttons { flex-direction: row; flex-wrap: wrap; } }
-
         .btn {
-            padding: 14px 24px;
-            border-radius: 9999px;
+            padding: 1rem 2rem;
+            border-radius: var(--radius-md);
             font-weight: 600;
             font-size: 1rem;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            gap: 0.75rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             text-decoration: none;
-            cursor: pointer;
             border: none;
-            min-height: 48px;
+            cursor: pointer;
+            flex: 1;
+            min-width: 200px;
         }
-        .btn-primary { background: var(--primary); color: white; }
-        .btn-primary:hover { background: var(--primary-dark); transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgb(37 99 235); }
-        .btn-secondary { background: #e2e8f0; color: var(--text-primary); }
-        .btn-outline { background: transparent; border: 2px solid var(--border); color: var(--text-primary); }
-        .btn-outline:hover { border-color: var(--primary); color: var(--primary); }
+        .btn-primary { 
+            background: var(--primary); 
+            color: white; 
+            box-shadow: 0 10px 20px -5px rgba(124, 58, 237, 0.3);
+        }
+        .btn-primary:hover { background: var(--primary-dark); transform: translateY(-2px); box-shadow: 0 15px 30px -10px rgba(124, 58, 237, 0.4); }
         .btn-whatsapp { background: #25d366; color: white; }
-        .btn-whatsapp:hover { background: #128c7e; transform: translateY(-2px); }
-        .btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+        .btn-whatsapp:hover { background: #1eb956; transform: translateY(-2px); }
+        .btn-outline { background: white; border: 2px solid var(--border); color: var(--text-main); }
+        .btn-outline:hover { border-color: var(--primary); color: var(--primary); }
 
-        /* Tabs */
+        /* Tabs Section */
         .tabs-container {
-            background: var(--surface);
+            margin-top: 4rem;
+            background: var(--surface-solid);
             border-radius: var(--radius-lg);
+            border: 1px solid var(--border);
             overflow: hidden;
-            box-shadow: var(--shadow-md);
-            margin-top: var(--space-6);
+            box-shadow: var(--shadow-premium);
         }
         .tabs {
             display: flex;
-            overflow-x: auto;
-            scrollbar-width: none;
             border-bottom: 1px solid var(--border);
-            padding-left: var(--space-2);
+            padding: 0 1rem;
+            background: #fafafa;
         }
-        .tabs::-webkit-scrollbar { display: none; }
         .tab {
-            padding: var(--space-4) var(--space-5);
-            background: none;
-            border: none;
+            padding: 1.5rem 2rem;
             font-weight: 600;
-            color: var(--text-secondary);
-            font-size: 1rem;
-            white-space: nowrap;
-            position: relative;
-            flex: 0 0 auto;
+            color: var(--text-muted);
+            border: none;
+            background: none;
             cursor: pointer;
+            position: relative;
+            transition: all 0.3s;
         }
-        .tab.active { color: var(--text-primary); }
+        .tab.active { color: var(--primary); }
         .tab.active::after {
             content: '';
             position: absolute;
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 40%;
+            bottom: -1px;
+            left: 20%;
+            right: 20%;
             height: 3px;
             background: var(--primary);
-            border-radius: 6px;
+            border-radius: 10px 10px 0 0;
         }
-        .tab-content { display: none; padding: var(--space-5); }
-        .tab-content.active { display: block; }
-        @media (max-width: 640px) { .tab-content { padding: var(--space-4); } }
 
-        /* Review & Comment */
-        .review-card, .comment-card {
-            padding: var(--space-5);
+        .tab-content { padding: 3rem; display: none; animation: fadeIn 0.4s ease; }
+        .tab-content.active { display: block; }
+
+        /* Specific Content Styling */
+        .detail-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+        .detail-item {
+            padding-bottom: 1rem;
             border-bottom: 1px solid var(--border);
-            display: flex;
-            gap: var(--space-4);
         }
-        .review-avatar, .comment-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            flex-shrink: 0;
-            object-fit: cover;
+        .detail-item label { 
+            display: block; 
+            font-size: 0.75rem; 
+            text-transform: uppercase; 
+            letter-spacing: 1px; 
+            color: var(--text-muted); 
+            margin-bottom: 0.4rem;
         }
-        .review-rating { color: #facc15; display: flex; gap: 2px; }
-        .like-btn {
-            background: none;
-            border: none;
-            color: var(--text-tertiary);
+        .detail-item span { font-weight: 600; font-size: 1rem; }
+
+        /* Entries (Reviews/Comments) */
+        .entry-card {
             display: flex;
-            align-items: center;
-            gap: var(--space-1);
-            font-size: 0.875rem;
-            cursor: pointer;
-            padding: 4px 8px;
+            gap: 1.5rem;
+            padding: 2rem 0;
+            border-bottom: 1px solid var(--border);
+        }
+        .entry-avatar { width: 48px; height: 48px; border-radius: 14px; object-fit: cover; }
+        .entry-content { flex: 1; }
+        .entry-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.75rem; }
+        .entry-name { font-weight: 700; font-size: 1.05rem; }
+        .entry-date { font-size: 0.8rem; color: var(--text-muted); }
+        .entry-text { color: hsl(215, 16%, 30%); line-height: 1.7; }
+
+        .rating-display { color: #facc15; font-size: 0.9rem; margin-top: 0.25rem; }
+
+        .form-dark {
+            background: #f8fafc;
+            padding: 2rem;
             border-radius: var(--radius-md);
+            margin-bottom: 3rem;
+            border: 1px solid var(--border);
         }
-        .like-btn.active { color: #ef4444; }
-        .review-form, .comment-form {
-            background: var(--surface-hover);
-            border-radius: var(--radius-lg);
-            padding: var(--space-5);
-            margin-bottom: var(--space-6);
+        .form-control {
+            width: 100%;
+            padding: 1.25rem;
+            border-radius: 12px;
+            border: 2px solid var(--border);
+            font-family: inherit;
+            font-size: 1rem;
+            transition: all 0.3s;
+            background: white;
         }
-        .rating-stars {
-            display: flex;
-            gap: 4px;
-            font-size: 1.75rem;
-            margin-bottom: var(--space-4);
-        }
-        .rating-stars i { cursor: pointer; color: #cbd5e1; transition: color 0.15s; }
-        .rating-stars i.active { color: #facc15; }
-        .empty-state {
-            text-align: center;
-            padding: var(--space-8) var(--space-4);
-            color: var(--text-tertiary);
-        }
-        .empty-state i { font-size: 3rem; opacity: 0.3; margin-bottom: var(--space-4); }
+        .form-control:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 4px var(--primary-light); }
 
         /* Modal */
         .modal {
-            display: none;
             position: fixed;
             inset: 0;
-            background: rgba(15, 23, 42, 0.7);
+            background: rgba(0,0,0,0.4);
+            backdrop-filter: blur(8px);
+            display: none;
             align-items: center;
             justify-content: center;
-            z-index: 10000;
+            z-index: 9999;
+            padding: 1rem;
         }
-        .modal.active { display: flex; }
-        .modal-content {
-            background: var(--surface);
-            border-radius: var(--radius-xl);
-            width: 92%;
-            max-width: 480px;
-            max-height: 92vh;
-            overflow: hidden;
-            box-shadow: var(--shadow-md);
-        }
-        .form-control, .form-select {
+        .modal.active { display: flex; animation: modalIn 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+        @keyframes modalIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+        .modal-card {
+            background: white;
             width: 100%;
-            padding: 14px 16px;
-            border: 2px solid var(--border);
-            border-radius: var(--radius-md);
-            font-size: 1rem;
-            transition: border 0.2s;
+            max-width: 500px;
+            border-radius: var(--radius-lg);
+            padding: 2.5rem;
+            box-shadow: 0 40px 100px -20px rgba(0,0,0,0.2);
         }
-        .form-control:focus, .form-select:focus {
-            outline: none;
-            border-color: var(--primary);
-        }
-        @media (max-width: 480px) {
-            .book-detail { padding: var(--space-3); }
-            .book-title { font-size: 1.6rem; }
-            .cover-wrapper { max-width: 200px; }
+
+        /* Mobile Adjustments */
+        @media (max-width: 768px) {
+            .book-detail { padding: 1.5rem 1rem; }
+            .action-group { flex-direction: column; }
+            .btn { width: 100%; }
+            .tabs { flex-wrap: nowrap; overflow-x: auto; -webkit-overflow-scrolling: touch; font-size: 0.9rem; }
+            .tab { padding: 1.25rem 1rem; white-space: nowrap; }
+            .tab-content { padding: 2rem 1rem; }
+            .book-title { font-size: 2.2rem; }
+            .meta-grid { grid-template-columns: repeat(2, 1fr); }
         }
     </style>
 </head>
@@ -765,53 +792,50 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['ajax_action']) && $_P
                     <div class="meta-grid">
                         <div class="meta-item">
                             <div class="meta-icon"><i class="fas fa-tag"></i></div>
-                            <div>
-                                <div style="font-size:0.75rem;opacity:0.7">Category</div>
-                                <?php echo htmlspecialchars($book['category'] ?? 'General'); ?>
-                            </div>
+                            <span class="meta-label">Category</span>
+                            <span class="meta-value"><?php echo htmlspecialchars($book['category'] ?? 'General'); ?></span>
                         </div>
                         <div class="meta-item">
                             <div class="meta-icon"><i class="fas fa-star"></i></div>
-                            <div>
-                                <div style="font-size:0.75rem;opacity:0.7">Rating</div>
-                                <?php echo $avgRating; ?> <span style="font-size:0.8rem">•</span> <?php echo count($reviews); ?> reviews
-                            </div>
+                            <span class="meta-label">Rating</span>
+                            <span class="meta-value"><?php echo $avgRating; ?> <span style="font-weight:400;opacity:0.6;font-size:0.8rem">(<?php echo count($reviews); ?>)</span></span>
                         </div>
                         <div class="meta-item">
                             <div class="meta-icon"><i class="fas fa-calendar"></i></div>
-                            <div>
-                                <div style="font-size:0.75rem;opacity:0.7">Added</div>
-                                <?php echo date('M j, Y', strtotime($book['created_at'])); ?>
-                            </div>
+                            <span class="meta-label">Added</span>
+                            <span class="meta-value"><?php echo date('M j, Y', strtotime($book['created_at'])); ?></span>
                         </div>
                         <div class="meta-item">
                             <div class="meta-icon"><i class="fas fa-eye"></i></div>
-                            <div>
-                                <div style="font-size:0.75rem;opacity:0.7">Views</div>
-                                <?php echo number_format($book['views'] ?? 0); ?>
-                            </div>
+                            <span class="meta-label">Views</span>
+                            <span class="meta-value"><?php echo number_format($book['views'] ?? 0); ?></span>
                         </div>
                     </div>
                     
                     <!-- Owner Card -->
-                    <div class="owner-card">
-                        <img src="/uploads/profile/<?php echo htmlspecialchars($owner['personal_info']['profile_pic'] ?? 'default-avatar.jpg'); ?>" 
-                             class="owner-avatar-large" 
-                             alt="<?php echo htmlspecialchars($owner['personal_info']['name'] ?? 'Owner'); ?>"
-                             onerror="this.src='/assets/images/avatars/default.jpg'">
-                        <div>
+                    <a href="/profile/?id=<?php echo $book['owner_id']; ?>" class="owner-card">
+                        <div class="owner-avatar-container">
+                            <img src="/uploads/profile/<?php echo htmlspecialchars($owner['personal_info']['profile_pic'] ?? 'default-avatar.jpg'); ?>" 
+                                 class="owner-avatar-large" 
+                                 alt="<?php echo htmlspecialchars($owner['personal_info']['name'] ?? 'Owner'); ?>"
+                                 onerror="this.src='/assets/images/avatars/default.jpg'">
+                        </div>
+                        <div style="flex:1">
                             <div class="owner-name"><?php echo htmlspecialchars($owner['personal_info']['name'] ?? 'Unknown Owner'); ?></div>
                             <div class="owner-details">
                                 <span><i class="fas fa-door-open"></i> <?php echo htmlspecialchars($owner['personal_info']['room_number'] ?? 'N/A'); ?></span>
                                 <span><i class="fas fa-building"></i> <?php echo htmlspecialchars($owner['personal_info']['department'] ?? 'N/A'); ?></span>
                             </div>
                         </div>
-                    </div>
+                        <div style="color: var(--primary); opacity: 0.5;">
+                            <i class="fas fa-chevron-right"></i>
+                        </div>
+                    </a>
                     
-                    <div class="action-buttons">
+                    <div class="action-group">
                         <?php if ($isOwner): ?>
                             <a href="/edit-book/?id=<?php echo $bookId; ?>" class="btn btn-primary">
-                                <i class="fas fa-edit"></i> Edit Book
+                                <i class="fas fa-edit"></i> Edit Listing
                             </a>
                             <button onclick="shareBook()" class="btn btn-outline">
                                 <i class="fas fa-share-alt"></i> Share
@@ -822,17 +846,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['ajax_action']) && $_P
                             </button>
                             <?php if ($whatsappLink): ?>
                                 <a href="<?php echo $whatsappLink; ?>" target="_blank" class="btn btn-whatsapp">
-                                    <i class="fab fa-whatsapp"></i> Chat on WhatsApp
+                                    <i class="fab fa-whatsapp"></i> Chat with Owner
                                 </a>
                             <?php endif; ?>
                         <?php elseif ($hasRequested): ?>
-                            <button class="btn btn-secondary" disabled>
+                            <button class="btn btn-secondary" disabled style="background:#f1f5f9; color:#94a3b8; border:1px solid #e2e8f0;">
                                 <i class="fas fa-clock"></i> Request Pending
                             </button>
-                            <a href="/requests/" class="btn btn-outline">View My Requests</a>
+                            <a href="/requests/" class="btn btn-outline">Manage Requests</a>
                         <?php elseif (!$isLoggedIn): ?>
                             <a href="/login/?redirect=/book/?id=<?php echo $bookId; ?>" class="btn btn-primary">
-                                Login to Borrow
+                                Join to Borrow
                             </a>
                         <?php else: ?>
                             <button class="btn btn-secondary" disabled>
@@ -846,11 +870,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['ajax_action']) && $_P
             <!-- Tabs -->
             <div class="tabs-container">
                 <div class="tabs">
-                    <button class="tab active" onclick="switchTab('description')">Description</button>
-                    <button class="tab" onclick="switchTab('details')">Details</button>
-                    <button class="tab" onclick="switchTab('reviews')">Reviews <span style="font-size:0.85rem">(<?php echo count($reviews); ?>)</span></button>
-                    <button class="tab" onclick="switchTab('comments')">Comments <span style="font-size:0.85rem">(<?php echo count($comments); ?>)</span></button>
-                    <button class="tab" onclick="switchTab('history')">History</button>
+                    <button class="tab active" data-tab="description" onclick="switchTab('description')">Description</button>
+                    <button class="tab" data-tab="details" onclick="switchTab('details')">Details</button>
+                    <button class="tab" data-tab="reviews" onclick="switchTab('reviews')">Reviews <span style="font-size:0.85rem;opacity:0.6">(<?php echo count($reviews); ?>)</span></button>
+                    <button class="tab" data-tab="comments" onclick="switchTab('comments')">Comments <span style="font-size:0.85rem;opacity:0.6">(<?php echo count($comments); ?>)</span></button>
+                    <button class="tab" data-tab="history" onclick="switchTab('history')">History</button>
                 </div>
                 
                 <!-- Description -->
@@ -862,51 +886,51 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['ajax_action']) && $_P
                 
                 <!-- Details -->
                 <div id="details-tab" class="tab-content">
-                    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:var(--space-4)">
-                        <div><strong>ISBN</strong><br><?php echo htmlspecialchars($book['isbn'] ?? 'N/A'); ?></div>
-                        <div><strong>Publisher</strong><br><?php echo htmlspecialchars($book['publisher'] ?? 'N/A'); ?></div>
-                        <div><strong>Year</strong><br><?php echo htmlspecialchars($book['publication_year'] ?? 'N/A'); ?></div>
-                        <div><strong>Pages</strong><br><?php echo htmlspecialchars($book['pages'] ?? 'N/A'); ?></div>
-                        <div><strong>Language</strong><br><?php echo htmlspecialchars($book['language'] ?? 'English'); ?></div>
-                        <div><strong>Condition</strong><br><?php echo htmlspecialchars($book['condition'] ?? 'Good'); ?></div>
+                    <div class="detail-grid">
+                        <div class="detail-item"><label>ISBN</label><span><?php echo htmlspecialchars($book['isbn'] ?? 'N/A'); ?></span></div>
+                        <div class="detail-item"><label>Publisher</label><span><?php echo htmlspecialchars($book['publisher'] ?? 'N/A'); ?></span></div>
+                        <div class="detail-item"><label>Year</label><span><?php echo htmlspecialchars($book['publication_year'] ?? 'N/A'); ?></span></div>
+                        <div class="detail-item"><label>Pages</label><span><?php echo htmlspecialchars($book['pages'] ?? 'N/A'); ?></span></div>
+                        <div class="detail-item"><label>Language</label><span><?php echo htmlspecialchars($book['language'] ?? 'English'); ?></span></div>
+                        <div class="detail-item"><label>Condition</label><span><?php echo htmlspecialchars($book['condition'] ?? 'Good'); ?></span></div>
                     </div>
                 </div>
                 
                 <!-- Reviews -->
                 <div id="reviews-tab" class="tab-content">
                     <?php if ($isLoggedIn && !$isOwner): ?>
-                        <div class="review-form">
-                            <h4 style="margin-bottom:var(--space-3)">Write a Review</h4>
-                            <div class="rating-stars" id="ratingStarsInput">
+                        <div class="form-dark">
+                            <h4 style="margin-bottom:1rem;font-weight:700">Write a Review</h4>
+                            <div class="rating-stars" id="ratingStarsInput" style="margin-bottom:1.5rem">
                                 <i class="far fa-star" data-rating="1"></i>
                                 <i class="far fa-star" data-rating="2"></i>
                                 <i class="far fa-star" data-rating="3"></i>
                                 <i class="far fa-star" data-rating="4"></i>
                                 <i class="far fa-star" data-rating="5"></i>
                             </div>
-                            <textarea id="reviewText" class="form-control" rows="3" placeholder="Share your honest thoughts..."></textarea>
-                            <button onclick="submitReview()" class="btn btn-primary" style="margin-top:var(--space-4);width:100%;max-width:220px">Submit Review</button>
+                            <textarea id="reviewText" class="form-control" rows="4" placeholder="What did you think of the book?"></textarea>
+                            <button onclick="submitReview()" class="btn btn-primary" style="margin-top:1.5rem;max-width:220px">Submit Review</button>
                         </div>
                     <?php endif; ?>
                     
                     <?php if (empty($reviews)): ?>
-                        <div class="empty-state"><i class="far fa-star"></i><p>No reviews yet. Be the first to review this book!</p></div>
+                        <div class="empty-state"><i class="far fa-star"></i><p>No reviews yet. Be the first to share your thoughts!</p></div>
                     <?php else: foreach ($reviews as $review): $reviewer = loadUserData($review['user_id']); ?>
-                        <div class="review-card">
-                            <img src="/uploads/profile/<?php echo htmlspecialchars($reviewer['personal_info']['profile_pic'] ?? 'default-avatar.jpg'); ?>" class="review-avatar">
-                            <div style="flex:1">
-                                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:var(--space-2)">
+                        <div class="entry-card">
+                            <img src="/uploads/profile/<?php echo htmlspecialchars($reviewer['personal_info']['profile_pic'] ?? 'default-avatar.jpg'); ?>" class="entry-avatar">
+                            <div class="entry-content">
+                                <div class="entry-header">
                                     <div>
-                                        <div style="font-weight:600"><?php echo htmlspecialchars($review['user_name']); ?></div>
-                                        <div style="font-size:0.8rem;color:var(--text-tertiary)"><?php echo formatDate($review['created_at']); ?></div>
+                                        <div class="entry-name"><?php echo htmlspecialchars($review['user_name']); ?></div>
+                                        <div class="rating-display">
+                                            <?php for($i=1; $i<=5; $i++): ?>
+                                                <i class="<?php echo ($i <= $review['rating']) ? 'fas fa-star' : 'far fa-star'; ?>"></i>
+                                            <?php endfor; ?>
+                                        </div>
                                     </div>
-                                    <div class="review-rating">
-                                        <?php for($i=1; $i<=5; $i++): ?>
-                                            <i class="<?php echo ($i <= $review['rating']) ? 'fas fa-star' : 'far fa-star'; ?>"></i>
-                                        <?php endfor; ?>
-                                    </div>
+                                    <div class="entry-date"><?php echo formatDate($review['created_at']); ?></div>
                                 </div>
-                                <p style="margin:0;color:var(--text-secondary)"><?php echo nl2br(htmlspecialchars($review['review_text'])); ?></p>
+                                <p class="entry-text"><?php echo nl2br(htmlspecialchars($review['review_text'])); ?></p>
                             </div>
                         </div>
                     <?php endforeach; endif; ?>
@@ -915,28 +939,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['ajax_action']) && $_P
                 <!-- Comments -->
                 <div id="comments-tab" class="tab-content">
                     <?php if ($isLoggedIn): ?>
-                        <div class="comment-form">
-                            <textarea id="commentText" class="form-control" rows="2" placeholder="Add a comment..."></textarea>
-                            <button onclick="submitComment()" class="btn btn-primary" style="margin-top:var(--space-3);width:100%;max-width:180px">Post Comment</button>
+                        <div class="form-dark">
+                            <h4 style="margin-bottom:1rem;font-weight:700">Add a Comment</h4>
+                            <textarea id="commentText" class="form-control" rows="3" placeholder="Ask a question or share a thought..."></textarea>
+                            <button onclick="submitComment()" class="btn btn-primary" style="margin-top:1.5rem;max-width:180px">Post Comment</button>
                         </div>
                     <?php endif; ?>
                     
                     <?php if (empty($comments)): ?>
-                        <div class="empty-state"><i class="far fa-comments"></i><p>No comments yet.</p></div>
+                        <div class="empty-state"><i class="far fa-comments"></i><p>No comments yet. Start the conversation!</p></div>
                     <?php else: foreach ($comments as $comment): 
                         $commenter = loadUserData($comment['user_id']); 
                         $userLiked = $isLoggedIn && in_array($currentUserId, $comment['likes'] ?? []);
                     ?>
-                        <div class="comment-card">
-                            <img src="/uploads/profile/<?php echo htmlspecialchars($commenter['personal_info']['profile_pic'] ?? 'default-avatar.jpg'); ?>" class="comment-avatar">
-                            <div style="flex:1">
-                                <div style="display:flex;justify-content:space-between;margin-bottom:var(--space-2)">
-                                    <span style="font-weight:600"><?php echo htmlspecialchars($comment['user_name']); ?></span>
-                                    <span style="font-size:0.8rem;color:var(--text-tertiary)"><?php echo formatDate($comment['created_at']); ?></span>
+                        <div class="entry-card">
+                            <img src="/uploads/profile/<?php echo htmlspecialchars($commenter['personal_info']['profile_pic'] ?? 'default-avatar.jpg'); ?>" class="entry-avatar">
+                            <div class="entry-content">
+                                <div class="entry-header">
+                                    <span class="entry-name"><?php echo htmlspecialchars($comment['user_name']); ?></span>
+                                    <span class="entry-date"><?php echo formatDate($comment['created_at']); ?></span>
                                 </div>
-                                <p style="margin:0 0 var(--space-3);color:var(--text-secondary)"><?php echo nl2br(htmlspecialchars($comment['comment_text'])); ?></p>
-                                <button onclick="likeComment('<?php echo $comment['id']; ?>', this)" class="like-btn <?php echo $userLiked ? 'active' : ''; ?>">
-                                    <i class="fas fa-heart"></i> <span class="like-count"><?php echo count($comment['likes'] ?? []); ?></span>
+                                <p class="entry-text" style="margin-bottom:1rem"><?php echo nl2br(htmlspecialchars($comment['comment_text'])); ?></p>
+                                <button onclick="likeComment('<?php echo $comment['id']; ?>', this)" class="like-btn <?php echo $userLiked ? 'active' : ''; ?>" style="background:var(--bg);padding:0.5rem 1rem;border-radius:10px;display:inline-flex;align-items:center;gap:0.5rem;border:none;cursor:pointer;transition:all 0.2s">
+                                    <i class="fas fa-heart"></i> <span class="like-count" style="font-weight:600"><?php echo count($comment['likes'] ?? []); ?></span>
                                 </button>
                             </div>
                         </div>
@@ -948,12 +973,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['ajax_action']) && $_P
                     <?php if (empty($borrowRequests)): ?>
                         <div class="empty-state"><i class="fas fa-history"></i><p>No borrow history yet.</p></div>
                     <?php else: foreach ($borrowRequests as $request): ?>
-                        <div style="display:flex;gap:var(--space-3);align-items:flex-start;padding:var(--space-4);border-bottom:1px solid var(--border)">
-                            <div class="rounded-full mt-1" style="width:12px;height:12px;background:<?php echo $request['status'] === 'approved' ? '#10b981' : ($request['status'] === 'pending' ? '#f59e0b' : '#ef4444'); ?>"></div>
-                            <div style="flex:1">
-                                <div style="font-weight:600"><?php echo htmlspecialchars($request['borrower_name']); ?></div>
-                                <div class="status-badge" style="font-size:0.75rem;padding:3px 10px;margin-top:4px;display:inline-flex"><?php echo ucfirst($request['status']); ?></div>
-                                <div style="font-size:0.8rem;color:var(--text-tertiary);margin-top:4px">Requested: <?php echo date('M j, Y', strtotime($request['request_date'])); ?></div>
+                        <div class="entry-card">
+                            <div style="width:10px;height:10px;border-radius:50%;margin-top:0.6rem;background:<?php echo $request['status'] === 'approved' ? '#10b981' : ($request['status'] === 'pending' ? '#f59e0b' : '#ef4444'); ?>;box-shadow: 0 0 10px <?php echo $request['status'] === 'approved' ? 'rgba(16,185,129,0.4)' : ($request['status'] === 'pending' ? 'rgba(245,158,11,0.4)' : 'rgba(239,68,68,0.4)'); ?>"></div>
+                            <div class="entry-content">
+                                <div class="entry-header">
+                                    <span class="entry-name"><?php echo htmlspecialchars($request['borrower_name']); ?></span>
+                                    <span class="entry-date"><?php echo date('M j, Y', strtotime($request['request_date'])); ?></span>
+                                </div>
+                                <div style="display:flex;align-items:center;gap:0.75rem">
+                                    <span class="status-badge <?php echo $request['status']; ?>" style="position:static;font-size:0.65rem;padding:0.4rem 0.8rem;border-radius:8px">
+                                        <?php echo strtoupper($request['status']); ?>
+                                    </span>
+                                </div>
                             </div>
                         </div>
                     <?php endforeach; endif; ?>
@@ -964,31 +995,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['ajax_action']) && $_P
     
     <!-- Borrow Modal -->
     <div id="borrowModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header" style="padding:var(--space-5);border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">
-                <h3 style="margin:0;font-size:1.3rem">Request to Borrow</h3>
-                <button onclick="closeModal('borrowModal')" style="background:none;border:none;font-size:1.8rem;line-height:1;cursor:pointer">&times;</button>
+        <div class="modal-card">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2rem">
+                <h3 style="margin:0;font-size:1.6rem;font-weight:800;letter-spacing:-0.5px">Request to Borrow</h3>
+                <button onclick="closeModal('borrowModal')" style="background:var(--bg);border:none;width:36px;height:36px;border-radius:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1.2rem">&times;</button>
             </div>
             <form method="POST">
-                <div class="modal-body" style="padding:var(--space-5)">
-                    <input type="hidden" name="action" value="borrow">
-                    <div style="margin-bottom:var(--space-4)">
-                        <label style="display:block;margin-bottom:6px;font-weight:500">Borrow duration</label>
-                        <select name="duration" class="form-select">
-                            <option value="7">7 days</option>
-                            <option value="14" selected>14 days</option>
-                            <option value="21">21 days</option>
-                            <option value="30">30 days</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label style="display:block;margin-bottom:6px;font-weight:500">Message to owner <span style="font-weight:400;color:var(--text-tertiary)">(optional)</span></label>
-                        <textarea name="message" class="form-control" rows="4" placeholder="Tell the owner why you'd like to borrow this book..."></textarea>
-                    </div>
+                <input type="hidden" name="action" value="borrow">
+                <div style="margin-bottom:1.5rem">
+                    <label style="display:block;margin-bottom:0.75rem;font-weight:600;font-size:0.9rem;color:var(--text-muted)">BORROW DURATION</label>
+                    <select name="duration" class="form-control" style="appearance:none;background-image:url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%2364748b%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M6%209l6%206%206-6%22%3E%3C%2Fpath%3E%3C%2Fsvg%3E');background-repeat:no-repeat;background-position:right%201rem%20center;background-size:1em">
+                        <option value="7">7 days</option>
+                        <option value="14" selected>14 days</option>
+                        <option value="21">21 days</option>
+                        <option value="30">30 days</option>
+                    </select>
                 </div>
-                <div class="modal-footer" style="padding:var(--space-5);border-top:1px solid var(--border);display:flex;gap:var(--space-3)">
+                <div style="margin-bottom:2.5rem">
+                    <label style="display:block;margin-bottom:0.75rem;font-weight:600;font-size:0.9rem;color:var(--text-muted)">MESSAGE TO OWNER <span style="font-weight:400;opacity:0.6">(OPTIONAL)</span></label>
+                    <textarea name="message" class="form-control" rows="4" placeholder="Hi! I'd love to read this book..."></textarea>
+                </div>
+                <div style="display:flex;gap:1rem">
                     <button type="button" onclick="closeModal('borrowModal')" class="btn btn-outline" style="flex:1">Cancel</button>
-                    <button type="submit" class="btn btn-primary" style="flex:1">Send Borrow Request</button>
+                    <button type="submit" class="btn btn-primary" style="flex:2">Send Request</button>
                 </div>
             </form>
         </div>
@@ -998,13 +1027,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['ajax_action']) && $_P
         // Tab switching
         function switchTab(tab) {
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            const tabBtns = document.querySelectorAll('.tab');
-            for (let btn of tabBtns) {
-                if (btn.textContent.toLowerCase().includes(tab.toLowerCase())) {
-                    btn.classList.add('active');
-                    break;
-                }
-            }
+            document.querySelector(`.tab[data-tab="${tab}"]`)?.classList.add('active');
+            
             document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
             document.getElementById(tab + '-tab').classList.add('active');
         }

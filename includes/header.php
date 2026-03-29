@@ -22,23 +22,40 @@ $notificationCount = 0;
 
 if ($isLoggedIn && isset($_SESSION['user_id'])) {
     $userId = $_SESSION['user_id'];
-    $userFile = dirname(__DIR__) . '/users/' . $userId . '.json';
     
+    // Primary source: Load from master users.json for session-global data
+    $masterUsersFile = dirname(__DIR__) . '/data/users.json';
+    if (file_exists($masterUsersFile)) {
+        $masterUsers = json_decode(file_get_contents($masterUsersFile), true) ?? [];
+        foreach ($masterUsers as $u) {
+            if ($u['id'] === $userId) {
+                $userName = $u['name'] ?? $userName;
+                $userEmail = $u['email'] ?? $userEmail;
+                $userAvatar = $u['profile_pic'] ?? 'default-avatar.jpg';
+                break;
+            }
+        }
+    }
+
+    // Fallback/Detailed: Load from detailed profile
+    $userFile = dirname(__DIR__) . '/users/' . $userId . '.json';
     if (file_exists($userFile)) {
         $userData = json_decode(file_get_contents($userFile), true);
-        // Get profile picture from personal_info
-        $userAvatar = $userData['personal_info']['profile_pic'] ?? 'default-avatar.jpg';
-        // Also get name and email from profile if available
+        // Supplement name/email if not in master or if explicitly set in profile
         $userName = $userData['personal_info']['name'] ?? $userName;
         $userEmail = $userData['personal_info']['email'] ?? $userEmail;
+        // Only override avatar if it's explicitly set in personal_info and not already set from master
+        if ($userAvatar === 'default-avatar.jpg' && isset($userData['personal_info']['profile_pic'])) {
+            $userAvatar = $userData['personal_info']['profile_pic'];
+        }
     }
     
-    // Also check session for updated name
+    // Also check session for override (e.g. immediately after update)
     if (isset($_SESSION['user_name'])) {
         $userName = $_SESSION['user_name'];
     }
-    if (isset($_SESSION['user_email'])) {
-        $userEmail = $_SESSION['user_email'];
+    if (isset($_SESSION['user_avatar'])) {
+        $userAvatar = $_SESSION['user_avatar'];
     }
     
     // Get notification count
@@ -58,7 +75,7 @@ $avatarPath = '/uploads/profile/' . $userAvatar;
 $defaultAvatar = '/assets/images/avatars/default.jpg';
 
 // Verify file exists on server
-$fullAvatarPath = $_SERVER['DOCUMENT_ROOT'] . '/uploads/profile/' . $userAvatar;
+$fullAvatarPath = dirname(__DIR__) . '/uploads/profile/' . $userAvatar;
 if (!file_exists($fullAvatarPath) || $userAvatar === 'default-avatar.jpg') {
     $avatarPath = $defaultAvatar;
 }

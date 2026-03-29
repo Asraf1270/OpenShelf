@@ -185,6 +185,93 @@ function processCoverImage($file, $bookId) {
 }
 
 /**
+ * Process and save user profile image
+ */
+function processUserProfileImage($file, $userId) {
+    if ($file['error'] !== UPLOAD_ERR_OK) {
+        return ['error' => 'File upload failed'];
+    }
+    
+    $profileUploadPath = dirname(__DIR__) . '/uploads/profile/';
+    if (!file_exists($profileUploadPath)) {
+        mkdir($profileUploadPath, 0755, true);
+    }
+    
+    $timestamp = time();
+    $webpFilename = $userId . '_' . $timestamp . '.webp';
+    $webpPath = $profileUploadPath . $webpFilename;
+    
+    $finfo = finfo_open(FILEINFO_MIME_TYPE);
+    $mimeType = finfo_file($finfo, $file['tmp_name']);
+    finfo_close($finfo);
+    
+    $image = null;
+    switch ($mimeType) {
+        case 'image/jpeg': $image = imagecreatefromjpeg($file['tmp_name']); break;
+        case 'image/png': $image = imagecreatefrompng($file['tmp_name']); break;
+        case 'image/gif': $image = imagecreatefromgif($file['tmp_name']); break;
+        case 'image/webp': $image = imagecreatefromwebp($file['tmp_name']); break;
+    }
+    
+    if (!$image) return ['error' => 'Failed to process image'];
+    
+    $width = imagesx($image);
+    $height = imagesy($image);
+    $size = min($width, $height);
+    $thumb = imagecreatetruecolor(300, 300);
+    
+    imagecopyresampled($thumb, $image, 0, 0, ($width - $size) / 2, ($height - $size) / 2, 300, 300, $size, $size);
+    imagewebp($thumb, $webpPath, 85);
+    
+    imagedestroy($image);
+    imagedestroy($thumb);
+    
+    return ['success' => true, 'filename' => $webpFilename];
+}
+
+/**
+ * Update user profile picture in JSON files
+ */
+function updateUserProfilePic($userId, $filename) {
+    $uploadPath = dirname(__DIR__) . '/uploads/profile/';
+    
+    // Update master users.json
+    $usersFile = DATA_PATH . 'users.json';
+    if (file_exists($usersFile)) {
+        $users = json_decode(file_get_contents($usersFile), true);
+        foreach ($users as &$user) {
+            if ($user['id'] === $userId) {
+                $oldPic = $user['profile_pic'] ?? 'default-avatar.jpg';
+                
+                // Delete previous profile pic if it's not the default
+                if ($oldPic !== 'default-avatar.jpg' && $oldPic !== $filename) {
+                    $oldFilePath = $uploadPath . $oldPic;
+                    if (file_exists($oldFilePath)) {
+                        unlink($oldFilePath);
+                    }
+                }
+                
+                $user['profile_pic'] = $filename;
+                break;
+            }
+        }
+        file_put_contents($usersFile, json_encode($users, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+    }
+    
+    // Update individual profile JSON
+    $profileFile = USERS_PATH . $userId . '.json';
+    if (file_exists($profileFile)) {
+        $profile = json_decode(file_get_contents($profileFile), true);
+        $profile['personal_info']['profile_pic'] = $filename;
+        file_put_contents($profileFile, json_encode($profile, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+    }
+    
+    // Update session
+    $_SESSION['user_avatar'] = $filename;
+}
+
+
+/**
  * Get list of book categories
  */
 function getCategories() {
@@ -297,7 +384,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $errors['pages'] = 'Pages must be a number';
     }
     
-    // Handle image upload if provided
+    
+    // Handle book cover image upload
     if (isset($_FILES['cover_image']) && $_FILES['cover_image']['error'] !== UPLOAD_ERR_NO_FILE) {
         $uploadResult = processCoverImage($_FILES['cover_image'], $bookId);
         
@@ -315,6 +403,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         }
     }
+    
+    // Handle user profile picture upload
+    if (isset($_FILES['user_profile_pic']) && $_FILES['user_profile_pic']['error'] !== UPLOAD_ERR_NO_FILE) {
+        $userUploadResult = processUserProfileImage($_FILES['user_profile_pic'], $currentUserId);
+        if (isset($userUploadResult['error'])) {
+            $errors['user_profile_pic'] = $userUploadResult['error'];
+        } else {
+            updateUserProfilePic($currentUserId, $userUploadResult['filename']);
+        }
+    }
+
     
     // If no errors, update book data
     if (empty($errors)) {
@@ -361,114 +460,167 @@ $currentCoverPath = !empty($coverImage) ? '/uploads/book_cover/' . $coverImage :
 $currentThumbPath = !empty($coverImage) ? '/uploads/book_cover/thumb_' . $coverImage : '/assets/images/default-book-cover.jpg';
 ?>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edit Book - <?php echo htmlspecialchars($title); ?> | OpenShelf</title>
-    <link rel="stylesheet" href="/assets/css/style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        /* Edit Book Specific Styles */
-        .edit-container {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: var(--space-5);
-        }
-        
-        .cover-preview {
-            width: 150px;
-            height: 200px;
-            border-radius: var(--radius-lg);
-            overflow: hidden;
-            box-shadow: var(--shadow-md);
-            margin: 0 auto var(--space-4);
-            cursor: pointer;
-            transition: all var(--transition-fast);
-        }
-        
-        .cover-preview:hover {
-            transform: scale(1.02);
-            box-shadow: var(--shadow-lg);
-        }
-        
-        .cover-preview img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        
-        .cover-placeholder {
-            width: 150px;
-            height: 200px;
-            background: var(--surface-hover);
-            border-radius: var(--radius-lg);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: var(--space-2);
-            color: var(--text-tertiary);
-            cursor: pointer;
-            margin: 0 auto var(--space-4);
-            transition: all var(--transition-fast);
-        }
-        
-        .cover-placeholder:hover {
-            background: var(--border);
-            transform: scale(1.02);
-        }
-        
-        .cover-placeholder i {
-            font-size: 2rem;
-        }
-        
-        .image-hint {
-            font-size: var(--font-size-xs);
-            color: var(--text-tertiary);
-            text-align: center;
-            margin-top: var(--space-2);
-        }
-        
+<?php 
+// Add page-specific styles
+?>
+<style>
+    /* Edit Book Specific Styles */
+    .edit-container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: var(--space-5);
+    }
+    
+    .cover-preview {
+        width: 150px;
+        height: 200px;
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+        box-shadow: var(--shadow-md);
+        margin: 0 auto var(--space-4);
+        cursor: pointer;
+        transition: all var(--transition-fast);
+    }
+    
+    .cover-preview:hover {
+        transform: scale(1.02);
+        box-shadow: var(--shadow-lg);
+    }
+    
+    .cover-preview img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    
+    .cover-placeholder {
+        width: 150px;
+        height: 200px;
+        background: var(--surface-hover);
+        border-radius: var(--radius-lg);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: var(--space-2);
+        color: var(--text-tertiary);
+        cursor: pointer;
+        margin: 0 auto var(--space-4);
+        transition: all var(--transition-fast);
+    }
+    
+    .cover-placeholder:hover {
+        background: var(--border);
+        transform: scale(1.02);
+    }
+    
+    .cover-placeholder i {
+        font-size: 2rem;
+    }
+    
+    .image-hint {
+        font-size: var(--font-size-xs);
+        color: var(--text-tertiary);
+        text-align: center;
+        margin-top: var(--space-2);
+    }
+    
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: var(--space-4);
+    }
+    
+    @media (max-width: 640px) {
         .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: var(--space-4);
+            grid-template-columns: 1fr;
         }
         
-        @media (max-width: 640px) {
-            .form-row {
-                grid-template-columns: 1fr;
-            }
-            
-            .edit-container {
-                padding: var(--space-4);
-            }
+        .edit-container {
+            padding: var(--space-4);
         }
-        
-        .char-counter {
-            font-size: var(--font-size-xs);
-            color: var(--text-tertiary);
-            text-align: right;
-            margin-top: var(--space-1);
-        }
-        
-        .char-counter.warning {
-            color: var(--warning);
-        }
-        
-        .char-counter.danger {
-            color: var(--danger);
-        }
-    </style>
-</head>
-<body>
+    }
+    
+    .char-counter {
+        font-size: var(--font-size-xs);
+        color: var(--text-tertiary);
+        text-align: right;
+        margin-top: var(--space-1);
+    }
+    
+    .char-counter.warning {
+        color: var(--warning);
+    }
+    
+    .char-counter.danger {
+        color: var(--danger);
+    }
+
+    /* Change Profile Picture Side Panel */
+    .profile-side-card {
+        background: white;
+        border-radius: var(--radius-lg);
+        padding: var(--space-4);
+        box-shadow: var(--shadow-sm);
+        margin-bottom: var(--space-4);
+        text-align: center;
+    }
+
+    .mini-avatar-preview {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        margin: 0 auto var(--space-2);
+        border: 2px solid var(--primary);
+        overflow: hidden;
+    }
+
+    .mini-avatar-preview img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+</style>
+
     <?php include dirname(__DIR__) . '/includes/header.php'; ?>
     
     <main>
-        <div class="container">
-            <div class="edit-container">
+        <div class="container" style="display: grid; grid-template-columns: 280px 1fr; gap: var(--space-6); padding: var(--space-6) 0;">
+            <!-- Left Sidebar for User Profile -->
+            <aside>
+                <div class="profile-side-card">
+                    <h3 style="font-size: var(--font-size-md); margin-bottom: var(--space-3);">Your Profile</h3>
+                    <div class="mini-avatar-preview">
+                        <img src="<?php 
+                            $avatar = $_SESSION['user_avatar'] ?? 'default-avatar.jpg';
+                            echo "/uploads/profile/" . $avatar; 
+                        ?>" alt="Avatar" id="userAvatarPreview" onerror="this.src='/assets/images/avatars/default.jpg'">
+                    </div>
+                    <p style="font-weight: 600; margin-bottom: var(--space-1);"><?php echo htmlspecialchars($currentUserName); ?></p>
+                    <p style="font-size: var(--font-size-xs); color: var(--text-tertiary); margin-bottom: var(--space-4);">Book Owner</p>
+                    
+                    <button type="button" class="btn btn-outline btn-sm btn-block" onclick="document.getElementById('user_profile_pic').click()">
+                        <i class="fas fa-camera"></i> Change Photo
+                    </button>
+                    <input type="file" name="user_profile_pic" id="user_profile_pic" form="editForm" accept="image/*" style="display: none;" onchange="previewUserAvatar(this)">
+                    
+                    <?php if (isset($errors['user_profile_pic'])): ?>
+                        <p class="text-danger" style="font-size: var(--font-size-xs); margin-top: var(--space-2);"><?php echo $errors['user_profile_pic']; ?></p>
+                    <?php endif; ?>
+                </div>
+
+                <div class="profile-side-card" style="text-align: left;">
+                    <h4 style="font-size: var(--font-size-sm); margin-bottom: var(--space-2);">Quick Tips</h4>
+                    <ul style="font-size: var(--font-size-xs); color: var(--text-secondary); padding-left: var(--space-3);">
+                        <li style="margin-bottom: var(--space-1);">Use a clear front cover image.</li>
+                        <li style="margin-bottom: var(--space-1);">Detailed descriptions help buyers.</li>
+                        <li>Honest condition reports build trust.</li>
+                    </ul>
+                </div>
+            </aside>
+
+            <div class="edit-container" style="margin: 0; max-width: none;">
+
                 <!-- Page Header -->
                 <div style="margin-bottom: var(--space-6);">
                     <div style="display: flex; align-items: center; gap: var(--space-3); margin-bottom: var(--space-2);">
@@ -677,7 +829,19 @@ $currentThumbPath = !empty($coverImage) ? '/uploads/book_cover/thumb_' . $coverI
     </main>
     
     <script>
+        // Preview user avatar before upload
+        function previewUserAvatar(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('userAvatarPreview').src = e.target.result;
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
         // Preview cover image before upload
+
         function previewCover(input) {
             const preview = document.getElementById('coverImagePreview');
             const placeholder = document.getElementById('coverPlaceholder');
@@ -784,5 +948,3 @@ $currentThumbPath = !empty($coverImage) ? '/uploads/book_cover/thumb_' . $coverI
     </script>
     
     <?php include dirname(__DIR__) . '/includes/footer.php'; ?>
-</body>
-</html>

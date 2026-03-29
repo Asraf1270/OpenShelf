@@ -7,7 +7,8 @@
         "session": "2024-25",
         "phone": "01336016328",
         "room_number": "R-103",
-        "bio": ""
+        "bio": "",
+        "profile_pic": "default-avatar.jpg"
     },
     "account_info": {
         "verified": true,
@@ -32,7 +33,7 @@
             "token": "1de1c717a6c2949a46a3ee5031b49b6f8c0f4ea4243c83ea6befa6c718ab41ed",
             "expiry": 1777294497,
             "created_at": "2026-03-28 08:54:57",
-            "user_agent": "Mozilla\/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit\/537.36 (KHTML, like Gecko) Chrome\/146.0.0.0 Safari\/537.36",
+            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36",
             "ip_address": "114.130.157.35"
         }
     ],

@@ -7,7 +7,8 @@
         "session": "2024-25",
         "phone": "01987971272",
         "room_number": "B-603",
-        "bio": ""
+        "bio": "",
+        "profile_pic": "default-avatar.jpg"
     },
     "account_info": {
         "verified": true,
@@ -32,7 +33,7 @@
             "token": "65819b1c507ff4df61ca790d49e4eadb11b40053f055fc8cfa81776d0b6c731e",
             "expiry": 1777289330,
             "created_at": "2026-03-28 07:28:50",
-            "user_agent": "Mozilla\/5.0 (Linux; Android 13; en; TECNO KI7 Build\/SP1A.210812.016) AppleWebKit\/537.36 (KHTML, like Gecko) Chrome\/146.0.7680.119 HiBrowser\/v2.25.10.2;lang=en;nation=BD;locale=en_US UWS\/ Mobile Safari\/537.36",
+            "user_agent": "Mozilla/5.0 (Linux; Android 13; en; TECNO KI7 Build/SP1A.210812.016) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.7680.119 HiBrowser/v2.25.10.2;lang=en;nation=BD;locale=en_US UWS/ Mobile Safari/537.36",
             "ip_address": "103.230.104.28"
         }
     ],

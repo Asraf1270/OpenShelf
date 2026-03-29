@@ -6,6 +6,7 @@
 
 session_start();
 include dirname(__DIR__) . '/includes/header.php';
+echo '<link rel="stylesheet" href="/assets/css/profile.css">';
 
 // Configuration
 define('DATA_PATH', dirname(__DIR__) . '/data/');
@@ -39,24 +40,48 @@ function loadUserBooks($userId) {
 }
 
 /**
- * Get user stats
+ * Get detailed user stats and book lists
  */
-function getUserStats($userId, $books) {
+function getUserProfileData($userId, $ownedBooks) {
     $requestsFile = DATA_PATH . 'borrow_requests.json';
     $requests = file_exists($requestsFile) ? json_decode(file_get_contents($requestsFile), true) ?? [] : [];
     
-    $borrowed = 0;
-    $lent = 0;
+    $borrowedBooks = [];
+    $lentBooks = [];
     
     foreach ($requests as $r) {
-        if ($r['borrower_id'] === $userId && $r['status'] === 'approved') $borrowed++;
-        if ($r['owner_id'] === $userId && $r['status'] === 'approved') $lent++;
+        if ($r['status'] === 'approved' || $r['status'] === 'returned') {
+            if ($r['borrower_id'] === $userId) {
+                $borrowedBooks[] = [
+                    'id' => $r['book_id'],
+                    'title' => $r['book_title'],
+                    'author' => $r['book_author'],
+                    'cover_image' => $r['book_cover'],
+                    'status' => $r['status'],
+                    'owner_name' => $r['owner_name']
+                ];
+            }
+            if ($r['owner_id'] === $userId) {
+                $lentBooks[] = [
+                    'id' => $r['book_id'],
+                    'title' => $r['book_title'],
+                    'author' => $r['book_author'],
+                    'cover_image' => $r['book_cover'],
+                    'status' => $r['status'],
+                    'borrower_name' => $r['borrower_name']
+                ];
+            }
+        }
     }
     
     return [
-        'owned' => count($books),
-        'borrowed' => $borrowed,
-        'lent' => $lent
+        'stats' => [
+            'owned' => count($ownedBooks),
+            'borrowed' => count($borrowedBooks),
+            'lent' => count($lentBooks)
+        ],
+        'borrowed' => $borrowedBooks,
+        'lent' => $lentBooks
     ];
 }
 
@@ -67,118 +92,187 @@ if (!$user) {
 }
 
 $books = loadUserBooks($viewUserId);
-$stats = getUserStats($viewUserId, $books);
+$profileData = getUserProfileData($viewUserId, $books);
+$stats = $profileData['stats'];
+$borrowedBooks = $profileData['borrowed'];
+$lentBooks = $profileData['lent'];
+
 $isOwnProfile = isset($_SESSION['user_id']) && $_SESSION['user_id'] === $viewUserId;
 
-$profileImage = $user['personal_info']['profile_pic'] ?? 'default-avatar.jpg';
+// --- Profile Image Logic (Robust) ---
+$profileImageName = 'default.jpg'; // Initialize
+
+// 1. Primary Source: Load from master users.json
+$masterUsersFile = dirname(__DIR__) . '/data/users.json';
+if (file_exists($masterUsersFile)) {
+    $masterUsers = json_decode(file_get_contents($masterUsersFile), true) ?? [];
+    foreach ($masterUsers as $u) {
+        if ($u['id'] === $viewUserId) {
+            $profileImageName = $u['profile_pic'] ?? $profileImageName;
+            break;
+        }
+    }
+}
+
+// 2. Secondary Source: Supplement from private user JSON if not already found or if it overrides
+$userFile = USERS_PATH . $viewUserId . '.json';
+if (file_exists($userFile)) {
+    $userData = json_decode(file_get_contents($userFile), true);
+    if (!empty($userData['personal_info']['profile_pic'])) {
+        $profileImageName = $userData['personal_info']['profile_pic'];
+    }
+}
+
+// 3. Fallback/Standardize
+if (empty($profileImageName) || $profileImageName === 'default-avatar.jpg') {
+    $profileImageName = 'default.jpg';
+}
+
+$profileImagePath = '/uploads/profile/' . $profileImageName;
+$serverImagePath = dirname(__DIR__) . '/uploads/profile/' . $profileImageName;
+$defaultAvatar = '/assets/images/avatars/default.jpg';
+
+// 4. Final Path Verification on server
+if (!file_exists($serverImagePath) || $profileImageName === 'default.jpg') {
+    $profileImagePath = $defaultAvatar;
+}
+
 $memberSince = date('M Y', strtotime($user['account_info']['created_at'] ?? 'now'));
+$showSensitiveInfo = $isOwnProfile; // Only owner can see sensitive info like room/phone/stats
 ?>
 
-<div class="container">
-    <!-- Profile Header -->
-    <div class="card" style="overflow: hidden; padding: 0;">
-        <!-- Cover -->
-        <div style="height: 150px; background: linear-gradient(135deg, var(--primary), var(--secondary));"></div>
-        
-        <!-- Profile Info -->
-        <div style="padding: 0 var(--space-lg) var(--space-lg); margin-top: -75px;">
-            <div style="display: flex; flex-direction: column; align-items: center; text-align: center;">
-                <!-- Avatar -->
-                <img src="/uploads/profile/<?php echo $profileImage; ?>" 
-                     alt="<?php echo htmlspecialchars($user['personal_info']['name']); ?>"
-                     style="width: 120px; height: 120px; border-radius: 50%; border: 4px solid white; box-shadow: var(--shadow-md); margin-bottom: var(--space-md);">
-                
-                <h1 style="margin-bottom: var(--space-xs);"><?php echo htmlspecialchars($user['personal_info']['name']); ?></h1>
-                
-                <?php if (!empty($user['personal_info']['bio'])): ?>
-                    <p style="color: var(--gray-600); max-width: 500px; margin-bottom: var(--space-md);">
-                        <?php echo nl2br(htmlspecialchars($user['personal_info']['bio'])); ?>
-                    </p>
-                <?php endif; ?>
-                
-                <!-- Details Grid -->
-                <div class="grid grid-2" style="max-width: 500px; margin-bottom: var(--space-lg);">
-                    <div>
-                        <div style="color: var(--gray-600); font-size: var(--font-size-xs);">Department</div>
-                        <div style="font-weight: 600;"><?php echo htmlspecialchars($user['personal_info']['department'] ?? 'N/A'); ?></div>
-                    </div>
-                    <div>
-                        <div style="color: var(--gray-600); font-size: var(--font-size-xs);">Session</div>
-                        <div style="font-weight: 600;"><?php echo htmlspecialchars($user['personal_info']['session'] ?? 'N/A'); ?></div>
-                    </div>
-                    <div>
-                        <div style="color: var(--gray-600); font-size: var(--font-size-xs);">Room</div>
-                        <div style="font-weight: 600;"><?php echo htmlspecialchars($user['personal_info']['room_number'] ?? 'N/A'); ?></div>
-                    </div>
-                    <div>
-                        <div style="color: var(--gray-600); font-size: var(--font-size-xs);">Member Since</div>
-                        <div style="font-weight: 600;"><?php echo $memberSince; ?></div>
-                    </div>
-                </div>
-                
-                <!-- Stats -->
-                <div class="grid grid-3" style="max-width: 400px; margin-bottom: var(--space-lg);">
-                    <div class="card" style="padding: var(--space-sm); text-align: center;">
-                        <div style="font-size: 1.5rem; font-weight: 700; color: var(--primary);"><?php echo $stats['owned']; ?></div>
-                        <div style="font-size: var(--font-size-xs); color: var(--gray-600);">Owned</div>
-                    </div>
-                    <div class="card" style="padding: var(--space-sm); text-align: center;">
-                        <div style="font-size: 1.5rem; font-weight: 700; color: var(--success);"><?php echo $stats['borrowed']; ?></div>
-                        <div style="font-size: var(--font-size-xs); color: var(--gray-600);">Borrowed</div>
-                    </div>
-                    <div class="card" style="padding: var(--space-sm); text-align: center;">
-                        <div style="font-size: 1.5rem; font-weight: 700; color: var(--warning);"><?php echo $stats['lent']; ?></div>
-                        <div style="font-size: var(--font-size-xs); color: var(--gray-600);">Lent</div>
-                    </div>
-                </div>
-                
-                <!-- Action Buttons -->
-                <?php if ($isOwnProfile): ?>
-                    <div style="display: flex; gap: var(--space-md);">
-                        <a href="/edit-profile/" class="btn btn-primary">
-                            <i class="fas fa-edit"></i> Edit Profile
-                        </a>
-                        <a href="/add-book/" class="btn btn-outline">
-                            <i class="fas fa-plus-circle"></i> Add Book
-                        </a>
-                    </div>
-                <?php elseif (isset($_SESSION['user_id'])): ?>
-                    <a href="https://wa.me/88<?php echo preg_replace('/[^0-9]/', '', $user['personal_info']['phone'] ?? ''); ?>" 
-                       target="_blank" class="btn btn-success">
-                        <i class="fab fa-whatsapp"></i> Contact via WhatsApp
-                    </a>
-                <?php endif; ?>
-            </div>
+<div class="profile-hero"></div>
+
+<div class="profile-container">
+    <div class="glass-card reveal active">
+        <!-- Action Buttons (Top Right) -->
+        <button class="share-btn" onclick="copyProfileLink()" title="Share Profile">
+            <i class="fas fa-share-alt"></i>
+        </button>
+
+        <div class="profile-avatar-wrapper">
+            <img src="<?php echo $profileImagePath; ?>" 
+                 alt="<?php echo htmlspecialchars($user['personal_info']['name']); ?>"
+                 class="profile-avatar">
         </div>
-    </div>
-    
-    <!-- Books Section -->
-    <div class="card" style="margin-top: var(--space-xl);">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-lg);">
-            <h2 style="margin: 0;">
-                <i class="fas fa-book" style="color: var(--primary);"></i>
-                Books Owned
-            </h2>
-            <?php if (count($books) > 6): ?>
-                <a href="/books/?owner=<?php echo $viewUserId; ?>" class="btn btn-outline btn-sm">View All</a>
+
+        <h1 class="profile-name"><?php echo htmlspecialchars($user['personal_info']['name']); ?></h1>
+        
+        <div class="profile-bio">
+            <?php if (!empty($user['personal_info']['bio'])): ?>
+                <p><?php echo nl2br(htmlspecialchars($user['personal_info']['bio'])); ?></p>
+            <?php else: ?>
+                <p>No bio available.</p>
             <?php endif; ?>
         </div>
-        
+
+        <!-- Details Grid -->
+        <div class="grid grid-2" style="max-width: 600px; margin: 0 auto 2rem; border-top: 1px solid var(--gray-200); padding-top: 1.5rem; position: relative;">
+            <div style="display: flex; gap: 0.75rem; align-items: center;">
+                <div style="background: var(--gray-100); padding: 0.5rem; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; color: var(--profile-primary);">
+                    <i class="fas fa-university"></i>
+                </div>
+                <div>
+                    <div style="font-size: 0.75rem; color: var(--gray-500);">Department</div>
+                    <div style="font-weight: 600;"><?php echo htmlspecialchars($user['personal_info']['department'] ?? 'N/A'); ?></div>
+                </div>
+            </div>
+            <div style="display: flex; gap: 0.75rem; align-items: center;">
+                <div style="background: var(--gray-100); padding: 0.5rem; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; color: var(--profile-secondary);">
+                    <i class="fas fa-graduation-cap"></i>
+                </div>
+                <div>
+                    <div style="font-size: 0.75rem; color: var(--gray-500);">Session</div>
+                    <div style="font-weight: 600;"><?php echo htmlspecialchars($user['personal_info']['session'] ?? 'N/A'); ?></div>
+                </div>
+            </div>
+            
+            <?php if (!$showSensitiveInfo): ?>
+                <div style="position: absolute; top: -10px; left: 50%; transform: translateX(-50%); background: var(--gray-100); padding: 2px 12px; border-radius: var(--radius-full); font-size: 0.65rem; color: var(--gray-500); display: flex; align-items: center; gap: 4px; border: 1px solid var(--gray-200);">
+                    <i class="fas fa-lock" style="font-size: 0.6rem;"></i> Limited Profile
+                </div>
+            <?php endif; ?>
+            <?php if ($showSensitiveInfo): ?>
+                <div style="display: flex; gap: 0.75rem; align-items: center;">
+                    <div style="background: var(--gray-100); padding: 0.5rem; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; color: var(--profile-accent);">
+                        <i class="fas fa-door-open"></i>
+                    </div>
+                    <div>
+                        <div style="font-size: 0.75rem; color: var(--gray-500);">Room</div>
+                        <div style="font-weight: 600;"><?php echo htmlspecialchars($user['personal_info']['room_number'] ?? 'N/A'); ?></div>
+                    </div>
+                </div>
+            <?php endif; ?>
+
+            <div style="display: flex; gap: 0.75rem; align-items: center;">
+                <div style="background: var(--gray-100); padding: 0.5rem; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; color: var(--warning);">
+                    <i class="fas fa-calendar-alt"></i>
+                </div>
+                <div>
+                    <div style="font-size: 0.75rem; color: var(--gray-500);">Member Since</div>
+                    <div style="font-weight: 600;"><?php echo $memberSince; ?></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-item">
+                <span class="stat-value"><?php echo $stats['owned']; ?></span>
+                <span class="stat-label">Owned</span>
+            </div>
+            <?php if ($showSensitiveInfo): ?>
+                <div class="stat-item">
+                    <span class="stat-value"><?php echo $stats['borrowed']; ?></span>
+                    <span class="stat-label">Borrowed</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value"><?php echo $stats['lent']; ?></span>
+                    <span class="stat-label">Lent</span>
+                </div>
+            <?php endif; ?>
+        </div>
+
+        <div style="display: flex; justify-content: center; gap: var(--space-md); margin-top: 2rem;">
+            <?php if ($isOwnProfile): ?>
+                <a href="/edit-profile/" class="btn btn-primary" style="border-radius: var(--radius-full); padding: 0.75rem 2rem;">
+                    <i class="fas fa-edit"></i> Edit Profile
+                </a>
+                <a href="/add-book/" class="btn btn-outline" style="border-radius: var(--radius-full); padding: 0.75rem 2rem;">
+                    <i class="fas fa-plus-circle"></i> Add Book
+                </a>
+            <?php elseif (isset($_SESSION['user_id'])): ?>
+                <a href="https://wa.me/88<?php echo preg_replace('/[^0-9]/', '', $user['personal_info']['phone'] ?? ''); ?>" 
+                   target="_blank" class="btn btn-success" style="border-radius: var(--radius-full); padding: 0.75rem 2rem;">
+                    <i class="fab fa-whatsapp"></i> Contact Me
+                </a>
+            <?php endif; ?>
+        </div>
+    </div>
+
+    <!-- Books Section with Tabs -->
+    <div class="profile-tabs" style="<?php echo !$showSensitiveInfo ? 'max-width: 200px; margin: 3rem auto 2rem;' : ''; ?>">
+        <button class="tab-btn active" onclick="switchTab(event, 'owned')">Books Owned</button>
+        <?php if ($showSensitiveInfo): ?>
+            <button class="tab-btn" onclick="switchTab(event, 'borrowed')">Borrowed</button>
+            <button class="tab-btn" onclick="switchTab(event, 'lent')">Lent</button>
+        <?php endif; ?>
+    </div>
+
+    <!-- Tab Contents -->
+    <div id="owned" class="tab-content active">
         <?php if (empty($books)): ?>
-            <div style="text-align: center; padding: var(--space-xl);">
-                <i class="fas fa-book-open" style="font-size: 3rem; color: var(--gray-400); margin-bottom: var(--space-md);"></i>
-                <p>No books to display.</p>
-                <?php if ($isOwnProfile): ?>
-                    <a href="/add-book/" class="btn btn-primary">Add Your First Book</a>
-                <?php endif; ?>
+            <div style="text-align: center; padding: 4rem 2rem; background: rgba(255,255,255,0.5); border-radius: var(--radius-xl);">
+                <i class="fas fa-book-open" style="font-size: 3rem; color: var(--gray-300); margin-bottom: 1rem;"></i>
+                <p>No owned books to show.</p>
             </div>
         <?php else: ?>
-            <div class="book-grid">
-                <?php foreach (array_slice($books, 0, 6) as $book): ?>
+            <div class="book-grid-profile">
+                <?php foreach ($books as $book): ?>
                     <div class="book-card">
                         <div class="book-cover">
                             <img src="/uploads/book_cover/thumb_<?php echo $book['cover_image'] ?? 'default.jpg'; ?>" 
-                                 alt="<?php echo htmlspecialchars($book['title']); ?>">
+                                 alt="<?php echo htmlspecialchars($book['title']); ?>"
+                                 onerror="this.src='/assets/images/default-book-cover.jpg'">
                             <span class="book-status status-<?php echo $book['status']; ?>">
                                 <?php echo ucfirst($book['status']); ?>
                             </span>
@@ -196,6 +290,102 @@ $memberSince = date('M Y', strtotime($user['account_info']['created_at'] ?? 'now
             </div>
         <?php endif; ?>
     </div>
+
+    <div id="borrowed" class="tab-content">
+        <?php if (empty($borrowedBooks)): ?>
+            <div style="text-align: center; padding: 4rem 2rem; background: rgba(255,255,255,0.5); border-radius: var(--radius-xl);">
+                <i class="fas fa-book-reader" style="font-size: 3rem; color: var(--gray-300); margin-bottom: 1rem;"></i>
+                <p>No borrowed books to show.</p>
+            </div>
+        <?php else: ?>
+            <div class="book-grid-profile">
+                <?php foreach ($borrowedBooks as $book): ?>
+                    <div class="book-card">
+                        <div class="book-cover">
+                            <img src="/uploads/book_cover/thumb_<?php echo $book['cover_image'] ?? 'default.jpg'; ?>" 
+                                 alt="<?php echo htmlspecialchars($book['title']); ?>"
+                                 onerror="this.src='/assets/images/default-book-cover.jpg'">
+                            <span class="book-status status-<?php echo $book['status']; ?>">
+                                <?php echo ucfirst($book['status']); ?>
+                            </span>
+                        </div>
+                        <div class="book-info">
+                            <h3 class="book-title">
+                                <a href="/book/?id=<?php echo $book['id']; ?>">
+                                    <?php echo htmlspecialchars($book['title']); ?>
+                                </a>
+                            </h3>
+                            <p class="book-author">By <?php echo htmlspecialchars($book['author']); ?></p>
+                            <p style="font-size: 0.7rem; color: var(--gray-500); margin-top: 4px;">Borrowed from: <b><?php echo htmlspecialchars($book['owner_name']); ?></b></p>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+        <?php endif; ?>
+    </div>
+
+    <div id="lent" class="tab-content">
+        <?php if (empty($lentBooks)): ?>
+            <div style="text-align: center; padding: 4rem 2rem; background: rgba(255,255,255,0.5); border-radius: var(--radius-xl);">
+                <i class="fas fa-hand-holding-heart" style="font-size: 3rem; color: var(--gray-300); margin-bottom: 1rem;"></i>
+                <p>No books lent yet.</p>
+            </div>
+        <?php else: ?>
+            <div class="book-grid-profile">
+                <?php foreach ($lentBooks as $book): ?>
+                    <div class="book-card">
+                        <div class="book-cover">
+                            <img src="/uploads/book_cover/thumb_<?php echo $book['cover_image'] ?? 'default.jpg'; ?>" 
+                                 alt="<?php echo htmlspecialchars($book['title']); ?>"
+                                 onerror="this.src='/assets/images/default-book-cover.jpg'">
+                            <span class="book-status status-<?php echo $book['status']; ?>">
+                                <?php echo ucfirst($book['status']); ?>
+                            </span>
+                        </div>
+                        <div class="book-info">
+                            <h3 class="book-title">
+                                <a href="/book/?id=<?php echo $book['id']; ?>">
+                                    <?php echo htmlspecialchars($book['title']); ?>
+                                </a>
+                            </h3>
+                            <p class="book-author"><?php echo htmlspecialchars($book['author']); ?></p>
+                            <p style="font-size: 0.7rem; color: var(--gray-500); margin-top: 4px;">Lent to: <b><?php echo htmlspecialchars($book['borrower_name']); ?></b></p>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+        <?php endif; ?>
+    </div>
 </div>
+
+<script>
+function switchTab(evt, tabId) {
+    const tabcontents = document.getElementsByClassName("tab-content");
+    for (let i = 0; i < tabcontents.length; i++) {
+        tabcontents[i].classList.remove("active");
+    }
+    const tablinks = document.getElementsByClassName("tab-btn");
+    for (let i = 0; i < tablinks.length; i++) {
+        tablinks[i].classList.remove("active");
+    }
+    document.getElementById(tabId).classList.add("active");
+    evt.currentTarget.classList.add("active");
+}
+
+function copyProfileLink() {
+    const url = window.location.href;
+    navigator.clipboard.writeText(url).then(() => {
+        alert("Profile link copied to clipboard!");
+    }).catch(err => {
+        console.error('Could not copy text: ', err);
+    });
+}
+
+// Reveal animation on load
+document.addEventListener('DOMContentLoaded', () => {
+    const glassCard = document.querySelector('.glass-card');
+    glassCard.classList.add('active');
+});
+</script>
 
 <?php include dirname(__DIR__) . '/includes/footer.php'; ?>
