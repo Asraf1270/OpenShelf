@@ -1,0 +1,27 @@
+{
+    "id": "WSKGSKNDNXP3284D",
+    "personal_info": {
+        "name": "Md. Asraful Islam",
+        "email": "mdasraful-2024917555@amath.du.ac.bd",
+        "department": "Applied Mathematics",
+        "session": "2024-25",
+        "phone": "01987971270",
+        "room_number": "B-603"
+    },
+    "account_info": {
+        "verified": false,
+        "role": "user",
+        "created_at": "2026-03-11 06:28:20",
+        "status": "pending"
+    },
+    "stats": {
+        "books_owned": 0,
+        "books_borrowed": 0,
+        "books_lent": 0,
+        "reviews": 0
+    },
+    "preferences": {
+        "notifications": true,
+        "privacy": "public"
+    }
+}

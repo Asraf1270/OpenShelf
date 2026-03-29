@@ -1,0 +1,45 @@
+{
+    "id": "TPYLVLU2VN",
+    "title": "\u0986\u099c\u09bf \u09b9\u09a4\u09c7 \u09b9\u09be\u099c\u09be\u09b0 \u09ac\u099b\u09b0 \u0986\u0997\u09c7",
+    "author": "\u0986\u09b0\u09bf\u09ab \u0986\u099c\u09be\u09a6",
+    "description": "This is first nobel of Arif Azad",
+    "category": "Graphic Novel",
+    "condition": "New",
+    "cover_image": "TPYLVLU2VN_1774626335.webp",
+    "owner_id": "DTLQ6XA3WRRJMQJ1",
+    "owner_name": "Md. Asraful Islam",
+    "status": "reserved",
+    "created_at": "2026-03-27 11:45:35",
+    "updated_at": "2026-03-27 12:01:13",
+    "views": 0,
+    "times_borrowed": 0,
+    "isbn": "978-984-29398-2-2",
+    "publication_year": "2026",
+    "publisher": "Sukun Publication",
+    "pages": "213",
+    "language": "Bangla",
+    "tags": [],
+    "reviews": [
+        {
+            "id": "rev_69c6bb7f7e06c_0bcc38c3",
+            "user_id": "DTLQ6XA3WRRJMQJZ",
+            "user_name": "Md. Asraful Islam",
+            "rating": 5,
+            "review_text": "This is a best book.",
+            "likes": [],
+            "created_at": "2026-03-27 13:16:47",
+            "updated_at": "2026-03-27 13:16:47"
+        }
+    ],
+    "comments": [
+        {
+            "id": "com_69c6bb8ca3833_4b07bcf2",
+            "user_id": "DTLQ6XA3WRRJMQJZ",
+            "user_name": "Md. Asraful Islam",
+            "comment_text": "Hi",
+            "likes": [],
+            "created_at": "2026-03-27 13:17:00",
+            "updated_at": "2026-03-27 13:17:00"
+        }
+    ]
+}

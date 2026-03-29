@@ -1,0 +1,86 @@
+[2026-03-12 01:49:50] [INFO] Loading autoloader...
+[2026-03-12 01:49:50] [INFO] Autoloader loaded successfully
+[2026-03-12 01:49:50] [INFO] Initializing Mailer...
+[2026-03-12 01:49:50] [INFO] Mailer initialized successfully
+[2026-03-12 01:49:50] [INFO] SMTP connection test: SUCCESS
+[2026-03-12 01:53:32] [INFO] Loading autoloader...
+[2026-03-12 01:53:32] [INFO] Autoloader loaded successfully
+[2026-03-12 01:53:32] [INFO] Initializing Mailer...
+[2026-03-12 01:53:32] [INFO] Mailer initialized successfully
+[2026-03-12 01:53:33] [INFO] SMTP connection test: SUCCESS
+[2026-03-12 01:53:33] [INFO] === New Login Attempt ===
+[2026-03-12 01:53:33] [INFO] Step: resend_otp
+[2026-03-12 01:53:33] [INFO] IP: 114.130.156.72
+[2026-03-12 01:53:33] [INFO] Resending OTP for email: mdasrafulislam1270@gmail.com
+[2026-03-12 01:53:33] [INFO] Loading admins from: /home/vol1000_8/infinityfree.com/if0_40028850/openshelf.free.nf/htdocs/data/admins.json
+[2026-03-12 01:53:33] [INFO] Loaded 3 admins
+[2026-03-12 01:53:33] [INFO] Found active admin: mdasrafulislam1270@gmail.com
+[2026-03-12 01:53:33] [INFO] Generated OTP: 936893
+[2026-03-12 01:53:33] [INFO] Saving OTP to: /home/vol1000_8/infinityfree.com/if0_40028850/openshelf.free.nf/htdocs/data/login_otp.json
+[2026-03-12 01:53:33] [INFO] Loaded 1 existing OTPs
+[2026-03-12 01:53:33] [INFO] Cleaned 1 expired OTPs
+[2026-03-12 01:53:33] [INFO] Created OTP record with ID: otp_69b254dd06b35_5698dede
+[2026-03-12 01:53:33] [INFO] OTP saved successfully
+[2026-03-12 01:53:33] [INFO] Attempting to send OTP email to: mdasrafulislam1270@gmail.com
+[2026-03-12 01:53:33] [INFO] Method 1: Using PHPMailer via Mailer class...
+[2026-03-12 01:53:33] [INFO] ✅ Method 1 succeeded: Email sent via PHPMailer
+[2026-03-12 01:53:33] [INFO] OTP resent successfully
+[2026-03-12 01:54:31] [INFO] Loading autoloader...
+[2026-03-12 01:54:31] [INFO] Autoloader loaded successfully
+[2026-03-12 01:54:31] [INFO] Initializing Mailer...
+[2026-03-12 01:54:31] [INFO] Mailer initialized successfully
+[2026-03-12 01:54:31] [INFO] SMTP connection test: SUCCESS
+[2026-03-12 01:54:31] [INFO] === New Login Attempt ===
+[2026-03-12 01:54:31] [INFO] Step: resend_otp
+[2026-03-12 01:54:31] [INFO] IP: 114.130.156.72
+[2026-03-12 01:54:31] [INFO] Resending OTP for email: mdasrafulislam1270@gmail.com
+[2026-03-12 01:54:31] [INFO] Loading admins from: /home/vol1000_8/infinityfree.com/if0_40028850/openshelf.free.nf/htdocs/data/admins.json
+[2026-03-12 01:54:31] [INFO] Loaded 3 admins
+[2026-03-12 01:54:31] [INFO] Found active admin: mdasrafulislam1270@gmail.com
+[2026-03-12 01:54:31] [INFO] Generated OTP: 255613
+[2026-03-12 01:54:31] [INFO] Saving OTP to: /home/vol1000_8/infinityfree.com/if0_40028850/openshelf.free.nf/htdocs/data/login_otp.json
+[2026-03-12 01:54:31] [INFO] Loaded 1 existing OTPs
+[2026-03-12 01:54:31] [INFO] Cleaned 0 expired OTPs
+[2026-03-12 01:54:31] [INFO] Created OTP record with ID: otp_69b255178448a_c7de7579
+[2026-03-12 01:54:31] [INFO] OTP saved successfully
+[2026-03-12 01:54:31] [INFO] Attempting to send OTP email to: mdasrafulislam1270@gmail.com
+[2026-03-12 01:54:31] [INFO] Method 1: Using PHPMailer via Mailer class...
+[2026-03-12 01:54:32] [INFO] ✅ Method 1 succeeded: Email sent via PHPMailer
+[2026-03-12 01:54:32] [INFO] OTP resent successfully
+[2026-03-12 01:54:46] [INFO] Loading autoloader...
+[2026-03-12 01:54:46] [INFO] Autoloader loaded successfully
+[2026-03-12 01:54:46] [INFO] Initializing Mailer...
+[2026-03-12 01:54:46] [INFO] Mailer initialized successfully
+[2026-03-12 01:54:47] [INFO] SMTP connection test: SUCCESS
+[2026-03-12 01:55:14] [INFO] Loading autoloader...
+[2026-03-12 01:55:14] [INFO] Autoloader loaded successfully
+[2026-03-12 01:55:14] [INFO] Initializing Mailer...
+[2026-03-12 01:55:14] [INFO] Mailer initialized successfully
+[2026-03-12 01:55:14] [INFO] SMTP connection test: SUCCESS
+[2026-03-12 01:56:28] [INFO] Loading autoloader...
+[2026-03-12 01:56:28] [INFO] Autoloader loaded successfully
+[2026-03-12 01:56:28] [INFO] Initializing Mailer...
+[2026-03-12 01:56:28] [INFO] Mailer initialized successfully
+[2026-03-12 01:56:28] [INFO] SMTP connection test: SUCCESS
+[2026-03-12 01:56:28] [INFO] === New Login Attempt ===
+[2026-03-12 01:56:28] [INFO] Step: resend_otp
+[2026-03-12 01:56:28] [INFO] IP: 114.130.156.72
+[2026-03-12 01:56:28] [INFO] Resending OTP for email: mdasrafulislam1270@gmail.com
+[2026-03-12 01:56:28] [INFO] Loading admins from: /home/vol1000_8/infinityfree.com/if0_40028850/openshelf.free.nf/htdocs/data/admins.json
+[2026-03-12 01:56:28] [INFO] Loaded 3 admins
+[2026-03-12 01:56:28] [INFO] Found active admin: mdasrafulislam1270@gmail.com
+[2026-03-12 01:56:28] [INFO] Generated OTP: 428586
+[2026-03-12 01:56:28] [INFO] Saving OTP to: /home/vol1000_8/infinityfree.com/if0_40028850/openshelf.free.nf/htdocs/data/login_otp.json
+[2026-03-12 01:56:28] [INFO] Loaded 2 existing OTPs
+[2026-03-12 01:56:28] [INFO] Cleaned 0 expired OTPs
+[2026-03-12 01:56:28] [INFO] Created OTP record with ID: otp_69b2558c8f8d9_15b5360b
+[2026-03-12 01:56:28] [INFO] OTP saved successfully
+[2026-03-12 01:56:28] [INFO] Attempting to send OTP email to: mdasrafulislam1270@gmail.com
+[2026-03-12 01:56:28] [INFO] Method 1: Using PHPMailer via Mailer class...
+[2026-03-12 01:56:29] [INFO] ✅ Method 1 succeeded: Email sent via PHPMailer
+[2026-03-12 01:56:29] [INFO] OTP resent successfully
+[2026-03-12 01:56:39] [INFO] Loading autoloader...
+[2026-03-12 01:56:39] [INFO] Autoloader loaded successfully
+[2026-03-12 01:56:39] [INFO] Initializing Mailer...
+[2026-03-12 01:56:39] [INFO] Mailer initialized successfully
+[2026-03-12 01:56:39] [INFO] SMTP connection test: SUCCESS

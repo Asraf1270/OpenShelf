@@ -1,0 +1,45 @@
+{
+    "id": "W8Z6SJYBGY",
+    "title": "\u09a6\u09bf \u098f\u09a8\u09be\u099f\u09ae\u09bf \u0985\u09ac \u0993\u09df\u09be\u09b2\u09cd\u09a1 \u09aa\u09b2\u09bf\u099f\u09bf\u0995\u09cd\u09b8",
+    "author": "\u09ae\u09cb\u09b9\u09be\u09ae\u09cd\u09ae\u09a6 \u09ae\u09bf\u09b0\u09be\u099c \u09ae\u09bf\u09df\u09be",
+    "description": "\u09ac\u0987\u099f\u09bf \u0986\u09a8\u09cd\u09a4\u09b0\u09cd\u099c\u09be\u09a4\u09bf\u0995 \u09b8\u09ae\u09cd\u09aa\u09b0\u09cd\u0995, \u09b0\u09be\u09b7\u09cd\u099f\u09ac\u09bf\u099c\u09cd\u099e\u09be\u09a8 \u098f\u09ac\u0982 \u0987\u09a4\u09bf\u09b9\u09be\u09b8\u09c7\u09b0 \u099b\u09be\u09a4\u09cd\u09b0\u09a6\u09c7\u09b0 \u099c\u09a8\u09cd\u09af \u098f\u0995\u099f\u09bf \u09ae\u09cc\u09b2\u09bf\u0995 \u09ac\u0987",
+    "category": "Non-Fiction",
+    "condition": "New",
+    "cover_image": "W8Z6SJYBGY_1773297369.webp",
+    "owner_id": "DTLQ6XA3WRRJMQJZ",
+    "owner_name": "Md. Asraful Islam",
+    "status": "available",
+    "created_at": "2026-03-12 02:36:09",
+    "updated_at": "2026-03-27 12:35:53",
+    "views": 0,
+    "times_borrowed": 1,
+    "isbn": null,
+    "publication_year": null,
+    "publisher": null,
+    "pages": null,
+    "language": "English",
+    "tags": [],
+    "comments": [
+        {
+            "id": "com_69c6b9491d2fb_000147fe",
+            "user_id": "DTLQ6XA3WRRJMQJZ",
+            "user_name": "Md. Asraful Islam",
+            "comment_text": "Hi",
+            "likes": [],
+            "created_at": "2026-03-27 13:07:21",
+            "updated_at": "2026-03-27 13:07:21"
+        }
+    ],
+    "reviews": [
+        {
+            "id": "rev_69c763c92f4ff_46f1c3f1",
+            "user_id": "DTLQ6XA3WRRJMQJ1",
+            "user_name": "Md. Asraful Islam",
+            "rating": 5,
+            "review_text": "This is best book to learn world politics",
+            "likes": [],
+            "created_at": "2026-03-28 01:14:49",
+            "updated_at": "2026-03-28 01:14:49"
+        }
+    ]
+}

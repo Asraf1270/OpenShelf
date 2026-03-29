@@ -1,0 +1,42 @@
+{
+    "id": "QRGQNXUCCNRVGYDB",
+    "personal_info": {
+        "name": "Saiful Islam Irvan",
+        "email": "saifulislam-70-2024117436@geoenv.du.ac.bd",
+        "department": "Geography and Environment",
+        "session": "2024-25",
+        "phone": "01336016328",
+        "room_number": "R-103",
+        "bio": ""
+    },
+    "account_info": {
+        "verified": true,
+        "role": "user",
+        "created_at": "2026-03-28 08:51:31",
+        "status": "active",
+        "verified_at": "2026-03-28 08:54:53",
+        "verified_by": "admin_65b2c3d4e5f6g8"
+    },
+    "stats": {
+        "books_owned": 1,
+        "books_borrowed": 0,
+        "books_lent": 0,
+        "reviews": 0
+    },
+    "preferences": {
+        "notifications": true,
+        "privacy": "public"
+    },
+    "remember_tokens": [
+        {
+            "token": "1de1c717a6c2949a46a3ee5031b49b6f8c0f4ea4243c83ea6befa6c718ab41ed",
+            "expiry": 1777294497,
+            "created_at": "2026-03-28 08:54:57",
+            "user_agent": "Mozilla\/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit\/537.36 (KHTML, like Gecko) Chrome\/146.0.0.0 Safari\/537.36",
+            "ip_address": "114.130.157.35"
+        }
+    ],
+    "owner_books": [
+        "J79QVK4V6W"
+    ]
+}

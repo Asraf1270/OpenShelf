@@ -1,0 +1,10 @@
+{
+    "otp_69c792735020c_9f340e14": {
+        "email": "mdasrafulislam1270@gmail.com",
+        "otp_hash": "$2y$10$3vTtdFQQwWV.tw5uZw1uquX2MKRJin\/U\/t4GhmI2n6u3kMAHUlieK",
+        "created_at": "2026-03-28 04:33:55",
+        "expires_at": "2026-03-28 04:38:55",
+        "attempts": 1,
+        "verified": true
+    }
+}

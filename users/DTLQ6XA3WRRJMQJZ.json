@@ -1,0 +1,93 @@
+{
+    "id": "DTLQ6XA3WRRJMQJZ",
+    "personal_info": {
+        "name": "Md. Asraful Islam",
+        "email": "mdasrafulislam0638@gmail.com",
+        "department": "Applied Mathematics",
+        "session": "2024-25",
+        "phone": "01987971270",
+        "room_number": "B-603",
+        "bio": "DU-104\r\nAMTH-11"
+    },
+    "account_info": {
+        "verified": true,
+        "role": "user",
+        "created_at": "2026-03-12 02:07:08",
+        "status": "active",
+        "verified_at": "2026-03-12 02:07:50",
+        "verified_by": null
+    },
+    "stats": {
+        "books_owned": 2,
+        "books_borrowed": 0,
+        "books_lent": 1,
+        "reviews": 0
+    },
+    "preferences": {
+        "notifications": true,
+        "privacy": "public"
+    },
+    "remember_tokens": [
+        {
+            "token": "63a0e5a97d3ef98e637f7fd63cfe2aa4e59a597b7e94e5301576be4c34b6643e",
+            "expiry": 1775887682,
+            "created_at": "2026-03-12 02:08:02",
+            "user_agent": "Mozilla\/5.0 (X11; Ubuntu; Linux x86_64; rv:148.0) Gecko\/20100101 Firefox\/148.0",
+            "ip_address": "114.130.156.72"
+        },
+        {
+            "token": "9430ab6f3fa9cfe09fe174878537366feff6434b9002e2ce8c4a7e339be98f0c",
+            "expiry": 1775887841,
+            "created_at": "2026-03-12 02:10:41",
+            "user_agent": "Mozilla\/5.0 (Linux; Android 10; K) AppleWebKit\/537.36 (KHTML, like Gecko) Chrome\/145.0.0.0 Mobile Safari\/537.36",
+            "ip_address": "114.130.156.72"
+        },
+        {
+            "token": "75de8728cb09aed5811ee82dfcd7aff2d929bdfb5aa5309b9585f51324ada715",
+            "expiry": 1775905650,
+            "created_at": "2026-03-12 07:07:30",
+            "user_agent": "Mozilla\/5.0 (X11; Ubuntu; Linux x86_64; rv:148.0) Gecko\/20100101 Firefox\/148.0",
+            "ip_address": "114.130.156.72"
+        }
+    ],
+    "owner_books": [
+        "PQ83QV9V1V",
+        "T4RHPW2V5C"
+    ],
+    "lent_history": [
+        {
+            "book_id": "W8Z6SJYBGY",
+            "request_id": "REQ17732988953d7287cc",
+            "action": "lent",
+            "date": "2026-03-12 03:02:25"
+        },
+        {
+            "book_id": "W8Z6SJYBGY",
+            "returned_at": "2026-03-27 12:35:53",
+            "returned_by": "DTLQ6XA3WRRJMQJ1"
+        },
+        {
+            "book_id": "PQ83QV9V1V",
+            "returned_at": "2026-03-28 06:37:29",
+            "returned_by": "DTLQ6XA3WRRJMQJ1"
+        },
+        {
+            "book_id": "T4RHPW2V5C",
+            "returned_at": "2026-03-28 07:31:34",
+            "returned_by": "Y25TR2H4G5LSB6EZ"
+        },
+        {
+            "book_id": "T4RHPW2V5C",
+            "returned_at": "2026-03-28 07:42:23",
+            "returned_by": "Y25TR2H4G5LSB6EZ"
+        },
+        {
+            "book_id": "T4RHPW2V5C",
+            "returned_at": "2026-03-28 08:08:48",
+            "returned_by": "Y25TR2H4G5LSB6EZ"
+        }
+    ],
+    "currently_lent": [
+        "T4RHPW2V5C"
+    ]
+}

@@ -1,0 +1,59 @@
+{
+    "id": "Y25TR2H4G5LSB6EZ",
+    "personal_info": {
+        "name": "Md Asraful Islam",
+        "email": "mdasraful-2025917555@amath.du.ac.bd",
+        "department": "AMTH",
+        "session": "2024-25",
+        "phone": "01987971272",
+        "room_number": "B-603",
+        "bio": ""
+    },
+    "account_info": {
+        "verified": true,
+        "role": "user",
+        "created_at": "2026-03-28 06:44:21",
+        "status": "active",
+        "verified_at": "2026-03-28 06:45:18",
+        "verified_by": "admin_65b2c3d4e5f6g8"
+    },
+    "stats": {
+        "books_owned": 0,
+        "books_borrowed": 1,
+        "books_lent": 0,
+        "reviews": 0
+    },
+    "preferences": {
+        "notifications": true,
+        "privacy": "public"
+    },
+    "remember_tokens": [
+        {
+            "token": "65819b1c507ff4df61ca790d49e4eadb11b40053f055fc8cfa81776d0b6c731e",
+            "expiry": 1777289330,
+            "created_at": "2026-03-28 07:28:50",
+            "user_agent": "Mozilla\/5.0 (Linux; Android 13; en; TECNO KI7 Build\/SP1A.210812.016) AppleWebKit\/537.36 (KHTML, like Gecko) Chrome\/146.0.7680.119 HiBrowser\/v2.25.10.2;lang=en;nation=BD;locale=en_US UWS\/ Mobile Safari\/537.36",
+            "ip_address": "103.230.104.28"
+        }
+    ],
+    "currently_borrowed": [
+        "T4RHPW2V5C"
+    ],
+    "borrow_history": [
+        {
+            "book_id": "T4RHPW2V5C",
+            "returned_at": "2026-03-28 07:31:34",
+            "status": "completed"
+        },
+        {
+            "book_id": "T4RHPW2V5C",
+            "returned_at": "2026-03-28 07:42:23",
+            "status": "completed"
+        },
+        {
+            "book_id": "T4RHPW2V5C",
+            "returned_at": "2026-03-28 08:08:48",
+            "status": "completed"
+        }
+    ]
+}

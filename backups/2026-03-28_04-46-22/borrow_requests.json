@@ -1,0 +1,192 @@
+[
+    {
+        "id": "REQ177329859233a70747",
+        "book_id": "W8Z6SJYBGY",
+        "book_title": "\u09a6\u09bf \u098f\u09a8\u09be\u099f\u09ae\u09bf \u0985\u09ac \u0993\u09df\u09be\u09b2\u09cd\u09a1 \u09aa\u09b2\u09bf\u099f\u09bf\u0995\u09cd\u09b8",
+        "book_author": "\u09ae\u09cb\u09b9\u09be\u09ae\u09cd\u09ae\u09a6 \u09ae\u09bf\u09b0\u09be\u099c \u09ae\u09bf\u09df\u09be",
+        "book_cover": "W8Z6SJYBGY_1773297369.webp",
+        "owner_id": "DTLQ6XA3WRRJMQJZ",
+        "owner_name": "Md. Asraful Islam",
+        "owner_email": "mdasraful-2024917555@amath.du.ac.bd",
+        "borrower_id": "DTLQ6XA3WRRJMQJ1",
+        "borrower_name": "Md. Asraful Islam",
+        "borrower_email": null,
+        "status": "rejected",
+        "request_date": "2026-03-12 02:56:32",
+        "expected_return_date": "2026-04-01 02:56:32",
+        "duration_days": 20,
+        "message": "Hi, I am the a test user By the super admin",
+        "updated_at": "2026-03-12 02:59:26",
+        "history": [
+            {
+                "action": "request_created",
+                "timestamp": "2026-03-12 02:56:32",
+                "user_id": "DTLQ6XA3WRRJMQJ1",
+                "notes": "Borrow request submitted"
+            },
+            {
+                "action": "status_changed",
+                "status": "rejected",
+                "timestamp": "2026-03-12 02:59:26",
+                "user_id": "DTLQ6XA3WRRJMQJZ",
+                "notes": "Send full details of you"
+            }
+        ],
+        "rejected_at": "2026-03-12 02:59:26",
+        "rejected_by": "DTLQ6XA3WRRJMQJZ",
+        "notes": "Send full details of you"
+    },
+    {
+        "id": "REQ17732988953d7287cc",
+        "book_id": "W8Z6SJYBGY",
+        "book_title": "\u09a6\u09bf \u098f\u09a8\u09be\u099f\u09ae\u09bf \u0985\u09ac \u0993\u09df\u09be\u09b2\u09cd\u09a1 \u09aa\u09b2\u09bf\u099f\u09bf\u0995\u09cd\u09b8",
+        "book_author": "\u09ae\u09cb\u09b9\u09be\u09ae\u09cd\u09ae\u09a6 \u09ae\u09bf\u09b0\u09be\u099c \u09ae\u09bf\u09df\u09be",
+        "book_cover": "W8Z6SJYBGY_1773297369.webp",
+        "owner_id": "DTLQ6XA3WRRJMQJZ",
+        "owner_name": "Md. Asraful Islam",
+        "owner_email": "mdasraful-2024917555@amath.du.ac.bd",
+        "borrower_id": "DTLQ6XA3WRRJMQJ1",
+        "borrower_name": "Md. Asraful Islam",
+        "borrower_email": null,
+        "status": "returned",
+        "request_date": "2026-03-12 03:01:35",
+        "expected_return_date": "2026-03-26 03:01:35",
+        "duration_days": 14,
+        "message": "i am a test user by Super Admin.",
+        "updated_at": "2026-03-27 12:35:53",
+        "history": [
+            {
+                "action": "request_created",
+                "timestamp": "2026-03-12 03:01:35",
+                "user_id": "DTLQ6XA3WRRJMQJ1"
+            },
+            {
+                "action": "status_changed",
+                "status": "approved",
+                "timestamp": "2026-03-12 03:02:25",
+                "user_id": "DTLQ6XA3WRRJMQJZ",
+                "notes": "Collect book from B-603"
+            },
+            {
+                "action": "returned",
+                "timestamp": "2026-03-27 12:35:53",
+                "user_id": "DTLQ6XA3WRRJMQJ1",
+                "user_name": "Md. Asraful Islam",
+                "notes": "This is a best book.",
+                "condition": "same",
+                "rating": 5
+            }
+        ],
+        "approved_at": "2026-03-12 03:02:25",
+        "approved_by": "DTLQ6XA3WRRJMQJZ",
+        "notes": "This is a best book.",
+        "returned_at": "2026-03-27 12:35:53",
+        "actual_return_date": "2026-03-27 12:35:53",
+        "return_condition": "same",
+        "returned_by": "DTLQ6XA3WRRJMQJ1",
+        "returned_by_name": "Md. Asraful Islam",
+        "rating": 5
+    },
+    {
+        "id": "REQ1773300151df775a45",
+        "book_id": "PQ83QV9V1V",
+        "book_title": "\u09aa\u09cd\u09b0\u09cb\u09a1\u09be\u0995\u09cd\u099f\u09bf\u09ad \u09ae\u09c1\u09b8\u09b2\u09bf\u09ae",
+        "book_author": "\u09ae\u09cb\u09b9\u09be\u09ae\u09cd\u09ae\u09a6 \u09ab\u09be\u09b0\u09bf\u09b8",
+        "book_cover": "PQ83QV9V1V_1773296504.webp",
+        "owner_id": "DTLQ6XA3WRRJMQJZ",
+        "owner_name": "Md. Asraful Islam",
+        "owner_email": "mdasraful-2024917555@amath.du.ac.bd",
+        "borrower_id": "DTLQ6XA3WRRJMQJ1",
+        "borrower_name": "Md. Asraful Islam",
+        "borrower_email": null,
+        "status": "rejected",
+        "request_date": "2026-03-12 03:22:31",
+        "expected_return_date": "2026-03-19 03:22:31",
+        "duration_days": 7,
+        "message": "Hi",
+        "updated_at": "2026-03-28 00:37:09",
+        "history": [
+            {
+                "action": "request_created",
+                "timestamp": "2026-03-12 03:22:31",
+                "user_id": "DTLQ6XA3WRRJMQJ1"
+            },
+            {
+                "action": "rejected",
+                "timestamp": "2026-03-28 00:37:09",
+                "user_id": "DTLQ6XA3WRRJMQJZ",
+                "user_name": "Md. Asraful Islam",
+                "notes": ""
+            }
+        ],
+        "rejected_at": "2026-03-28 00:37:09",
+        "rejection_reason": "Hdh ud ud udvdbisvhud id ud d ud"
+    },
+    {
+        "id": "REQ17746265052d5665b0",
+        "book_id": "T4RHPW2V5C",
+        "book_title": "\u09ac\u09be\u0999\u09b2\u09be\u09a8\u09be\u09ae\u09be",
+        "book_author": "\u09a2\u09be\u0995\u09be \u09ac\u09bf\u09b6\u09cd\u09ac\u09ac\u09bf\u09a6\u09cd\u09af\u09be\u09b2\u09df \u09b8\u0982\u0996\u09cd\u09af\u09be",
+        "book_cover": "T4RHPW2V5C_1773297455.webp",
+        "owner_id": "DTLQ6XA3WRRJMQJZ",
+        "owner_name": "Md. Asraful Islam",
+        "owner_email": "mdasraful-2024917555@amath.du.ac.bd",
+        "borrower_id": "DTLQ6XA3WRRJMQJ1",
+        "borrower_name": "Md. Asraful Islam",
+        "borrower_email": null,
+        "status": "rejected",
+        "request_date": "2026-03-27 11:48:25",
+        "expected_return_date": "2026-04-10 11:48:25",
+        "duration_days": 14,
+        "message": "Please i need this book",
+        "updated_at": "2026-03-27 12:10:18",
+        "history": [
+            {
+                "action": "request_created",
+                "timestamp": "2026-03-27 11:48:25",
+                "user_id": "DTLQ6XA3WRRJMQJ1"
+            },
+            {
+                "action": "status_changed",
+                "status": "rejected",
+                "timestamp": "2026-03-27 12:10:18",
+                "user_id": "DTLQ6XA3WRRJMQJZ",
+                "notes": "I do not read this book."
+            }
+        ],
+        "rejected_at": "2026-03-27 12:10:18",
+        "rejected_by": "DTLQ6XA3WRRJMQJZ",
+        "notes": "I do not read this book."
+    },
+    {
+        "id": "REQ1774631832edd59a0c",
+        "book_id": "TPYLVLU2VN",
+        "book_title": "\u0986\u099c\u09bf \u09b9\u09a4\u09c7 \u09b9\u09be\u099c\u09be\u09b0 \u09ac\u099b\u09b0 \u0986\u0997\u09c7",
+        "book_author": "\u0986\u09b0\u09bf\u09ab \u0986\u099c\u09be\u09a6",
+        "book_cover": "TPYLVLU2VN_1774626335.webp",
+        "owner_id": "DTLQ6XA3WRRJMQJ1",
+        "owner_name": "Unknown",
+        "owner_email": null,
+        "borrower_id": "DTLQ6XA3WRRJMQJZ",
+        "borrower_name": "Md. Asraful Islam",
+        "borrower_email": null,
+        "status": "rejected",
+        "request_date": "2026-03-27 13:17:12",
+        "expected_return_date": "2026-04-10 13:17:12",
+        "duration_days": 14,
+        "message": "",
+        "updated_at": "2026-03-28 02:57:14",
+        "rejected_at": "2026-03-28 02:57:14",
+        "rejected_by": "admin_65b2c3d4e5f6g8",
+        "rejection_reason": "For testing \r\nHsi ksb",
+        "history": [
+            {
+                "action": "rejected_by_admin",
+                "timestamp": "2026-03-28 02:57:14",
+                "admin_id": "admin_65b2c3d4e5f6g8",
+                "admin_name": "super_admin",
+                "reason": "For testing \r\nHsi ksb"
+            }
+        ]
+    }
+]

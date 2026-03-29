@@ -1,0 +1,95 @@
+[
+    {
+        "id": "69b143c41e50d",
+        "type": "new_registration",
+        "user_id": "WSKGSKNDNXP3284D",
+        "message": "New user registration: Md. Asraful Islam (mdasraful-2024917555@amath.du.ac.bd)",
+        "is_read": false,
+        "created_at": "2026-03-11 06:28:20"
+    },
+    {
+        "id": "notif_69c6b617ec04b_e092f945",
+        "user_id": "DTLQ6XA3WRRJMQJ1",
+        "type": "announcement",
+        "title": "This is the first announcement",
+        "message": "Hi everyone! \r\nHow are you?\r\nWe want to start a new event.\r\nUpdate announced very soon.",
+        "link": "\/announcements\/?id=ann_69c6b617925cf_cddf7b5c",
+        "icon": "fa-info-circle",
+        "is_read": true,
+        "created_at": "2026-03-27 12:53:43",
+        "expires_at": "2026-04-26 12:51:00",
+        "read_at": "2026-03-27 12:54:55"
+    },
+    {
+        "id": "notif_69c6bb98e7037_1c37afa7",
+        "user_id": "DTLQ6XA3WRRJMQJ1",
+        "type": "borrow_request",
+        "title": "New Borrow Request",
+        "message": "Md. Asraful Islam wants to borrow \"\u0986\u099c\u09bf \u09b9\u09a4\u09c7 \u09b9\u09be\u099c\u09be\u09b0 \u09ac\u099b\u09b0 \u0986\u0997\u09c7\"",
+        "link": "\/requests\/?id=REQ1774631832edd59a0c",
+        "is_read": true,
+        "created_at": "2026-03-27 13:17:12",
+        "expires_at": "2026-04-26 13:17:12",
+        "read_at": "2026-03-28 03:24:40"
+    },
+    {
+        "id": "notif_69c75af5cfe3a_3ac03583",
+        "user_id": "DTLQ6XA3WRRJMQJ1",
+        "type": "request_rejected",
+        "title": "Borrow Request Rejected",
+        "message": "Your request for '\u09aa\u09cd\u09b0\u09cb\u09a1\u09be\u0995\u09cd\u099f\u09bf\u09ad \u09ae\u09c1\u09b8\u09b2\u09bf\u09ae' has been rejected: Hdh ud ud udvdbisvhud id ud d ud",
+        "link": "\/requests\/?id=REQ1773300151df775a45",
+        "is_read": true,
+        "created_at": "2026-03-28 00:37:09",
+        "expires_at": "2026-04-27 00:37:09",
+        "read_at": "2026-03-28 03:24:40"
+    },
+    {
+        "id": "notif_69c78f64b811a_251a9e03",
+        "user_id": "DTLQ6XA3WRRJMQJZ",
+        "type": "announcement",
+        "title": "Thhd id id jsb us i",
+        "message": "Fjvn h u h h ycyvn uxgl hcy g b hcj h gcj,n j h j",
+        "link": "\/announcements\/?id=ann_69c78f64b7bd3_24ac5788",
+        "icon": "fa-info-circle",
+        "is_read": false,
+        "created_at": "2026-03-28 04:20:52",
+        "expires_at": "2026-04-27 04:20:00"
+    },
+    {
+        "id": "notif_69c78f6523925_ca850751",
+        "user_id": "DTLQ6XA3WRRJMQJ1",
+        "type": "announcement",
+        "title": "Thhd id id jsb us i",
+        "message": "Fjvn h u h h ycyvn uxgl hcy g b hcj h gcj,n j h j",
+        "link": "\/announcements\/?id=ann_69c78f64b7bd3_24ac5788",
+        "icon": "fa-info-circle",
+        "is_read": false,
+        "created_at": "2026-03-28 04:20:53",
+        "expires_at": "2026-04-27 04:20:00"
+    },
+    {
+        "id": "notif_69c79260d9647_c5bea89d",
+        "user_id": "DTLQ6XA3WRRJMQJZ",
+        "type": "announcement",
+        "title": "Thhd id id jsb us i",
+        "message": "Fjvn h u h h ycyvn uxgl hcy g b hcj h gcj,n j h j",
+        "link": "\/announcements\/?id=ann_69c79260d9120_fccf0d69",
+        "icon": "fa-info-circle",
+        "is_read": false,
+        "created_at": "2026-03-28 04:33:36",
+        "expires_at": "2026-04-27 04:20:00"
+    },
+    {
+        "id": "notif_69c792613d74b_86215ef6",
+        "user_id": "DTLQ6XA3WRRJMQJ1",
+        "type": "announcement",
+        "title": "Thhd id id jsb us i",
+        "message": "Fjvn h u h h ycyvn uxgl hcy g b hcj h gcj,n j h j",
+        "link": "\/announcements\/?id=ann_69c79260d9120_fccf0d69",
+        "icon": "fa-info-circle",
+        "is_read": false,
+        "created_at": "2026-03-28 04:33:37",
+        "expires_at": "2026-04-27 04:20:00"
+    }
+]

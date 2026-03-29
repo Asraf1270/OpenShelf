@@ -1,0 +1,922 @@
+<?php
+/**
+ * OpenShelf Admin Request Management
+ * Modern UI with advanced filtering and bulk actions
+ */
+
+session_start();
+
+// Configuration
+define('DATA_PATH', dirname(__DIR__, 2) . '/data/');
+define('BOOKS_PATH', dirname(__DIR__, 2) . '/books/');
+define('USERS_PATH', dirname(__DIR__, 2) . '/users/');
+
+// Check admin login
+if (!isset($_SESSION['admin_id'])) {
+    header('Location: /admin/login/');
+    exit;
+}
+
+$adminId = $_SESSION['admin_id'];
+$adminName = $_SESSION['admin_name'] ?? 'Admin';
+
+/**
+ * Load all borrow requests
+ */
+function loadAllRequests() {
+    $requestsFile = DATA_PATH . 'borrow_requests.json';
+    if (!file_exists($requestsFile)) return [];
+    return json_decode(file_get_contents($requestsFile), true) ?? [];
+}
+
+/**
+ * Load book data
+ */
+function loadBookData($bookId) {
+    $bookFile = BOOKS_PATH . $bookId . '.json';
+    if (!file_exists($bookFile)) return null;
+    return json_decode(file_get_contents($bookFile), true);
+}
+
+/**
+ * Update request status
+ */
+function updateRequestStatus($requestId, $status, $additionalData = []) {
+    $requests = loadAllRequests();
+    $updated = false;
+    $requestData = null;
+    
+    foreach ($requests as &$request) {
+        if ($request['id'] === $requestId) {
+            $request['status'] = $status;
+            $request['updated_at'] = date('Y-m-d H:i:s');
+            
+            if ($status === 'approved') {
+                $request['approved_at'] = date('Y-m-d H:i:s');
+                $request['approved_by'] = $GLOBALS['adminId'];
+            } elseif ($status === 'rejected') {
+                $request['rejected_at'] = date('Y-m-d H:i:s');
+                $request['rejected_by'] = $GLOBALS['adminId'];
+                $request['rejection_reason'] = $additionalData['reason'] ?? '';
+            } elseif ($status === 'closed') {
+                $request['closed_at'] = date('Y-m-d H:i:s');
+                $request['closed_by'] = $GLOBALS['adminId'];
+                $request['closed_notes'] = $additionalData['notes'] ?? '';
+            }
+            
+            // Add to history
+            if (!isset($request['history'])) $request['history'] = [];
+            $request['history'][] = [
+                'action' => $status . '_by_admin',
+                'timestamp' => date('Y-m-d H:i:s'),
+                'admin_id' => $GLOBALS['adminId'],
+                'admin_name' => $GLOBALS['adminName'],
+                'data' => $additionalData
+            ];
+            
+            $requestData = $request;
+            $updated = true;
+            break;
+        }
+    }
+    
+    if ($updated) {
+        file_put_contents(DATA_PATH . 'borrow_requests.json', json_encode($requests, JSON_PRETTY_PRINT));
+        
+        // Update book status if approved or rejected
+        if ($status === 'approved') {
+            updateBookStatus($requestData['book_id'], 'borrowed', $requestData['borrower_id']);
+        } elseif ($status === 'rejected' || $status === 'closed') {
+            $book = loadBookData($requestData['book_id']);
+            if ($book && ($book['status'] ?? '') === 'reserved') {
+                updateBookStatus($requestData['book_id'], 'available');
+            }
+        }
+        
+        // Create notification for user
+        createNotification($requestData, $status);
+        
+        return true;
+    }
+    return false;
+}
+
+/**
+ * Update book status
+ */
+function updateBookStatus($bookId, $status, $borrowerId = null) {
+    // Update individual book file
+    $bookFile = BOOKS_PATH . $bookId . '.json';
+    if (file_exists($bookFile)) {
+        $book = json_decode(file_get_contents($bookFile), true);
+        $book['status'] = $status;
+        $book['updated_at'] = date('Y-m-d H:i:s');
+        if ($status === 'borrowed' && $borrowerId) {
+            $book['current_borrower_id'] = $borrowerId;
+            $book['borrowed_since'] = date('Y-m-d H:i:s');
+        } elseif ($status === 'available') {
+            unset($book['current_borrower_id']);
+            unset($book['borrowed_since']);
+        }
+        file_put_contents($bookFile, json_encode($book, JSON_PRETTY_PRINT));
+    }
+    
+    // Update master books.json
+    $masterFile = DATA_PATH . 'books.json';
+    if (file_exists($masterFile)) {
+        $books = json_decode(file_get_contents($masterFile), true);
+        foreach ($books as &$b) {
+            if ($b['id'] === $bookId) {
+                $b['status'] = $status;
+                break;
+            }
+        }
+        file_put_contents($masterFile, json_encode($books, JSON_PRETTY_PRINT));
+    }
+}
+
+/**
+ * Extend return date
+ */
+function extendReturnDate($requestId, $additionalDays, $reason = '') {
+    $requests = loadAllRequests();
+    $updated = false;
+    
+    foreach ($requests as &$request) {
+        if ($request['id'] === $requestId) {
+            if (!in_array($request['status'], ['approved', 'borrowed'])) {
+                return false;
+            }
+            
+            $oldDate = $request['expected_return_date'];
+            $newDate = date('Y-m-d H:i:s', strtotime($oldDate . " +{$additionalDays} days"));
+            
+            $request['expected_return_date'] = $newDate;
+            $request['extended_at'] = date('Y-m-d H:i:s');
+            $request['extended_by'] = $GLOBALS['adminId'];
+            $request['extension_days'] = ($request['extension_days'] ?? 0) + $additionalDays;
+            $request['extension_reason'] = $reason;
+            $request['updated_at'] = date('Y-m-d H:i:s');
+            
+            // Add to history
+            if (!isset($request['history'])) $request['history'] = [];
+            $request['history'][] = [
+                'action' => 'extended_by_admin',
+                'timestamp' => date('Y-m-d H:i:s'),
+                'admin_id' => $GLOBALS['adminId'],
+                'additional_days' => $additionalDays,
+                'reason' => $reason
+            ];
+            
+            $updated = true;
+            break;
+        }
+    }
+    
+    if ($updated) {
+        file_put_contents(DATA_PATH . 'borrow_requests.json', json_encode($requests, JSON_PRETTY_PRINT));
+        
+        // Create notification
+        createExtensionNotification($request, $additionalDays);
+        
+        return true;
+    }
+    return false;
+}
+
+/**
+ * Create notification for user
+ */
+function createNotification($request, $status) {
+    $notificationsFile = DATA_PATH . 'notifications.json';
+    $notifications = file_exists($notificationsFile) ? json_decode(file_get_contents($notificationsFile), true) : [];
+    
+    if ($status === 'approved') {
+        $notification = [
+            'id' => 'notif_' . uniqid() . '_' . bin2hex(random_bytes(4)),
+            'user_id' => $request['borrower_id'],
+            'type' => 'request_approved',
+            'title' => 'Borrow Request Approved',
+            'message' => "Your request for '{$request['book_title']}' has been approved by admin",
+            'link' => "/requests/?id={$request['id']}",
+            'is_read' => false,
+            'created_at' => date('Y-m-d H:i:s')
+        ];
+        $notifications[] = $notification;
+    } elseif ($status === 'rejected') {
+        $notification = [
+            'id' => 'notif_' . uniqid() . '_' . bin2hex(random_bytes(4)),
+            'user_id' => $request['borrower_id'],
+            'type' => 'request_rejected',
+            'title' => 'Borrow Request Rejected',
+            'message' => "Your request for '{$request['book_title']}' has been rejected by admin",
+            'link' => "/requests/?id={$request['id']}",
+            'is_read' => false,
+            'created_at' => date('Y-m-d H:i:s')
+        ];
+        $notifications[] = $notification;
+    } elseif ($status === 'closed') {
+        $notification = [
+            'id' => 'notif_' . uniqid() . '_' . bin2hex(random_bytes(4)),
+            'user_id' => $request['borrower_id'],
+            'type' => 'request_closed',
+            'title' => 'Borrow Request Closed',
+            'message' => "Your borrow request for '{$request['book_title']}' has been closed by admin",
+            'link' => "/requests/?id={$request['id']}",
+            'is_read' => false,
+            'created_at' => date('Y-m-d H:i:s')
+        ];
+        $notifications[] = $notification;
+    }
+    
+    file_put_contents($notificationsFile, json_encode($notifications, JSON_PRETTY_PRINT));
+}
+
+/**
+ * Create extension notification
+ */
+function createExtensionNotification($request, $additionalDays) {
+    $notificationsFile = DATA_PATH . 'notifications.json';
+    $notifications = file_exists($notificationsFile) ? json_decode(file_get_contents($notificationsFile), true) : [];
+    
+    $notification = [
+        'id' => 'notif_' . uniqid() . '_' . bin2hex(random_bytes(4)),
+        'user_id' => $request['borrower_id'],
+        'type' => 'return_date_extended',
+        'title' => 'Return Date Extended',
+        'message' => "Your return date for '{$request['book_title']}' has been extended by {$additionalDays} days",
+        'link' => "/requests/?id={$request['id']}",
+        'is_read' => false,
+        'created_at' => date('Y-m-d H:i:s')
+    ];
+    $notifications[] = $notification;
+    
+    file_put_contents($notificationsFile, json_encode($notifications, JSON_PRETTY_PRINT));
+}
+
+/**
+ * Calculate overdue status
+ */
+function calculateOverdueStatus($requests) {
+    $now = time();
+    foreach ($requests as &$request) {
+        if (in_array($request['status'], ['approved', 'borrowed']) && !empty($request['expected_return_date'])) {
+            $dueDate = strtotime($request['expected_return_date']);
+            if ($dueDate < $now) {
+                $request['overdue'] = true;
+                $request['overdue_days'] = floor(($now - $dueDate) / 86400);
+            } else {
+                $request['overdue'] = false;
+                $request['days_until_due'] = floor(($dueDate - $now) / 86400);
+            }
+        }
+    }
+    return $requests;
+}
+
+// Load requests
+$requests = loadAllRequests();
+$requests = calculateOverdueStatus($requests);
+
+// Filters
+$status = $_GET['status'] ?? 'all';
+$search = $_GET['search'] ?? '';
+$fromDate = $_GET['from'] ?? '';
+$toDate = $_GET['to'] ?? '';
+
+$filteredRequests = $requests;
+if ($status !== 'all') {
+    if ($status === 'overdue') {
+        $filteredRequests = array_filter($filteredRequests, fn($r) => !empty($r['overdue']));
+    } else {
+        $filteredRequests = array_filter($filteredRequests, fn($r) => ($r['status'] ?? '') === $status);
+    }
+}
+if (!empty($search)) {
+    $searchLower = strtolower($search);
+    $filteredRequests = array_filter($filteredRequests, fn($r) => 
+        strpos(strtolower($r['book_title'] ?? ''), $searchLower) !== false ||
+        strpos(strtolower($r['borrower_name'] ?? ''), $searchLower) !== false ||
+        strpos(strtolower($r['owner_name'] ?? ''), $searchLower) !== false
+    );
+}
+if (!empty($fromDate)) {
+    $fromTimestamp = strtotime($fromDate);
+    $filteredRequests = array_filter($filteredRequests, fn($r) => strtotime($r['request_date'] ?? '0') >= $fromTimestamp);
+}
+if (!empty($toDate)) {
+    $toTimestamp = strtotime($toDate . ' 23:59:59');
+    $filteredRequests = array_filter($filteredRequests, fn($r) => strtotime($r['request_date'] ?? '0') <= $toTimestamp);
+}
+
+// Sort by date (newest first)
+usort($filteredRequests, fn($a, $b) => strtotime($b['request_date']) - strtotime($a['request_date']));
+
+// Statistics
+$stats = [
+    'total' => count($requests),
+    'pending' => count(array_filter($requests, fn($r) => ($r['status'] ?? '') === 'pending')),
+    'approved' => count(array_filter($requests, fn($r) => ($r['status'] ?? '') === 'approved')),
+    'rejected' => count(array_filter($requests, fn($r) => ($r['status'] ?? '') === 'rejected')),
+    'returned' => count(array_filter($requests, fn($r) => ($r['status'] ?? '') === 'returned')),
+    'overdue' => count(array_filter($requests, fn($r) => !empty($r['overdue'])))
+];
+
+// Pagination
+$page = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
+$perPage = 15;
+$total = count($filteredRequests);
+$totalPages = ceil($total / $perPage);
+$offset = ($page - 1) * $perPage;
+$paginatedRequests = array_slice($filteredRequests, $offset, $perPage);
+
+// Handle actions
+$message = '';
+$error = '';
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $action = $_POST['action'] ?? '';
+    $requestId = $_POST['request_id'] ?? '';
+    
+    if ($action === 'approve') {
+        if (updateRequestStatus($requestId, 'approved')) {
+            $message = 'Request approved successfully';
+        } else {
+            $error = 'Failed to approve request';
+        }
+    } elseif ($action === 'reject') {
+        $reason = trim($_POST['rejection_reason'] ?? 'No reason provided');
+        if (updateRequestStatus($requestId, 'rejected', ['reason' => $reason])) {
+            $message = 'Request rejected successfully';
+        } else {
+            $error = 'Failed to reject request';
+        }
+    } elseif ($action === 'close') {
+        $notes = trim($_POST['close_notes'] ?? '');
+        if (updateRequestStatus($requestId, 'closed', ['notes' => $notes])) {
+            $message = 'Request closed successfully';
+        } else {
+            $error = 'Failed to close request';
+        }
+    } elseif ($action === 'extend') {
+        $days = intval($_POST['extend_days'] ?? 0);
+        $reason = trim($_POST['extend_reason'] ?? '');
+        if ($days > 0 && extendReturnDate($requestId, $days, $reason)) {
+            $message = "Return date extended by {$days} days";
+        } else {
+            $error = 'Failed to extend return date';
+        }
+    } elseif ($action === 'bulk_approve') {
+        $requestIds = $_POST['request_ids'] ?? [];
+        $count = 0;
+        foreach ($requestIds as $rid) {
+            if (updateRequestStatus($rid, 'approved')) $count++;
+        }
+        $message = "Approved {$count} requests successfully";
+    } elseif ($action === 'bulk_reject') {
+        $requestIds = $_POST['request_ids'] ?? [];
+        $reason = trim($_POST['bulk_rejection_reason'] ?? '');
+        $count = 0;
+        foreach ($requestIds as $rid) {
+            if (updateRequestStatus($rid, 'rejected', ['reason' => $reason])) $count++;
+        }
+        $message = "Rejected {$count} requests successfully";
+    }
+    
+    // Reload data
+    $requests = loadAllRequests();
+    $requests = calculateOverdueStatus($requests);
+    $filteredRequests = $requests;
+    if ($status !== 'all') $filteredRequests = array_filter($filteredRequests, fn($r) => ($r['status'] ?? '') === $status);
+    if (!empty($search)) $filteredRequests = array_filter($filteredRequests, fn($r) => strpos(strtolower($r['book_title'] ?? ''), strtolower($search)) !== false);
+    $paginatedRequests = array_slice($filteredRequests, $offset, $perPage);
+}
+?>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Request Management - OpenShelf Admin</title>
+    <link rel="stylesheet" href="/assets/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        .stats-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        .stat-card {
+            background: white;
+            border-radius: 1rem;
+            padding: 1.25rem;
+            text-align: center;
+            border: 1px solid #e2e8f0;
+            transition: all 0.2s;
+        }
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+        }
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+        .stat-label {
+            color: #64748b;
+            font-size: 0.85rem;
+        }
+        .filters-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        .filter-group {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+        .filter-select {
+            padding: 0.5rem 1rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 2rem;
+            background: white;
+            font-size: 0.85rem;
+            cursor: pointer;
+        }
+        .date-input {
+            padding: 0.5rem 1rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 2rem;
+            font-size: 0.85rem;
+        }
+        .search-box {
+            position: relative;
+        }
+        .search-box input {
+            padding: 0.5rem 1rem 0.5rem 2.5rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 2rem;
+            width: 250px;
+            font-size: 0.85rem;
+        }
+        .search-box i {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+        }
+        .requests-table-container {
+            background: white;
+            border-radius: 1rem;
+            overflow-x: auto;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .requests-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .requests-table th {
+            text-align: left;
+            padding: 1rem;
+            background: #f8fafc;
+            color: #475569;
+            font-weight: 600;
+            font-size: 0.85rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .requests-table td {
+            padding: 1rem;
+            border-bottom: 1px solid #e2e8f0;
+            vertical-align: middle;
+        }
+        .requests-table tr:hover td {
+            background: #f8fafc;
+        }
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.75rem;
+            border-radius: 2rem;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+        .status-pending { background: rgba(245,158,11,0.1); color: #f59e0b; }
+        .status-approved { background: rgba(16,185,129,0.1); color: #10b981; }
+        .status-rejected { background: rgba(239,68,68,0.1); color: #ef4444; }
+        .status-returned { background: rgba(99,102,241,0.1); color: #6366f1; }
+        .status-closed { background: rgba(100,116,139,0.1); color: #475569; }
+        .overdue-badge {
+            background: rgba(239,68,68,0.15);
+            color: #dc2626;
+            font-size: 0.65rem;
+            padding: 0.2rem 0.5rem;
+            border-radius: 1rem;
+            margin-left: 0.5rem;
+        }
+        .action-buttons {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        .action-btn {
+            padding: 0.35rem 0.75rem;
+            border-radius: 0.5rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.7rem;
+            font-weight: 500;
+            color: white;
+        }
+        .action-btn.approve { background: #10b981; }
+        .action-btn.reject { background: #f59e0b; }
+        .action-btn.close { background: #ef4444; }
+        .action-btn.extend { background: #6366f1; }
+        .action-btn.view { background: #64748b; }
+        .action-btn:hover { transform: translateY(-1px); filter: brightness(0.95); }
+        .bulk-bar {
+            background: #f1f5f9;
+            border-radius: 0.75rem;
+            padding: 0.75rem 1rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        .bulk-bar.hidden { display: none; }
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 2rem;
+        }
+        .page-link {
+            padding: 0.5rem 0.75rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.5rem;
+            text-decoration: none;
+            color: #0f172a;
+            font-size: 0.85rem;
+        }
+        .page-link.active {
+            background: #6366f1;
+            border-color: #6366f1;
+            color: white;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        .modal.active { display: flex; }
+        .modal-content {
+            background: white;
+            border-radius: 1rem;
+            max-width: 450px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .modal-header {
+            padding: 1.25rem;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .modal-body { padding: 1.25rem; }
+        .modal-footer {
+            padding: 1.25rem;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            gap: 1rem;
+        }
+        @media (max-width: 768px) {
+            .filters-bar { flex-direction: column; align-items: stretch; }
+            .filter-group { flex-direction: column; }
+            .search-box input { width: 100%; }
+            .requests-table th, .requests-table td { padding: 0.75rem; }
+            .action-buttons { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+    <?php include dirname(__DIR__, 2) . '/includes/admin-header.php'; ?>
+
+    <div class="admin-content">
+        <!-- Page Header -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+            <div>
+                <h1 style="font-size: 1.5rem; font-weight: 700;">Request Management</h1>
+                <p style="color: #64748b;">Manage and moderate all borrow requests</p>
+            </div>
+            <div>
+                <a href="/admin/requests/export.php" class="btn-admin btn-admin-primary" style="display: inline-flex; align-items: center; gap: 0.5rem;">
+                    <i class="fas fa-download"></i> Export Requests
+                </a>
+            </div>
+        </div>
+        
+        <!-- Messages -->
+        <?php if ($message): ?>
+            <div class="alert alert-success" style="background: rgba(16,185,129,0.1); color: #10b981; padding: 1rem; border-radius: 0.75rem; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+                <i class="fas fa-check-circle"></i> <?php echo $message; ?>
+            </div>
+        <?php endif; ?>
+        
+        <?php if ($error): ?>
+            <div class="alert alert-error" style="background: rgba(239,68,68,0.1); color: #ef4444; padding: 1rem; border-radius: 0.75rem; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+                <i class="fas fa-exclamation-circle"></i> <?php echo $error; ?>
+            </div>
+        <?php endif; ?>
+        
+        <!-- Stats Cards -->
+        <div class="stats-cards">
+            <div class="stat-card"><div class="stat-number" style="color: #6366f1;"><?php echo $stats['total']; ?></div><div class="stat-label">Total Requests</div></div>
+            <div class="stat-card"><div class="stat-number" style="color: #f59e0b;"><?php echo $stats['pending']; ?></div><div class="stat-label">Pending</div></div>
+            <div class="stat-card"><div class="stat-number" style="color: #10b981;"><?php echo $stats['approved']; ?></div><div class="stat-label">Approved</div></div>
+            <div class="stat-card"><div class="stat-number" style="color: #ef4444;"><?php echo $stats['rejected']; ?></div><div class="stat-label">Rejected</div></div>
+            <div class="stat-card"><div class="stat-number" style="color: #6366f1;"><?php echo $stats['returned']; ?></div><div class="stat-label">Returned</div></div>
+            <div class="stat-card"><div class="stat-number" style="color: #dc2626;"><?php echo $stats['overdue']; ?></div><div class="stat-label">Overdue</div></div>
+        </div>
+        
+        <!-- Filters -->
+        <div class="filters-bar">
+            <div class="filter-group">
+                <select class="filter-select" id="statusFilter" onchange="applyFilter()">
+                    <option value="all" <?php echo $status === 'all' ? 'selected' : ''; ?>>All Status</option>
+                    <option value="pending" <?php echo $status === 'pending' ? 'selected' : ''; ?>>Pending</option>
+                    <option value="approved" <?php echo $status === 'approved' ? 'selected' : ''; ?>>Approved</option>
+                    <option value="rejected" <?php echo $status === 'rejected' ? 'selected' : ''; ?>>Rejected</option>
+                    <option value="returned" <?php echo $status === 'returned' ? 'selected' : ''; ?>>Returned</option>
+                    <option value="overdue" <?php echo $status === 'overdue' ? 'selected' : ''; ?>>Overdue</option>
+                </select>
+                <input type="date" class="date-input" id="fromDate" value="<?php echo $fromDate; ?>" placeholder="From" onchange="applyFilter()">
+                <input type="date" class="date-input" id="toDate" value="<?php echo $toDate; ?>" placeholder="To" onchange="applyFilter()">
+            </div>
+            <form method="GET" class="search-box" id="searchForm">
+                <i class="fas fa-search"></i>
+                <input type="text" name="search" placeholder="Search by book, borrower, owner..." value="<?php echo htmlspecialchars($search); ?>">
+                <input type="hidden" name="status" id="hiddenStatus" value="<?php echo $status; ?>">
+                <input type="hidden" name="from" id="hiddenFrom" value="<?php echo $fromDate; ?>">
+                <input type="hidden" name="to" id="hiddenTo" value="<?php echo $toDate; ?>">
+            </form>
+        </div>
+        
+        <!-- Bulk Actions Bar -->
+        <div id="bulkBar" class="bulk-bar hidden">
+            <span id="selectedCount">0 selected</span>
+            <div style="display: flex; gap: 0.5rem;">
+                <button class="btn-admin btn-admin-primary" onclick="bulkApprove()">Approve Selected</button>
+                <button class="btn-admin" style="background: #f59e0b; color: white;" onclick="showBulkRejectModal()">Reject Selected</button>
+            </div>
+        </div>
+        
+        <!-- Requests Table -->
+        <div class="requests-table-container">
+            <table class="requests-table">
+                <thead>
+                    <tr><th width="40"><input type="checkbox" id="selectAll" onclick="toggleAll()"></th><th>Book</th><th>Borrower</th><th>Owner</th><th>Request Date</th><th>Due Date</th><th>Status</th><th>Actions</th></tr>
+                </thead>
+                <tbody>
+                    <?php if (empty($paginatedRequests)): ?>
+                        <tr><td colspan="8" style="text-align: center; padding: 3rem;"><i class="fas fa-exchange-alt" style="font-size: 3rem; color: #cbd5e1;"></i><p style="margin-top: 1rem;">No requests found</p></td></tr>
+                    <?php else: ?>
+                        <?php foreach ($paginatedRequests as $request): ?>
+                            <tr>
+                                <td><input type="checkbox" class="request-checkbox" value="<?php echo $request['id']; ?>" onchange="updateSelectedCount()"></td>
+                                <td><div style="font-weight: 500;"><?php echo htmlspecialchars($request['book_title']); ?></div><div style="font-size: 0.7rem; color: #64748b;">by <?php echo htmlspecialchars($request['book_author'] ?? 'Unknown'); ?></div></td>
+                                <td><div><?php echo htmlspecialchars($request['borrower_name']); ?></div><div style="font-size: 0.7rem; color: #64748b;">ID: <?php echo htmlspecialchars($request['borrower_id']); ?></div></td>
+                                <td><div><?php echo htmlspecialchars($request['owner_name']); ?></div><div style="font-size: 0.7rem; color: #64748b;">ID: <?php echo htmlspecialchars($request['owner_id']); ?></div></td>
+                                <td style="font-size: 0.85rem;"><?php echo date('M j, Y', strtotime($request['request_date'])); ?><div style="font-size: 0.7rem; color: #64748b;"><?php echo $request['duration_days'] ?? 14; ?> days</div></td>
+                                <td style="font-size: 0.85rem;">
+                                    <?php if (!empty($request['expected_return_date'])): ?>
+                                        <span><?php echo date('M j, Y', strtotime($request['expected_return_date'])); ?></span>
+                                        <?php if (!empty($request['overdue_days'])): ?><div class="overdue-badge"><?php echo $request['overdue_days']; ?> days overdue</div>
+                                        <?php elseif (!empty($request['days_until_due'])): ?><div style="font-size: 0.65rem; color: #10b981;"><?php echo $request['days_until_due']; ?> days left</div><?php endif; ?>
+                                    <?php else: ?><span class="text-muted">Not set</span><?php endif; ?>
+                                </td>
+                                <td><span class="status-badge status-<?php echo $request['status']; ?>"><?php echo ucfirst($request['status']); ?></span><?php if (!empty($request['overdue'])): ?><span class="overdue-badge">OVERDUE</span><?php endif; ?></td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <?php if ($request['status'] === 'pending'): ?>
+                                            <button class="action-btn approve" onclick="approveRequest('<?php echo $request['id']; ?>')" title="Approve"><i class="fas fa-check"></i> Approve</button>
+                                            <button class="action-btn reject" onclick="showRejectModal('<?php echo $request['id']; ?>')" title="Reject"><i class="fas fa-times"></i> Reject</button>
+                                        <?php endif; ?>
+                                        <?php if (in_array($request['status'], ['approved', 'borrowed'])): ?>
+                                            <button class="action-btn extend" onclick="showExtendModal('<?php echo $request['id']; ?>')" title="Extend"><i class="fas fa-calendar-plus"></i> Extend</button>
+                                            <button class="action-btn close" onclick="showCloseModal('<?php echo $request['id']; ?>')" title="Force Close"><i class="fas fa-lock"></i> Close</button>
+                                        <?php endif; ?>
+                                        <button class="action-btn view" onclick="viewRequest('<?php echo $request['id']; ?>')" title="View"><i class="fas fa-eye"></i> View</button>
+                                    </div>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Pagination -->
+        <?php if ($totalPages > 1): ?>
+            <div class="pagination">
+                <a href="?page=<?php echo max(1, $page - 1); ?>&status=<?php echo $status; ?>&search=<?php echo urlencode($search); ?>&from=<?php echo $fromDate; ?>&to=<?php echo $toDate; ?>" class="page-link <?php echo $page <= 1 ? 'disabled' : ''; ?>"><i class="fas fa-chevron-left"></i></a>
+                <?php for ($i = 1; $i <= min(5, $totalPages); $i++): ?>
+                    <?php if ($i >= $page - 2 && $i <= $page + 2): ?>
+                        <a href="?page=<?php echo $i; ?>&status=<?php echo $status; ?>&search=<?php echo urlencode($search); ?>&from=<?php echo $fromDate; ?>&to=<?php echo $toDate; ?>" class="page-link <?php echo $i === $page ? 'active' : ''; ?>"><?php echo $i; ?></a>
+                    <?php endif; ?>
+                <?php endfor; ?>
+                <?php if ($totalPages > 5 && $page < $totalPages - 2): ?><span class="page-link disabled">...</span><a href="?page=<?php echo $totalPages; ?>&status=<?php echo $status; ?>&search=<?php echo urlencode($search); ?>&from=<?php echo $fromDate; ?>&to=<?php echo $toDate; ?>" class="page-link"><?php echo $totalPages; ?></a><?php endif; ?>
+                <a href="?page=<?php echo min($totalPages, $page + 1); ?>&status=<?php echo $status; ?>&search=<?php echo urlencode($search); ?>&from=<?php echo $fromDate; ?>&to=<?php echo $toDate; ?>" class="page-link <?php echo $page >= $totalPages ? 'disabled' : ''; ?>"><i class="fas fa-chevron-right"></i></a>
+            </div>
+        <?php endif; ?>
+    </div>
+
+    <!-- Reject Modal -->
+    <div id="rejectModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header"><h3><i class="fas fa-times-circle" style="color: #f59e0b;"></i> Reject Request</h3><button onclick="closeModal('rejectModal')" style="background:none;border:none;font-size:1.5rem;cursor:pointer;">&times;</button></div>
+            <form method="POST">
+                <div class="modal-body">
+                    <input type="hidden" name="action" value="reject">
+                    <input type="hidden" name="request_id" id="rejectUserId">
+                    <div class="form-group"><label style="display:block;margin-bottom:0.5rem;font-weight:500;">Reason for Rejection</label><textarea name="rejection_reason" class="form-control-admin" rows="4" required placeholder="Please provide a reason..."></textarea></div>
+                </div>
+                <div class="modal-footer"><button type="submit" class="btn-admin" style="background:#f59e0b;color:white;">Reject Request</button><button type="button" class="btn-admin btn-outline" onclick="closeModal('rejectModal')">Cancel</button></div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Close Modal -->
+    <div id="closeModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header"><h3><i class="fas fa-lock" style="color:#ef4444;"></i> Force Close Request</h3><button onclick="closeModal('closeModal')" style="background:none;border:none;font-size:1.5rem;cursor:pointer;">&times;</button></div>
+            <form method="POST">
+                <div class="modal-body">
+                    <input type="hidden" name="action" value="close">
+                    <input type="hidden" name="request_id" id="closeRequestId">
+                    <div class="form-group"><label style="display:block;margin-bottom:0.5rem;font-weight:500;">Closing Notes</label><textarea name="close_notes" class="form-control-admin" rows="4" placeholder="Add notes about this closure..."></textarea></div>
+                </div>
+                <div class="modal-footer"><button type="submit" class="btn-admin" style="background:#ef4444;color:white;">Force Close</button><button type="button" class="btn-admin btn-outline" onclick="closeModal('closeModal')">Cancel</button></div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Extend Modal -->
+    <div id="extendModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header"><h3><i class="fas fa-calendar-plus" style="color:#6366f1;"></i> Extend Return Date</h3><button onclick="closeModal('extendModal')" style="background:none;border:none;font-size:1.5rem;cursor:pointer;">&times;</button></div>
+            <form method="POST">
+                <div class="modal-body">
+                    <input type="hidden" name="action" value="extend">
+                    <input type="hidden" name="request_id" id="extendRequestId">
+                    <div class="form-group"><label style="display:block;margin-bottom:0.5rem;font-weight:500;">Additional Days</label><input type="number" name="extend_days" class="form-control-admin" min="1" max="90" value="7" required></div>
+                    <div class="form-group"><label style="display:block;margin-bottom:0.5rem;font-weight:500;">Reason (Optional)</label><textarea name="extend_reason" class="form-control-admin" rows="3" placeholder="Why is the extension needed?"></textarea></div>
+                </div>
+                <div class="modal-footer"><button type="submit" class="btn-admin" style="background:#6366f1;color:white;">Extend Return Date</button><button type="button" class="btn-admin btn-outline" onclick="closeModal('extendModal')">Cancel</button></div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Bulk Reject Modal -->
+    <div id="bulkRejectModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header"><h3><i class="fas fa-times-circle" style="color:#f59e0b;"></i> Bulk Reject Requests</h3><button onclick="closeModal('bulkRejectModal')" style="background:none;border:none;font-size:1.5rem;cursor:pointer;">&times;</button></div>
+            <form method="POST">
+                <div class="modal-body">
+                    <input type="hidden" name="action" value="bulk_reject">
+                    <div id="bulkRequestIds"></div>
+                    <div class="form-group"><label style="display:block;margin-bottom:0.5rem;font-weight:500;">Rejection Reason</label><textarea name="bulk_rejection_reason" class="form-control-admin" rows="4" required placeholder="Please provide a reason..."></textarea></div>
+                    <p style="margin-top:1rem;color:#64748b;">This will reject <span id="bulkCount"></span> selected request(s).</p>
+                </div>
+                <div class="modal-footer"><button type="submit" class="btn-admin" style="background:#f59e0b;color:white;">Reject Selected</button><button type="button" class="btn-admin btn-outline" onclick="closeModal('bulkRejectModal')">Cancel</button></div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function applyFilter() {
+            const status = document.getElementById('statusFilter').value;
+            const from = document.getElementById('fromDate').value;
+            const to = document.getElementById('toDate').value;
+            const search = document.querySelector('input[name="search"]').value;
+            window.location.href = `?status=${status}&search=${encodeURIComponent(search)}&from=${from}&to=${to}`;
+        }
+        
+        function approveRequest(requestId) {
+            if (confirm('Approve this request?')) {
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.innerHTML = `<input type="hidden" name="action" value="approve"><input type="hidden" name="request_id" value="${requestId}">`;
+                document.body.appendChild(form);
+                form.submit();
+            }
+        }
+        
+        function showRejectModal(requestId) {
+            document.getElementById('rejectUserId').value = requestId;
+            document.getElementById('rejectModal').classList.add('active');
+        }
+        
+        function showCloseModal(requestId) {
+            document.getElementById('closeRequestId').value = requestId;
+            document.getElementById('closeModal').classList.add('active');
+        }
+        
+        function showExtendModal(requestId) {
+            document.getElementById('extendRequestId').value = requestId;
+            document.getElementById('extendModal').classList.add('active');
+        }
+        
+        function viewRequest(requestId) {
+            window.open(`/requests/?id=${requestId}`, '_blank');
+        }
+        
+        let selectedRequests = new Set();
+        
+        function toggleAll() {
+            const checkboxes = document.querySelectorAll('.request-checkbox');
+            const selectAll = document.getElementById('selectAll');
+            checkboxes.forEach(cb => {
+                cb.checked = selectAll.checked;
+                if (selectAll.checked) selectedRequests.add(cb.value);
+                else selectedRequests.delete(cb.value);
+            });
+            updateSelectedCount();
+        }
+        
+        function updateSelectedCount() {
+            document.querySelectorAll('.request-checkbox').forEach(cb => {
+                if (cb.checked) selectedRequests.add(cb.value);
+                else selectedRequests.delete(cb.value);
+            });
+            const count = selectedRequests.size;
+            const bulkBar = document.getElementById('bulkBar');
+            if (count > 0) {
+                document.getElementById('selectedCount').textContent = count + ' selected';
+                bulkBar.classList.remove('hidden');
+            } else {
+                bulkBar.classList.add('hidden');
+            }
+        }
+        
+        function bulkApprove() {
+            if (selectedRequests.size === 0) return;
+            if (confirm(`Approve ${selectedRequests.size} selected request(s)?`)) {
+                const form = document.createElement('form');
+                form.method = 'POST';
+                let html = '<input type="hidden" name="action" value="bulk_approve">';
+                selectedRequests.forEach(id => html += `<input type="hidden" name="request_ids[]" value="${id}">`);
+                form.innerHTML = html;
+                document.body.appendChild(form);
+                form.submit();
+            }
+        }
+        
+        function showBulkRejectModal() {
+            if (selectedRequests.size === 0) return;
+            document.getElementById('bulkCount').textContent = selectedRequests.size;
+            let html = '';
+            selectedRequests.forEach(id => html += `<input type="hidden" name="request_ids[]" value="${id}">`);
+            document.getElementById('bulkRequestIds').innerHTML = html;
+            document.getElementById('bulkRejectModal').classList.add('active');
+        }
+        
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+        
+        window.addEventListener('click', function(e) {
+            if (e.target.classList.contains('modal')) e.target.classList.remove('active');
+        });
+        
+        let searchTimeout;
+        document.querySelector('.search-box input').addEventListener('input', function() {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => document.getElementById('searchForm').submit(), 500);
+        });
+    </script>
+
+    <?php include dirname(__DIR__, 2) . '/includes/admin-footer.php'; ?>
+</body>
+</html>

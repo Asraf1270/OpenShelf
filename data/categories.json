@@ -1,0 +1,57 @@
+[
+    {
+        "id": 1,
+        "name": "Fiction",
+        "count": 0
+    },
+    {
+        "id": 2,
+        "name": "Non-Fiction",
+        "count": 0
+    },
+    {
+        "id": 3,
+        "name": "Science Fiction",
+        "count": 0
+    },
+    {
+        "id": 4,
+        "name": "Fantasy",
+        "count": 0
+    },
+    {
+        "id": 5,
+        "name": "Mystery",
+        "count": 0
+    },
+    {
+        "id": 6,
+        "name": "Biography",
+        "count": 0
+    },
+    {
+        "id": 7,
+        "name": "History",
+        "count": 0
+    },
+    {
+        "id": 8,
+        "name": "Programming",
+        "count": 0
+    },
+    {
+        "id": 9,
+        "name": "Science",
+        "count": 0
+    },
+    {
+        "id": 10,
+        "name": "Self-Help",
+        "count": 0
+    },
+    {
+        "id": 11,
+        "name": "Test",
+        "count": 0
+    }
+]
