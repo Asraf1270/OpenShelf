@@ -30,7 +30,7 @@ This release, v1.1.0, focuses on comprehensive UI/UX modernizations and crucial 
 
 ---
 
-## ✨ What's New in v1.0.1
+## ✨ What's New in v1.0.0
 
 We've completely overhauled the platform to provide a state-of-the-art experience:
 - 🎨 **Premium UI/UX:** A total redesign using modern glassmorphism, fluid animations, and a rich HSL-based color palette.
