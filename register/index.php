@@ -235,389 +235,533 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <title>Register - OpenShelf</title>
     <link rel="stylesheet" href="/assets/css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        /* Additional registration page specific styles */
+        :root {
+            --primary: #6d28d9;
+            --primary-light: #8b5cf6;
+            --secondary: #0ea5e9;
+            --bg-dark: #0f172a;
+            --glass-bg: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --error: #ef4444;
+            --success: #10b981;
+            --warning: #f59e0b;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
         .registration-container {
-            min-height: calc(100vh - 140px);
+            min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 2rem 1rem;
-        }
-        
-        .registration-card {
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-            width: 100%;
-            max-width: 800px;
-            overflow: hidden;
-        }
-        
-        .registration-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 2rem;
-            text-align: center;
-        }
-        
-        .registration-header h1 {
-            font-size: 2rem;
-            margin-bottom: 0.5rem;
-        }
-        
-        .registration-header p {
-            opacity: 0.9;
-            font-size: 1rem;
-        }
-        
-        .registration-body {
-            padding: 2rem;
-        }
-        
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
-        }
-        
-        .input-group {
+            padding: 3rem 1.5rem;
             position: relative;
+            background: radial-gradient(circle at 100% 0%, rgba(109, 40, 217, 0.1) 0%, transparent 40%),
+                        radial-gradient(circle at 0% 100%, rgba(14, 165, 233, 0.1) 0%, transparent 40%);
+        }
+
+        /* Animated background blobs */
+        .blob {
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            filter: blur(100px);
+            border-radius: 50%;
+            z-index: -1;
+            opacity: 0.1;
+            animation: move 25s infinite alternate;
+        }
+
+        .blob-1 { top: -150px; right: -150px; animation-delay: 0s; }
+        .blob-2 { bottom: -150px; left: -150px; animation-delay: -7s; }
+
+        @keyframes move {
+            from { transform: translate(0, 0) scale(1); }
+            to { transform: translate(-100px, 100px) scale(1.1); }
+        }
+
+        .registration-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid var(--glass-border);
+            border-radius: 28px;
+            width: 100%;
+            max-width: 850px;
+            padding: 3.5rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            animation: fadeInScale 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes fadeInScale {
+            from { opacity: 0; transform: scale(0.98) translateY(20px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        .registration-header {
+            text-align: center;
+            margin-bottom: 3.5rem;
+        }
+
+        .brand-logo {
+            font-size: 3rem;
+            background: linear-gradient(135deg, #fff 0%, #cbd5e1 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+            display: inline-block;
+        }
+
+        .registration-header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            margin-bottom: 0.5rem;
+            color: #fff;
+        }
+
+        .registration-header p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+
+        /* Form Layout */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
             margin-bottom: 1.5rem;
         }
-        
-        .input-group i {
+
+        .form-group {
+            position: relative;
+        }
+
+        .full-width {
+            grid-column: span 2;
+        }
+
+        .input-group {
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .input-group i:not(.toggle-password, .check-icon) {
             position: absolute;
-            left: 1rem;
+            left: 1.25rem;
             top: 50%;
             transform: translateY(-50%);
-            color: #8898aa;
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            pointer-events: none;
         }
-        
+
         .input-group input,
         .input-group select {
             width: 100%;
-            padding: 0.75rem 1rem 0.75rem 2.5rem;
-            border: 2px solid #e9ecef;
-            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--glass-border);
+            border-radius: 14px;
+            padding: 1.1rem 1.25rem 1.1rem 3.25rem;
+            color: #fff;
             font-size: 1rem;
-            transition: all 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        
+
         .input-group input:focus,
         .input-group select:focus {
             outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            border-color: var(--primary-light);
+            background: rgba(255, 255, 255, 0.05);
+            box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.15);
         }
-        
-        .input-group .error-message {
-            color: #f5365c;
+
+        .input-group input:focus + i {
+            color: var(--primary-light);
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        /* Error Messages */
+        .error-message {
+            color: var(--error);
             font-size: 0.85rem;
-            margin-top: 0.25rem;
-            padding-left: 2.5rem;
-        }
-        
-        .password-strength {
             margin-top: 0.5rem;
-            height: 5px;
-            background: #e9ecef;
-            border-radius: 5px;
-            overflow: hidden;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
         }
-        
+
+        /* Alerts */
+        .alert {
+            padding: 1.25rem;
+            border-radius: 16px;
+            margin-bottom: 2.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            animation: slideIn 0.5s ease;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .alert-success {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            color: #6ee7b7;
+        }
+
+        .alert-success .btn-login {
+            background: var(--success);
+            padding: 0.5rem 1rem;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            text-decoration: none;
+            color: white;
+            font-weight: 600;
+            margin-left: auto;
+        }
+
+        /* Password Strength */
+        .password-strength-container {
+            margin-top: 0.75rem;
+        }
+
         .password-strength-bar {
+            height: 6px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 0.75rem;
+        }
+
+        .strength-fill {
             height: 100%;
             width: 0;
-            transition: all 0.3s ease;
+            transition: all 0.4s ease;
         }
-        
-        .strength-weak { width: 33.33%; background: #f5365c; }
-        .strength-medium { width: 66.66%; background: #fb6340; }
-        .strength-strong { width: 100%; background: #2dce89; }
-        
+
+        .strength-weak { background: var(--error); width: 33%; }
+        .strength-medium { background: var(--warning); width: 66%; }
+        .strength-strong { background: var(--success); width: 100%; }
+
         .password-requirements {
-            font-size: 0.85rem;
-            color: #8898aa;
-            margin-top: 0.5rem;
-            padding-left: 2.5rem;
-        }
-        
-        .password-requirements ul {
-            list-style: none;
-            padding: 0;
-            margin: 0.5rem 0 0;
-        }
-        
-        .password-requirements li {
-            margin-bottom: 0.25rem;
-        }
-        
-        .password-requirements li.valid {
-            color: #2dce89;
-        }
-        
-        .password-requirements li i {
-            width: 20px;
-        }
-        
-        .success-alert {
-            background: rgba(45, 206, 137, 0.1);
-            border: 2px solid #2dce89;
-            color: #2dce89;
-            padding: 1rem;
-            border-radius: 10px;
-            margin-bottom: 1.5rem;
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-        
-        .success-alert i {
-            font-size: 2rem;
-        }
-        
-        .success-alert .btn {
-            margin-left: auto;
-            background: #2dce89;
-            color: white;
-            padding: 0.5rem 1rem;
-            border-radius: 5px;
-            text-decoration: none;
-            transition: all 0.3s ease;
-        }
-        
-        .success-alert .btn:hover {
-            background: #28b97b;
-            transform: translateY(-2px);
-        }
-        
-        .error-alert {
-            background: rgba(245, 54, 92, 0.1);
-            border: 2px solid #f5365c;
-            color: #f5365c;
-            padding: 1rem;
-            border-radius: 10px;
-            margin-bottom: 1.5rem;
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-        
-        .terms-checkbox {
-            display: flex;
-            align-items: center;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
             gap: 0.5rem;
-            margin: 1.5rem 0;
+            font-size: 0.8rem;
+            color: var(--text-muted);
         }
-        
-        .terms-checkbox input[type="checkbox"] {
-            width: auto;
+
+        .requirement {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            transition: all 0.2s ease;
         }
-        
-        .terms-checkbox label {
-            color: #8898aa;
-            font-size: 0.9rem;
+
+        .requirement.met {
+            color: var(--success);
         }
-        
-        .terms-checkbox a {
-            color: #667eea;
+
+        /* Terms */
+        .terms-group {
+            margin: 2rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        .custom-checkbox {
+            width: 22px;
+            height: 22px;
+            border: 1px solid var(--glass-border);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background: rgba(255, 255, 255, 0.02);
+            position: relative;
+        }
+
+        .terms-group input { display: none; }
+
+        .terms-group input:checked + .custom-checkbox {
+            background: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .custom-checkbox i {
+            color: #fff;
+            font-size: 0.8rem;
+            display: none;
+        }
+
+        .terms-group input:checked + .custom-checkbox i {
+            display: block;
+        }
+
+        .terms-group a {
+            color: var(--primary-light);
             text-decoration: none;
         }
-        
-        .terms-checkbox a:hover {
-            text-decoration: underline;
-        }
-        
+
+        /* Buttons */
         .btn-register {
             width: 100%;
-            padding: 1rem;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: #fff;
             border: none;
-            border-radius: 10px;
+            border-radius: 14px;
+            padding: 1.25rem;
             font-size: 1.1rem;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            box-shadow: 0 10px 15px -3px rgba(109, 40, 217, 0.3);
         }
-        
-        .btn-register:hover {
+
+        .btn-register:hover:not(:disabled) {
             transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 20px 25px -5px rgba(109, 40, 217, 0.4);
+            filter: brightness(1.1);
         }
-        
+
         .btn-register:disabled {
             opacity: 0.5;
             cursor: not-allowed;
         }
-        
+
+        /* Footer */
         .login-link {
             text-align: center;
-            margin-top: 1.5rem;
-            color: #8898aa;
+            margin-top: 2.5rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--glass-border);
+            color: var(--text-muted);
+            font-size: 1rem;
         }
-        
+
         .login-link a {
-            color: #667eea;
+            color: #fff;
             text-decoration: none;
             font-weight: 600;
+            margin-left: 0.25rem;
+            transition: color 0.2s ease;
         }
-        
+
         .login-link a:hover {
-            text-decoration: underline;
+            color: var(--secondary);
         }
-        
+
+        /* Responsive */
         @media (max-width: 768px) {
-            .form-row {
+            .registration-card {
+                padding: 2.5rem 1.5rem;
+            }
+            .form-grid {
                 grid-template-columns: 1fr;
             }
-            
-            .registration-body {
-                padding: 1.5rem;
+            .full-width {
+                grid-column: span 1;
+            }
+            .password-requirements {
+                grid-template-columns: 1fr;
             }
         }
     </style>
 </head>
 <body>
     <div class="registration-container">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        
         <div class="registration-card">
             <div class="registration-header">
-                <h1><i class="fas fa-book-open"></i> Join OpenShelf</h1>
-                <p>Create your account to start sharing and borrowing books</p>
+                <i class="fas fa-book-open brand-logo"></i>
+                <h1>Join OpenShelf</h1>
+                <p>Create your account and start sharing</p>
             </div>
             
-            <div class="registration-body">
-                <?php if ($success): ?>
-                    <div class="success-alert">
-                        <i class="fas fa-check-circle"></i>
-                        <div>
-                            <strong>Registration Successful!</strong>
-                            <p>Your account has been created and is pending admin approval. You will be able to login once your account is verified.</p>
-                        </div>
-                        <a href="/login/" class="btn">Go to Login</a>
+            <!-- Success/Error Alerts -->
+            <?php if ($success): ?>
+                <div class="alert alert-success">
+                    <i class="fas fa-circle-check fa-2x"></i>
+                    <div>
+                        <strong>Registration Successful!</strong>
+                        <p>Your account is pending admin approval. We'll notify you soon.</p>
                     </div>
-                <?php endif; ?>
-                
-                <?php if (isset($errors['general'])): ?>
-                    <div class="error-alert">
-                        <i class="fas fa-exclamation-circle"></i>
-                        <div>
-                            <strong>Registration Failed!</strong>
-                            <p><?php echo $errors['general']; ?></p>
-                        </div>
+                    <a href="/login/" class="btn-login">Login Hub</a>
+                </div>
+            <?php endif; ?>
+            
+            <?php if (isset($errors['general'])): ?>
+                <div class="alert error-alert">
+                    <i class="fas fa-circle-exclamation fa-2x"></i>
+                    <div>
+                        <strong>Registration Failed!</strong>
+                        <p><?php echo $errors['general']; ?></p>
                     </div>
-                <?php endif; ?>
-                
-                <form method="POST" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" id="registrationForm">
-                    <div class="form-row">
-                        <!-- Full Name -->
+                </div>
+            <?php endif; ?>
+            
+            <form method="POST" action="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" id="registrationForm">
+                <div class="form-grid">
+                    <!-- Full Name -->
+                    <div class="form-group">
                         <div class="input-group">
                             <i class="fas fa-user"></i>
                             <input type="text" name="name" id="name" placeholder="Full Name" 
                                    value="<?php echo htmlspecialchars($name); ?>" required>
-                            <?php if (isset($errors['name'])): ?>
-                                <div class="error-message"><?php echo $errors['name']; ?></div>
-                            <?php endif; ?>
                         </div>
-                        
-                        <!-- Email -->
+                        <?php if (isset($errors['name'])): ?>
+                            <div class="error-message"><i class="fas fa-circle-exclamation"></i> <?php echo $errors['name']; ?></div>
+                        <?php endif; ?>
+                    </div>
+                    
+                    <!-- Email -->
+                    <div class="form-group">
                         <div class="input-group">
                             <i class="fas fa-envelope"></i>
-                            <input type="email" name="email" id="email" placeholder="University Email" 
+                            <input type="email" name="email" id="email" placeholder="University Email (@*.du.ac.bd)" 
                                    value="<?php echo htmlspecialchars($email); ?>" required>
-                            <?php if (isset($errors['email'])): ?>
-                                <div class="error-message"><?php echo $errors['email']; ?></div>
-                            <?php endif; ?>
                         </div>
+                        <?php if (isset($errors['email'])): ?>
+                            <div class="error-message"><i class="fas fa-circle-exclamation"></i> <?php echo $errors['email']; ?></div>
+                        <?php endif; ?>
                     </div>
                     
-                    <div class="form-row">
-                        <!-- Department -->
+                    <!-- Department -->
+                    <div class="form-group">
                         <div class="input-group">
-                            <i class="fas fa-building"></i>
+                            <i class="fas fa-building-columns"></i>
                             <input type="text" name="department" id="department" placeholder="Department" 
                                    value="<?php echo htmlspecialchars($department); ?>" required>
-                            <?php if (isset($errors['department'])): ?>
-                                <div class="error-message"><?php echo $errors['department']; ?></div>
-                            <?php endif; ?>
                         </div>
-                        
-                        <!-- Session -->
-                        <div class="input-group">
-                            <i class="fas fa-calendar"></i>
-                            <input type="text" name="session" id="session" placeholder="Session (e.g., 2023-24)" 
-                                   value="<?php echo htmlspecialchars($session); ?>" required>
-                            <?php if (isset($errors['session'])): ?>
-                                <div class="error-message"><?php echo $errors['session']; ?></div>
-                            <?php endif; ?>
-                        </div>
+                        <?php if (isset($errors['department'])): ?>
+                            <div class="error-message"><i class="fas fa-circle-exclamation"></i> <?php echo $errors['department']; ?></div>
+                        <?php endif; ?>
                     </div>
                     
-                    <div class="form-row">
-                        <!-- Phone -->
+                    <!-- Session -->
+                    <div class="form-group">
+                        <div class="input-group">
+                            <i class="fas fa-calendar-days"></i>
+                            <input type="text" name="session" id="session" placeholder="Session (YYYY-YY)" 
+                                   value="<?php echo htmlspecialchars($session); ?>" required>
+                        </div>
+                        <?php if (isset($errors['session'])): ?>
+                            <div class="error-message"><i class="fas fa-circle-exclamation"></i> <?php echo $errors['session']; ?></div>
+                        <?php endif; ?>
+                    </div>
+                    
+                    <!-- Phone -->
+                    <div class="form-group">
                         <div class="input-group">
                             <i class="fas fa-phone"></i>
                             <input type="tel" name="phone" id="phone" placeholder="Phone Number" 
                                    value="<?php echo htmlspecialchars($phone); ?>" required>
-                            <?php if (isset($errors['phone'])): ?>
-                                <div class="error-message"><?php echo $errors['phone']; ?></div>
-                            <?php endif; ?>
                         </div>
-                        
-                        <!-- Room Number -->
+                        <?php if (isset($errors['phone'])): ?>
+                            <div class="error-message"><i class="fas fa-circle-exclamation"></i> <?php echo $errors['phone']; ?></div>
+                        <?php endif; ?>
+                    </div>
+                    
+                    <!-- Room Number -->
+                    <div class="form-group">
                         <div class="input-group">
                             <i class="fas fa-door-open"></i>
-                            <input type="text" name="roomNumber" id="roomNumber" placeholder="Room Number" 
+                            <input type="text" name="roomNumber" id="roomNumber" placeholder="Room/Hostel Info" 
                                    value="<?php echo htmlspecialchars($roomNumber); ?>" required>
-                            <?php if (isset($errors['roomNumber'])): ?>
-                                <div class="error-message"><?php echo $errors['roomNumber']; ?></div>
-                            <?php endif; ?>
                         </div>
+                        <?php if (isset($errors['roomNumber'])): ?>
+                            <div class="error-message"><i class="fas fa-circle-exclamation"></i> <?php echo $errors['roomNumber']; ?></div>
+                        <?php endif; ?>
                     </div>
                     
                     <!-- Password -->
-                    <div class="input-group">
-                        <i class="fas fa-lock"></i>
-                        <input type="password" name="password" id="password" placeholder="Password" required>
+                    <div class="form-group full-width">
+                        <div class="input-group">
+                            <i class="fas fa-lock"></i>
+                            <input type="password" name="password" id="password" placeholder="Secure Password" required>
+                        </div>
                         <?php if (isset($errors['password'])): ?>
-                            <div class="error-message"><?php echo $errors['password']; ?></div>
+                            <div class="error-message"><i class="fas fa-circle-exclamation"></i> <?php echo $errors['password']; ?></div>
                         <?php endif; ?>
                         
-                        <div class="password-strength">
-                            <div class="password-strength-bar" id="passwordStrength"></div>
-                        </div>
-                        
-                        <div class="password-requirements">
-                            <ul id="passwordRequirements">
-                                <li id="length"><i class="fas fa-circle"></i> At least 8 characters</li>
-                                <li id="uppercase"><i class="fas fa-circle"></i> At least one uppercase letter</li>
-                                <li id="lowercase"><i class="fas fa-circle"></i> At least one lowercase letter</li>
-                                <li id="number"><i class="fas fa-circle"></i> At least one number</li>
-                            </ul>
+                        <div class="password-strength-container">
+                            <div class="password-strength-bar">
+                                <div class="strength-fill" id="strengthFill"></div>
+                            </div>
+                            <div class="password-requirements">
+                                <div class="requirement" id="req-length"><i class="fas fa-circle-dot"></i> 8+ Characters</div>
+                                <div class="requirement" id="req-upper"><i class="fas fa-circle-dot"></i> Uppercase</div>
+                                <div class="requirement" id="req-lower"><i class="fas fa-circle-dot"></i> Lowercase</div>
+                                <div class="requirement" id="req-number"><i class="fas fa-circle-dot"></i> Number</div>
+                            </div>
                         </div>
                     </div>
                     
                     <!-- Confirm Password -->
-                    <div class="input-group">
-                        <i class="fas fa-lock"></i>
-                        <input type="password" name="confirm_password" id="confirm_password" placeholder="Confirm Password" required>
+                    <div class="form-group full-width">
+                        <div class="input-group">
+                            <i class="fas fa-shield"></i>
+                            <input type="password" name="confirm_password" id="confirm_password" placeholder="Confirm Password" required>
+                        </div>
                         <?php if (isset($errors['confirm_password'])): ?>
-                            <div class="error-message"><?php echo $errors['confirm_password']; ?></div>
+                            <div class="error-message"><i class="fas fa-circle-exclamation"></i> <?php echo $errors['confirm_password']; ?></div>
                         <?php endif; ?>
                     </div>
-                    
-                    <!-- Terms and Conditions -->
-                    <div class="terms-checkbox">
-                        <input type="checkbox" name="terms" id="terms" required>
-                        <label for="terms">I agree to the <a href="/terms.php" target="_blank">Terms of Service</a> and <a href="/privacy.php" target="_blank">Privacy Policy</a></label>
-                    </div>
-                    
-                    <!-- Submit Button -->
-                    <button type="submit" class="btn-register" id="submitBtn">
-                        <i class="fas fa-user-plus"></i> Create Account
-                    </button>
-                </form>
+                </div>
+                
+                <!-- Terms -->
+                <div class="terms-group">
+                    <input type="checkbox" name="terms" id="terms" required>
+                    <label for="terms" class="custom-checkbox">
+                        <i class="fas fa-check"></i>
+                    </label>
+                    <label for="terms">I accept the <a href="/terms.php">Terms</a> & <a href="/privacy.php">Privacy</a></label>
+                </div>
+                
+                <button type="submit" class="btn-register" id="submitBtn">
+                    <span class="btn-text">Create Account</span>
+                    <i class="fas fa-user-plus"></i>
+                </button>
+            </form>
+            
+            <div class="login-link">
+                Already part of the community? <a href="/login/">Sign In</a>
+            </div>
+        </div>
+    </div>
                 
                 <div class="login-link">
                     Already have an account? <a href="/login/">Login here</a>
@@ -627,57 +771,41 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
     
     <script>
-        // Client-side password strength checker
-        const password = document.getElementById('password');
-        const confirmPassword = document.getElementById('confirm_password');
-        const strengthBar = document.getElementById('passwordStrength');
-        
-        // Password requirement elements
-        const lengthReq = document.getElementById('length');
-        const uppercaseReq = document.getElementById('uppercase');
-        const lowercaseReq = document.getElementById('lowercase');
-        const numberReq = document.getElementById('number');
-        
         function checkPasswordStrength() {
             const value = password.value;
             
-            // Check requirements
             const hasLength = value.length >= 8;
-            const hasUppercase = /[A-Z]/.test(value);
-            const hasLowercase = /[a-z]/.test(value);
+            const hasUpper = /[A-Z]/.test(value);
+            const hasLower = /[a-z]/.test(value);
             const hasNumber = /\d/.test(value);
             
-            // Update requirement indicators
-            updateRequirement(lengthReq, hasLength);
-            updateRequirement(uppercaseReq, hasUppercase);
-            updateRequirement(lowercaseReq, hasLowercase);
-            updateRequirement(numberReq, hasNumber);
+            updateReq('req-length', hasLength);
+            updateReq('req-upper', hasUpper);
+            updateReq('req-lower', hasLower);
+            updateReq('req-number', hasNumber);
             
-            // Calculate strength
-            const requirements = [hasLength, hasUppercase, hasLowercase, hasNumber];
-            const metCount = requirements.filter(Boolean).length;
+            const met = [hasLength, hasUpper, hasLower, hasNumber].filter(Boolean).length;
+            const fill = document.getElementById('strengthFill');
             
-            // Update strength bar
-            strengthBar.className = 'password-strength-bar';
-            if (value.length === 0) {
-                strengthBar.style.width = '0';
-            } else if (metCount <= 2) {
-                strengthBar.classList.add('strength-weak');
-            } else if (metCount === 3) {
-                strengthBar.classList.add('strength-medium');
+            fill.className = 'strength-fill';
+            if (value.length > 0) {
+                if (met <= 2) fill.classList.add('strength-weak');
+                else if (met === 3) fill.classList.add('strength-medium');
+                else fill.classList.add('strength-strong');
             } else {
-                strengthBar.classList.add('strength-strong');
+                fill.style.width = '0';
             }
         }
         
-        function updateRequirement(element, isValid) {
-            const icon = element.querySelector('i');
-            if (isValid) {
-                element.classList.add('valid');
-                icon.className = 'fas fa-check-circle';
+        function updateReq(id, isMet) {
+            const el = document.getElementById(id);
+            const icon = el.querySelector('i');
+            if (isMet) {
+                el.classList.add('met');
+                icon.className = 'fas fa-circle-check';
             } else {
-                element.classList.remove('valid');
-                icon.className = 'fas fa-circle';
+                el.classList.remove('met');
+                icon.className = 'fas fa-circle-dot';
             }
         }
         
