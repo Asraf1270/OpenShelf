@@ -1,10 +1,22 @@
 # 📚 OpenShelf — Community Library Management System
 
-[![Version](https://img.shields.io/badge/version-1.0.1-blue.svg)](https://github.com/Asraf1270/OpenShelf_V1.0.1)
+[![Version](https://img.shields.io/badge/version-1.1.0-blue.svg)](https://github.com/Asraf1270/OpenShelf_V1.1.0)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![PHP](https://img.shields.io/badge/PHP-7.4%2B-777bb4.svg)](https://www.php.net/)
 
 **OpenShelf** is a modern, open-source library management system designed for communities, universities, and book clubs. It empowers users to share, borrow, and manage books effortlessly through a **premium, glassmorphic interface** that feels alive and responsive.
+
+---
+
+## ✨ What's New in v1.1.0
+
+This release, v1.1.0, focuses on comprehensive UI/UX modernizations and crucial functional fixes to elevate the OpenShelf experience:
+- 🎨 **Complete UI Modernization:** Implemented a unified premium, glassmorphic design language across Authentication (Login/Register), Book Details, Profile Editing, and About pages.
+- 📱 **Mobile-First Enhancements:** Introduced responsive two-column grid layouts for book listings on mobile devices, ensuring a seamless experience on any screen.
+- 📧 **Borrow Request Emails:** Fixed and fully integrated automated email notifications to alert book owners when their books are requested.
+- 🐛 **Profile Picture & Upload Fixes:** Resolved display issues with user avatars in the header and fixed profile picture upload bugs during profile editing.
+- ✨ **Interactive Aesthetics:** Added smooth, scroll-triggered animations, interactive hover states, and a consistent HSL-based styling system throughout the platform.
+- 🔍 **Advanced Filtering:** Added the ability to select multiple categories simultaneously on the Book Listing page.
 
 ---
 
