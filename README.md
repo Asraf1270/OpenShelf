@@ -59,8 +59,8 @@ We've completely overhauled the platform to provide a state-of-the-art experienc
 
 ### 1. Clone the Repository
 ```bash
-git clone https://github.com/Asraf1270/OpenShelf_V1.0.1.git
-cd OpenShelf_V1.0.1
+git clone https://github.com/Asraf1270/OpenShelf.git
+cd OpenShelf
 ```
 
 ### 2. Configure Environment
