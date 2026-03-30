@@ -12,6 +12,16 @@ define('BOOKS_DATA_PATH', dirname(__DIR__) . '/data/book/');
 define('USERS_PATH', dirname(__DIR__) . '/users/');
 define('BASE_URL', 'https://openshelf.free.nf');
 
+// Initialize mailer
+$mailer = null;
+try {
+    require_once dirname(__DIR__) . '/vendor/autoload.php';
+    $mailer = new Mailer();
+} catch (Exception $e) {
+    error_log("❌ Mailer initialization failed in book/index.php: " . $e->getMessage());
+}
+
+
 // Get book ID from URL
 $bookId = $_GET['id'] ?? '';
 if (empty($bookId)) {
@@ -192,6 +202,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     if ($_POST['action'] === 'borrow' && $canBorrow) {
         $requestsFile = DATA_PATH . 'borrow_requests.json';
         $requests = file_exists($requestsFile) ? json_decode(file_get_contents($requestsFile), true) : [];
+        if (!is_array($requests)) $requests = [];
+
         
         $requestId = 'REQ' . time() . bin2hex(random_bytes(4));
         $duration = intval($_POST['duration'] ?? 14);
@@ -245,6 +257,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 $currentUserName . ' wants to borrow "' . $book['title'] . '"',
                 '/requests/?id=' . $requestId
             );
+            
+            // Send email notification to owner
+            if ($mailer && !empty($owner['personal_info']['email'])) {
+                $borrower = loadUserData($currentUserId);
+                $mailer->sendTemplate(
+                    $owner['personal_info']['email'],
+                    $owner['personal_info']['name'] ?? 'Owner',
+                    'borrow_request',
+                    [
+                        'owner_name' => $owner['personal_info']['name'] ?? 'Owner',
+                        'borrower_name' => $currentUserName,
+                        'book_title' => $book['title'],
+                        'book_author' => $book['author'],
+                        'duration_days' => $duration,
+                        'message' => $message,
+                        'request_id' => $requestId,
+                        'borrower_department' => $borrower['personal_info']['department'] ?? 'N/A',
+                        'borrower_session' => $borrower['personal_info']['session'] ?? 'N/A',
+                        'borrower_room' => $borrower['personal_info']['room_number'] ?? 'N/A',
+                        'borrower_phone' => $borrower['personal_info']['phone'] ?? 'N/A',
+                        'base_url' => BASE_URL,
+                        'subject' => 'New Borrow Request: ' . $book['title']
+                    ]
+                );
+            }
+
             
             $borrowMessage = 'Request sent successfully!';
             $hasRequested = true;

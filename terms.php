@@ -16,67 +16,116 @@ include 'includes/header.php';
     <link rel="stylesheet" href="/assets/css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
+
+        :root {
+            --primary: #6366f1;
+            --primary-light: #818cf8;
+            --bg: #f8fafc;
+            --glass-bg: rgba(255, 255, 255, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.4);
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --shadow-premium: 0 20px 40px -15px rgba(0, 0, 0, 0.1);
+            --radius-lg: 24px;
+            --radius-xl: 32px;
+            --transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        body {
+            background-color: var(--bg);
+            font-family: 'Outfit', system-ui, -apple-system, sans-serif;
+            color: var(--text-main);
+            line-height: 1.6;
+        }
+
         .terms-page {
-            max-width: 800px;
+            max-width: 900px;
             margin: 0 auto;
-            padding: 2rem 1rem;
+            padding: 4rem 1.5rem;
         }
 
         .hero-section {
             text-align: center;
-            margin-bottom: 2rem;
+            margin-bottom: 4rem;
         }
 
         .hero-section h1 {
-            font-size: 2.5rem;
-            font-weight: 700;
-            background: linear-gradient(135deg, #0f172a, #6366f1);
+            font-size: clamp(2.5rem, 5vw, 3.5rem);
+            font-weight: 800;
+            letter-spacing: -1px;
+            background: linear-gradient(135deg, #0f172a 0%, #6366f1 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             margin-bottom: 1rem;
         }
 
+        .hero-section p {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+        }
+
         .terms-content {
-            background: white;
-            padding: 2rem;
-            border-radius: 1rem;
-            border: 1px solid var(--border);
+            background: var(--glass-bg);
+            backdrop-filter: blur(25px);
+            padding: 4rem;
+            border-radius: var(--radius-xl);
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--shadow-premium);
         }
 
         .terms-section {
-            margin-bottom: 2rem;
+            margin-bottom: 3rem;
         }
 
         .terms-section h2 {
-            font-size: 1.25rem;
-            font-weight: 600;
-            margin-bottom: 1rem;
-            color: var(--text-primary);
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .terms-section h2::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--primary);
+            border-radius: 4px;
         }
 
         .terms-section p {
-            color: var(--text-secondary);
-            line-height: 1.6;
+            color: #475569;
+            line-height: 1.8;
             margin-bottom: 1rem;
+            font-size: 1.05rem;
         }
 
         .terms-section ul {
             margin-left: 1.5rem;
-            margin-bottom: 1rem;
-            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+            color: #475569;
         }
 
         .terms-section li {
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.75rem;
         }
 
         .last-updated {
             text-align: center;
-            color: var(--text-tertiary);
-            font-size: 0.8rem;
-            margin-top: 2rem;
-            padding-top: 1rem;
-            border-top: 1px solid var(--border);
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(226, 232, 240, 0.5);
+            font-weight: 500;
+        }
+
+        @media (max-width: 768px) {
+            .terms-page { padding: 2rem 1rem; }
+            .terms-content { padding: 2rem; }
         }
     </style>
 </head>

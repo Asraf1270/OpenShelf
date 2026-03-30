@@ -1,294 +1,131 @@
-# OpenShelf - Community Library Management System
+# 📚 OpenShelf — Community Library Management System
 
-A modern, open-source library management system designed for communities, universities, and book clubs. OpenShelf enables users to share, borrow, and manage books effortlessly with a beautiful, animated interface.
+[![Version](https://img.shields.io/badge/version-1.0.1-blue.svg)](https://github.com/Asraf1270/OpenShelf_V1.0.1)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![PHP](https://img.shields.io/badge/PHP-7.4%2B-777bb4.svg)](https://www.php.net/)
 
-## 🌟 Features
+**OpenShelf** is a modern, open-source library management system designed for communities, universities, and book clubs. It empowers users to share, borrow, and manage books effortlessly through a **premium, glassmorphic interface** that feels alive and responsive.
 
-### For Users
-- **User Registration & Authentication**: Secure email-based registration with university domain verification
-- **Book Catalog**: Browse a comprehensive catalog of shared books with detailed information
-- **Book Sharing**: Add your own books to the library and manage your collection
-- **Borrowing System**: Request to borrow books from other community members with automated notifications
-- **User Profiles**: Create and customize your profile with reading preferences
-- **Announcements**: Stay updated with community announcements and library news
-- **Notifications**: Real-time notifications for borrow requests, approvals, and returns
-- **Feed System**: View activity feed and community interactions
-- **Contact & Support**: Built-in contact form and FAQ section
+---
 
-### For Administrators
-- **Admin Dashboard**: Comprehensive dashboard with real-time statistics and charts
-- **User Management**: Manage user accounts, approve registrations, and suspend users
-- **Book Management**: Monitor all books, verify entries, and manage categories
-- **Borrow Request Management**: Review and approve book borrow requests
-- **Announcements Management**: Create and manage community announcements
-- **Activity Logs**: Track all system activities and user actions
-- **Backup & Restore**: Automated backup and restore functionality for data safety
-- **Reports & Analytics**: Generate reports on library usage and statistics
+## ✨ What's New in v1.0.1
+
+We've completely overhauled the platform to provide a state-of-the-art experience:
+- 🎨 **Premium UI/UX:** A total redesign using modern glassmorphism, fluid animations, and a rich HSL-based color palette.
+- 📱 **Mobile-First Excellence:** Every feature is now optimized for mobile devices, ensuring a seamless experience on any screen size.
+- 📧 **Automated Borrow Notifications:** Integrated email system to alert owners instantly when someone wants to borrow their book.
+- 🔍 **Multi-Category Search:** Find your next read faster with advanced filtering across multiple genres simultaneously.
+- ⚡ **Performance Boost:** Smarter JSON data handling for lightning-fast book discovery and user interactions.
+
+---
+
+## 🌟 Key Features
+
+### 👤 For Users
+- **Secure Registration:** Email-based authentication with university domain verification.
+- **Glassmorphic Catalog:** Browse books through an elegant, interactive grid layout.
+- **Easy Sharing:** Add your own books with custom cover uploads in seconds.
+- **Smart Requests:** Request books directly with automated email alerts to the owner.
+- **Personalized Profiles:** A beautiful split-screen UI to manage your shared books and reading history.
+- **Real-time Notifications:** Stay updated with in-app alerts for borrows, approvals, and community news.
+
+### 🛡️ For Administrators
+- **Dynamic Dashboard:** Real-time statistics with interactive charts and system health monitoring.
+- **Full Moderation:** Manage users, verify book entries, and oversee borrow requests.
+- **Announcement Engine:** Broadcast community-wide updates with premium styling.
+- **Audit Logs:** Track every system activity for complete transparency and security.
+- **One-Click Backups:** Automated data safety tools to keep your library's information secure.
+
+---
 
 ## 🛠️ Tech Stack
+- **Backend:** PHP 7.4+ (Clean, modular architecture)
+- **Frontend:** Modern HTML5, CSS3 (Custom properties/variables), Vanilla JavaScript
+- **Styling:** Premium Glassmorphism, HSL color system, fluid animations
+- **Storage:** High-performance JSON-based file system (No SQL database required!)
+- **Communication:** PHPMailer with SMTP integration (Brevo/SendGrid/Gmail)
 
-- **Backend**: PHP 7.4+
-- **Frontend**: HTML5, CSS3, JavaScript
-- **Data Storage**: JSON-based file storage (no database required)
-- **Email Service**: PHPMailer with SMTP (Brevo/Sendinblue)
-- **Server**: Apache/Nginx with PHP support
+---
 
 ## 📋 System Requirements
+- **PHP:** 7.4 or higher
+- **Server:** Apache/Nginx (with PHP support)
+- **Permissions:** Read/write access for `/data`, `/uploads`, `/logs`, and `/sessions`
+- **Mail:** SMTP credentials for automated notifications
 
-- PHP 7.4 or higher
-- Web server (Apache/Nginx)
-- Read/write permissions for `/data`, `/uploads`, `/logs`, and `/sessions` directories
-- SMTP credentials for email notifications (optional but recommended)
-- 100MB+ storage space
+---
 
-## 🚀 Installation
+## 🚀 Installation & Setup
 
-### 1. Download/Clone the Repository
+### 1. Clone the Repository
 ```bash
-git clone <repository-url>
-cd openshelf_like_final
+git clone https://github.com/Asraf1270/OpenShelf_V1.0.1.git
+cd OpenShelf_V1.0.1
 ```
 
-### 2. Configure Environment Variables
-Create a `.env` file in the root directory with your SMTP credentials:
-
-```env
-SMTP_USERNAME=your-smtp-username@smtp-provider.com
-SMTP_PASSWORD=your-smtp-password
+### 2. Configure Environment
+Create a `.env` file in the root directory by copying the example:
+```bash
+cp .env.example .env
 ```
+Open `.env` and fill in your details:
+- **SMTP Settings:** Host, Port, Secure, Username, Password.
+- **Email Settings:** From Address, From Name, Reply-To, and Admin Email.
+- **App Settings:** App Name, URL, and Debug mode.
 
 ### 3. Set File Permissions
+Ensure the web server can write to the following directories:
 ```bash
 chmod 755 data/ uploads/ logs/ sessions/ backups/
 chmod 644 data/*.json uploads/book_cover/ uploads/profile/
 ```
 
-### 4. Update Configuration Files
-Edit `config/mail.php` and update:
-- SMTP server settings
-- Email sender address and name
-- Reply-to email address
+### 4. Configuration
+- Edit `config/mail.php` to update SMTP host, sender name, and reply-to address.
+- Update the `BASE_URL` in its respective configuration files to match your domain (e.g., `https://yourdomain.com`).
 
-### 5. Set Base URL
-Update the `BASE_URL` constant in registration, login, and other files to match your domain:
-```php
-define('BASE_URL', 'https://yourdomain.com');
-```
-
-### 6. Create First Admin (Optional)
-Edit the admin login or use database tools to add the first admin account to `data/admins.json`
-
-### 7. Access the Application
-- **User Interface**: `https://yourdomain.com`
-- **Admin Panel**: `https://yourdomain.com/admin/`
-
-## 📁 Directory Structure
-
-```
-openshelf/
-├── admin/                    # Admin panel and management features
-│   ├── dashboard/           # Admin dashboard
-│   ├── users/               # User management
-│   ├── books/               # Book management
-│   ├── requests/            # Borrow request management
-│   ├── announcements/       # Announcements management
-│   ├── reports/             # Reports and exports
-│   └── logs/                # Activity logs
-├── api/                     # API endpoints for dynamic features
-├── assets/                  # Frontend assets
-│   ├── css/                 # Stylesheets
-│   └── js/                  # JavaScript files
-├── config/                  # Configuration files
-├── data/                    # JSON data storage (⚠️ Keep backup!)
-│   ├── users.json
-│   ├── books.json
-│   ├── borrow_requests.json
-│   ├── announcements.json
-│   ├── notifications.json
-│   └── categories.json
-├── includes/                # Shared PHP include files
-│   ├── header.php
-│   ├── footer.php
-│   └── navbar.php
-├── lib/                     # Library classes
-│   └── Mailer.php          # Email handling class
-├── uploads/                 # User uploads
-│   ├── book_cover/         # Book cover images
-│   └── profile/            # Profile pictures
-├── emails/                  # Email template files
-├── logs/                    # System and activity logs
-├── backups/                 # Automated backups
-└── vendor/                  # Composer dependencies
-
-```
-
-## 🔧 Configuration
-
-### Email Setup
-1. Sign up with an email service provider (e.g., Brevo, SendGrid, Gmail)
-2. Get your SMTP credentials
-3. Update `.env` file with your credentials
-4. Verify sender email address with the provider
-
-### User Registration Constraints
-By default, the system requires a university email domain. To change this:
-1. Edit `register/index.php`
-2. Modify the `validateEmail()` function to accept your desired email pattern
-
-### Categories
-Edit `data/categories.json` to add or modify book categories
-
-## 📖 Usage Guide
-
-### For Users
-
-1. **Register**: Visit `/register/` and create an account with your email
-2. **Browse Books**: View all available books on the home page or `/books/`
-3. **Add Books**: Go to `/add-book/` to share your books
-4. **Borrow Books**: Click "Borrow" on any book and wait for owner approval
-5. **Return Books**: Use `/return-book/` to complete a borrow transaction
-6. **View Requests**: Check `/requests/` to see all borrow requests
-
-### For Admins
-
-1. **Login**: Navigate to `/admin/login/` with admin credentials
-2. **Dashboard**: View statistics and activity reports
-3. **User Management**: Approve users, suspend accounts, view profiles
-4. **Book Management**: Verify and manage book listings
-5. **Approvals**: Review and approve/reject borrow requests
-6. **Generate Reports**: Export data and view analytics
-7. **Backup**: Create and restore backups from admin panel
-
-## 🔐 Security Considerations
-
-- ✅ Email-based user verification
-- ✅ Session-based authentication
-- ✅ Data stored in JSON files (not exposed to web)
-- ⚠️ Regularly backup `/data` directory
-- ⚠️ Use HTTPS in production
-- ⚠️ Keep `.env` and sensitive files out of version control
-- ⚠️ Set appropriate file permissions (644 for data, 755 for directories)
-
-## 📧 Email Notifications
-
-The system automatically sends emails for:
-- Account registration and approval/rejection
-- Book borrow requests and approvals
-- Book return reminders
-- Overdue notifications
-- New announcements
-- System notifications
-
-## 🔄 Backup & Restore
-
-### Automatic Backups
-- Located in `/backups/` directory
-- Backups include all JSON data files
-- Access via Admin Panel → Backup & Restore
-
-### Manual Backup
-```bash
-cp -r data/ data_backup_$(date +%Y%m%d)/
-```
-
-### Restore
-1. Go to Admin Panel → Backup & Restore
-2. Select backup date and click "Restore"
-
-## 🐛 Troubleshooting
-
-### Issues with Emails Not Sending
-- Verify SMTP credentials in `.env`
-- Check if SMTP provider requires port changes (usually 587 for TLS)
-- Verify sender email is confirmed with provider
-- Check `/logs/` for error messages
-
-### Registration Not Working
-- Verify email validation pattern matches your domain
-- Check file permissions on `/data/` directory
-- Ensure PHP can write to `/data/` directory
-
-### Books Not Displaying
-- Check if `data/books.json` exists and is readable
-- Verify JSON syntax is valid
-- Check `books/` directory permissions
-
-### Session Issues
-- Ensure `/sessions/` directory has write permissions
-- Check PHP session configuration
-- Clear sessions folder if experiencing login issues
-
-## 📝 Features in Detail
-
-### Book Management
-- Add books with title, author, ISBN, category, description
-- Upload book cover images
-- Track book availability status
-- View borrowing history per book
-- Categorize books for easy discovery
-
-### Borrow System
-- Request to borrow available books
-- Owner receives notification of requests
-- Admin can approve/reject requests
-- Automatic reminders for returns
-- View borrow history and favorites
-
-### Admin Features
-- Real-time dashboard with animations
-- User approval workflow
-- Borrow request management
-- Content moderation
-- Activity logging for audit trails
-- Export reports as files
-
-## 🤝 Contributing
-
-Contributions are welcome! Feel free to:
-- Report bugs
-- Suggest features
-- Submit pull requests
-- Improve documentation
-
-## 📄 License
-
-This project is open source and available under the MIT License.
-
-## 📞 Support
-
-For issues, questions, or suggestions:
-- Email: support@openshelf.free.nf
-- Submit feedback via: `/contact/`
-- Check FAQs: `/faq.php`
-
-## 🎨 Customization
-
-The system is easily customizable:
-- Modify colors in `assets/css/style.css`
-- Change branding in `includes/header.php`
-- Update email templates in `emails/` directory
-- Customize dashboard in `admin/dashboard/index.php`
-
-## 📚 Additional Pages
-
-- **About**: `/about.php` - Information about OpenShelf
-- **FAQ**: `/faq.php` - Frequently asked questions
-- **Guidelines**: `/guidelines.php` - Community guidelines
-- **Privacy Policy**: `/privacy.php` - Data privacy information
-- **Terms of Service**: `/terms.php` - Terms and conditions
-- **Contact**: `/contact.php` - Contact form
-
-## Future Enhancements
-
-- [ ] Database migration support
-- [ ] Advanced search and filtering
-- [ ] Rating and review system
-- [ ] Wishlist feature
-- [ ] User recommendations
-- [ ] Mobile application
-- [ ] Real-time notifications (WebSockets)
-- [ ] Integration with library management standards
+### 5. Launch
+Navigate to your server's URL. For the admin panel, visit `/admin/`.
 
 ---
 
-**OpenShelf** - Making book sharing simple and accessible to everyone! 📚✨
+## 📁 Directory Structure
+```
+openshelf/
+├── admin/            # Comprehensive management dashboard
+├── api/              # Dynamic endpoints for frontend interactions
+├── assets/           # Premium CSS, JS, and design tokens
+├── data/             # Optimized JSON storage (⚠️ Keep this secure/backed up)
+├── includes/         # Shared UI components (header, footer, nav)
+├── uploads/          # User-uploaded covers and profile media
+├── backups/          # Automatically generated system snapshots
+└── vendor/           # Composer dependencies
+```
+
+---
+
+## 🧪 Security Standards
+- ✅ **Domain-Locked Registration:** Prevent unauthorized access by restricting email domains.
+- ✅ **Encrypted Sessions:** Secure user state management.
+- ✅ **Data Isolation:** JSON storage is structured to be inaccessible from direct web requests.
+- ✅ **Environment Protection:** Sensitive API keys and passwords are kept out of version control via `.env`.
+
+---
+
+## 🤝 Contributing
+Contributions are welcome! Whether it's reporting bugs, suggesting features, or submitting pull requests, we value community input. Check out our contributing guidelines for more details.
+
+---
+
+## 📄 License
+This project is open-source and released under the **MIT License**.
+
+---
+
+## 📞 Support & Community
+- **Email:** support@openshelf.free.nf
+- **Feedback:** Use the built-in `/contact.php` form
+- **FAQ:** Check `/faq.php` for common questions
+
+---
+**OpenShelf** — Empowering communities, one shared book at a time. 📚✨

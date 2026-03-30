@@ -205,291 +205,348 @@ $paginatedUsers = array_slice($filteredUsers, $offset, $perPage);
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
         /* User Management Styles */
-        .stats-cards {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
-            margin-bottom: 2rem;
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2.5rem;
+            flex-wrap: wrap;
+            gap: 1.5rem;
         }
-        
+
+        .header-title h1 {
+            font-size: 2rem;
+            font-weight: 800;
+            letter-spacing: -1px;
+            color: var(--text-main);
+            margin-bottom: 0.5rem;
+        }
+
+        .header-title p {
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
         .stat-card {
             background: white;
-            border-radius: 1rem;
-            padding: 1.25rem;
+            border-radius: 20px;
+            padding: 1.5rem;
             text-align: center;
-            border: 1px solid #e2e8f0;
-            transition: all 0.2s;
+            border: 1px solid #f1f5f9;
+            transition: var(--transition);
         }
-        
+
         .stat-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px -5px rgba(0,0,0,0.05);
         }
-        
-        .stat-number {
-            font-size: 2rem;
-            font-weight: 700;
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 800;
             margin-bottom: 0.25rem;
+            letter-spacing: -1.5px;
         }
-        
+
         .stat-label {
-            color: #64748b;
+            color: var(--text-muted);
             font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
-        
+
         .filters-bar {
             display: flex;
             justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
-            gap: 1rem;
-            margin-bottom: 1.5rem;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: white;
+            border-radius: 20px;
+            border: 1px solid #f1f5f9;
         }
-        
+
         .filter-tabs {
             display: flex;
-            gap: 0.5rem;
+            gap: 0.75rem;
             flex-wrap: wrap;
         }
-        
+
         .filter-tab {
-            padding: 0.5rem 1.25rem;
-            border-radius: 2rem;
+            padding: 0.6rem 1.25rem;
+            border-radius: 12px;
             text-decoration: none;
-            font-size: 0.85rem;
-            font-weight: 500;
-            transition: all 0.2s;
-            background: white;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: var(--transition);
+            background: #f8fafc;
             border: 1px solid #e2e8f0;
-            color: #0f172a;
+            color: #475569;
         }
-        
+
         .filter-tab:hover {
-            border-color: #6366f1;
-            color: #6366f1;
+            background: #f1f5f9;
+            border-color: var(--primary);
+            color: var(--primary);
         }
-        
+
         .filter-tab.active {
-            background: #6366f1;
-            border-color: #6366f1;
+            background: var(--primary);
+            border-color: var(--primary);
             color: white;
+            box-shadow: 0 8px 16px rgba(99, 102, 241, 0.2);
         }
-        
+
         .search-box {
             position: relative;
         }
-        
+
         .search-box input {
-            padding: 0.5rem 1rem 0.5rem 2.5rem;
+            padding: 0.75rem 1rem 0.75rem 2.75rem;
             border: 1px solid #e2e8f0;
-            border-radius: 2rem;
-            width: 250px;
-            font-size: 0.85rem;
+            border-radius: 14px;
+            width: 320px;
+            font-size: 0.9rem;
+            font-family: inherit;
+            transition: var(--transition);
         }
-        
+
+        .search-box input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+        }
+
         .search-box i {
             position: absolute;
-            left: 1rem;
+            left: 1.1rem;
             top: 50%;
             transform: translateY(-50%);
             color: #94a3b8;
+            font-size: 1rem;
         }
-        
-        .users-table-container {
+
+        .table-container {
             background: white;
-            border-radius: 1rem;
+            border-radius: 24px;
             overflow-x: auto;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid #f1f5f9;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+            margin-bottom: 2rem;
+            -webkit-overflow-scrolling: touch;
         }
-        
+
         .users-table {
             width: 100%;
             border-collapse: collapse;
         }
-        
+
         .users-table th {
             text-align: left;
-            padding: 1rem;
+            padding: 1.25rem 1.5rem;
             background: #f8fafc;
-            color: #475569;
-            font-weight: 600;
-            font-size: 0.85rem;
-            border-bottom: 1px solid #e2e8f0;
+            color: #64748b;
+            font-weight: 700;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 1px solid #f1f5f9;
         }
-        
+
         .users-table td {
-            padding: 1rem;
-            border-bottom: 1px solid #e2e8f0;
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid #f1f5f9;
             vertical-align: middle;
+            color: var(--text-main);
+            font-size: 0.95rem;
         }
-        
+
+        .users-table tr:last-child td {
+            border-bottom: none;
+        }
+
         .users-table tr:hover td {
-            background: #f8fafc;
+            background: #fcfdfe;
         }
-        
-        .user-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+
+        .user-info {
             display: flex;
             align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: 600;
+            gap: 1rem;
         }
-        
+
+        .user-avatar {
+            width: 44px; height: 44px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            display: flex; align-items: center; justify-content: center;
+            color: white; font-weight: 700;
+            font-size: 1.1rem;
+            flex-shrink: 0;
+        }
+
+        .user-name { font-weight: 700; margin-bottom: 2px; }
+        .user-email { font-size: 0.8rem; color: var(--text-muted); font-weight: 500; }
+
         .status-badge {
             display: inline-flex;
             align-items: center;
-            padding: 0.25rem 0.75rem;
-            border-radius: 2rem;
-            font-size: 0.7rem;
-            font-weight: 600;
+            padding: 0.4rem 0.85rem;
+            border-radius: 10px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
-        
-        .status-active {
-            background: rgba(16, 185, 129, 0.1);
-            color: #10b981;
-        }
-        
-        .status-pending {
-            background: rgba(245, 158, 11, 0.1);
-            color: #f59e0b;
-        }
-        
-        .status-rejected {
-            background: rgba(239, 68, 68, 0.1);
-            color: #ef4444;
-        }
-        
+
+        .status-active { background: rgba(16, 185, 129, 0.1); color: #10b981; }
+        .status-pending { background: rgba(245, 158, 11, 0.1); color: #f59e0b; }
+        .status-rejected { background: rgba(239, 68, 68, 0.1); color: #ef4444; }
+
         .action-buttons {
             display: flex;
-            gap: 0.5rem;
+            gap: 0.6rem;
         }
-        
+
         .action-btn {
-            width: 32px;
-            height: 32px;
-            border-radius: 0.5rem;
+            width: 38px; height: 38px;
+            border-radius: 10px;
             display: inline-flex;
             align-items: center;
             justify-content: center;
             border: none;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: var(--transition);
             color: white;
+            font-size: 1rem;
         }
-        
-        .action-btn.approve { background: #10b981; }
-        .action-btn.reject { background: #f59e0b; }
-        .action-btn.delete { background: #ef4444; }
-        .action-btn.view { background: #6366f1; }
-        
+
+        .action-btn.approve { background: #10b981; box-shadow: 0 4px 10px rgba(16, 185, 129, 0.2); }
+        .action-btn.reject { background: #f59e0b; box-shadow: 0 4px 10px rgba(245, 158, 11, 0.2); }
+        .action-btn.delete { background: #ef4444; box-shadow: 0 4px 10px rgba(239, 68, 68, 0.2); }
+        .action-btn.view { background: var(--primary); box-shadow: 0 4px 10px rgba(99, 102, 241, 0.2); }
+
         .action-btn:hover {
-            transform: translateY(-2px);
+            transform: translateY(-3px);
+            filter: brightness(1.1);
         }
-        
+
         .bulk-bar {
-            background: #f1f5f9;
-            border-radius: 0.75rem;
-            padding: 0.75rem 1rem;
-            margin-bottom: 1rem;
+            background: #1e293b;
+            color: white;
+            border-radius: 16px;
+            padding: 1rem 1.5rem;
+            margin-bottom: 1.5rem;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 1rem;
+            animation: slideIn 0.3s ease-out;
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.2);
         }
-        
-        .bulk-bar.hidden {
-            display: none;
+
+        @keyframes slideIn {
+            from { transform: translateY(-10px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
         }
-        
+
+        .bulk-bar.hidden { display: none; }
+
         .pagination {
             display: flex;
             justify-content: center;
-            gap: 0.5rem;
-            margin-top: 2rem;
+            gap: 0.75rem;
+            margin-top: 3rem;
         }
-        
+
         .page-link {
-            padding: 0.5rem 0.75rem;
+            padding: 0.75rem 1.1rem;
             border: 1px solid #e2e8f0;
-            border-radius: 0.5rem;
+            border-radius: 12px;
             text-decoration: none;
-            color: #0f172a;
-            font-size: 0.85rem;
+            color: #475569;
+            font-size: 0.9rem;
+            font-weight: 600;
+            background: white;
+            transition: var(--transition);
         }
-        
+
         .page-link.active {
-            background: #6366f1;
-            border-color: #6366f1;
+            background: var(--primary);
+            border-color: var(--primary);
             color: white;
+            box-shadow: 0 8px 16px rgba(99, 102, 241, 0.2);
         }
-        
+
+        .page-link:hover:not(.active) {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
         .modal {
             display: none;
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(15, 23, 42, 0.4);
+            backdrop-filter: blur(8px);
             align-items: center;
             justify-content: center;
-            z-index: 1000;
+            z-index: 2000;
+            padding: 1.5rem;
         }
-        
-        .modal.active {
-            display: flex;
-        }
-        
+
+        .modal.active { display: flex; }
+
         .modal-content {
             background: white;
-            border-radius: 1rem;
-            max-width: 450px;
-            width: 90%;
-            max-height: 90vh;
-            overflow-y: auto;
+            border-radius: 24px;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            overflow: hidden;
+            animation: modalIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
         }
-        
+
+        @keyframes modalIn {
+            from { transform: scale(0.95); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
         .modal-header {
-            padding: 1.25rem;
-            border-bottom: 1px solid #e2e8f0;
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid #f1f5f9;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
-        
-        .modal-body {
-            padding: 1.25rem;
-        }
-        
+
+        .modal-header h3 { font-weight: 800; letter-spacing: -0.5px; }
+
+        .modal-body { padding: 2rem; }
+
         .modal-footer {
-            padding: 1.25rem;
-            border-top: 1px solid #e2e8f0;
+            padding: 1.5rem 2rem;
+            background: #f8fafc;
             display: flex;
             gap: 1rem;
+            justify-content: flex-end;
         }
-        
+
         @media (max-width: 768px) {
-            .filters-bar {
-                flex-direction: column;
-                align-items: stretch;
-            }
-            
-            .search-box input {
-                width: 100%;
-            }
-            
-            .users-table th, .users-table td {
-                padding: 0.75rem;
-            }
-            
-            .action-buttons {
-                flex-direction: column;
-            }
+            .page-header { margin-bottom: 1.5rem; }
+            .filters-bar { padding: 1rem; }
+            .search-box input { width: 100%; }
+            .action-buttons { flex-wrap: wrap; }
         }
     </style>
 </head>
@@ -498,13 +555,13 @@ $paginatedUsers = array_slice($filteredUsers, $offset, $perPage);
 
     <div class="admin-content">
         <!-- Page Header -->
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
-            <div>
-                <h1 style="font-size: 1.5rem; font-weight: 700;">User Management</h1>
-                <p style="color: #64748b;">Manage and moderate user accounts</p>
+        <div class="page-header">
+            <div class="header-title">
+                <h1>User Management</h1>
+                <p>Manage and moderate user accounts with precision</p>
             </div>
             <div>
-                <a href="/admin/users/export.php" class="btn-admin btn-admin-primary" style="display: inline-flex; align-items: center; gap: 0.5rem;">
+                <a href="/admin/users/export.php" class="btn-admin btn-admin-primary">
                     <i class="fas fa-download"></i> Export Users
                 </a>
             </div>
@@ -523,22 +580,22 @@ $paginatedUsers = array_slice($filteredUsers, $offset, $perPage);
             </div>
         <?php endif; ?>
         
-        <!-- Stats Cards -->
-        <div class="stats-cards">
+        <!-- Stats Grid -->
+        <div class="stats-grid">
             <div class="stat-card">
-                <div class="stat-number" style="color: #6366f1;"><?php echo count($users); ?></div>
+                <div class="stat-value" style="color: var(--primary);"><?php echo count($users); ?></div>
                 <div class="stat-label">Total Users</div>
             </div>
             <div class="stat-card">
-                <div class="stat-number" style="color: #10b981;"><?php echo count($approvedUsers); ?></div>
-                <div class="stat-label">Active</div>
+                <div class="stat-value" style="color: #10b981;"><?php echo count($approvedUsers); ?></div>
+                <div class="stat-label">Active Users</div>
             </div>
             <div class="stat-card">
-                <div class="stat-number" style="color: #f59e0b;"><?php echo count($pendingUsers); ?></div>
-                <div class="stat-label">Pending</div>
+                <div class="stat-value" style="color: #f59e0b;"><?php echo count($pendingUsers); ?></div>
+                <div class="stat-label">Pending Review</div>
             </div>
             <div class="stat-card">
-                <div class="stat-number" style="color: #ef4444;"><?php echo count($rejectedUsers); ?></div>
+                <div class="stat-value" style="color: #ef4444;"><?php echo count($rejectedUsers); ?></div>
                 <div class="stat-label">Rejected</div>
             </div>
         </div>
@@ -577,7 +634,7 @@ $paginatedUsers = array_slice($filteredUsers, $offset, $perPage);
         </div>
         
         <!-- Users Table -->
-        <div class="users-table-container">
+        <div class="table-container">
             <table class="users-table">
                 <thead>
                     <tr>
@@ -607,14 +664,14 @@ $paginatedUsers = array_slice($filteredUsers, $offset, $perPage);
                                 <td>
                                     <input type="checkbox" class="user-checkbox" value="<?php echo $user['id']; ?>" onchange="updateSelectedCount()">
                                 </td>
-                                <td>
-                                    <div style="display: flex; align-items: center; gap: 0.75rem;">
+                                 <td>
+                                    <div class="user-info">
                                         <div class="user-avatar">
                                             <?php echo strtoupper(substr($user['name'] ?? 'U', 0, 1)); ?>
                                         </div>
                                         <div>
-                                            <div style="font-weight: 600;"><?php echo htmlspecialchars($user['name'] ?? 'Unknown'); ?></div>
-                                            <div style="font-size: 0.75rem; color: #64748b;"><?php echo htmlspecialchars($user['email'] ?? ''); ?></div>
+                                            <div class="user-name"><?php echo htmlspecialchars($user['name'] ?? 'Unknown'); ?></div>
+                                            <div class="user-email"><?php echo htmlspecialchars($user['email'] ?? ''); ?></div>
                                         </div>
                                     </div>
                                 </td>

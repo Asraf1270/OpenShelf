@@ -215,49 +215,52 @@ if ($hour < 12) {
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         /* Dashboard Specific Styles */
+        :root {
+            --chart-primary: #6366f1;
+            --chart-secondary: #a855f7;
+            --chart-success: #10b981;
+            --chart-warning: #f59e0b;
+            --chart-danger: #ef4444;
+        }
+
         .dashboard-stats {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 1.5rem;
-            margin-bottom: 2rem;
+            margin-bottom: 2.5rem;
         }
 
         .stat-card {
             background: white;
-            border-radius: 1.5rem;
-            padding: 1.5rem;
+            border-radius: 24px;
+            padding: 2rem;
             display: flex;
             align-items: center;
-            gap: 1rem;
-            transition: all 0.3s ease;
-            border: 1px solid #e2e8f0;
+            gap: 1.5rem;
+            transition: var(--transition);
+            border: 1px solid #f1f5f9;
             position: relative;
             overflow: hidden;
-        }
-
-        .stat-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 4px;
-            background: linear-gradient(90deg, var(--primary), var(--accent));
+            box-shadow: 0 1px 3px rgba(0,0,0,0.02);
         }
 
         .stat-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);
+            transform: translateY(-8px);
+            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.05);
+            border-color: rgba(99, 102, 241, 0.2);
         }
 
         .stat-icon {
-            width: 60px;
-            height: 60px;
-            border-radius: 1rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.8rem;
+            width: 70px; height: 70px;
+            border-radius: 20px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 2rem;
+            flex-shrink: 0;
+            transition: var(--transition);
+        }
+
+        .stat-card:hover .stat-icon {
+            transform: scale(1.1) rotate(5deg);
         }
 
         .stat-info {
@@ -265,280 +268,266 @@ if ($hour < 12) {
         }
 
         .stat-value {
-            font-size: 2rem;
-            font-weight: 700;
-            line-height: 1.2;
+            font-size: 2.25rem;
+            font-weight: 800;
+            line-height: 1;
+            letter-spacing: -1px;
+            color: var(--text-main);
+            margin-bottom: 0.25rem;
         }
 
         .stat-label {
-            color: #64748b;
-            font-size: 0.85rem;
-            margin-top: 0.25rem;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .stat-change {
-            font-size: 0.75rem;
+            font-size: 0.8rem;
             margin-top: 0.5rem;
             display: flex;
             align-items: center;
-            gap: 0.25rem;
+            gap: 0.35rem;
+            font-weight: 700;
         }
 
-        .trend-up {
-            color: #10b981;
+        .trend-up { color: #10b981; }
+        .trend-down { color: #ef4444; }
+
+        /* Welcome Banner */
+        .welcome-banner {
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #312e81 100%);
+            border-radius: 30px;
+            padding: 3.5rem;
+            margin-bottom: 2.5rem;
+            color: white;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 20px 40px -10px rgba(15, 23, 42, 0.3);
         }
 
-        .trend-down {
-            color: #ef4444;
+        .welcome-banner::before {
+            content: '';
+            position: absolute;
+            top: -50%; right: -20%;
+            width: 500px; height: 500px;
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .welcome-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 0.75rem;
+            letter-spacing: -1.5px;
+        }
+
+        .welcome-text {
+            font-size: 1.1rem;
+            opacity: 0.8;
+            max-width: 600px;
+            line-height: 1.6;
+        }
+
+        .date-badge {
+            position: absolute;
+            top: 2rem; right: 2rem;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 0.6rem 1.25rem;
+            border-radius: 14px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         /* Charts Row */
         .charts-row {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 1.5rem;
-            margin-bottom: 2rem;
+            gap: 2rem;
+            margin-bottom: 2.5rem;
         }
 
         .chart-card {
             background: white;
-            border-radius: 1.5rem;
-            padding: 1.5rem;
-            border: 1px solid #e2e8f0;
+            border-radius: 24px;
+            padding: 2rem;
+            border: 1px solid #f1f5f9;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.02);
         }
 
         .chart-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 1rem;
-            padding-bottom: 0.75rem;
-            border-bottom: 1px solid #e2e8f0;
+            margin-bottom: 2rem;
         }
 
         .chart-title {
-            font-weight: 600;
-            font-size: 1rem;
+            font-weight: 800;
+            font-size: 1.25rem;
+            color: var(--text-main);
+            letter-spacing: -0.5px;
         }
 
         .chart-container {
-            height: 280px;
+            height: 320px;
             position: relative;
         }
 
         /* Quick Actions */
+        .quick-actions-section {
+            margin-bottom: 3rem;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            color: var(--text-main);
+            letter-spacing: -1px;
+        }
+
         .quick-actions {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
-            margin-bottom: 2rem;
+            gap: 1.5rem;
         }
 
         .action-card {
             background: white;
-            border-radius: 1rem;
-            padding: 1rem;
+            border-radius: 20px;
+            padding: 1.5rem;
             text-align: center;
-            transition: all 0.3s ease;
-            border: 1px solid #e2e8f0;
+            transition: var(--transition);
+            border: 1px solid #f1f5f9;
             text-decoration: none;
             color: inherit;
         }
 
         .action-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
-            border-color: #6366f1;
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px -5px rgba(0,0,0,0.05);
+            border-color: var(--primary);
+            background: var(--bg-body);
         }
 
         .action-icon {
-            width: 48px;
-            height: 48px;
+            width: 56px; height: 56px;
             background: linear-gradient(135deg, #6366f1, #8b5cf6);
-            border-radius: 1rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 0.75rem;
+            border-radius: 16px;
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 1rem;
             color: white;
-            font-size: 1.2rem;
+            font-size: 1.4rem;
+            box-shadow: 0 8px 16px rgba(99, 102, 241, 0.3);
         }
 
-        .action-title {
-            font-weight: 600;
-            font-size: 0.9rem;
+        .action-title { font-weight: 700; font-size: 1rem; }
+        .action-desc { font-size: 0.8rem; color: var(--text-muted); margin-top: 0.35rem; }
+
+        /* Sidebar for activity */
+        .activity-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
         }
 
-        .action-desc {
-            font-size: 0.7rem;
-            color: #64748b;
-            margin-top: 0.25rem;
+        .activity-feed {
+            background: white;
+            border-radius: 24px;
+            padding: 2rem;
+            border: 1px solid #f1f5f9;
         }
 
-        /* Categories */
-        .categories-list {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-            margin-top: 1rem;
-        }
-
-        .category-tag {
-            background: #f1f5f9;
-            padding: 0.5rem 1rem;
-            border-radius: 2rem;
-            font-size: 0.8rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .category-count {
-            background: #6366f1;
-            color: white;
-            padding: 0.15rem 0.5rem;
-            border-radius: 1rem;
-            font-size: 0.7rem;
-        }
-
-        /* Activity Feed */
         .activity-list {
             display: flex;
             flex-direction: column;
-            gap: 0.75rem;
+            gap: 1rem;
         }
 
         .activity-item {
             display: flex;
             align-items: center;
-            gap: 1rem;
-            padding: 0.75rem;
+            gap: 1.25rem;
+            padding: 1.25rem;
             background: #f8fafc;
-            border-radius: 1rem;
-            transition: all 0.2s ease;
+            border-radius: 16px;
+            transition: var(--transition);
+            border: 1px solid transparent;
         }
 
         .activity-item:hover {
-            background: #f1f5f9;
-            transform: translateX(4px);
+            background: white;
+            border-color: #e2e8f0;
+            transform: translateX(8px);
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05);
         }
 
         .activity-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 0.75rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
+            width: 48px; height: 48px;
+            border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            color: white; font-size: 1.1rem;
+            flex-shrink: 0;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         }
 
-        .activity-content {
-            flex: 1;
-        }
+        .activity-content { flex: 1; }
+        .activity-title { font-weight: 700; font-size: 0.95rem; color: var(--text-main); }
+        .activity-desc { font-size: 0.85rem; color: var(--text-muted); margin-top: 0.25rem; }
+        .activity-time { font-size: 0.75rem; font-weight: 600; color: #94a3b8; }
 
-        .activity-title {
-            font-weight: 600;
-            font-size: 0.85rem;
-        }
-
-        .activity-desc {
-            font-size: 0.75rem;
-            color: #64748b;
-            margin-top: 0.2rem;
-        }
-
-        .activity-time {
-            font-size: 0.7rem;
-            color: #94a3b8;
-            white-space: nowrap;
-        }
-
-        /* Welcome Banner */
-        .welcome-banner {
-            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
-            border-radius: 1.5rem;
+        /* Category Card */
+        .category-card {
+            background: white;
+            border-radius: 24px;
             padding: 2rem;
-            margin-bottom: 2rem;
+            border: 1px solid #f1f5f9;
+        }
+
+        .category-tag {
+            background: #f1f5f9;
+            padding: 0.6rem 1rem;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 0.75rem;
+            transition: var(--transition);
+        }
+
+        .category-tag:hover {
+            background: #e2e8f0;
+            transform: scale(1.02);
+        }
+
+        .category-count {
+            background: var(--primary);
             color: white;
-            position: relative;
-            overflow: hidden;
+            padding: 0.2rem 0.6rem;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            font-weight: 800;
         }
 
-        .welcome-banner::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            right: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
-            animation: rotate 20s linear infinite;
+        @media (max-width: 1200px) {
+            .activity-grid { grid-template-columns: 1fr; }
         }
 
-        @keyframes rotate {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-
-        .welcome-title {
-            font-size: 1.5rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-            position: relative;
-        }
-
-        .welcome-text {
-            opacity: 0.9;
-            position: relative;
-        }
-
-        .date-badge {
-            position: absolute;
-            top: 2rem;
-            right: 2rem;
-            background: rgba(255,255,255,0.2);
-            padding: 0.5rem 1rem;
-            border-radius: 2rem;
-            font-size: 0.8rem;
-        }
-
-        /* Responsive */
         @media (max-width: 1024px) {
-            .charts-row {
-                grid-template-columns: 1fr;
-            }
+            .charts-row { grid-template-columns: 1fr; }
         }
 
         @media (max-width: 768px) {
-            .dashboard-stats {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 1rem;
-            }
-            
-            .stat-card {
-                padding: 1rem;
-            }
-            
-            .stat-value {
-                font-size: 1.5rem;
-            }
-            
-            .welcome-banner {
-                padding: 1.5rem;
-            }
-            
-            .date-badge {
-                position: static;
-                margin-top: 1rem;
-                display: inline-block;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .dashboard-stats {
-                grid-template-columns: 1fr;
-            }
+            .welcome-banner { padding: 2rem; }
+            .welcome-title { font-size: 1.75rem; }
+            .dashboard-stats { grid-template-columns: 1fr; }
+            .date-badge { position: static; margin-bottom: 1rem; display: inline-block; }
         }
     </style>
 </head>
@@ -586,13 +575,13 @@ if ($hour < 12) {
             </div>
             
             <div class="stat-card">
-                <div class="stat-icon" style="background: rgba(16, 185, 129, 0.1); color: #10b981;">
+                <div class="stat-icon" style="background: rgba(139, 92, 246, 0.1); color: #8b5cf6;">
                     <i class="fas fa-check-circle"></i>
                 </div>
                 <div class="stat-info">
                     <div class="stat-value"><?php echo number_format($availableBooks); ?></div>
                     <div class="stat-label">Available Books</div>
-                    <div class="stat-change text-success">
+                    <div class="stat-change" style="color: #8b5cf6">
                         <i class="fas fa-percent"></i> <?php echo $totalBooks > 0 ? round($availableBooks / $totalBooks * 100) : 0; ?>% of total
                     </div>
                 </div>
@@ -637,8 +626,8 @@ if ($hour < 12) {
                     <div class="stat-value"><?php echo number_format($totalRequests); ?></div>
                     <div class="stat-label">Total Requests</div>
                     <div class="stat-change">
-                        <span class="text-success"><?php echo $approvedRequests; ?> approved</span>
-                        <span class="text-danger"> • <?php echo $rejectedRequests; ?> rejected</span>
+                        <span class="trend-up"><?php echo $approvedRequests; ?> approved</span>
+                        <span class="trend-down"> • <?php echo $rejectedRequests; ?> rejected</span>
                     </div>
                 </div>
             </div>
@@ -676,8 +665,7 @@ if ($hour < 12) {
         <div class="charts-row">
             <div class="chart-card">
                 <div class="chart-header">
-                    <h3 class="chart-title">📈 User Growth (Last 30 Days)</h3>
-                    <i class="fas fa-chart-line" style="color: #6366f1;"></i>
+                    <h3 class="chart-title">📈 User Growth</h3>
                 </div>
                 <div class="chart-container">
                     <canvas id="userGrowthChart"></canvas>
@@ -686,8 +674,7 @@ if ($hour < 12) {
             
             <div class="chart-card">
                 <div class="chart-header">
-                    <h3 class="chart-title">📚 Book Growth (Last 30 Days)</h3>
-                    <i class="fas fa-chart-bar" style="color: #10b981;"></i>
+                    <h3 class="chart-title">📚 Book Activity</h3>
                 </div>
                 <div class="chart-container">
                     <canvas id="bookGrowthChart"></canvas>
@@ -696,64 +683,47 @@ if ($hour < 12) {
         </div>
 
         <!-- Quick Actions -->
-        <div class="quick-actions">
-            <a href="/admin/users/?status=pending" class="action-card">
-                <div class="action-icon"><i class="fas fa-user-check"></i></div>
-                <div class="action-title">Approve Users</div>
-                <div class="action-desc"><?php echo $pendingUsers; ?> pending approvals</div>
-            </a>
-            <a href="/admin/books/" class="action-card">
-                <div class="action-icon"><i class="fas fa-book"></i></div>
-                <div class="action-title">Manage Books</div>
-                <div class="action-desc"><?php echo $totalBooks; ?> books in library</div>
-            </a>
-            <a href="/admin/requests/?status=pending" class="action-card">
-                <div class="action-icon"><i class="fas fa-exchange-alt"></i></div>
-                <div class="action-title">Review Requests</div>
-                <div class="action-desc"><?php echo $pendingRequests; ?> pending requests</div>
-            </a>
-            <a href="/admin/announcements/" class="action-card">
-                <div class="action-icon"><i class="fas fa-bullhorn"></i></div>
-                <div class="action-title">Post Announcement</div>
-                <div class="action-desc">Send update to all users</div>
-            </a>
-            <a href="/admin/reports/" class="action-card">
-                <div class="action-icon"><i class="fas fa-chart-pie"></i></div>
-                <div class="action-title">View Reports</div>
-                <div class="action-desc">Analytics & insights</div>
-            </a>
-            <a href="/admin/backup/" class="action-card">
-                <div class="action-icon"><i class="fas fa-database"></i></div>
-                <div class="action-title">Backup Data</div>
-                <div class="action-desc">Secure your data</div>
-            </a>
+        <div class="quick-actions-section">
+            <h2 class="section-title">⚡ Quick Actions</h2>
+            <div class="quick-actions">
+                <a href="/admin/users/?status=pending" class="action-card">
+                    <div class="action-icon"><i class="fas fa-user-check"></i></div>
+                    <div class="action-title">Approve Users</div>
+                    <div class="action-desc"><?php echo $pendingUsers; ?> pending approvals</div>
+                </a>
+                <a href="/admin/books/" class="action-card">
+                    <div class="action-icon" style="background: linear-gradient(135deg, #10b981, #059669);"><i class="fas fa-book"></i></div>
+                    <div class="action-title">Manage Books</div>
+                    <div class="action-desc"><?php echo $totalBooks; ?> books in library</div>
+                </a>
+                <a href="/admin/requests/?status=pending" class="action-card">
+                    <div class="action-icon" style="background: linear-gradient(135deg, #f59e0b, #d97706);"><i class="fas fa-exchange-alt"></i></div>
+                    <div class="action-title">Review Requests</div>
+                    <div class="action-desc"><?php echo $pendingRequests; ?> pending requests</div>
+                </a>
+                <a href="/admin/announcements/" class="action-card">
+                    <div class="action-icon" style="background: linear-gradient(135deg, #0ea5e9, #0284c7);"><i class="fas fa-bullhorn"></i></div>
+                    <div class="action-title">Post Announcement</div>
+                    <div class="action-desc">Send update to all users</div>
+                </a>
+                <a href="/admin/reports/" class="action-card">
+                    <div class="action-icon" style="background: linear-gradient(135deg, #ec4899, #db2777);"><i class="fas fa-chart-pie"></i></div>
+                    <div class="action-title">View Reports</div>
+                    <div class="action-desc">Analytics & insights</div>
+                </a>
+                <a href="/admin/backup/" class="action-card">
+                    <div class="action-icon" style="background: linear-gradient(135deg, #64748b, #475569);"><i class="fas fa-database"></i></div>
+                    <div class="action-title">Backup Data</div>
+                    <div class="action-desc">Secure your data</div>
+                </a>
+            </div>
         </div>
 
-        <!-- Bottom Section -->
-        <div class="charts-row">
-            <div class="chart-card">
-                <div class="chart-header">
-                    <h3 class="chart-title">🏷️ Top Categories</h3>
-                    <i class="fas fa-tags" style="color: #f59e0b;"></i>
-                </div>
-                <div class="categories-list">
-                    <?php if (empty($topCategories)): ?>
-                        <p style="color: #64748b;">No categories data available yet.</p>
-                    <?php else: ?>
-                        <?php foreach ($topCategories as $category => $count): ?>
-                            <div class="category-tag">
-                                <?php echo htmlspecialchars($category); ?>
-                                <span class="category-count"><?php echo $count; ?></span>
-                            </div>
-                        <?php endforeach; ?>
-                    <?php endif; ?>
-                </div>
-            </div>
-            
-            <div class="chart-card">
+        <div class="activity-grid">
+            <div class="activity-feed">
                 <div class="chart-header">
                     <h3 class="chart-title">🕐 Recent Activity</h3>
-                    <a href="/admin/logs/" style="font-size: 0.7rem; color: #6366f1;">View all</a>
+                    <a href="/admin/logs/" style="font-size: 0.85rem; font-weight: 600; color: var(--primary); text-decoration: none;">View all</a>
                 </div>
                 <div class="activity-list">
                     <?php foreach ($recentActivities as $activity): ?>
@@ -770,8 +740,8 @@ if ($hour < 12) {
                                 $time = strtotime($activity['timestamp']);
                                 $diff = time() - $time;
                                 if ($diff < 60) echo 'Just now';
-                                elseif ($diff < 3600) echo floor($diff / 60) . ' min ago';
-                                elseif ($diff < 86400) echo floor($diff / 3600) . ' hours ago';
+                                elseif ($diff < 3600) echo floor($diff / 60) . 'm ago';
+                                elseif ($diff < 86400) echo floor($diff / 3600) . 'h ago';
                                 else echo date('M j', $time);
                                 ?>
                             </div>
@@ -779,37 +749,53 @@ if ($hour < 12) {
                     <?php endforeach; ?>
                 </div>
             </div>
+
+            <div class="category-card">
+                <div class="chart-header">
+                    <h3 class="chart-title">🏷️ Top Categories</h3>
+                </div>
+                <div class="categories-list">
+                    <?php if (empty($topCategories)): ?>
+                        <p style="color: #64748b;">No categories data available yet.</p>
+                    <?php else: ?>
+                        <?php foreach ($topCategories as $category => $count): ?>
+                            <div class="category-tag">
+                                <span><?php echo htmlspecialchars($category); ?></span>
+                                <span class="category-count"><?php echo $count; ?></span>
+                            </div>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
+                </div>
+            </div>
         </div>
     </div>
 
     <script>
-        // User Growth Chart Data
-        const userGrowthLabels = <?php echo json_encode(array_keys($userGrowth)); ?>;
-        const userGrowthData = <?php echo json_encode(array_values($userGrowth)); ?>;
-        
-        // Book Growth Chart Data
-        const bookGrowthData = <?php echo json_encode(array_values($bookGrowth)); ?>;
-        
+        // Set chart default font to Outfit
+        Chart.defaults.font.family = "'Outfit', sans-serif";
+        Chart.defaults.color = '#64748b';
+
         // User Growth Chart
         new Chart(document.getElementById('userGrowthChart'), {
             type: 'line',
             data: {
-                labels: userGrowthLabels.map(d => {
+                labels: <?php echo json_encode(array_keys($userGrowth)); ?>.map(d => {
                     const date = new Date(d);
                     return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
                 }),
                 datasets: [{
                     label: 'New Users',
-                    data: userGrowthData,
+                    data: <?php echo json_encode(array_values($userGrowth)); ?>,
                     borderColor: '#6366f1',
                     backgroundColor: 'rgba(99, 102, 241, 0.1)',
                     fill: true,
                     tension: 0.4,
-                    pointRadius: 2,
-                    pointBackgroundColor: '#6366f1',
-                    pointBorderColor: '#ffffff',
+                    pointRadius: 4,
+                    pointBackgroundColor: '#ffffff',
+                    pointBorderColor: '#6366f1',
                     pointBorderWidth: 2,
-                    pointHoverRadius: 6
+                    pointHoverRadius: 6,
+                    pointHoverBackgroundColor: '#6366f1'
                 }]
             },
             options: {
@@ -817,11 +803,22 @@ if ($hour < 12) {
                 maintainAspectRatio: false,
                 plugins: {
                     legend: { display: false },
-                    tooltip: { mode: 'index', intersect: false }
+                    tooltip: { 
+                        backgroundColor: '#0f172a',
+                        padding: 12,
+                        cornerRadius: 12,
+                        titleFont: { size: 14, weight: 'bold' }
+                    }
                 },
                 scales: {
-                    y: { beginAtZero: true, grid: { color: '#e2e8f0' } },
-                    x: { grid: { display: false } }
+                    y: { 
+                        beginAtZero: true, 
+                        grid: { color: '#f1f5f9' },
+                        ticks: { stepSize: 1 }
+                    },
+                    x: { 
+                        grid: { display: false }
+                    }
                 }
             }
         });
@@ -830,17 +827,16 @@ if ($hour < 12) {
         new Chart(document.getElementById('bookGrowthChart'), {
             type: 'bar',
             data: {
-                labels: userGrowthLabels.map(d => {
+                labels: <?php echo json_encode(array_keys($userGrowth)); ?>.map(d => {
                     const date = new Date(d);
                     return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
                 }),
                 datasets: [{
                     label: 'New Books',
-                    data: bookGrowthData,
-                    backgroundColor: 'rgba(16, 185, 129, 0.7)',
-                    borderRadius: 8,
-                    barPercentage: 0.6,
-                    categoryPercentage: 0.8
+                    data: <?php echo json_encode(array_values($bookGrowth)); ?>,
+                    backgroundColor: '#10b981',
+                    borderRadius: 12,
+                    barPercentage: 0.5
                 }]
             },
             options: {
@@ -848,11 +844,21 @@ if ($hour < 12) {
                 maintainAspectRatio: false,
                 plugins: {
                     legend: { display: false },
-                    tooltip: { mode: 'index', intersect: false }
+                    tooltip: { 
+                        backgroundColor: '#0f172a',
+                        padding: 12,
+                        cornerRadius: 12
+                    }
                 },
                 scales: {
-                    y: { beginAtZero: true, grid: { color: '#e2e8f0' } },
-                    x: { grid: { display: false } }
+                    y: { 
+                        beginAtZero: true, 
+                        grid: { color: '#f1f5f9' },
+                        ticks: { stepSize: 1 }
+                    },
+                    x: { 
+                        grid: { display: false }
+                    }
                 }
             }
         });

@@ -16,85 +16,136 @@ include 'includes/header.php';
     <link rel="stylesheet" href="/assets/css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
+
+        :root {
+            --primary: #6366f1;
+            --primary-light: #818cf8;
+            --bg: #f8fafc;
+            --glass-bg: rgba(255, 255, 255, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.4);
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --shadow-premium: 0 20px 40px -15px rgba(0, 0, 0, 0.1);
+            --radius-lg: 24px;
+            --radius-xl: 32px;
+            --transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        body {
+            background-color: var(--bg);
+            font-family: 'Outfit', system-ui, -apple-system, sans-serif;
+            color: var(--text-main);
+            line-height: 1.6;
+        }
+
         .guidelines-page {
-            max-width: 800px;
+            max-width: 900px;
             margin: 0 auto;
-            padding: 2rem 1rem;
+            padding: 4rem 1.5rem;
         }
 
         .hero-section {
             text-align: center;
-            margin-bottom: 2rem;
+            margin-bottom: 4rem;
         }
 
         .hero-section h1 {
-            font-size: 2.5rem;
-            font-weight: 700;
-            background: linear-gradient(135deg, #0f172a, #6366f1);
+            font-size: clamp(2.5rem, 5vw, 3.5rem);
+            font-weight: 800;
+            letter-spacing: -1px;
+            background: linear-gradient(135deg, #0f172a 0%, #6366f1 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             margin-bottom: 1rem;
         }
 
+        .hero-section p {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+        }
+
         .guidelines-content {
-            background: white;
-            padding: 2rem;
-            border-radius: 1rem;
-            border: 1px solid var(--border);
+            background: var(--glass-bg);
+            backdrop-filter: blur(25px);
+            padding: 4rem;
+            border-radius: var(--radius-xl);
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--shadow-premium);
         }
 
         .guideline-section {
-            margin-bottom: 2rem;
+            margin-bottom: 3rem;
         }
 
         .guideline-section h2 {
-            font-size: 1.25rem;
-            font-weight: 600;
-            margin-bottom: 1rem;
-            color: var(--text-primary);
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .guideline-section h2::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: var(--primary);
+            border-radius: 4px;
         }
 
         .guideline-section p {
-            color: var(--text-secondary);
-            line-height: 1.6;
+            color: #475569;
+            line-height: 1.8;
             margin-bottom: 1rem;
+            font-size: 1.05rem;
         }
 
         .guideline-section ul {
             margin-left: 1.5rem;
-            margin-bottom: 1rem;
-            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+            color: #475569;
         }
 
         .guideline-section li {
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.75rem;
         }
 
         .dos-donts {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 1rem;
-            margin: 1rem 0;
+            gap: 2rem;
+            margin: 2rem 0;
         }
 
         .dos {
             background: rgba(16, 185, 129, 0.05);
-            padding: 1rem;
-            border-radius: 0.5rem;
-            border-left: 3px solid #10b981;
+            padding: 2rem;
+            border-radius: var(--radius-lg);
+            border: 1px solid rgba(16, 185, 129, 0.1);
+            border-top: 4px solid #10b981;
         }
 
         .donts {
             background: rgba(239, 68, 68, 0.05);
-            padding: 1rem;
-            border-radius: 0.5rem;
-            border-left: 3px solid #ef4444;
+            padding: 2rem;
+            border-radius: var(--radius-lg);
+            border: 1px solid rgba(239, 68, 68, 0.1);
+            border-top: 4px solid #ef4444;
         }
 
-        @media (max-width: 640px) {
-            .dos-donts {
-                grid-template-columns: 1fr;
-            }
+        .dos strong, .donts strong {
+            display: block;
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+
+        @media (max-width: 768px) {
+            .guidelines-page { padding: 2rem 1rem; }
+            .guidelines-content { padding: 2rem; }
+            .dos-donts { grid-template-columns: 1fr; }
         }
     </style>
 </head>

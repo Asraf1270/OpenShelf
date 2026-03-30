@@ -9,27 +9,27 @@
 return [
     // SMTP settings
     'smtp' => [
-        'host' => 'smtp-relay.brevo.com',              // SMTP server (use your provider)
-        'port' => 587,                            // TLS port
-        'secure' => 'tls',                         // tls or ssl
-        'auth' => true,                            // Enable SMTP authentication
-        'username' => getenv('SMTP_USERNAME') ?: 'a15ef4001@smtp-brevo.com',     // SMTP username
-        'password' => getenv('SMTP_PASSWORD') ?: '',         // SMTP password (use environment variable)
-        'timeout' => 30,                            // Connection timeout
-        'debug' => 0                                 // Debug level (0 = off, 1 = client, 2 = client & server)
+        'host' => getenv('SMTP_HOST') ?: 'smtp-relay.brevo.com',
+        'port' => getenv('SMTP_PORT') ?: 587,
+        'secure' => getenv('SMTP_SECURE') ?: 'tls',
+        'auth' => true,
+        'username' => getenv('SMTP_USERNAME'),
+        'password' => getenv('SMTP_PASSWORD'),
+        'timeout' => 30,
+        'debug' => 0
     ],
     
     // Email settings
     'email' => [
         'from' => [
-            'address' => 'mdasrafulislam70@yahoo.com',
-            'name' => 'OpenShelf'
+            'address' => getenv('MAIL_FROM_ADDRESS') ?: 'no-reply@openshelf.org',
+            'name' => getenv('MAIL_FROM_NAME') ?: 'OpenShelf'
         ],
         'reply_to' => [
-            'address' => 'mdasrafulislam70@yahoo.com',
-            'name' => 'OpenShelf Support'
+            'address' => getenv('MAIL_REPLY_TO') ?: 'support@openshelf.org',
+            'name' => getenv('MAIL_FROM_NAME') ?: 'OpenShelf Support'
         ],
-        'admin_email' => 'mdasrafulislam1270@gmail.com',     // Admin email for system notifications
+        'admin_email' => getenv('ADMIN_EMAIL') ?: 'admin@openshelf.org',
         'charset' => 'UTF-8',
         'encoding' => 'base64',
         'wordwrap' => 50

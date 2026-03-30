@@ -17,79 +17,136 @@ include 'includes/header.php';
     <link rel="stylesheet" href="/assets/css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
+
+        :root {
+            --primary: #6366f1;
+            --primary-light: #818cf8;
+            --bg: #f8fafc;
+            --glass-bg: rgba(255, 255, 255, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.4);
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --shadow-premium: 0 20px 40px -15px rgba(0, 0, 0, 0.1);
+            --radius-lg: 24px;
+            --radius-xl: 32px;
+            --transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        body {
+            background-color: var(--bg);
+            font-family: 'Outfit', system-ui, -apple-system, sans-serif;
+            color: var(--text-main);
+            line-height: 1.6;
+        }
+
         .faq-page {
-            max-width: 800px;
+            max-width: 900px;
             margin: 0 auto;
-            padding: 2rem 1rem;
+            padding: 4rem 1.5rem;
         }
 
         .hero-section {
             text-align: center;
-            margin-bottom: 2rem;
+            margin-bottom: 4rem;
         }
 
         .hero-section h1 {
-            font-size: 2.5rem;
-            font-weight: 700;
-            background: linear-gradient(135deg, #0f172a, #6366f1);
+            font-size: clamp(2.5rem, 5vw, 3.5rem);
+            font-weight: 800;
+            letter-spacing: -1px;
+            background: linear-gradient(135deg, #0f172a 0%, #6366f1 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             margin-bottom: 1rem;
         }
 
+        .hero-section p {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+        }
+
         .faq-category {
-            margin-bottom: 2rem;
+            margin-bottom: 4rem;
         }
 
         .category-title {
             font-size: 1.5rem;
-            font-weight: 600;
-            margin-bottom: 1rem;
-            padding-bottom: 0.5rem;
-            border-bottom: 2px solid var(--border);
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            padding-left: 1rem;
+            border-left: 4px solid var(--primary);
+            color: var(--text-main);
         }
 
         .faq-item {
-            background: white;
-            border-radius: 1rem;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border-radius: var(--radius-lg);
             margin-bottom: 1rem;
-            border: 1px solid var(--border);
+            border: 1px solid var(--glass-border);
             overflow: hidden;
+            transition: var(--transition);
+        }
+
+        .faq-item:hover {
+            border-color: rgba(99, 102, 241, 0.4);
+            transform: translateX(5px);
+            background: rgba(255, 255, 255, 0.85);
+            box-shadow: var(--shadow-premium);
         }
 
         .faq-question {
-            padding: 1.25rem;
+            padding: 1.5rem;
             cursor: pointer;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-weight: 500;
-            transition: background 0.2s;
-        }
-
-        .faq-question:hover {
-            background: var(--surface-hover);
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.2s;
         }
 
         .faq-question i {
-            color: #6366f1;
-            transition: transform 0.2s;
+            color: var(--primary);
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            background: rgba(99, 102, 241, 0.1);
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
         }
 
-        .faq-question.active i {
+        .faq-item.active {
+            border-color: var(--primary);
+            background: white;
+            box-shadow: var(--shadow-premium);
+        }
+
+        .faq-item.active .faq-question i {
             transform: rotate(180deg);
+            background: var(--primary);
+            color: white;
         }
 
         .faq-answer {
-            padding: 0 1.25rem 1.25rem 1.25rem;
+            padding: 0 1.5rem 1.5rem 1.5rem;
             display: none;
-            color: var(--text-secondary);
-            line-height: 1.6;
-            border-top: 1px solid var(--border);
+            color: #475569;
+            line-height: 1.8;
+            font-size: 1rem;
+            animation: slideDown 0.3s ease-out;
         }
 
         .faq-answer.show {
             display: block;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
     </style>
 </head>
@@ -266,11 +323,22 @@ include 'includes/header.php';
 
     <script>
         function toggleAnswer(element) {
+            const faqItem = element.parentElement;
             const answer = element.nextElementSibling;
-            const icon = element.querySelector('i');
             
+            // Toggle current
             answer.classList.toggle('show');
-            element.classList.toggle('active');
+            faqItem.classList.toggle('active');
+            
+            // Close others (optional)
+            /*
+            document.querySelectorAll('.faq-answer').forEach(el => {
+                if (el !== answer) el.classList.remove('show');
+            });
+            document.querySelectorAll('.faq-item').forEach(el => {
+                if (el !== faqItem) el.classList.remove('active');
+            });
+            */
         }
     </script>
 

@@ -56,429 +56,357 @@ $availableBooks = getAvailableBooks();
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
         /* ========================================
-           BEAUTIFUL DASHBOARD - SIMPLE & CLEAN
+           PREMIUM GLASSMORPHIC DASHBOARD
         ======================================== */
-        
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
+
         :root {
             --primary: #6366f1;
-            --primary-dark: #4f46e5;
-            --primary-light: #818cf8;
-            --secondary: #0f172a;
+            --primary-h: 239;
+            --primary-s: 84%;
+            --primary-l: 67%;
+            --primary-rgb: 99, 102, 241;
             --accent: #10b981;
-            --surface: #ffffff;
-            --surface-hover: #f8fafc;
-            --text-primary: #0f172a;
-            --text-secondary: #334155;
-            --text-tertiary: #64748b;
-            --border: #e2e8f0;
-            --gradient-primary: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
-            --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
-            --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1);
-            --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1);
-            --shadow-xl: 0 20px 25px -5px rgba(0,0,0,0.1);
-            --radius-sm: 8px;
-            --radius-md: 12px;
-            --radius-lg: 16px;
-            --radius-xl: 24px;
-            --radius-2xl: 32px;
-            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --bg: #f8fafc;
+            --glass-bg: rgba(255, 255, 255, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.4);
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --shadow-premium: 0 20px 40px -15px rgba(0, 0, 0, 0.1);
+            --radius-lg: 24px;
+            --radius-xl: 32px;
+            --transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
-            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-            font-family: system-ui, -apple-system, 'Inter', 'Segoe UI', Roboto, sans-serif;
-            color: var(--text-primary);
-            line-height: 1.5;
+            background-color: var(--bg);
+            font-family: 'Outfit', system-ui, -apple-system, sans-serif;
+            color: var(--text-main);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
         }
 
         /* Hero Section */
         .hero {
             position: relative;
-            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%);
-            padding: 5rem 0 7rem;
+            padding: 8rem 0 10rem;
+            background: radial-gradient(circle at top right, rgba(99, 102, 241, 0.15), transparent 40%),
+                        radial-gradient(circle at bottom left, rgba(139, 92, 246, 0.1), transparent 40%),
+                        linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+            color: white;
+            text-align: center;
             overflow: hidden;
         }
 
-        .hero::before {
+        .hero::after {
             content: '';
             position: absolute;
-            top: 0;
+            bottom: 0;
             left: 0;
             right: 0;
-            bottom: 0;
-            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%238b5cf6' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-            opacity: 0.3;
-            pointer-events: none;
-        }
-
-        .hero .container {
-            position: relative;
-            z-index: 2;
-            text-align: center;
+            height: 100px;
+            background: linear-gradient(to bottom, transparent, var(--bg));
         }
 
         .hero-badge {
-            display: inline-block;
-            background: rgba(99, 102, 241, 0.2);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.6rem 1.2rem;
+            background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(10px);
-            padding: 0.5rem 1rem;
             border-radius: 100px;
-            font-size: 0.75rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            font-size: 0.85rem;
             font-weight: 500;
             color: #a5b4fc;
-            margin-bottom: 1.5rem;
-            border: 1px solid rgba(99, 102, 241, 0.3);
+            margin-bottom: 2rem;
+            animation: fadeInDown 0.8s ease;
         }
 
         .hero-title {
-            font-size: clamp(2.5rem, 8vw, 4.5rem);
+            font-size: clamp(3rem, 10vw, 5.5rem);
             font-weight: 800;
-            line-height: 1.2;
-            margin-bottom: 1rem;
-            background: linear-gradient(135deg, #ffffff 0%, #c4b5fd 50%, #a78bfa 100%);
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            letter-spacing: -2px;
+            background: linear-gradient(135deg, #fff 30%, #a5b4fc 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            background-clip: text;
+            animation: fadeInUp 1s ease 0.2s both;
         }
 
         .hero-subtitle {
-            font-size: clamp(1rem, 3vw, 1.25rem);
-            color: #cbd5e1;
-            max-width: 600px;
-            margin: 0 auto 2rem;
+            font-size: clamp(1.1rem, 3vw, 1.4rem);
+            color: rgba(255, 255, 255, 0.7);
+            max-width: 700px;
+            margin: 0 auto 3rem;
+            animation: fadeInUp 1s ease 0.4s both;
         }
 
         .hero-buttons {
             display: flex;
-            gap: 1rem;
+            gap: 1.5rem;
             justify-content: center;
             flex-wrap: wrap;
+            animation: fadeInUp 1s ease 0.6s both;
         }
 
-        /* Stats Dashboard - 3 Cards */
+        /* Stats Cards */
         .stats-dashboard {
-            margin-top: -3rem;
-            margin-bottom: 4rem;
+            margin-top: -5rem;
+            margin-bottom: 6rem;
             position: relative;
             z-index: 10;
         }
 
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 1.5rem;
-            max-width: 1000px;
-            margin: 0 auto;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
         }
 
         .stat-card {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            padding: 2rem 1.5rem;
-            border-radius: var(--radius-2xl);
-            text-align: center;
-            box-shadow: var(--shadow-xl);
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            padding: 3rem 2rem;
+            border-radius: var(--radius-xl);
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--shadow-premium);
             transition: var(--transition);
-            border: 1px solid rgba(255, 255, 255, 0.5);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .stat-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: var(--gradient-primary);
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
         }
 
         .stat-card:hover {
-            transform: translateY(-8px);
-            box-shadow: var(--shadow-2xl);
-            background: white;
+            transform: translateY(-10px) scale(1.02);
+            border-color: rgba(99, 102, 241, 0.4);
+            background: rgba(255, 255, 255, 0.85);
         }
 
         .stat-icon {
-            width: 80px;
-            height: 80px;
-            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.05));
-            border-radius: 50%;
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(99, 102, 241, 0.2));
+            color: var(--primary);
+            border-radius: 20px;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 0 auto 1.25rem;
-            font-size: 2.5rem;
-            color: var(--primary);
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
             transition: var(--transition);
         }
 
         .stat-card:hover .stat-icon {
-            transform: scale(1.1);
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            background: var(--primary);
             color: white;
+            transform: rotate(10deg);
         }
 
         .stat-value {
-            font-size: 3rem;
+            font-size: 3.5rem;
             font-weight: 800;
-            color: var(--text-primary);
-            line-height: 1.2;
-            margin-bottom: 0.5rem;
+            color: var(--text-main);
+            letter-spacing: -1px;
+            line-height: 1;
         }
 
         .stat-label {
-            color: var(--text-tertiary);
-            font-size: 0.875rem;
-            font-weight: 500;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-muted);
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 2px;
         }
 
-        /* Features Section */
+        /* Feature Section */
         .features-section {
-            padding: 4rem 0;
-            background: var(--surface);
-            border-radius: var(--radius-2xl);
-            margin-bottom: 4rem;
-            box-shadow: var(--shadow-lg);
+            padding: 6rem 0;
         }
 
         .section-header {
             text-align: center;
-            margin-bottom: 3rem;
+            margin-bottom: 5rem;
+        }
+
+        .section-tag {
+            color: var(--primary);
+            font-weight: 700;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 1rem;
+            display: block;
         }
 
         .section-title {
-            font-size: 2rem;
-            font-weight: 700;
-            margin-bottom: 1rem;
-            background: linear-gradient(135deg, var(--text-primary), var(--primary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .section-subtitle {
-            color: var(--text-tertiary);
-            max-width: 600px;
-            margin: 0 auto;
+            font-size: clamp(2.5rem, 5vw, 3.5rem);
+            font-weight: 800;
+            letter-spacing: -1px;
+            margin-bottom: 1.5rem;
         }
 
         .features-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-            max-width: 1000px;
-            margin: 0 auto;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2.5rem;
         }
 
         .feature-card {
-            background: var(--surface);
-            padding: 2rem;
-            border-radius: var(--radius-xl);
-            text-align: center;
+            background: white;
+            padding: 3rem 2rem;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--glass-border);
             transition: var(--transition);
-            border: 1px solid var(--border);
-        }
-
-        .feature-card:hover {
-            transform: translateY(-5px);
-            box-shadow: var(--shadow-lg);
-            border-color: var(--primary-light);
-        }
-
-        .feature-icon {
-            width: 70px;
-            height: 70px;
-            background: linear-gradient(135deg, var(--primary-light), var(--primary));
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 1.25rem;
-            font-size: 1.75rem;
-            color: white;
-            box-shadow: 0 10px 25px -5px rgba(99, 102, 241, 0.3);
-        }
-
-        .feature-title {
-            font-size: 1.25rem;
-            font-weight: 600;
-            margin-bottom: 1rem;
-        }
-
-        .feature-description {
-            color: var(--text-tertiary);
-            font-size: 0.875rem;
-            line-height: 1.6;
-        }
-
-        /* How It Works */
-        .how-it-works {
-            padding: 4rem 0;
-            background: var(--surface-hover);
-            border-radius: var(--radius-2xl);
-            margin-bottom: 4rem;
-        }
-
-        .steps-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 2rem;
-            max-width: 1000px;
-            margin: 0 auto;
-        }
-
-        .step-card {
-            text-align: center;
-            padding: 1.5rem;
-        }
-
-        .step-number {
-            width: 50px;
-            height: 50px;
-            background: var(--gradient-primary);
-            color: white;
-            font-size: 1.5rem;
-            font-weight: 700;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 1rem;
-        }
-
-        .step-title {
-            font-size: 1.125rem;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-        }
-
-        .step-description {
-            color: var(--text-tertiary);
-            font-size: 0.875rem;
-        }
-
-        /* CTA Section */
-        .cta-section {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-            border-radius: var(--radius-2xl);
-            padding: 3rem;
-            text-align: center;
             position: relative;
             overflow: hidden;
         }
 
-        .cta-section::before {
+        .feature-card::before {
             content: '';
             position: absolute;
-            top: -50%;
-            right: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
-            animation: rotate 20s linear infinite;
+            top: 0; left: 0; width: 4px; height: 100%;
+            background: var(--primary);
+            opacity: 0;
+            transition: var(--transition);
         }
 
-        @keyframes rotate {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
+        .feature-card:hover {
+            transform: translateX(10px);
+            box-shadow: var(--shadow-premium);
         }
 
-        .cta-title {
-            font-size: 1.75rem;
+        .feature-card:hover::before { opacity: 1; }
+
+        .feature-icon-box {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 2rem;
+            opacity: 0.8;
+        }
+
+        .feature-title {
+            font-size: 1.5rem;
             font-weight: 700;
-            color: white;
-            margin-bottom: 0.75rem;
+            margin-bottom: 1rem;
         }
 
-        .cta-text {
-            color: rgba(255,255,255,0.9);
-            max-width: 500px;
+        .feature-description {
+            color: var(--text-muted);
+            line-height: 1.7;
+        }
+
+        /* Steps Section */
+        .steps-container {
+            background: #fff;
+            padding: 8rem 0;
+            border-radius: 60px;
+            margin: 4rem 0;
+            box-shadow: inset 0 0 100px rgba(0,0,0,0.02);
+        }
+
+        .steps-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 3rem;
+            position: relative;
+        }
+
+        .step-card {
+            text-align: center;
+            position: relative;
+        }
+
+        .step-number {
+            font-size: 8rem;
+            font-weight: 900;
+            color: rgba(99, 102, 241, 0.05);
+            position: absolute;
+            top: -2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            line-height: 1;
+            z-index: 1;
+        }
+
+        .step-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .step-icon {
+            width: 60px;
+            height: 60px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             margin: 0 auto 1.5rem;
+            font-size: 1.5rem;
+            box-shadow: 0 10px 20px rgba(99, 102, 241, 0.3);
         }
 
         /* Buttons */
         .btn {
+            padding: 1.2rem 2.5rem;
+            border-radius: 100px;
+            font-weight: 700;
+            font-size: 1rem;
+            text-decoration: none;
             display: inline-flex;
             align-items: center;
-            gap: 0.5rem;
-            padding: 0.75rem 1.75rem;
-            border-radius: 2rem;
-            font-weight: 600;
-            font-size: 0.875rem;
-            text-decoration: none;
+            gap: 0.8rem;
             transition: var(--transition);
-            border: none;
-            cursor: pointer;
         }
 
         .btn-primary {
-            background: var(--gradient-primary);
-            color: white;
-            box-shadow: 0 4px 14px 0 rgba(99, 102, 241, 0.4);
+            background: white;
+            color: var(--primary);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.2);
         }
 
         .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px -5px rgba(99, 102, 241, 0.5);
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            background: var(--bg);
         }
 
-        .btn-outline-light {
-            background: transparent;
-            border: 2px solid rgba(255,255,255,0.3);
+        .btn-outline {
+            background: rgba(255, 255, 255, 0.1);
             color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
         }
 
-        .btn-outline-light:hover {
-            background: white;
-            color: var(--primary);
+        .btn-outline:hover {
+            background: rgba(255, 255, 255, 0.2);
             border-color: white;
-            transform: translateY(-2px);
+            transform: translateY(-5px);
         }
 
-        /* Responsive */
+        /* Animations */
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeInDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+
         @media (max-width: 768px) {
-            .stats-grid {
-                grid-template-columns: 1fr;
-                gap: 1rem;
-            }
-            .stat-card {
-                padding: 1.5rem;
-            }
-            .stat-value {
-                font-size: 2rem;
-            }
-            .features-grid,
-            .steps-grid {
-                grid-template-columns: 1fr;
-            }
-            .hero {
-                padding: 3rem 0 5rem;
-            }
-        }
-
-        /* Animation */
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .animate-in {
-            animation: fadeInUp 0.6s ease forwards;
+            .hero { padding: 6rem 0 8rem; }
+            .stats-dashboard { margin-top: -4rem; }
+            .stat-value { font-size: 2.8rem; }
+            .steps-container { padding: 4rem 0; border-radius: 30px; }
         }
     </style>
 </head>
@@ -489,246 +417,148 @@ $availableBooks = getAvailableBooks();
         <section class="hero">
             <div class="container">
                 <div class="hero-badge">
-                    <i class="fas fa-star"></i> Community Library
+                    <i class="fas fa-sparkles"></i> OpenShelf v1.0.1 Stable
                 </div>
-                <h1 class="hero-title">OpenShelf Library</h1>
+                <h1 class="hero-title">Share Knowledge.<br>Share Books.</h1>
                 <p class="hero-subtitle">
-                    A community-powered library for students. Share books, discover new reads,<br>
-                    and connect with fellow book lovers.
+                    The ultimate community-powered library for university students. 
+                    Manage your collection, discover new reads, and connect with fellow book lovers.
                 </p>
                 <div class="hero-buttons">
                     <a href="/books/" class="btn btn-primary">
-                        <i class="fas fa-book-open"></i> Explore Library
+                        <i class="fas fa-search"></i> Explore Library
                     </a>
-                    <a href="/add-book/" class="btn btn-outline-light">
-                        <i class="fas fa-plus-circle"></i> Share a Book
+                    <a href="/add-book/" class="btn btn-outline">
+                        <i class="fas fa-plus"></i> Share a Book
                     </a>
                 </div>
             </div>
         </section>
         
         <div class="container">
-            <!-- Statistics Dashboard - Only 3 Cards -->
+            <!-- Statistics Dashboard -->
             <div class="stats-dashboard">
                 <div class="stats-grid">
-                    <div class="stat-card animate-in" style="animation-delay: 0.1s">
-                        <div class="stat-icon">
-                            <i class="fas fa-users"></i>
-                        </div>
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fas fa-users-viewfinder"></i></div>
                         <div class="stat-value" id="stat-totalUsers">0</div>
-                        <div class="stat-label">Active Members</div>
+                        <div class="stat-label">Active Readers</div>
                     </div>
-                    <div class="stat-card animate-in" style="animation-delay: 0.2s">
-                        <div class="stat-icon">
-                            <i class="fas fa-book"></i>
-                        </div>
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fas fa-book-sparkles"></i></div>
                         <div class="stat-value" id="stat-totalBooks">0</div>
                         <div class="stat-label">Total Books</div>
                     </div>
-                    <div class="stat-card animate-in" style="animation-delay: 0.3s">
-                        <div class="stat-icon">
-                            <i class="fas fa-check-circle"></i>
-                        </div>
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fas fa-circle-check"></i></div>
                         <div class="stat-value" id="stat-availableBooks">0</div>
                         <div class="stat-label">Available Now</div>
                     </div>
                 </div>
             </div>
             
-            <!-- Features Section - Explaining What the System Does -->
-            <div class="features-section">
+            <!-- Features Section -->
+            <section class="features-section">
                 <div class="section-header">
-                    <h2 class="section-title">✨ What is OpenShelf?</h2>
-                    <p class="section-subtitle">A complete book sharing platform for university students</p>
+                    <span class="section-tag">Features</span>
+                    <h2 class="section-title">Designed for Communities</h2>
                 </div>
                 
                 <div class="features-grid">
                     <div class="feature-card">
-                        <div class="feature-icon">
-                            <i class="fas fa-hand-holding-heart"></i>
-                        </div>
-                        <h3 class="feature-title">Share Books</h3>
-                        <p class="feature-description">
-                            Add books you own to the library. Share your collection with fellow students and help build a community library.
-                        </p>
+                        <div class="feature-icon-box"><i class="fas fa-heart-pulse"></i></div>
+                        <h3 class="feature-title">Community Driven</h3>
+                        <p class="feature-description">Built for and by students. Help grow the library by sharing books you've already read.</p>
                     </div>
                     <div class="feature-card">
-                        <div class="feature-icon">
-                            <i class="fas fa-search"></i>
-                        </div>
-                        <h3 class="feature-title">Discover & Borrow</h3>
-                        <p class="feature-description">
-                            Browse through thousands of books shared by other students. Request to borrow books and expand your reading horizons.
-                        </p>
+                        <div class="feature-icon-box"><i class="fas fa-envelope-open-text"></i></div>
+                        <h3 class="feature-title">Smart Notifications</h3>
+                        <p class="feature-description">Instant email and in-app alerts keep you updated on all your borrow requests and returns.</p>
                     </div>
                     <div class="feature-card">
-                        <div class="feature-icon">
-                            <i class="fas fa-comments"></i>
-                        </div>
-                        <h3 class="feature-title">Connect & Review</h3>
-                        <p class="feature-description">
-                            Write reviews, rate books, and comment on your favorite reads. Connect with fellow book lovers in your hall.
-                        </p>
+                        <div class="feature-icon-box"><i class="fab fa-whatsapp"></i></div>
+                        <h3 class="feature-title">Fast Coordination</h3>
+                        <p class="feature-description">Direct WhatsApp integration for quick communication between lenders and borrowers.</p>
                     </div>
                 </div>
-            </div>
+            </section>
             
-            <!-- How It Works Section -->
-            <div class="how-it-works">
-                <div class="section-header">
-                    <h2 class="section-title">🚀 How It Works</h2>
-                    <p class="section-subtitle">Simple steps to start sharing and borrowing books</p>
-                </div>
-                
-                <div class="steps-grid">
-                    <div class="step-card">
-                        <div class="step-number">1</div>
-                        <h3 class="step-title">Create Account</h3>
-                        <p class="step-description">
-                            Sign up with your university email and join the OpenShelf community.
-                        </p>
+            <!-- Steps Section -->
+            <section class="steps-container">
+                <div class="container">
+                    <div class="section-header">
+                        <span class="section-tag">How it works</span>
+                        <h2 class="section-title">Start Borrowing in Minutes</h2>
                     </div>
-                    <div class="step-card">
-                        <div class="step-number">2</div>
-                        <h3 class="step-title">Add Your Books</h3>
-                        <p class="step-description">
-                            Upload books you own with cover images, category, and condition details.
-                        </p>
-                    </div>
-                    <div class="step-card">
-                        <div class="step-number">3</div>
-                        <h3 class="step-title">Browse & Request</h3>
-                        <p class="step-description">
-                            Discover books from other students and send borrow requests.
-                        </p>
-                    </div>
-                    <div class="step-card">
-                        <div class="step-number">4</div>
-                        <h3 class="step-title">Connect & Return</h3>
-                        <p class="step-description">
-                            Connect with owners via WhatsApp, arrange pickup, and return books on time.
-                        </p>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Key Features List -->
-            <div class="features-section" style="background: var(--surface);">
-                <div class="section-header">
-                    <h2 class="section-title">🌟 Key Features</h2>
-                    <p class="section-subtitle">Everything you need for a seamless book sharing experience</p>
-                </div>
-                
-                <div class="features-grid">
-                    <div class="feature-card">
-                        <div class="feature-icon" style="background: linear-gradient(135deg, #10b981, #059669);">
-                            <i class="fas fa-mobile-alt"></i>
+                    
+                    <div class="steps-grid">
+                        <div class="step-card">
+                            <div class="step-number">01</div>
+                            <div class="step-content">
+                                <div class="step-icon"><i class="fas fa-user-plus"></i></div>
+                                <h3 class="step-title">Join Us</h3>
+                                <p class="step-description">Create your account with your university email.</p>
+                            </div>
                         </div>
-                        <h3 class="feature-title">Mobile First Design</h3>
-                        <p class="feature-description">
-                            Fully responsive design that works perfectly on phones, tablets, and desktops.
-                        </p>
-                    </div>
-                    <div class="feature-card">
-                        <div class="feature-icon" style="background: linear-gradient(135deg, #f59e0b, #d97706);">
-                            <i class="fas fa-bell"></i>
+                        <div class="step-card">
+                            <div class="step-number">02</div>
+                            <div class="step-content">
+                                <div class="step-icon"><i class="fas fa-upload"></i></div>
+                                <h3 class="step-title">List Books</h3>
+                                <p class="step-description">Share your books with the community easily.</p>
+                            </div>
                         </div>
-                        <h3 class="feature-title">Real-time Notifications</h3>
-                        <p class="feature-description">
-                            Get instant alerts when someone requests your book or approves your request.
-                        </p>
-                    </div>
-                    <div class="feature-card">
-                        <div class="feature-icon" style="background: linear-gradient(135deg, #ef4444, #dc2626);">
-                            <i class="fas fa-star"></i>
+                        <div class="step-card">
+                            <div class="step-number">03</div>
+                            <div class="step-content">
+                                <div class="step-icon"><i class="fas fa-magnifying-glass"></i></div>
+                                <h3 class="step-title">Browse</h3>
+                                <p class="step-description">Find the book you need using smart filters.</p>
+                            </div>
                         </div>
-                        <h3 class="feature-title">Reviews & Ratings</h3>
-                        <p class="feature-description">
-                            Rate books you've read and help others discover great reads.
-                        </p>
-                    </div>
-                    <div class="feature-card">
-                        <div class="feature-icon" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed);">
-                            <i class="fab fa-whatsapp"></i>
+                        <div class="step-card">
+                            <div class="step-number">04</div>
+                            <div class="step-content">
+                                <div class="step-icon"><i class="fas fa-handshake"></i></div>
+                                <h3 class="step-title">Connect</h3>
+                                <p class="step-description">Request to borrow and coordinate pickup.</p>
+                            </div>
                         </div>
-                        <h3 class="feature-title">WhatsApp Integration</h3>
-                        <p class="feature-description">
-                            Direct WhatsApp contact with book owners for quick communication.
-                        </p>
-                    </div>
-                    <div class="feature-card">
-                        <div class="feature-icon" style="background: linear-gradient(135deg, #06b6d4, #0891b2);">
-                            <i class="fas fa-chart-line"></i>
-                        </div>
-                        <h3 class="feature-title">Activity Feed</h3>
-                        <p class="feature-description">
-                            See what's happening in the community with real-time activity updates.
-                        </p>
-                    </div>
-                    <div class="feature-card">
-                        <div class="feature-icon" style="background: linear-gradient(135deg, #84cc16, #65a30d);">
-                            <i class="fas fa-shield-alt"></i>
-                        </div>
-                        <h3 class="feature-title">Secure & Trusted</h3>
-                        <p class="feature-description">
-                            University email verification and admin approval ensures trusted community.
-                        </p>
                     </div>
                 </div>
-            </div>
-            
-            <!-- Call to Action -->
-            <div class="cta-section">
-                <h2 class="cta-title">Ready to Join the Community?</h2>
-                <p class="cta-text">
-                    Be part of a growing community of readers. Share your books, discover new ones, and connect with fellow students.
-                </p>
-                <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
-                    <a href="/register/" class="btn btn-outline-light">
-                        <i class="fas fa-user-plus"></i> Create Free Account
-                    </a>
-                    <a href="/books/" class="btn btn-primary" style="background: white; color: var(--primary);">
-                        <i class="fas fa-book"></i> Explore Books
-                    </a>
-                </div>
-            </div>
+            </section>
         </div>
     </main>
     
     <script>
-        // Statistics data from PHP
         const statsData = {
             totalBooks: <?php echo $totalBooks; ?>,
             totalUsers: <?php echo $totalUsers; ?>,
             availableBooks: <?php echo $availableBooks; ?>
         };
         
-        // Smooth counter animation
-        function animateCounter(element, start, end, duration = 1500) {
+        function animateCounter(element, start, end, duration = 2000) {
             let startTimestamp = null;
             const step = (timestamp) => {
                 if (!startTimestamp) startTimestamp = timestamp;
                 const progress = Math.min((timestamp - startTimestamp) / duration, 1);
-                const currentValue = Math.floor(progress * (end - start) + start);
+                // Use easeOutExpo for smoother ending
+                const easeOutExpo = 1 - Math.pow(2, -10 * progress);
+                const currentValue = Math.floor(easeOutExpo * (end - start) + start);
                 element.textContent = currentValue.toLocaleString();
-                if (progress < 1) {
-                    window.requestAnimationFrame(step);
-                } else {
-                    element.textContent = end.toLocaleString();
-                }
+                if (progress < 1) window.requestAnimationFrame(step);
+                else element.textContent = end.toLocaleString();
             };
             window.requestAnimationFrame(step);
         }
         
-        // Initialize counters
-        function initCounters() {
-            animateCounter(document.getElementById('stat-totalUsers'), 0, statsData.totalUsers, 1500);
-            animateCounter(document.getElementById('stat-totalBooks'), 0, statsData.totalBooks, 1500);
-            animateCounter(document.getElementById('stat-availableBooks'), 0, statsData.availableBooks, 1500);
-        }
-        
-        // Initialize when page loads
-        document.addEventListener('DOMContentLoaded', initCounters);
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                animateCounter(document.getElementById('stat-totalUsers'), 0, statsData.totalUsers);
+                animateCounter(document.getElementById('stat-totalBooks'), 0, statsData.totalBooks);
+                animateCounter(document.getElementById('stat-availableBooks'), 0, statsData.availableBooks);
+            }, 500);
+        });
     </script>
     
     <?php include 'includes/footer.php'; ?>

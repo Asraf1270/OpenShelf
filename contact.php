@@ -36,45 +36,86 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link rel="stylesheet" href="/assets/css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
+
+        :root {
+            --primary: #6366f1;
+            --primary-light: #818cf8;
+            --success: #10b981;
+            --error: #ef4444;
+            --bg: #f8fafc;
+            --glass-bg: rgba(255, 255, 255, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.4);
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --shadow-premium: 0 20px 40px -15px rgba(0, 0, 0, 0.1);
+            --radius-lg: 24px;
+            --radius-xl: 32px;
+            --transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        body {
+            background-color: var(--bg);
+            font-family: 'Outfit', system-ui, -apple-system, sans-serif;
+            color: var(--text-main);
+            line-height: 1.6;
+        }
+
         .contact-page {
-            max-width: 1000px;
+            max-width: 1100px;
             margin: 0 auto;
-            padding: 2rem 1rem;
+            padding: 4rem 1.5rem;
         }
 
         .hero-section {
             text-align: center;
-            margin-bottom: 2rem;
+            margin-bottom: 4rem;
         }
 
         .hero-section h1 {
-            font-size: 2.5rem;
-            font-weight: 700;
-            background: linear-gradient(135deg, #0f172a, #6366f1);
+            font-size: clamp(2.5rem, 5vw, 3.5rem);
+            font-weight: 800;
+            letter-spacing: -1px;
+            background: linear-gradient(135deg, #0f172a 0%, #6366f1 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             margin-bottom: 1rem;
         }
 
+        .hero-section p {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+        }
+
         .contact-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 2rem;
+            gap: 3rem;
+            align-items: start;
         }
 
         .contact-info {
-            background: white;
-            padding: 2rem;
-            border-radius: 1rem;
-            border: 1px solid var(--border);
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            padding: 3rem;
+            border-radius: var(--radius-xl);
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--shadow-premium);
+        }
+
+        .contact-info h2 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+            color: var(--text-main);
         }
 
         .info-item {
             display: flex;
             align-items: center;
-            gap: 1rem;
-            padding: 1rem 0;
-            border-bottom: 1px solid var(--border);
+            gap: 1.5rem;
+            padding: 1.25rem 0;
+            border-bottom: 1px solid rgba(226, 232, 240, 0.5);
         }
 
         .info-item:last-child {
@@ -82,92 +123,140 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         .info-icon {
-            width: 50px;
-            height: 50px;
-            background: rgba(99, 102, 241, 0.1);
-            border-radius: 1rem;
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(99, 102, 241, 0.2));
+            border-radius: 16px;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #6366f1;
-            font-size: 1.25rem;
+            color: var(--primary);
+            font-size: 1.5rem;
+            transition: var(--transition);
+        }
+
+        .info-item:hover .info-icon {
+            background: var(--primary);
+            color: white;
+            transform: scale(1.1) rotate(-5deg);
+        }
+
+        .info-content strong {
+            display: block;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.25rem;
+        }
+
+        .info-content span, .info-content a {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-main);
+            text-decoration: none;
         }
 
         .contact-form {
             background: white;
-            padding: 2rem;
-            border-radius: 1rem;
-            border: 1px solid var(--border);
+            padding: 3rem;
+            border-radius: var(--radius-xl);
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--shadow-premium);
+        }
+
+        .contact-form h2 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+            color: var(--text-main);
         }
 
         .form-group {
-            margin-bottom: 1.25rem;
+            margin-bottom: 1.5rem;
         }
 
         .form-group label {
             display: block;
             margin-bottom: 0.5rem;
-            font-weight: 500;
-            color: var(--text-primary);
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--text-main);
         }
 
         .form-control {
             width: 100%;
-            padding: 0.75rem;
-            border: 1px solid var(--border);
-            border-radius: 0.5rem;
-            font-size: 0.9rem;
-            transition: border-color 0.2s;
+            padding: 1rem;
+            background: #f8fafc;
+            border: 2px solid #f1f5f9;
+            border-radius: 12px;
+            font-family: inherit;
+            font-size: 1rem;
+            transition: var(--transition);
         }
 
         .form-control:focus {
             outline: none;
-            border-color: #6366f1;
+            border-color: var(--primary);
+            background: white;
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
         }
 
         textarea.form-control {
             resize: vertical;
-            min-height: 100px;
+            min-height: 120px;
         }
 
         .btn-submit {
             background: linear-gradient(135deg, #6366f1, #8b5cf6);
             color: white;
-            padding: 0.75rem 1.5rem;
+            padding: 1rem 2rem;
             border: none;
-            border-radius: 2rem;
-            font-weight: 600;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 1rem;
             cursor: pointer;
             width: 100%;
-            transition: transform 0.2s;
+            transition: var(--transition);
+            box-shadow: 0 10px 20px -5px rgba(99, 102, 241, 0.4);
         }
 
         .btn-submit:hover {
-            transform: translateY(-2px);
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px -5px rgba(99, 102, 241, 0.5);
         }
 
         .alert {
-            padding: 1rem;
-            border-radius: 0.5rem;
-            margin-bottom: 1rem;
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
         }
 
         .alert-success {
             background: rgba(16, 185, 129, 0.1);
-            color: #10b981;
+            color: var(--success);
             border: 1px solid rgba(16, 185, 129, 0.2);
         }
 
         .alert-error {
             background: rgba(239, 68, 68, 0.1);
-            color: #ef4444;
+            color: var(--error);
             border: 1px solid rgba(239, 68, 68, 0.2);
         }
 
-        @media (max-width: 768px) {
+        @media (max-width: 992px) {
             .contact-grid {
                 grid-template-columns: 1fr;
             }
+        }
+
+        @media (max-width: 768px) {
+            .contact-page { padding: 2rem 1rem; }
+            .contact-info, .contact-form { padding: 2rem; }
         }
     </style>
 </head>
