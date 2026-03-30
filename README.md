@@ -1,10 +1,20 @@
 # 📚 OpenShelf — Community Library Management System
 
-[![Version](https://img.shields.io/badge/version-1.1.0-blue.svg)](https://github.com/Asraf1270/OpenShelf_V1.1.0)
+[![Version](https://img.shields.io/badge/version-1.2.0-blue.svg)](https://github.com/Asraf1270/OpenShelf/releases/tag/v1.2.0)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![PHP](https://img.shields.io/badge/PHP-7.4%2B-777bb4.svg)](https://www.php.net/)
 
 **OpenShelf** is a modern, open-source library management system designed for communities, universities, and book clubs. It empowers users to share, borrow, and manage books effortlessly through a **premium, glassmorphic interface** that feels alive and responsive.
+
+---
+
+## ✨ What's New in v1.2.0
+
+This release, v1.2.0, completely overhauls the OpenShelf automated email communication system. We've modernized all 12 system-generated email templates to provide a sleek, professional, and mobile-optimized experience across every inbox:
+- 📱 **Mobile-First Card Design:** Every email is now formatted as a sleek, centered card that looks beautiful on any device, from smartphones to desktop screens.
+- 🎨 **Brand Consistency & Thematic Palettes:** Replaced generic colors with context-aware gradients (e.g., Emerald for approvals, Amber/Red for overdues, Indigo for welcome/OTP emails) to create instantaneous visual cues.
+- 📧 **Universal Client Compatibility:** Re-engineered the underlying HTML structure using robust `<table>` wrappers and inline CSS, complete with `<!--[if mso]>` conditionals to ensure flawless rendering on older clients like Microsoft Outlook.
+- ✍️ **Refined Typography & UI Elements:** Increased base font sizes, improved readability with sans-serif system fonts, and introduced large, touch-friendly, pill-shaped action buttons for higher engagement.
 
 ---
 
