@@ -8,7 +8,7 @@ session_start();
 
 // Configuration
 define('DATA_PATH', dirname(__DIR__) . '/data/');
-define('BOOKS_PATH', dirname(__DIR__) . '/books/');
+define('BOOKS_PATH', dirname(__DIR__) . '/data/book/');
 define('USERS_PATH', dirname(__DIR__) . '/users/');
 define('UPLOAD_PATH', dirname(__DIR__) . '/uploads/book_cover/');
 define('MAX_FILE_SIZE', 10 * 1024 * 1024); // 10MB
@@ -464,115 +464,44 @@ $currentThumbPath = !empty($coverImage) ? '/uploads/book_cover/thumb_' . $coverI
 // Add page-specific styles
 ?>
 <style>
-    /* Edit Book Specific Styles */
+    /* Mobile-first CSS for Edit Book Page */
+
     .edit-container {
         max-width: 800px;
         margin: 0 auto;
-        padding: var(--space-5);
-    }
-    
-    .cover-preview {
-        width: 150px;
-        height: 200px;
-        border-radius: var(--radius-lg);
-        overflow: hidden;
-        box-shadow: var(--shadow-md);
-        margin: 0 auto var(--space-4);
-        cursor: pointer;
-        transition: all var(--transition-fast);
-    }
-    
-    .cover-preview:hover {
-        transform: scale(1.02);
-        box-shadow: var(--shadow-lg);
-    }
-    
-    .cover-preview img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-    }
-    
-    .cover-placeholder {
-        width: 150px;
-        height: 200px;
-        background: var(--surface-hover);
-        border-radius: var(--radius-lg);
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        gap: var(--space-2);
-        color: var(--text-tertiary);
-        cursor: pointer;
-        margin: 0 auto var(--space-4);
-        transition: all var(--transition-fast);
-    }
-    
-    .cover-placeholder:hover {
-        background: var(--border);
-        transform: scale(1.02);
-    }
-    
-    .cover-placeholder i {
-        font-size: 2rem;
-    }
-    
-    .image-hint {
-        font-size: var(--font-size-xs);
-        color: var(--text-tertiary);
-        text-align: center;
-        margin-top: var(--space-2);
-    }
-    
-    .form-row {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: var(--space-4);
-    }
-    
-    @media (max-width: 640px) {
-        .form-row {
-            grid-template-columns: 1fr;
-        }
-        
-        .edit-container {
-            padding: var(--space-4);
-        }
-    }
-    
-    .char-counter {
-        font-size: var(--font-size-xs);
-        color: var(--text-tertiary);
-        text-align: right;
-        margin-top: var(--space-1);
-    }
-    
-    .char-counter.warning {
-        color: var(--warning);
-    }
-    
-    .char-counter.danger {
-        color: var(--danger);
+        padding: 1.25rem;
     }
 
-    /* Change Profile Picture Side Panel */
+    .container {
+        padding: 1rem 0;
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    /* Sidebar styles */
+    aside {
+        order: 2; /* Sidebar below main content on mobile */
+    }
+
     .profile-side-card {
-        background: white;
-        border-radius: var(--radius-lg);
-        padding: var(--space-4);
-        box-shadow: var(--shadow-sm);
-        margin-bottom: var(--space-4);
+        background: #fff;
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        margin-bottom: 1rem;
         text-align: center;
+        border: 1px solid #e5e7eb;
     }
 
     .mini-avatar-preview {
         width: 80px;
         height: 80px;
         border-radius: 50%;
-        margin: 0 auto var(--space-2);
-        border: 2px solid var(--primary);
+        margin: 0 auto 0.75rem;
+        border: 3px solid #3b82f6;
         overflow: hidden;
+        background: #f3f4f6;
     }
 
     .mini-avatar-preview img {
@@ -580,59 +509,415 @@ $currentThumbPath = !empty($coverImage) ? '/uploads/book_cover/thumb_' . $coverI
         height: 100%;
         object-fit: cover;
     }
+
+    /* Main content */
+    .edit-container {
+        order: 1; /* Main content first on mobile */
+        background: #fff;
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        border: 1px solid #e5e7eb;
+    }
+
+    /* Page header */
+    .page-header {
+        margin-bottom: 2rem;
+        text-align: center;
+    }
+
+    .page-header h1 {
+        font-size: 1.875rem;
+        font-weight: 700;
+        color: #1f2937;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+
+    .page-header p {
+        color: #6b7280;
+        font-size: 0.875rem;
+    }
+
+    .back-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem;
+        background: #f3f4f6;
+        border: 1px solid #d1d5db;
+        border-radius: 8px;
+        color: #374151;
+        text-decoration: none;
+        font-size: 0.875rem;
+        margin-bottom: 1rem;
+        transition: all 0.2s;
+    }
+
+    .back-btn:hover {
+        background: #e5e7eb;
+    }
+
+    /* Cover image section */
+    .cover-section {
+        text-align: center;
+        margin-bottom: 2rem;
+        padding: 1.5rem;
+        background: #f9fafb;
+        border-radius: 12px;
+        border: 2px dashed #d1d5db;
+    }
+
+    .cover-preview {
+        width: 120px;
+        height: 160px;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        margin: 0 auto 1rem;
+        cursor: pointer;
+        transition: transform 0.2s;
+        border: 2px solid #fff;
+    }
+
+    .cover-preview:hover {
+        transform: scale(1.05);
+    }
+
+    .cover-preview img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .cover-placeholder {
+        width: 120px;
+        height: 160px;
+        background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+        border-radius: 8px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        color: #6b7280;
+        cursor: pointer;
+        margin: 0 auto 1rem;
+        transition: all 0.2s;
+        border: 2px solid #d1d5db;
+    }
+
+    .cover-placeholder:hover {
+        background: linear-gradient(135deg, #e5e7eb 0%, #d1d5db 100%);
+        border-color: #9ca3af;
+    }
+
+    .cover-placeholder i {
+        font-size: 1.5rem;
+    }
+
+    .image-hint {
+        font-size: 0.75rem;
+        color: #6b7280;
+        text-align: center;
+        margin-top: 0.5rem;
+    }
+
+    /* Form styles */
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+        display: block;
+        font-weight: 600;
+        color: #374151;
+        margin-bottom: 0.5rem;
+        font-size: 0.875rem;
+    }
+
+    .form-input,
+    .form-textarea,
+    .form-select {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid #d1d5db;
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: border-color 0.2s, box-shadow 0.2s;
+        background: #fff;
+    }
+
+    .form-input:focus,
+    .form-textarea:focus,
+    .form-select:focus {
+        outline: none;
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+
+    .form-textarea {
+        resize: vertical;
+        min-height: 120px;
+    }
+
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .form-error {
+        color: #dc2626;
+        font-size: 0.75rem;
+        margin-top: 0.25rem;
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+    }
+
+    .char-counter {
+        font-size: 0.75rem;
+        color: #6b7280;
+        text-align: right;
+        margin-top: 0.25rem;
+    }
+
+    .char-counter.warning {
+        color: #f59e0b;
+    }
+
+    .char-counter.danger {
+        color: #dc2626;
+    }
+
+    .condition-help {
+        font-size: 0.75rem;
+        color: #6b7280;
+        margin-top: 0.25rem;
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+    }
+
+    /* Buttons */
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.2s;
+        border: none;
+        cursor: pointer;
+        font-size: 0.875rem;
+    }
+
+    .btn-primary {
+        background: #3b82f6;
+        color: #fff;
+    }
+
+    .btn-primary:hover {
+        background: #2563eb;
+    }
+
+    .btn-outline {
+        background: transparent;
+        color: #374151;
+        border: 1px solid #d1d5db;
+    }
+
+    .btn-outline:hover {
+        background: #f9fafb;
+    }
+
+    .btn-sm {
+        padding: 0.5rem 1rem;
+        font-size: 0.75rem;
+    }
+
+    .btn-block {
+        width: 100%;
+    }
+
+    /* Form actions */
+    .form-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+        margin-top: 2rem;
+    }
+
+    .form-actions .btn {
+        flex: 1;
+    }
+
+    /* Alerts */
+    .alert {
+        padding: 1rem;
+        border-radius: 8px;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.875rem;
+    }
+
+    .alert-danger {
+        background: #fef2f2;
+        color: #dc2626;
+        border: 1px solid #fecaca;
+    }
+
+    /* Quick tips */
+    .quick-tips ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .quick-tips li {
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: flex-start;
+        gap: 0.5rem;
+        font-size: 0.75rem;
+        color: #4b5563;
+    }
+
+    .quick-tips li::before {
+        content: "✓";
+        color: #10b981;
+        font-weight: bold;
+        flex-shrink: 0;
+    }
+
+    /* Tablet and up */
+    @media (min-width: 768px) {
+        .container {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 2rem;
+            padding: 2rem 0;
+        }
+
+        aside {
+            order: 0; /* Sidebar back to left on larger screens */
+        }
+
+        .edit-container {
+            padding: 2rem;
+        }
+
+        .form-actions {
+            flex-direction: row;
+        }
+
+        .form-actions .btn:last-child {
+            flex: 0 0 auto;
+        }
+
+        .cover-preview {
+            width: 150px;
+            height: 200px;
+        }
+
+        .cover-placeholder {
+            width: 150px;
+            height: 200px;
+        }
+    }
+
+    /* Mobile adjustments */
+    @media (max-width: 640px) {
+        .form-row {
+            grid-template-columns: 1fr;
+        }
+
+        .edit-container {
+            padding: 1rem;
+        }
+
+        .cover-preview {
+            width: 100px;
+            height: 133px;
+        }
+
+        .cover-placeholder {
+            width: 100px;
+            height: 133px;
+        }
+    }
+
+    /* Utility classes */
+    .text-danger {
+        color: #dc2626;
+    }
+
+    .text-center {
+        text-align: center;
+    }
+
+    /* Hide file inputs */
+    input[type="file"] {
+        display: none;
+    }
 </style>
 
-    <?php include dirname(__DIR__) . '/includes/header.php'; ?>
-    
     <main>
-        <div class="container" style="display: grid; grid-template-columns: 280px 1fr; gap: var(--space-6); padding: var(--space-6) 0;">
+        <div class="container">
             <!-- Left Sidebar for User Profile -->
             <aside>
                 <div class="profile-side-card">
-                    <h3 style="font-size: var(--font-size-md); margin-bottom: var(--space-3);">Your Profile</h3>
+                    <h3>Your Profile</h3>
                     <div class="mini-avatar-preview">
                         <img src="<?php 
                             $avatar = $_SESSION['user_avatar'] ?? 'default-avatar.jpg';
                             echo "/uploads/profile/" . $avatar; 
                         ?>" alt="Avatar" id="userAvatarPreview" onerror="this.src='/assets/images/avatars/default.jpg'">
                     </div>
-                    <p style="font-weight: 600; margin-bottom: var(--space-1);"><?php echo htmlspecialchars($currentUserName); ?></p>
-                    <p style="font-size: var(--font-size-xs); color: var(--text-tertiary); margin-bottom: var(--space-4);">Book Owner</p>
+                    <p style="font-weight: 600; margin-bottom: 0.25rem;"><?php echo htmlspecialchars($currentUserName); ?></p>
+                    <p style="font-size: 0.75rem; color: #6b7280; margin-bottom: 1rem;">Book Owner</p>
                     
                     <button type="button" class="btn btn-outline btn-sm btn-block" onclick="document.getElementById('user_profile_pic').click()">
                         <i class="fas fa-camera"></i> Change Photo
                     </button>
-                    <input type="file" name="user_profile_pic" id="user_profile_pic" form="editForm" accept="image/*" style="display: none;" onchange="previewUserAvatar(this)">
+                    <input type="file" name="user_profile_pic" id="user_profile_pic" form="editForm" accept="image/*">
                     
                     <?php if (isset($errors['user_profile_pic'])): ?>
-                        <p class="text-danger" style="font-size: var(--font-size-xs); margin-top: var(--space-2);"><?php echo $errors['user_profile_pic']; ?></p>
+                        <p class="text-danger" style="font-size: 0.75rem; margin-top: 0.5rem;"><?php echo $errors['user_profile_pic']; ?></p>
                     <?php endif; ?>
                 </div>
 
-                <div class="profile-side-card" style="text-align: left;">
-                    <h4 style="font-size: var(--font-size-sm); margin-bottom: var(--space-2);">Quick Tips</h4>
-                    <ul style="font-size: var(--font-size-xs); color: var(--text-secondary); padding-left: var(--space-3);">
-                        <li style="margin-bottom: var(--space-1);">Use a clear front cover image.</li>
-                        <li style="margin-bottom: var(--space-1);">Detailed descriptions help buyers.</li>
+                <div class="profile-side-card quick-tips">
+                    <h4 style="font-size: 0.875rem; margin-bottom: 0.5rem;">Quick Tips</h4>
+                    <ul>
+                        <li>Use a clear front cover image.</li>
+                        <li>Detailed descriptions help buyers.</li>
                         <li>Honest condition reports build trust.</li>
                     </ul>
                 </div>
             </aside>
 
-            <div class="edit-container" style="margin: 0; max-width: none;">
+            <div class="edit-container">
 
                 <!-- Page Header -->
-                <div style="margin-bottom: var(--space-6);">
-                    <div style="display: flex; align-items: center; gap: var(--space-3); margin-bottom: var(--space-2);">
-                        <a href="/book/?id=<?php echo $bookId; ?>" class="btn btn-outline btn-sm">
-                            <i class="fas fa-arrow-left"></i> Back to Book
-                        </a>
-                    </div>
-                    <h1 style="font-size: var(--font-size-xl); margin-bottom: var(--space-2);">
-                        <i class="fas fa-edit" style="color: var(--primary);"></i>
+                <div class="page-header">
+                    <a href="/book/?id=<?php echo $bookId; ?>" class="back-btn">
+                        <i class="fas fa-arrow-left"></i> Back to Book
+                    </a>
+                    <h1>
+                        <i class="fas fa-edit"></i>
                         Edit Book
                     </h1>
-                    <p style="color: var(--text-tertiary);">Update your book information</p>
+                    <p>Update your book information</p>
                 </div>
                 
                 <!-- Error Messages -->
@@ -646,7 +931,7 @@ $currentThumbPath = !empty($coverImage) ? '/uploads/book_cover/thumb_' . $coverI
                 <!-- Edit Form -->
                 <form method="POST" enctype="multipart/form-data" id="editForm">
                     <!-- Cover Image Section -->
-                    <div style="text-align: center; margin-bottom: var(--space-6);">
+                    <div class="cover-section">
                         <label for="cover_image" style="cursor: pointer;">
                             <?php if (!empty($coverImage)): ?>
                                 <div class="cover-preview" id="coverPreview">
@@ -660,13 +945,13 @@ $currentThumbPath = !empty($coverImage) ? '/uploads/book_cover/thumb_' . $coverI
                                 </div>
                             <?php endif; ?>
                         </label>
-                        <input type="file" name="cover_image" id="cover_image" accept="image/jpeg,image/png,image/gif,image/webp" style="display: none;" onchange="previewCover(this)">
+                        <input type="file" name="cover_image" id="cover_image" accept="image/jpeg,image/png,image/gif,image/webp" onchange="previewCover(this)">
                         <div class="image-hint">
                             <i class="fas fa-info-circle"></i>
                             Max size: 10MB. Supported: JPG, PNG, GIF, WebP
                         </div>
                         <?php if (isset($errors['cover_image'])): ?>
-                            <div class="form-error" style="justify-content: center;">
+                            <div class="form-error text-center">
                                 <i class="fas fa-exclamation-circle"></i>
                                 <?php echo htmlspecialchars($errors['cover_image']); ?>
                             </div>
@@ -812,14 +1097,13 @@ $currentThumbPath = !empty($coverImage) ? '/uploads/book_cover/thumb_' . $coverI
                             <div class="form-error"><?php echo $errors['description']; ?></div>
                         <?php endif; ?>
                     </div>
-                    
                     <!-- Form Actions -->
-                    <div style="display: flex; gap: var(--space-3); margin-top: var(--space-6);">
-                        <button type="submit" class="btn btn-primary" style="flex: 2;">
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">
                             <i class="fas fa-save"></i>
                             Save Changes
                         </button>
-                        <a href="/book/?id=<?php echo $bookId; ?>" class="btn btn-outline" style="flex: 1;">
+                        <a href="/book/?id=<?php echo $bookId; ?>" class="btn btn-outline">
                             Cancel
                         </a>
                     </div>
