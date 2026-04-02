@@ -163,7 +163,6 @@ if (!file_exists($fullAvatarPath) || $userAvatar === 'default-avatar.jpg') {
         .logo {
             display: flex;
             align-items: center;
-            gap: 0.5rem;
             text-decoration: none;
             transition: transform 0.2s ease;
         }
@@ -172,27 +171,10 @@ if (!file_exists($fullAvatarPath) || $userAvatar === 'default-avatar.jpg') {
             transform: scale(1.02);
         }
 
-        .logo-icon {
-            width: 36px;
-            height: 36px;
-            border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(99, 102, 241, 0.3);
-            overflow: hidden;
-        }
-
-        .logo-icon img {
-            width: 100%;
-            height: 100%;
+        .logo img {
+            height: 40px;
+            width: auto;
             display: block;
-        }
-
-        .logo-text {
-            font-size: 1.5rem;
-            font-weight: 800;
-            background: linear-gradient(135deg, #0f172a 0%, #6366f1 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
         }
 
         /* Desktop Navigation */
@@ -629,10 +611,7 @@ if (!file_exists($fullAvatarPath) || $userAvatar === 'default-avatar.jpg') {
     <div class="header-container">
         <!-- Logo -->
         <a href="/" class="logo">
-            <div class="logo-icon">
-                <img src="/assets/images/logo-icon.svg" alt="OpenShelf Logo">
-            </div>
-            <span class="logo-text">OpenShelf</span>
+            <img src="/assets/images/logo-full.svg" alt="OpenShelf">
         </a>
 
         <!-- Desktop Navigation -->
