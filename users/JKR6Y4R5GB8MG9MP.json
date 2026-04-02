@@ -33,11 +33,36 @@
             "token": "a8ab767b91fc08e2b02ae4405f9753b8a038f7c1c950b357b20fa07f1f7d94de",
             "expiry": 1777284696,
             "created_at": "2026-03-28 06:11:36",
-            "user_agent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Mobile Safari/537.36",
+            "user_agent": "Mozilla\/5.0 (Linux; Android 10; K) AppleWebKit\/537.36 (KHTML, like Gecko) Chrome\/146.0.0.0 Mobile Safari\/537.36",
             "ip_address": "43.245.120.215"
         }
     ],
     "currently_borrowed": [
         "T4RHPW2V5C"
+    ],
+    "notifications": [
+        {
+            "id": "notif_69c7ac209f4de_12367fea",
+            "user_id": "JKR6Y4R5GB8MG9MP",
+            "type": "announcement",
+            "title": "Test Announcement",
+            "message": "Hi everyone! \r\nHow are you? \r\nThis is first test announcement of OpenShelf.",
+            "link": "\/announcements\/?id=ann_69c7ac1ea2cf7_d8e83412",
+            "icon": "fa-info-circle",
+            "is_read": false,
+            "created_at": "2026-03-28 06:23:28",
+            "expires_at": "2026-04-27 06:22:00"
+        },
+        {
+            "id": "notif_69c7a9ad8abad_6ecbba07",
+            "user_id": "JKR6Y4R5GB8MG9MP",
+            "type": "request_approved",
+            "title": "Borrow Request Approved",
+            "message": "Your request for 'বাঙলানামা' has been approved",
+            "link": "\/requests\/?id=REQ1774692743f236b184",
+            "is_read": false,
+            "created_at": "2026-03-28 06:13:01",
+            "expires_at": "2026-04-27 06:13:01"
+        }
     ]
 }

@@ -59,11 +59,12 @@ if ($isLoggedIn && isset($_SESSION['user_id'])) {
     }
     
     // Get notification count
-    $notifFile = dirname(__DIR__) . '/data/notifications.json';
-    if (file_exists($notifFile)) {
-        $notifications = json_decode(file_get_contents($notifFile), true) ?? [];
+    $userFile = dirname(__DIR__) . '/users/' . $userId . '.json';
+    if (file_exists($userFile)) {
+        $userData = json_decode(file_get_contents($userFile), true);
+        $notifications = $userData['notifications'] ?? [];
         foreach ($notifications as $n) {
-            if (($n['user_id'] ?? '') === $userId && empty($n['is_read'])) {
+            if (empty($n['is_read'])) {
                 $notificationCount++;
             }
         }

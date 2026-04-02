@@ -24,5 +24,6 @@
     "preferences": {
         "notifications": true,
         "privacy": "public"
-    }
+    },
+    "notifications": []
 }

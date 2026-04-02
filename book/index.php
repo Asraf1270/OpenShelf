@@ -130,8 +130,11 @@ function formatPhoneForWhatsApp($phone) {
  * Create notification
  */
 function createNotification($userId, $type, $title, $message, $link) {
-    $notificationsFile = DATA_PATH . 'notifications.json';
-    $notifications = file_exists($notificationsFile) ? json_decode(file_get_contents($notificationsFile), true) : [];
+    $userFile = dirname(__DIR__) . '/users/' . $userId . '.json';
+    if (!file_exists($userFile)) return false;
+    
+    $userData = json_decode(file_get_contents($userFile), true);
+    $notifications = $userData['notifications'] ?? [];
     
     $notifications[] = [
         'id' => 'notif_' . uniqid() . '_' . bin2hex(random_bytes(4)),
@@ -145,7 +148,14 @@ function createNotification($userId, $type, $title, $message, $link) {
         'expires_at' => date('Y-m-d H:i:s', strtotime('+30 days'))
     ];
     
-    return file_put_contents($notificationsFile, json_encode($notifications, JSON_PRETTY_PRINT));
+    // Sort and limit
+    usort($notifications, function($a, $b) {
+        return strtotime($b['created_at']) <=> strtotime($a['created_at']);
+    });
+    $notifications = array_slice($notifications, 0, 25);
+    
+    $userData['notifications'] = $notifications;
+    return file_put_contents($userFile, json_encode($userData, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
 }
 
 // Load detailed book data

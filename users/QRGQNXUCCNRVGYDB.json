@@ -33,11 +33,46 @@
             "token": "1de1c717a6c2949a46a3ee5031b49b6f8c0f4ea4243c83ea6befa6c718ab41ed",
             "expiry": 1777294497,
             "created_at": "2026-03-28 08:54:57",
-            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36",
+            "user_agent": "Mozilla\/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit\/537.36 (KHTML, like Gecko) Chrome\/146.0.0.0 Safari\/537.36",
             "ip_address": "114.130.157.35"
         }
     ],
     "owner_books": [
         "J79QVK4V6W"
+    ],
+    "notifications": [
+        {
+            "id": "notif_69c7df3cb5ac6_7ccc1ca3",
+            "user_id": "QRGQNXUCCNRVGYDB",
+            "type": "return_confirmed",
+            "title": "Return Confirmed",
+            "message": "Your return of \"আজি হতে হাজার বছর আগে\" has been confirmed",
+            "link": "\/requests\/?id=REQ1774704470f674e2da",
+            "is_read": false,
+            "created_at": "2026-03-28 10:01:32",
+            "expires_at": "2026-04-27 10:01:32"
+        },
+        {
+            "id": "notif_69c7df381da4c_85178b6f",
+            "user_id": "QRGQNXUCCNRVGYDB",
+            "type": "return_confirmed",
+            "title": "Return Confirmed",
+            "message": "Your return of \"আজি হতে হাজার বছর আগে\" has been confirmed",
+            "link": "\/requests\/?id=REQ1774704470f674e2da",
+            "is_read": false,
+            "created_at": "2026-03-28 10:01:28",
+            "expires_at": "2026-04-27 10:01:28"
+        },
+        {
+            "id": "notif_69c7d7c21570b_10d6a49e",
+            "user_id": "QRGQNXUCCNRVGYDB",
+            "type": "request_approved",
+            "title": "Borrow Request Approved",
+            "message": "Your request for 'আজি হতে হাজার বছর আগে' has been approved by admin",
+            "link": "\/requests\/?id=REQ1774704470f674e2da",
+            "is_read": true,
+            "created_at": "2026-03-28 09:29:38",
+            "read_at": "2026-03-28 10:00:15"
+        }
     ]
 }

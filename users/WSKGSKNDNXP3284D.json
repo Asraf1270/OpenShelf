@@ -23,5 +23,15 @@
     "preferences": {
         "notifications": true,
         "privacy": "public"
-    }
+    },
+    "notifications": [
+        {
+            "id": "69b143c41e50d",
+            "type": "new_registration",
+            "user_id": "WSKGSKNDNXP3284D",
+            "message": "New user registration: Md. Asraful Islam (mdasraful-2024917555@amath.du.ac.bd)",
+            "is_read": false,
+            "created_at": "2026-03-11 06:28:20"
+        }
+    ]
 }

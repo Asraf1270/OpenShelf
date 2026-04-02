@@ -22,29 +22,28 @@ $currentUserId = $_SESSION['user_id'];
 $currentUserName = $_SESSION['user_name'] ?? 'User';
 
 /**
- * Load all notifications
+ * Load user's notifications from their file
  */
-function loadAllNotifications() {
-    $notificationsFile = DATA_PATH . 'notifications.json';
-    if (!file_exists($notificationsFile)) {
+function loadUserNotifications($userId) {
+    $userFile = USERS_PATH . $userId . '.json';
+    if (!file_exists($userFile)) {
         return [];
     }
-    return json_decode(file_get_contents($notificationsFile), true) ?? [];
+    $userData = json_decode(file_get_contents($userFile), true);
+    return $userData['notifications'] ?? [];
 }
 
 /**
  * Get user's notifications
  */
 function getUserNotifications($userId, $includeRead = true) {
-    $allNotifications = loadAllNotifications();
-    $userNotifications = array_filter($allNotifications, function($n) use ($userId) {
-        return ($n['user_id'] ?? '') === $userId;
-    });
+    $userNotifications = loadUserNotifications($userId);
     
     if (!$includeRead) {
         $userNotifications = array_filter($userNotifications, fn($n) => empty($n['is_read']));
     }
     
+    // Already sorted in migration, but ensure
     usort($userNotifications, fn($a, $b) => strtotime($b['created_at']) - strtotime($a['created_at']));
     return $userNotifications;
 }
@@ -53,14 +52,15 @@ function getUserNotifications($userId, $includeRead = true) {
  * Mark notification as read
  */
 function markAsRead($notificationId, $userId) {
-    $notificationsFile = DATA_PATH . 'notifications.json';
-    if (!file_exists($notificationsFile)) return false;
+    $userFile = USERS_PATH . $userId . '.json';
+    if (!file_exists($userFile)) return false;
     
-    $notifications = json_decode(file_get_contents($notificationsFile), true);
+    $userData = json_decode(file_get_contents($userFile), true);
+    $notifications = $userData['notifications'] ?? [];
     $updated = false;
     
     foreach ($notifications as &$n) {
-        if ($n['id'] === $notificationId && $n['user_id'] === $userId) {
+        if ($n['id'] === $notificationId) {
             $n['is_read'] = true;
             $n['read_at'] = date('Y-m-d H:i:s');
             $updated = true;
@@ -69,7 +69,8 @@ function markAsRead($notificationId, $userId) {
     }
     
     if ($updated) {
-        return file_put_contents($notificationsFile, json_encode($notifications, JSON_PRETTY_PRINT));
+        $userData['notifications'] = $notifications;
+        return file_put_contents($userFile, json_encode($userData, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
     }
     return false;
 }
@@ -78,14 +79,15 @@ function markAsRead($notificationId, $userId) {
  * Mark all notifications as read
  */
 function markAllAsRead($userId) {
-    $notificationsFile = DATA_PATH . 'notifications.json';
-    if (!file_exists($notificationsFile)) return false;
+    $userFile = USERS_PATH . $userId . '.json';
+    if (!file_exists($userFile)) return false;
     
-    $notifications = json_decode(file_get_contents($notificationsFile), true);
+    $userData = json_decode(file_get_contents($userFile), true);
+    $notifications = $userData['notifications'] ?? [];
     $updated = false;
     
     foreach ($notifications as &$n) {
-        if ($n['user_id'] === $userId && empty($n['is_read'])) {
+        if (empty($n['is_read'])) {
             $n['is_read'] = true;
             $n['read_at'] = date('Y-m-d H:i:s');
             $updated = true;
@@ -93,7 +95,8 @@ function markAllAsRead($userId) {
     }
     
     if ($updated) {
-        return file_put_contents($notificationsFile, json_encode($notifications, JSON_PRETTY_PRINT));
+        $userData['notifications'] = $notifications;
+        return file_put_contents($userFile, json_encode($userData, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
     }
     return false;
 }

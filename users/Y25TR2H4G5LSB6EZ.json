@@ -33,7 +33,7 @@
             "token": "65819b1c507ff4df61ca790d49e4eadb11b40053f055fc8cfa81776d0b6c731e",
             "expiry": 1777289330,
             "created_at": "2026-03-28 07:28:50",
-            "user_agent": "Mozilla/5.0 (Linux; Android 13; en; TECNO KI7 Build/SP1A.210812.016) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.7680.119 HiBrowser/v2.25.10.2;lang=en;nation=BD;locale=en_US UWS/ Mobile Safari/537.36",
+            "user_agent": "Mozilla\/5.0 (Linux; Android 13; en; TECNO KI7 Build\/SP1A.210812.016) AppleWebKit\/537.36 (KHTML, like Gecko) Chrome\/146.0.7680.119 HiBrowser\/v2.25.10.2;lang=en;nation=BD;locale=en_US UWS\/ Mobile Safari\/537.36",
             "ip_address": "103.230.104.28"
         }
     ],
@@ -55,6 +55,196 @@
             "book_id": "T4RHPW2V5C",
             "returned_at": "2026-03-28 08:08:48",
             "status": "completed"
+        }
+    ],
+    "notifications": [
+        {
+            "id": "notif_69c7dfda4f209_abd16fc2",
+            "user_id": "Y25TR2H4G5LSB6EZ",
+            "type": "request_rejected",
+            "title": "Borrow Request Rejected",
+            "message": "Your request for 'প্রোডাক্টিভ মুসলিম' has been rejected: Hsj js sjs js ks sks",
+            "link": "\/requests\/?id=REQ177470646593d4d254",
+            "is_read": false,
+            "created_at": "2026-03-28 10:04:10",
+            "expires_at": "2026-04-27 10:04:10"
+        },
+        {
+            "id": "notif_69c7dfd02047a_27162798",
+            "user_id": "Y25TR2H4G5LSB6EZ",
+            "type": "request_rejected",
+            "title": "Borrow Request Rejected",
+            "message": "Your request for 'বাঙলানামা' has been rejected: Usb is is sosv is",
+            "link": "\/requests\/?id=REQ1774706518952e83ae",
+            "is_read": false,
+            "created_at": "2026-03-28 10:04:00",
+            "expires_at": "2026-04-27 10:04:00"
+        },
+        {
+            "id": "notif_69c7dfc12c56a_d04c95a6",
+            "user_id": "Y25TR2H4G5LSB6EZ",
+            "type": "request_approved",
+            "title": "Borrow Request Approved",
+            "message": "Your request for 'বাঙলানামা' has been approved",
+            "link": "\/requests\/?id=REQ177470519264db0710",
+            "is_read": false,
+            "created_at": "2026-03-28 10:03:45",
+            "expires_at": "2026-04-27 10:03:45"
+        },
+        {
+            "id": "notif_69c7df0c26ba4_ce7a319c",
+            "user_id": "Y25TR2H4G5LSB6EZ",
+            "type": "return_confirmed",
+            "title": "Return Confirmed",
+            "message": "Your return of \"বাঙলানামা\" has been confirmed",
+            "link": "\/requests\/?id=REQ177470519264db0710",
+            "is_read": false,
+            "created_at": "2026-03-28 10:00:44",
+            "expires_at": "2026-04-27 10:00:44"
+        },
+        {
+            "id": "notif_69c7df04aeb21_035c34df",
+            "user_id": "Y25TR2H4G5LSB6EZ",
+            "type": "return_confirmed",
+            "title": "Return Confirmed",
+            "message": "Your return of \"বাঙলানামা\" has been confirmed",
+            "link": "\/requests\/?id=REQ177470519264db0710",
+            "is_read": false,
+            "created_at": "2026-03-28 10:00:36",
+            "expires_at": "2026-04-27 10:00:36"
+        },
+        {
+            "id": "notif_69c7deed1a212_c0ac3937",
+            "user_id": "Y25TR2H4G5LSB6EZ",
+            "type": "request_approved",
+            "title": "Borrow Request Approved",
+            "message": "Your request for 'বাঙলানামা' has been approved",
+            "link": "\/requests\/?id=REQ177470519264db0710",
+            "is_read": false,
+            "created_at": "2026-03-28 10:00:13",
+            "expires_at": "2026-04-27 10:00:13"
+        },
+        {
+            "id": "notif_69c7d61690517_71378829",
+            "user_id": "Y25TR2H4G5LSB6EZ",
+            "type": "return_confirmed",
+            "title": "Return Confirmed",
+            "message": "Your return of \"বাঙলানামা\" has been confirmed",
+            "link": "\/requests\/?id=REQ177470407215618941",
+            "is_read": false,
+            "created_at": "2026-03-28 09:22:30",
+            "expires_at": "2026-04-27 09:22:30"
+        },
+        {
+            "id": "notif_69c7d5fb7bbbe_6d50f542",
+            "user_id": "Y25TR2H4G5LSB6EZ",
+            "type": "request_approved",
+            "title": "Borrow Request Approved",
+            "message": "Your request for 'বাঙলানামা' has been approved",
+            "link": "\/requests\/?id=REQ177470407215618941",
+            "is_read": false,
+            "created_at": "2026-03-28 09:22:03",
+            "expires_at": "2026-04-27 09:22:03"
+        },
+        {
+            "id": "notif_69c7d5f60b3ea_1ddf3139",
+            "user_id": "Y25TR2H4G5LSB6EZ",
+            "type": "request_rejected",
+            "title": "Borrow Request Rejected",
+            "message": "Your request for 'বাঙলানামা' has been rejected: G vgcuhkb jvh j b ubibif",
+            "link": "\/requests\/?id=REQ1774704029611546b8",
+            "is_read": false,
+            "created_at": "2026-03-28 09:21:58",
+            "expires_at": "2026-04-27 09:21:58"
+        },
+        {
+            "id": "notif_69c7d5b81092f_c17c816b",
+            "user_id": "Y25TR2H4G5LSB6EZ",
+            "type": "request_rejected",
+            "title": "Borrow Request Rejected",
+            "message": "Your request for 'বাঙলানামা' has been rejected: G vgcuhkb jvh j b ubibif",
+            "link": "\/requests\/?id=REQ1774704029611546b8",
+            "is_read": false,
+            "created_at": "2026-03-28 09:20:56",
+            "expires_at": "2026-04-27 09:20:56"
+        },
+        {
+            "id": "notif_69c7d5a7b35d5_780cfba8",
+            "user_id": "Y25TR2H4G5LSB6EZ",
+            "type": "request_approved",
+            "title": "Borrow Request Approved",
+            "message": "Your request for 'বাঙলানামা' has been approved",
+            "link": "\/requests\/?id=REQ177469967294f0f6ca",
+            "is_read": false,
+            "created_at": "2026-03-28 09:20:39",
+            "expires_at": "2026-04-27 09:20:39"
+        },
+        {
+            "id": "notif_69c7c4ad5b9c6_97fac4f0",
+            "user_id": "Y25TR2H4G5LSB6EZ",
+            "type": "request_approved",
+            "title": "Borrow Request Approved",
+            "message": "Your request for 'বাঙলানামা' has been approved",
+            "link": "\/requests\/?id=REQ177469967294f0f6ca",
+            "is_read": false,
+            "created_at": "2026-03-28 08:08:13",
+            "expires_at": "2026-04-27 08:08:13"
+        },
+        {
+            "id": "notif_69c7c488cf086_6e6bf306",
+            "user_id": "Y25TR2H4G5LSB6EZ",
+            "type": "request_rejected",
+            "title": "Borrow Request Rejected",
+            "message": "Your request for 'বাঙলানামা' has been rejected: Uvh hcy h h h h h g h h ych h k",
+            "link": "\/requests\/?id=REQ17746996069349c52e",
+            "is_read": false,
+            "created_at": "2026-03-28 08:07:36",
+            "expires_at": "2026-04-27 08:07:36"
+        },
+        {
+            "id": "notif_69c7be771eb25_f6b7f3be",
+            "user_id": "Y25TR2H4G5LSB6EZ",
+            "type": "request_approved",
+            "title": "Borrow Request Approved",
+            "message": "Your request for 'বাঙলানামা' has been approved",
+            "link": "\/requests\/?id=REQ177469807822c9a0dd",
+            "is_read": false,
+            "created_at": "2026-03-28 07:41:43",
+            "expires_at": "2026-04-27 07:41:43"
+        },
+        {
+            "id": "notif_69c7be4610788_4e4dd7b4",
+            "user_id": "Y25TR2H4G5LSB6EZ",
+            "type": "request_rejected",
+            "title": "Borrow Request Rejected",
+            "message": "Your request for 'বাঙলানামা' has been rejected: Hvjvj. Jvh j h j h h h",
+            "link": "\/requests\/?id=REQ17746980242be0e7f8",
+            "is_read": false,
+            "created_at": "2026-03-28 07:40:54",
+            "expires_at": "2026-04-27 07:40:54"
+        },
+        {
+            "id": "notif_69c7bbfa8925a_995ce93d",
+            "user_id": "Y25TR2H4G5LSB6EZ",
+            "type": "request_approved",
+            "title": "Borrow Request Approved",
+            "message": "Your request for 'বাঙলানামা' has been approved",
+            "link": "\/requests\/?id=REQ177469718478f4364b",
+            "is_read": true,
+            "created_at": "2026-03-28 07:31:06",
+            "expires_at": "2026-04-27 07:31:06",
+            "read_at": "2026-03-28 07:31:18"
+        },
+        {
+            "id": "notif_69c7b1db512ee_9a5f7b4a",
+            "user_id": "Y25TR2H4G5LSB6EZ",
+            "type": "request_rejected",
+            "title": "Borrow Request Rejected",
+            "message": "Your request for 'প্রোডাক্টিভ মুসলিম' has been rejected: Hcb hc uch uvj u",
+            "link": "\/requests\/?id=REQ177469482803e1a684",
+            "is_read": false,
+            "created_at": "2026-03-28 06:47:55",
+            "expires_at": "2026-04-27 06:47:55"
         }
     ]
 }

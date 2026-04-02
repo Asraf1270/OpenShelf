@@ -121,8 +121,11 @@ function updateBookStatus($bookId, $status) {
  * Create in-app notification for owner
  */
 function createOwnerNotification($ownerId, $borrowerName, $bookTitle, $requestId) {
-    $notificationsFile = DATA_PATH . 'notifications.json';
-    $notifications = file_exists($notificationsFile) ? json_decode(file_get_contents($notificationsFile), true) : [];
+    $userFile = dirname(__DIR__) . '/users/' . $ownerId . '.json';
+    if (!file_exists($userFile)) return false;
+    
+    $userData = json_decode(file_get_contents($userFile), true);
+    $notifications = $userData['notifications'] ?? [];
     
     $notifications[] = [
         'id' => 'notif_' . uniqid() . '_' . bin2hex(random_bytes(4)),
@@ -135,7 +138,16 @@ function createOwnerNotification($ownerId, $borrowerName, $bookTitle, $requestId
         'created_at' => date('Y-m-d H:i:s')
     ];
     
-    return file_put_contents($notificationsFile, json_encode($notifications, JSON_PRETTY_PRINT));
+    // Sort by created_at desc
+    usort($notifications, function($a, $b) {
+        return strtotime($b['created_at']) <=> strtotime($a['created_at']);
+    });
+    
+    // Limit to 25
+    $notifications = array_slice($notifications, 0, 25);
+    
+    $userData['notifications'] = $notifications;
+    return file_put_contents($userFile, json_encode($userData, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
 }
 
 /**

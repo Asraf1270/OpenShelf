@@ -9,6 +9,7 @@ header('Content-Type: application/json');
 
 // Configuration
 define('DATA_PATH', dirname(__DIR__) . '/data/');
+define('USERS_PATH', dirname(__DIR__) . '/users/');
 
 // Check if user is logged in
 if (!isset($_SESSION['user_id'])) {
@@ -23,55 +24,55 @@ $currentUserId = $_SESSION['user_id'];
  * Load notifications for current user
  */
 function loadUserNotifications($userId, $limit = 50, $includeRead = false) {
-    $notificationsFile = DATA_PATH . 'notifications.json';
+    $userFile = USERS_PATH . $userId . '.json';
     
-    if (!file_exists($notificationsFile)) {
+    if (!file_exists($userFile)) {
         return [];
     }
     
-    $allNotifications = json_decode(file_get_contents($notificationsFile), true) ?? [];
-    $userNotifications = [];
+    $userData = json_decode(file_get_contents($userFile), true);
+    $userNotifications = $userData['notifications'] ?? [];
     
-    foreach ($allNotifications as $notification) {
-        if ($notification['user_id'] === $userId) {
-            // Filter out read notifications if not including them
-            if (!$includeRead && $notification['is_read']) {
-                continue;
-            }
-            
-            // Check if notification has expired
-            if (isset($notification['expires_at']) && strtotime($notification['expires_at']) < time()) {
-                continue;
-            }
-            
-            $userNotifications[] = $notification;
+    $filteredNotifications = [];
+    foreach ($userNotifications as $notification) {
+        // Filter out read notifications if not including them
+        if (!$includeRead && $notification['is_read']) {
+            continue;
         }
+        
+        // Check if notification has expired
+        if (isset($notification['expires_at']) && strtotime($notification['expires_at']) < time()) {
+            continue;
+        }
+        
+        $filteredNotifications[] = $notification;
     }
     
-    // Sort by created_at (newest first)
-    usort($userNotifications, function($a, $b) {
+    // Already sorted, but ensure
+    usort($filteredNotifications, function($a, $b) {
         return strtotime($b['created_at']) - strtotime($a['created_at']);
     });
     
     // Apply limit
-    return array_slice($userNotifications, 0, $limit);
+    return array_slice($filteredNotifications, 0, $limit);
 }
 
 /**
  * Mark notification as read
  */
 function markAsRead($notificationId, $userId) {
-    $notificationsFile = DATA_PATH . 'notifications.json';
+    $userFile = USERS_PATH . $userId . '.json';
     
-    if (!file_exists($notificationsFile)) {
+    if (!file_exists($userFile)) {
         return false;
     }
     
-    $notifications = json_decode(file_get_contents($notificationsFile), true) ?? [];
+    $userData = json_decode(file_get_contents($userFile), true);
+    $notifications = $userData['notifications'] ?? [];
     $updated = false;
     
     foreach ($notifications as &$notification) {
-        if ($notification['id'] === $notificationId && $notification['user_id'] === $userId) {
+        if ($notification['id'] === $notificationId) {
             $notification['is_read'] = true;
             $notification['read_at'] = date('Y-m-d H:i:s');
             $updated = true;
@@ -80,9 +81,10 @@ function markAsRead($notificationId, $userId) {
     }
     
     if ($updated) {
+        $userData['notifications'] = $notifications;
         return file_put_contents(
-            $notificationsFile,
-            json_encode($notifications, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)
+            $userFile,
+            json_encode($userData, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)
         );
     }
     
@@ -93,17 +95,18 @@ function markAsRead($notificationId, $userId) {
  * Mark all notifications as read for user
  */
 function markAllAsRead($userId) {
-    $notificationsFile = DATA_PATH . 'notifications.json';
+    $userFile = USERS_PATH . $userId . '.json';
     
-    if (!file_exists($notificationsFile)) {
+    if (!file_exists($userFile)) {
         return false;
     }
     
-    $notifications = json_decode(file_get_contents($notificationsFile), true) ?? [];
+    $userData = json_decode(file_get_contents($userFile), true);
+    $notifications = $userData['notifications'] ?? [];
     $updated = false;
     
     foreach ($notifications as &$notification) {
-        if ($notification['user_id'] === $userId && !$notification['is_read']) {
+        if (!$notification['is_read']) {
             $notification['is_read'] = true;
             $notification['read_at'] = date('Y-m-d H:i:s');
             $updated = true;
@@ -111,9 +114,10 @@ function markAllAsRead($userId) {
     }
     
     if ($updated) {
+        $userData['notifications'] = $notifications;
         return file_put_contents(
-            $notificationsFile,
-            json_encode($notifications, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)
+            $userFile,
+            json_encode($userData, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)
         );
     }
     
@@ -124,21 +128,23 @@ function markAllAsRead($userId) {
  * Delete notification
  */
 function deleteNotification($notificationId, $userId) {
-    $notificationsFile = DATA_PATH . 'notifications.json';
+    $userFile = USERS_PATH . $userId . '.json';
     
-    if (!file_exists($notificationsFile)) {
+    if (!file_exists($userFile)) {
         return false;
     }
     
-    $notifications = json_decode(file_get_contents($notificationsFile), true) ?? [];
-    $filtered = array_filter($notifications, function($notification) use ($notificationId, $userId) {
-        return !($notification['id'] === $notificationId && $notification['user_id'] === $userId);
+    $userData = json_decode(file_get_contents($userFile), true);
+    $notifications = $userData['notifications'] ?? [];
+    $filtered = array_filter($notifications, function($notification) use ($notificationId) {
+        return $notification['id'] !== $notificationId;
     });
     
     if (count($filtered) !== count($notifications)) {
+        $userData['notifications'] = array_values($filtered);
         return file_put_contents(
-            $notificationsFile,
-            json_encode(array_values($filtered), JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)
+            $userFile,
+            json_encode($userData, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)
         );
     }
     

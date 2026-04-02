@@ -212,17 +212,28 @@ function updateOwnerLentList($userId, $bookId, $action) {
             'returned_at' => date('Y-m-d H:i:s'),
             'returned_by' => $GLOBALS['currentUserId']
         ];
+        
+        // Sort lent_history by date desc and limit to 25
+        usort($userData['lent_history'], function($a, $b) {
+            $dateA = $a['returned_at'] ?? $a['date'] ?? '1970-01-01';
+            $dateB = $b['returned_at'] ?? $b['date'] ?? '1970-01-01';
+            return strtotime($dateB) <=> strtotime($dateA);
+        });
+        $userData['lent_history'] = array_slice($userData['lent_history'], 0, 25);
     }
     
-    return file_put_contents($userFile, json_encode($userData, JSON_PRETTY_PRINT));
+    return file_put_contents($userFile, json_encode($userData, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
 }
 
 /**
  * Create notification for user
  */
 function createNotification($userId, $type, $title, $message, $link) {
-    $notificationsFile = DATA_PATH . 'notifications.json';
-    $notifications = file_exists($notificationsFile) ? json_decode(file_get_contents($notificationsFile), true) : [];
+    $userFile = dirname(__DIR__) . '/users/' . $userId . '.json';
+    if (!file_exists($userFile)) return false;
+    
+    $userData = json_decode(file_get_contents($userFile), true);
+    $notifications = $userData['notifications'] ?? [];
     
     $notifications[] = [
         'id' => 'notif_' . uniqid() . '_' . bin2hex(random_bytes(4)),
@@ -236,7 +247,14 @@ function createNotification($userId, $type, $title, $message, $link) {
         'expires_at' => date('Y-m-d H:i:s', strtotime('+30 days'))
     ];
     
-    return file_put_contents($notificationsFile, json_encode($notifications, JSON_PRETTY_PRINT));
+    // Sort and limit
+    usort($notifications, function($a, $b) {
+        return strtotime($b['created_at']) <=> strtotime($a['created_at']);
+    });
+    $notifications = array_slice($notifications, 0, 25);
+    
+    $userData['notifications'] = $notifications;
+    return file_put_contents($userFile, json_encode($userData, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
 }
 
 // Get request ID from URL

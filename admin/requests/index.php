@@ -188,13 +188,17 @@ function extendReturnDate($requestId, $additionalDays, $reason = '') {
  * Create notification for user
  */
 function createNotification($request, $status) {
-    $notificationsFile = DATA_PATH . 'notifications.json';
-    $notifications = file_exists($notificationsFile) ? json_decode(file_get_contents($notificationsFile), true) : [];
+    $userId = $request['borrower_id'];
+    $userFile = dirname(dirname(__DIR__)) . '/users/' . $userId . '.json';
+    if (!file_exists($userFile)) return;
+    
+    $userData = json_decode(file_get_contents($userFile), true);
+    $notifications = $userData['notifications'] ?? [];
     
     if ($status === 'approved') {
         $notification = [
             'id' => 'notif_' . uniqid() . '_' . bin2hex(random_bytes(4)),
-            'user_id' => $request['borrower_id'],
+            'user_id' => $userId,
             'type' => 'request_approved',
             'title' => 'Borrow Request Approved',
             'message' => "Your request for '{$request['book_title']}' has been approved by admin",
@@ -206,7 +210,7 @@ function createNotification($request, $status) {
     } elseif ($status === 'rejected') {
         $notification = [
             'id' => 'notif_' . uniqid() . '_' . bin2hex(random_bytes(4)),
-            'user_id' => $request['borrower_id'],
+            'user_id' => $userId,
             'type' => 'request_rejected',
             'title' => 'Borrow Request Rejected',
             'message' => "Your request for '{$request['book_title']}' has been rejected by admin",
@@ -218,7 +222,7 @@ function createNotification($request, $status) {
     } elseif ($status === 'closed') {
         $notification = [
             'id' => 'notif_' . uniqid() . '_' . bin2hex(random_bytes(4)),
-            'user_id' => $request['borrower_id'],
+            'user_id' => $userId,
             'type' => 'request_closed',
             'title' => 'Borrow Request Closed',
             'message' => "Your borrow request for '{$request['book_title']}' has been closed by admin",
@@ -229,19 +233,30 @@ function createNotification($request, $status) {
         $notifications[] = $notification;
     }
     
-    file_put_contents($notificationsFile, json_encode($notifications, JSON_PRETTY_PRINT));
+    // Sort and limit
+    usort($notifications, function($a, $b) {
+        return strtotime($b['created_at']) <=> strtotime($a['created_at']);
+    });
+    $notifications = array_slice($notifications, 0, 25);
+    
+    $userData['notifications'] = $notifications;
+    file_put_contents($userFile, json_encode($userData, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
 }
 
 /**
  * Create extension notification
  */
 function createExtensionNotification($request, $additionalDays) {
-    $notificationsFile = DATA_PATH . 'notifications.json';
-    $notifications = file_exists($notificationsFile) ? json_decode(file_get_contents($notificationsFile), true) : [];
+    $userId = $request['borrower_id'];
+    $userFile = dirname(dirname(__DIR__)) . '/users/' . $userId . '.json';
+    if (!file_exists($userFile)) return;
+    
+    $userData = json_decode(file_get_contents($userFile), true);
+    $notifications = $userData['notifications'] ?? [];
     
     $notification = [
         'id' => 'notif_' . uniqid() . '_' . bin2hex(random_bytes(4)),
-        'user_id' => $request['borrower_id'],
+        'user_id' => $userId,
         'type' => 'return_date_extended',
         'title' => 'Return Date Extended',
         'message' => "Your return date for '{$request['book_title']}' has been extended by {$additionalDays} days",
@@ -251,7 +266,14 @@ function createExtensionNotification($request, $additionalDays) {
     ];
     $notifications[] = $notification;
     
-    file_put_contents($notificationsFile, json_encode($notifications, JSON_PRETTY_PRINT));
+    // Sort and limit
+    usort($notifications, function($a, $b) {
+        return strtotime($b['created_at']) <=> strtotime($a['created_at']);
+    });
+    $notifications = array_slice($notifications, 0, 25);
+    
+    $userData['notifications'] = $notifications;
+    file_put_contents($userFile, json_encode($userData, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
 }
 
 /**
