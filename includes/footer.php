@@ -14,7 +14,7 @@
                 <!-- Brand Column -->
                 <div class="footer-section">
                     <div class="footer-logo">
-                        <i class="fas fa-book-open"></i>
+                        <img src="/assets/images/logo-icon.svg" alt="OpenShelf" class="footer-logo-img">
                         <span>OpenShelf</span>
                     </div>
                     <p class="footer-tagline">
@@ -127,15 +127,16 @@
         .footer-logo {
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: 0.75rem;
             font-size: 1.5rem;
             font-weight: 700;
             color: white;
         }
 
-        .footer-logo i {
-            color: #6366f1;
-            font-size: 1.8rem;
+        .footer-logo-img {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
         }
 
         .footer-logo span {

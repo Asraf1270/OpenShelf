@@ -337,6 +337,8 @@ if (isset($_GET['redirect'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - OpenShelf</title>
+    <link rel="icon" type="image/svg+xml" href="/assets/images/logo-icon.svg">
+    <link rel="apple-touch-icon" href="/assets/images/logo-icon.svg">
     <link rel="stylesheet" href="/assets/css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -445,12 +447,11 @@ if (isset($_GET['redirect'])) {
         }
 
         .brand-logo {
-            font-size: 3rem;
-            background: linear-gradient(135deg, #fff 0%, #cbd5e1 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            width: 72px;
+            height: 72px;
+            border-radius: 20px;
             margin-bottom: 0.75rem;
-            display: inline-block;
+            filter: drop-shadow(0 4px 15px rgba(99, 102, 241, 0.4));
         }
 
         .login-header h1 {
@@ -730,7 +731,7 @@ if (isset($_GET['redirect'])) {
 
         <div class="login-card">
             <div class="login-header">
-                <i class="fas fa-book-open brand-logo"></i>
+                <img src="/assets/images/logo-icon.svg" alt="OpenShelf" class="brand-logo">
                 <h1>OpenShelf</h1>
                 <p>Login to your portal</p>
             </div>

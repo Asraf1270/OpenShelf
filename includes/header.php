@@ -88,6 +88,10 @@ if (!file_exists($fullAvatarPath) || $userAvatar === 'default-avatar.jpg') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>OpenShelf - Share Books, Share Knowledge</title>
     
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/assets/images/logo-icon.svg">
+    <link rel="apple-touch-icon" href="/assets/images/logo-icon.svg">
+    
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
@@ -171,14 +175,15 @@ if (!file_exists($fullAvatarPath) || $userAvatar === 'default-avatar.jpg') {
         .logo-icon {
             width: 36px;
             height: 36px;
-            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 1.2rem;
+            border-radius: 10px;
             box-shadow: 0 4px 10px rgba(99, 102, 241, 0.3);
+            overflow: hidden;
+        }
+
+        .logo-icon img {
+            width: 100%;
+            height: 100%;
+            display: block;
         }
 
         .logo-text {
@@ -625,7 +630,7 @@ if (!file_exists($fullAvatarPath) || $userAvatar === 'default-avatar.jpg') {
         <!-- Logo -->
         <a href="/" class="logo">
             <div class="logo-icon">
-                <i class="fas fa-book-open"></i>
+                <img src="/assets/images/logo-icon.svg" alt="OpenShelf Logo">
             </div>
             <span class="logo-text">OpenShelf</span>
         </a>

@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <!-- Primary brand gradient -->
+    <linearGradient id="brandGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#6366f1"/>
+      <stop offset="100%" style="stop-color:#8b5cf6"/>
+    </linearGradient>
+    <!-- Lighter accent gradient for book pages -->
+    <linearGradient id="pageGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#a5b4fc"/>
+      <stop offset="100%" style="stop-color:#c4b5fd"/>
+    </linearGradient>
+    <!-- Subtle shadow -->
+    <filter id="iconShadow" x="-10%" y="-10%" width="120%" height="130%">
+      <feDropShadow dx="0" dy="4" stdDeviation="8" flood-color="#6366f1" flood-opacity="0.25"/>
+    </filter>
+  </defs>
+
+  <!-- Rounded square background -->
+  <rect x="16" y="16" width="480" height="480" rx="96" ry="96" fill="url(#brandGradient)" filter="url(#iconShadow)"/>
+
+  <!-- Shelf base line -->
+  <rect x="116" y="340" width="280" height="16" rx="8" ry="8" fill="rgba(255,255,255,0.3)"/>
+
+  <!-- Left book page (angled) -->
+  <path d="M256 160 L148 200 L148 320 L256 280 Z" fill="white" opacity="0.95"/>
+
+  <!-- Right book page (angled) -->
+  <path d="M256 160 L364 200 L364 320 L256 280 Z" fill="white" opacity="0.75"/>
+
+  <!-- Book spine center line -->
+  <line x1="256" y1="160" x2="256" y2="280" stroke="url(#brandGradient)" stroke-width="3" opacity="0.4"/>
+
+  <!-- Left page lines (text representation) -->
+  <line x1="175" y1="225" x2="240" y2="210" stroke="url(#pageGradient)" stroke-width="3" stroke-linecap="round" opacity="0.5"/>
+  <line x1="175" y1="245" x2="235" y2="232" stroke="url(#pageGradient)" stroke-width="3" stroke-linecap="round" opacity="0.4"/>
+  <line x1="175" y1="265" x2="225" y2="254" stroke="url(#pageGradient)" stroke-width="3" stroke-linecap="round" opacity="0.3"/>
+
+  <!-- Right page lines (text representation) -->
+  <line x1="272" y1="210" x2="337" y2="225" stroke="url(#pageGradient)" stroke-width="3" stroke-linecap="round" opacity="0.5"/>
+  <line x1="277" y1="232" x2="337" y2="245" stroke="url(#pageGradient)" stroke-width="3" stroke-linecap="round" opacity="0.4"/>
+  <line x1="287" y1="254" x2="337" y2="265" stroke="url(#pageGradient)" stroke-width="3" stroke-linecap="round" opacity="0.3"/>
+
+  <!-- Small decorative books on shelf (left) -->
+  <rect x="126" y="308" width="18" height="32" rx="3" ry="3" fill="white" opacity="0.3" transform="rotate(-4, 135, 324)"/>
+  <rect x="148" y="310" width="14" height="30" rx="3" ry="3" fill="white" opacity="0.25"/>
+
+  <!-- Small decorative books on shelf (right) -->
+  <rect x="350" y="310" width="14" height="30" rx="3" ry="3" fill="white" opacity="0.25"/>
+  <rect x="368" y="308" width="18" height="32" rx="3" ry="3" fill="white" opacity="0.3" transform="rotate(4, 377, 324)"/>
+
+  <!-- Sharing arrows (subtle, representing community sharing) -->
+  <g opacity="0.5" fill="white">
+    <!-- Arrow curving right -->
+    <path d="M290 145 C310 125, 330 130, 330 145" stroke="white" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <polygon points="330,140 336,147 328,150" fill="white"/>
+    <!-- Arrow curving left -->
+    <path d="M222 145 C202 125, 182 130, 182 145" stroke="white" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <polygon points="182,140 176,147 184,150" fill="white"/>
+  </g>
+</svg>

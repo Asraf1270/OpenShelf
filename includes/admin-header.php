@@ -17,6 +17,8 @@ $adminRole = $_SESSION['admin_role'] ?? 'admin';
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>OpenShelf Admin Panel</title>
+    <link rel="icon" type="image/svg+xml" href="/assets/images/logo-icon.svg">
+    <link rel="apple-touch-icon" href="/assets/images/logo-icon.svg">
     <link rel="stylesheet" href="/assets/css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
@@ -89,8 +91,10 @@ $adminRole = $_SESSION['admin_role'] ?? 'admin';
             letter-spacing: -1px;
         }
 
-        .sidebar-logo i {
-            color: var(--primary);
+        .sidebar-logo-img {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
             filter: drop-shadow(0 0 10px rgba(99, 102, 241, 0.5));
         }
 
@@ -379,7 +383,7 @@ $adminRole = $_SESSION['admin_role'] ?? 'admin';
         <aside class="admin-sidebar" id="adminSidebar">
             <div class="sidebar-header">
                 <a href="/admin/dashboard/" class="sidebar-logo">
-                    <i class="fas fa-book-open"></i>
+                    <img src="/assets/images/logo-icon.svg" alt="OpenShelf" class="sidebar-logo-img">
                     <span>OpenShelf</span>
                 </a>
                 <div class="sidebar-badge">
