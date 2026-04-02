@@ -1,10 +1,21 @@
 # 📚 OpenShelf — Community Library Management System
 
-[![Version](https://img.shields.io/badge/version-1.2.0-blue.svg)](https://github.com/Asraf1270/OpenShelf/releases/tag/v1.2.0)
+[![Version](https://img.shields.io/badge/version-1.3.0-blue.svg)](https://github.com/Asraf1270/OpenShelf/releases/tag/v1.3.0)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![PHP](https://img.shields.io/badge/PHP-7.4%2B-777bb4.svg)](https://www.php.net/)
 
 **OpenShelf** is a modern, open-source library management system designed for communities, universities, and book clubs. It empowers users to share, borrow, and manage books effortlessly through a **premium, glassmorphic interface** that feels alive and responsive.
+
+---
+
+## ✨ What's New in v1.3.0
+
+This release, v1.3.0, introduces significant improvements to data management and system performance by restructuring notification storage:
+- 📊 **Per-User Notification Storage:** Migrated from a global `notifications.json` file to individual user-specific storage in `users/[user_id].json`, improving performance and scalability.
+- 🔢 **Notification Limits:** Implemented automatic limiting to store only the 25 most recent notifications per user, keeping data lean and relevant.
+- 📚 **Lent History Optimization:** Added similar limiting to the `lent_history` field, maintaining only the 25 most recent entries per user for better data management.
+- ⚡ **Performance Enhancements:** Reduced file I/O operations and improved notification retrieval speed by eliminating the need to scan global notification arrays.
+- 🛠️ **Codebase Updates:** Refactored all notification-related functions across the application to work with the new per-user storage system while maintaining full backward compatibility.
 
 ---
 
