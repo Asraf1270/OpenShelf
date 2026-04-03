@@ -234,7 +234,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register - OpenShelf</title>
     <link rel="icon" type="image/svg+xml" href="/assets/images/logo-icon.svg">
-    <link rel="apple-touch-icon" href="/assets/images/logo-icon.svg">
+    <link rel="apple-touch-icon" href="/assets/images/pwa/icon-192x192.png">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#6366f1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="OpenShelf">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="msapplication-TileColor" content="#6366f1">
+    <meta name="msapplication-TileImage" content="/assets/images/pwa/icon-144x144.png">
     <link rel="stylesheet" href="/assets/css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -853,6 +861,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
             e.target.value = value;
         });
+    </script>
+
+    <!-- PWA Service Worker Registration -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then((reg) => console.log('[PWA] SW registered:', reg.scope))
+                    .catch((err) => console.warn('[PWA] SW failed:', err));
+            });
+        }
     </script>
 </body>
 </html>
