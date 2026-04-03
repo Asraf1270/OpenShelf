@@ -1,10 +1,20 @@
 # 📚 OpenShelf — Community Library Management System
 
-[![Version](https://img.shields.io/badge/version-1.3.0-blue.svg)](https://github.com/Asraf1270/OpenShelf/releases/tag/v1.3.0)
+[![Version](https://img.shields.io/badge/version-1.4.0-blue.svg)](https://github.com/Asraf1270/OpenShelf/releases/tag/v1.4.0)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![PHP](https://img.shields.io/badge/PHP-7.4%2B-777bb4.svg)](https://www.php.net/)
 
 **OpenShelf** is a modern, open-source library management system designed for communities, universities, and book clubs. It empowers users to share, borrow, and manage books effortlessly through a **premium, glassmorphic interface** that feels alive and responsive.
+
+---
+
+## ✨ What's New in v1.4.0
+
+This release, v1.4.0, brings native app-like capabilities to OpenShelf with full Progressive Web App (PWA) support:
+- 📱 **Installable App Experience:** Users can now install OpenShelf directly to their mobile or desktop home screens for a standalone, immersive experience.
+- ⚡ **Smart Caching:** A new Service Worker pre-caches static assets (CSS, JS, fonts) for lightning-fast loads and reduced bandwidth usage.
+- 🌐 **Offline Resilience:** Implemented graceful offline handling with a branded fallback page that automatically reconnects when the network is restored.
+- 🚀 **App Shortcuts:** Added quick actions to the app icon, allowing direct navigation to features like "Browse Books" and "Add a Book".
 
 ---
 
