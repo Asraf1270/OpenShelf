@@ -869,6 +869,73 @@ $currentThumbPath = !empty($coverImage) ? '/uploads/book_cover/thumb_' . $coverI
     input[type="file"] {
         display: none;
     }
+
+    /* Dark Mode Overrides */
+    [data-theme="dark"] .profile-side-card,
+    [data-theme="dark"] .edit-container {
+        background: #1e293b;
+        border-color: #334155;
+    }
+    
+    [data-theme="dark"] .page-header h1,
+    [data-theme="dark"] .form-label,
+    [data-theme="dark"] .profile-side-card h3 {
+        color: #f8fafc;
+    }
+
+    [data-theme="dark"] .page-header p {
+        color: #cbd5e1;
+    }
+
+    [data-theme="dark"] .back-btn {
+        background: #334155;
+        border-color: #475569;
+        color: #e2e8f0;
+    }
+
+    [data-theme="dark"] .back-btn:hover {
+        background: #475569;
+    }
+
+    [data-theme="dark"] .cover-section {
+        background: #0f172a;
+        border-color: #334155;
+    }
+
+    [data-theme="dark"] .cover-placeholder {
+        background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+        border-color: #334155;
+        color: #94a3b8;
+    }
+
+    [data-theme="dark"] .form-input,
+    [data-theme="dark"] .form-textarea,
+    [data-theme="dark"] .form-select {
+        background: #0f172a;
+        border-color: #334155;
+        color: #e2e8f0;
+    }
+
+    [data-theme="dark"] .form-input:focus,
+    [data-theme="dark"] .form-textarea:focus,
+    [data-theme="dark"] .form-select:focus {
+        border-color: #818cf8;
+        box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.2);
+    }
+
+    [data-theme="dark"] .btn-outline {
+        color: #cbd5e1;
+        border-color: #475569;
+    }
+    
+    [data-theme="dark"] .btn-outline:hover {
+        background: #334155;
+        color: #f8fafc;
+    }
+
+    [data-theme="dark"] .quick-tips li {
+        color: #cbd5e1;
+    }
 </style>
 
     <main>

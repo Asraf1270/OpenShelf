@@ -785,7 +785,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['ajax_action']) && $_P
             box-shadow: 0 40px 100px -20px rgba(0,0,0,0.2);
         }
 
-        /* Mobile Adjustments */
         @media (max-width: 768px) {
             .book-detail { padding: 1.5rem 1rem; }
             .action-group { flex-direction: column; }
@@ -796,6 +795,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['ajax_action']) && $_P
             .book-title { font-size: 2.2rem; }
             .meta-grid { grid-template-columns: repeat(2, 1fr); }
         }
+
+        /* Dark Mode Overrides */
+        :root[data-theme="dark"] {
+            --bg: #0f172a;
+            --surface: hsla(215, 28%, 17%, 0.7);
+            --surface-solid: #1e293b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border: #334155;
+            --glass-border: hsla(215, 28%, 17%, 0.4);
+        }
+        [data-theme="dark"] .book-title { color: #f8fafc; }
+        [data-theme="dark"] .cover-wrapper { background: #0f172a; }
+        [data-theme="dark"] .meta-icon { background: #0f172a; }
+        [data-theme="dark"] .btn-outline { background: #1e293b; border-color: #334155; color: #f8fafc; }
+        [data-theme="dark"] .tabs { background: #0f172a; border-color: #334155; }
+        [data-theme="dark"] .form-dark { background: #1e293b; }
+        [data-theme="dark"] .form-control { background: #0f172a; border-color: #334155; color: #f8fafc; }
+        [data-theme="dark"] .modal-card { background: #1e293b; }
+        [data-theme="dark"] .entry-text { color: #cbd5e1; }
     </style>
 </head>
 <body>

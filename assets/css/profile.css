@@ -214,5 +214,41 @@
     
     .profile-hero {
         height: 200px;
-    }
+}
+}
+
+/* Dark Mode Overrides */
+:root[data-theme="dark"] {
+    --glass-bg: rgba(30, 41, 59, 0.8);
+    --glass-border: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] .stat-item {
+    background: rgba(30, 41, 59, 0.6);
+}
+
+[data-theme="dark"] .stat-item:hover {
+    background: rgba(30, 41, 59, 0.9);
+}
+
+[data-theme="dark"] .profile-tabs {
+    background: #1e293b;
+}
+
+[data-theme="dark"] .tab-btn {
+    color: #94a3b8;
+}
+
+[data-theme="dark"] .tab-btn.active {
+    background: #0f172a;
+    color: var(--profile-primary);
+}
+
+[data-theme="dark"] .share-btn {
+    background: #1e293b;
+    color: #f8fafc;
+}
+
+[data-theme="dark"] .share-btn:hover {
+    background: var(--profile-primary);
 }

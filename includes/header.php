@@ -111,6 +111,14 @@ if (!file_exists($fullAvatarPath) || $userAvatar === 'default-avatar.jpg') {
     <!-- Custom CSS -->
     <link rel="stylesheet" href="/assets/css/style.css">
     
+    <!-- Theme Init -->
+    <script>
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        if (savedTheme === 'dark') {
+            document.documentElement.setAttribute('data-theme', 'dark');
+        }
+    </script>
+    
     <style>
         /* ========================================
            UNIVERSAL HEADER STYLES
@@ -131,6 +139,45 @@ if (!file_exists($fullAvatarPath) || $userAvatar === 'default-avatar.jpg') {
             --border: #e2e8f0;
             --surface-hover: #f8fafc;
             --primary: #6366f1;
+        }
+
+        :root[data-theme="dark"] {
+            --header-bg: rgba(15, 23, 42, 0.95);
+            --header-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            --header-border: rgba(51, 65, 85, 0.5);
+            --nav-link-color: #cbd5e1;
+            --nav-link-hover: #818cf8;
+            --nav-link-active: #818cf8;
+            --text-primary: #f8fafc;
+            --text-secondary: #cbd5e1;
+            --text-tertiary: #94a3b8;
+            --border: #334155;
+            --surface-hover: #1e293b;
+            --primary: #818cf8;
+        }
+
+        [data-theme="dark"] body {
+            background: #0f172a;
+            color: #cbd5e1;
+        }
+
+        [data-theme="dark"] .mobile-menu,
+        [data-theme="dark"] .mobile-header,
+        [data-theme="dark"] .mobile-overlay {
+            background: #0f172a;
+        }
+        
+        [data-theme="dark"] .mobile-header {
+            background: linear-gradient(135deg, #1e293b, #0f172a);
+        }
+
+        [data-theme="dark"] .user-dropdown {
+            background: #1e293b;
+        }
+        
+        [data-theme="dark"] .dropdown-header {
+            background: linear-gradient(135deg, #1e293b, #0f172a);
+            border-bottom-color: #334155;
         }
 
         /* Reset any conflicting styles */
@@ -647,6 +694,10 @@ if (!file_exists($fullAvatarPath) || $userAvatar === 'default-avatar.jpg') {
 
         <!-- Right Section -->
         <div style="display: flex; align-items: center; gap: 0.5rem;">
+            <!-- Theme Toggle -->
+            <button id="themeToggleBtn" class="notification-btn" title="Toggle Theme" style="display: inline-flex; align-items: center; justify-content: center;">
+                <i class="fas fa-moon"></i>
+            </button>
             <!-- Notification Bell (Desktop) -->
             <?php if ($isLoggedIn): ?>
             <div class="notification-wrapper">
@@ -849,6 +900,21 @@ if (!file_exists($fullAvatarPath) || $userAvatar === 'default-avatar.jpg') {
             userDropdown.classList.remove('show');
         }
     });
+
+    // Theme Toggle
+    const themeToggleBtn = document.getElementById('themeToggleBtn');
+    if (themeToggleBtn) {
+        if (document.documentElement.getAttribute('data-theme') === 'dark') {
+            themeToggleBtn.innerHTML = '<i class="fas fa-sun"></i>';
+        }
+        themeToggleBtn.addEventListener('click', () => {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            themeToggleBtn.innerHTML = newTheme === 'dark' ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+        });
+    }
 </script>
 
 <main class="main-content">

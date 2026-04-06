@@ -674,6 +674,52 @@ $profileImagePath = '/uploads/profile/' . $profileImage;
             padding: 2rem;
         }
     }
+
+    /* Dark Mode Overrides */
+    :root[data-theme="dark"] {
+        --bg: #0f172a;
+        --card: #1e293b;
+        --border: #334155;
+        --text: #f8fafc;
+        --muted: #94a3b8;
+    }
+
+    [data-theme="dark"] .form-panel {
+        background: var(--card);
+        border-color: var(--border);
+        box-shadow: none;
+    }
+
+    [data-theme="dark"] .premium-input {
+        background: #0f172a;
+        border-color: var(--border);
+        color: var(--text);
+    }
+    
+    [data-theme="dark"] .premium-input:focus {
+        background: #1e293b;
+        border-color: var(--primary);
+    }
+
+    [data-theme="dark"] .premium-input-wrapper i {
+        color: var(--muted);
+    }
+
+    [data-theme="dark"] .btn-outline {
+        background: transparent;
+        color: #e2e8f0;
+        border-color: var(--border);
+    }
+
+    [data-theme="dark"] .btn-outline:hover {
+        background: rgba(255, 255, 255, 0.05);
+        color: #fff;
+    }
+
+    [data-theme="dark"] .count-badge {
+        background: #334155;
+        color: #cbd5e1;
+    }
 </style>
 
     <?php include dirname(__DIR__) . '/includes/header.php'; ?>

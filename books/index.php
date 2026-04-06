@@ -417,6 +417,27 @@ function toggleCategoryUrl($cat) {
             .books-hero h1 { font-size: 3.5rem; }
             .book-grid { grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 2rem; }
         }
+
+        /* Dark Mode Overrides */
+        [data-theme="dark"] .books-hero { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); }
+        [data-theme="dark"] .books-hero h1 { background: linear-gradient(135deg, #f8fafc, #818cf8); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+        [data-theme="dark"] .stat-item { background: rgba(30, 41, 59, 0.85); border-color: #334155; }
+        [data-theme="dark"] .stat-value { color: #818cf8; }
+        [data-theme="dark"] .stat-label { color: #cbd5e1; }
+        [data-theme="dark"] .category-pill { background: #1e293b; border-color: #334155; color: #cbd5e1; }
+        [data-theme="dark"] .category-pill:hover { background: #334155; color: #818cf8; border-color: #818cf8; }
+        [data-theme="dark"] .filter-glass { background: #1e293b; border-color: #334155; }
+        [data-theme="dark"] .search-input { background: #0f172a; border-color: #334155; color: #f8fafc; }
+        [data-theme="dark"] .styled-select { background-color: #0f172a; border-color: #334155; color: #f8fafc; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23cbd5e1' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E"); }
+        [data-theme="dark"] .books-count { color: #cbd5e1; }
+        [data-theme="dark"] .books-count strong { color: #f8fafc; }
+        [data-theme="dark"] .book-card { background: #1e293b; border-color: #334155; }
+        [data-theme="dark"] .book-cover-container { background: #0f172a; }
+        [data-theme="dark"] .book-title { color: #f8fafc; }
+        [data-theme="dark"] .book-footer { border-color: #334155; }
+        [data-theme="dark"] .owner-name { color: #cbd5e1; }
+        [data-theme="dark"] .empty-glass { background: #1e293b; border-color: #334155; }
+        [data-theme="dark"] .empty-glass h3 { color: #f8fafc; }
     </style>
 </head>
 <body>

@@ -1,10 +1,19 @@
 # 📚 OpenShelf — Community Library Management System
 
-[![Version](https://img.shields.io/badge/version-1.4.0-blue.svg)](https://github.com/Asraf1270/OpenShelf/releases/tag/v1.4.0)
+[![Version](https://img.shields.io/badge/version-1.5.0-blue.svg)](https://github.com/Asraf1270/OpenShelf/releases/tag/v1.5.0)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![PHP](https://img.shields.io/badge/PHP-7.4%2B-777bb4.svg)](https://www.php.net/)
 
 **OpenShelf** is a modern, open-source library management system designed for communities, universities, and book clubs. It empowers users to share, borrow, and manage books effortlessly through a **premium, glassmorphic interface** that feels alive and responsive.
+
+---
+
+## ✨ What's New in v1.5.0
+
+This release, v1.5.0, brings a highly requested aesthetic and accessibility update alongside a unified brand identity:
+- 🌙 **Global Dark Mode:** Introduced a comprehensive dark theme toggle with `localStorage` persistence, allowing users to comfortably browse late at night. The transition prevents unstyled content flashes and remembers user preferences automatically.
+- 🎨 **Adaptive Interface Styling:** Hand-crafted dark-mode overrides have been rolled out globally across all pages, ensuring that everything from book cards, dashboard widgets, and request modals adapt flawlessly while retaining their signature glassmorphic elegance.
+- 🖼️ **Unified Brand Identity:** Generated and implemented a customized OpenShelf vector logo, establishing consistent branding across headers, footers, sidebars, and favicons, moving away from generic icon placeholders.
 
 ---
 

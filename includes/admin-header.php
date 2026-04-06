@@ -29,6 +29,12 @@ $adminRole = $_SESSION['admin_role'] ?? 'admin';
     <meta name="msapplication-TileImage" content="/assets/images/pwa/icon-144x144.png">
     <link rel="stylesheet" href="/assets/css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script>
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        if (savedTheme === 'dark') {
+            document.documentElement.setAttribute('data-theme', 'dark');
+        }
+    </script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
 
@@ -47,6 +53,53 @@ $adminRole = $_SESSION['admin_role'] ?? 'admin';
             --bg-body: #f8fafc;
             --radius-lg: 16px;
             --transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        :root[data-theme="dark"] {
+            --primary: #818cf8;
+            --primary-dark: #6366f1;
+            --sidebar-bg: #0b1120;
+            --header-bg: rgba(15, 23, 42, 0.8);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --bg-body: #0f172a;
+        }
+
+        [data-theme="dark"] .admin-card {
+            background: #1e293b;
+            border-color: #334155;
+            color: #f8fafc;
+        }
+
+        [data-theme="dark"] .menu-toggle {
+            background: #1e293b;
+            border-color: #334155;
+        }
+
+        [data-theme="dark"] .admin-notification {
+            background: #1e293b;
+            border-color: #334155;
+        }
+
+        [data-theme="dark"] .admin-notification:hover {
+            border-color: #818cf8;
+        }
+        
+        [data-theme="dark"] .admin-user:hover {
+            background: #1e293b;
+            border-color: #334155;
+        }
+        
+        [data-theme="dark"] .admin-topbar {
+            border-bottom-color: #334155;
+        }
+        
+        [data-theme="dark"] .page-title {
+            color: #f8fafc;
+        }
+        
+        [data-theme="dark"] .user-name {
+            color: #f8fafc;
         }
 
         * {
@@ -466,6 +519,9 @@ $adminRole = $_SESSION['admin_role'] ?? 'admin';
                 </button>
                 <div class="page-title" id="pageTitle"><?php echo $currentPage === 'dashboard.php' ? 'Dashboard' : ucfirst(str_replace('.php', '', $currentPage)); ?></div>
                 <div class="topbar-right">
+                    <div class="admin-notification" id="adminThemeToggle" title="Toggle Theme" style="display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-moon"></i>
+                    </div>
                     <div class="admin-notification">
                         <i class="far fa-bell"></i>
                         <span class="notification-dot"></span>
@@ -484,3 +540,27 @@ $adminRole = $_SESSION['admin_role'] ?? 'admin';
             </div>
 
             <div class="admin-content">
+            
+<script>
+    const adminThemeToggle = document.getElementById('adminThemeToggle');
+    if (adminThemeToggle) {
+        if (document.documentElement.getAttribute('data-theme') === 'dark') {
+            adminThemeToggle.innerHTML = '<i class="fas fa-sun"></i>';
+        }
+        adminThemeToggle.addEventListener('click', () => {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            adminThemeToggle.innerHTML = newTheme === 'dark' ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+        });
+    }
+
+    const menuToggleBtn = document.getElementById('menuToggle');
+    const adminSidebar = document.getElementById('adminSidebar');
+    if (menuToggleBtn && adminSidebar) {
+        menuToggleBtn.addEventListener('click', () => {
+            adminSidebar.classList.toggle('show');
+        });
+    }
+</script>

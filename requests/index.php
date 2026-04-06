@@ -600,6 +600,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         .modal-body { padding: 1.25rem; }
         .modal-footer { padding: 1.25rem; border-top: 1px solid #e2e8f0; display: flex; gap: 0.75rem; }
         @media (max-width: 768px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } .tabs { overflow-x: auto; white-space: nowrap; } .tab-btn { padding: 0.5rem 1rem; } .request-header { flex-direction: column; } }
+
+        /* Dark Mode Overrides */
+        [data-theme="dark"] .page-header h1 { background: linear-gradient(135deg, #f8fafc, #818cf8); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+        [data-theme="dark"] .page-header p { color: #cbd5e1; }
+        [data-theme="dark"] .stat-card { background: #1e293b; border-color: #334155; }
+        [data-theme="dark"] .stat-label { color: #94a3b8; }
+        [data-theme="dark"] .tabs { border-color: #334155; }
+        [data-theme="dark"] .tab-btn { color: #94a3b8; }
+        [data-theme="dark"] .tab-btn:hover { background: #1e293b; color: #818cf8; }
+        [data-theme="dark"] .tab-btn.active { background: rgba(99, 102, 241, 0.2); color: #818cf8; }
+        [data-theme="dark"] .request-card { background: #1e293b; border-color: #334155; color: #cbd5e1; }
+        [data-theme="dark"] .book-title { color: #f8fafc; }
+        [data-theme="dark"] .book-title a { color: #f8fafc; }
+        [data-theme="dark"] .request-meta { background: #0f172a; }
+        [data-theme="dark"] .meta-item { color: #cbd5e1; }
+        [data-theme="dark"] .request-message { background: rgba(245, 158, 11, 0.1); border-left-color: #f59e0b; color: #cbd5e1; }
+        [data-theme="dark"] .request-actions { border-color: #334155; }
+        [data-theme="dark"] .btn-outline { border-color: #475569; color: #cbd5e1; }
+        [data-theme="dark"] .btn-outline:hover { border-color: #818cf8; color: #f8fafc; }
+        [data-theme="dark"] .empty-state { background: #1e293b; border-color: #334155; color: #cbd5e1; }
+        [data-theme="dark"] .modal-content { background: #1e293b; color: #cbd5e1; }
+        [data-theme="dark"] .modal-header,
+        [data-theme="dark"] .modal-footer { border-color: #334155; }
+        [data-theme="dark"] .form-control { background: #0f172a; border-color: #334155; color: #f8fafc; }
     </style>
 </head>
 <body>
