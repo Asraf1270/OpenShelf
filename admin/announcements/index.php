@@ -11,6 +11,9 @@ define('DATA_PATH', dirname(__DIR__, 2) . '/data/');
 define('USERS_PATH', dirname(__DIR__, 2) . '/users/');
 define('BASE_URL', 'https://openshelf.free.nf');
 
+// Include database connection
+require_once dirname(__DIR__, 2) . '/includes/db.php';
+
 // Check if admin is logged in
 if (!isset($_SESSION['admin_id'])) {
     header('Location: /admin/login/');
@@ -26,34 +29,38 @@ require_once dirname(__DIR__, 2) . '/vendor/autoload.php';
 $mailer = new Mailer();
 
 /**
- * Load all announcements
+ * Load all announcements from DB
  */
 function loadAnnouncements() {
-    $announcementsFile = DATA_PATH . 'announcements.json';
-    if (!file_exists($announcementsFile)) {
-        return ['announcements' => [], 'user_read_status' => []];
+    $db = getDB();
+    $stmt = $db->query("SELECT * FROM announcements ORDER BY created_at DESC");
+    $announcements = $stmt->fetchAll();
+    
+    // Map DB structure to app structure if needed
+    foreach ($announcements as &$ann) {
+        $sentVia = json_decode($ann['sent_via'] ?? '{"email":false,"notification":false}', true);
+        $ann['sent_via'] = [
+            'email' => (bool)($sentVia['email'] ?? false),
+            'notification' => (bool)($sentVia['notification'] ?? false)
+        ];
+        
+        $stats = json_decode($ann['stats'] ?? '{"views":0,"read":0}', true);
+        $ann['stats'] = [
+            'views' => $stats['views'] ?? 0,
+            'read' => $stats['read'] ?? 0
+        ];
     }
-    return json_decode(file_get_contents($announcementsFile), true) ?? ['announcements' => [], 'user_read_status' => []];
+    
+    return ['announcements' => $announcements];
 }
 
 /**
- * Save announcements
- */
-function saveAnnouncements($data) {
-    $announcementsFile = DATA_PATH . 'announcements.json';
-    return file_put_contents(
-        $announcementsFile,
-        json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)
-    );
-}
-
-/**
- * Load all users
+ * Load all active users from DB
  */
 function loadAllUsers() {
-    $usersFile = DATA_PATH . 'users.json';
-    if (!file_exists($usersFile)) return [];
-    return json_decode(file_get_contents($usersFile), true) ?? [];
+    $db = getDB();
+    $stmt = $db->query("SELECT * FROM users WHERE status = 'active'");
+    return $stmt->fetchAll();
 }
 
 /**
@@ -158,7 +165,6 @@ function sendAnnouncement($announcement, $sendEmail, $sendNotification) {
 // Load data
 $announcementsData = loadAnnouncements();
 $announcements = $announcementsData['announcements'];
-$userReadStatus = $announcementsData['user_read_status'];
 
 // Handle actions
 $message = '';
@@ -166,6 +172,7 @@ $error = '';
 $editingAnnouncement = null;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $db = getDB();
     $action = $_POST['action'] ?? '';
     
     if ($action === 'create') {
@@ -184,31 +191,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } elseif (empty($content)) {
             $error = 'Announcement content is required';
         } else {
-            $announcement = [
-                'id' => generateAnnouncementId(),
-                'title' => $title,
-                'content' => $content,
-                'priority' => $priority,
-                'target' => $target,
-                'created_by' => $adminId,
-                'created_by_name' => $adminName,
-                'created_at' => date('Y-m-d H:i:s'),
-                'scheduled_for' => !empty($scheduleDate) ? date('Y-m-d H:i:s', strtotime($scheduleDate)) : null,
-                'expires_at' => !empty($expiryDate) ? date('Y-m-d H:i:s', strtotime($expiryDate)) : date('Y-m-d H:i:s', strtotime('+30 days')),
-                'sent_via' => [
-                    'email' => $sendEmail,
-                    'notification' => $sendNotification
-                ],
-                'stats' => [
-                    'views' => 0,
-                    'read' => 0
-                ]
-            ];
+            $id = generateAnnouncementId();
+            $sql = "INSERT INTO announcements (id, title, content, priority, target, created_by, created_by_name, created_at, scheduled_for, expires_at, sent_via, stats) 
+                    VALUES (:id, :title, :content, :priority, :target, :created_by, :created_by_name, :created_at, :scheduled_for, :expires_at, :sent_via, :stats)";
             
-            $announcements[] = $announcement;
+            $stmt = $db->prepare($sql);
+            $saved = $stmt->execute([
+                ':id' => $id,
+                ':title' => $title,
+                ':content' => $content,
+                ':priority' => $priority,
+                ':target' => $target,
+                ':created_by' => $adminId,
+                ':created_by_name' => $adminName,
+                ':created_at' => date('Y-m-d H:i:s'),
+                ':scheduled_for' => !empty($scheduleDate) ? date('Y-m-d H:i:s', strtotime($scheduleDate)) : null,
+                ':expires_at' => !empty($expiryDate) ? date('Y-m-d H:i:s', strtotime($expiryDate)) : date('Y-m-d H:i:s', strtotime('+30 days')),
+                ':sent_via' => json_encode(['email' => $sendEmail, 'notification' => $sendNotification]),
+                ':stats' => json_encode(['views' => 0, 'read' => 0])
+            ]);
             
-            if (saveAnnouncements(['announcements' => $announcements, 'user_read_status' => $userReadStatus])) {
+            if ($saved) {
                 $message = 'Announcement created successfully!';
+                
+                $announcement = [
+                    'id' => $id,
+                    'title' => $title,
+                    'content' => $content,
+                    'priority' => $priority,
+                    'expires_at' => $expiryDate
+                ];
                 
                 // Send immediately if not scheduled
                 if (empty($scheduleDate) || strtotime($scheduleDate) <= time()) {
@@ -229,18 +241,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $priority = $_POST['priority'] ?? 'info';
         $expiryDate = trim($_POST['expiry_date'] ?? '');
         
-        foreach ($announcements as &$ann) {
-            if ($ann['id'] === $announcementId) {
-                $ann['title'] = $title;
-                $ann['content'] = $content;
-                $ann['priority'] = $priority;
-                $ann['expires_at'] = !empty($expiryDate) ? date('Y-m-d H:i:s', strtotime($expiryDate)) : $ann['expires_at'];
-                $ann['updated_at'] = date('Y-m-d H:i:s');
-                break;
-            }
-        }
+        $sql = "UPDATE announcements SET 
+                    title = :title, 
+                    content = :content, 
+                    priority = :priority, 
+                    expires_at = :expires_at, 
+                    updated_at = :updated_at 
+                WHERE id = :id";
         
-        if (saveAnnouncements(['announcements' => $announcements, 'user_read_status' => $userReadStatus])) {
+        $stmt = $db->prepare($sql);
+        $updated = $stmt->execute([
+            ':title' => $title,
+            ':content' => $content,
+            ':priority' => $priority,
+            ':expires_at' => !empty($expiryDate) ? date('Y-m-d H:i:s', strtotime($expiryDate)) : null,
+            ':updated_at' => date('Y-m-d H:i:s'),
+            ':id' => $announcementId
+        ]);
+        
+        if ($updated) {
             $message = 'Announcement updated successfully!';
         } else {
             $error = 'Failed to update announcement';
@@ -249,37 +268,43 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif ($action === 'delete') {
         $announcementId = $_POST['announcement_id'] ?? '';
         
-        $announcements = array_filter($announcements, fn($a) => $a['id'] !== $announcementId);
-        $userReadStatus = array_filter($userReadStatus, fn($s) => $s['announcement_id'] !== $announcementId);
+        $stmt = $db->prepare("DELETE FROM announcements WHERE id = ?");
+        $deletedAnn = $stmt->execute([$announcementId]);
         
-        if (saveAnnouncements(['announcements' => $announcements, 'user_read_status' => $userReadStatus])) {
+        $stmt = $db->prepare("DELETE FROM announcement_read_status WHERE announcement_id = ?");
+        $deletedStatus = $stmt->execute([$announcementId]);
+        
+        if ($deletedAnn) {
             $message = 'Announcement deleted successfully!';
         } else {
             $error = 'Failed to delete announcement';
         }
     } elseif ($action === 'send_now') {
         $announcementId = $_POST['announcement_id'] ?? '';
-        $announcement = null;
         
-        foreach ($announcements as &$ann) {
-            if ($ann['id'] === $announcementId) {
-                $announcement = $ann;
-                $ann['scheduled_for'] = null;
-                break;
-            }
-        }
+        $stmt = $db->prepare("SELECT * FROM announcements WHERE id = ?");
+        $stmt->execute([$announcementId]);
+        $announcement = $stmt->fetch();
         
-        if ($announcement && saveAnnouncements(['announcements' => $announcements, 'user_read_status' => $userReadStatus])) {
+        if ($announcement) {
+            $stmt = $db->prepare("UPDATE announcements SET scheduled_for = NULL WHERE id = ?");
+            $stmt->execute([$announcementId]);
+            
+            $sentVia = json_decode($announcement['sent_via'] ?? '{"email":false,"notification":false}', true);
             $sentCount = sendAnnouncement(
                 $announcement,
-                $announcement['sent_via']['email'],
-                $announcement['sent_via']['notification']
+                (bool)($sentVia['email'] ?? false),
+                (bool)($sentVia['notification'] ?? false)
             );
             $message = "Announcement sent! Delivered to {$sentCount['email']} emails and {$sentCount['notification']} notifications.";
         } else {
             $error = 'Failed to send announcement';
         }
     }
+    
+    // Reload data
+    $announcementsData = loadAnnouncements();
+    $announcements = $announcementsData['announcements'];
 }
 
 // Get announcement for editing

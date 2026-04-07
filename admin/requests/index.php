@@ -11,6 +11,9 @@ define('DATA_PATH', dirname(__DIR__, 2) . '/data/');
 define('BOOKS_PATH', dirname(__DIR__, 2) . '/books/');
 define('USERS_PATH', dirname(__DIR__, 2) . '/users/');
 
+// Include database connection
+require_once dirname(__DIR__, 2) . '/includes/db.php';
+
 // Check admin login
 if (!isset($_SESSION['admin_id'])) {
     header('Location: /admin/login/');
@@ -21,68 +24,82 @@ $adminId = $_SESSION['admin_id'];
 $adminName = $_SESSION['admin_name'] ?? 'Admin';
 
 /**
- * Load all borrow requests
+ * Load all borrow requests from DB
  */
 function loadAllRequests() {
-    $requestsFile = DATA_PATH . 'borrow_requests.json';
-    if (!file_exists($requestsFile)) return [];
-    return json_decode(file_get_contents($requestsFile), true) ?? [];
+    $db = getDB();
+    $stmt = $db->query("SELECT * FROM borrow_requests ORDER BY request_date DESC");
+    return $stmt->fetchAll();
 }
 
 /**
- * Load book data
+ * Load book data from DB
  */
 function loadBookData($bookId) {
-    $bookFile = BOOKS_PATH . $bookId . '.json';
-    if (!file_exists($bookFile)) return null;
-    return json_decode(file_get_contents($bookFile), true);
+    if (empty($bookId)) return null;
+    $db = getDB();
+    $stmt = $db->prepare("SELECT * FROM books WHERE id = ?");
+    $stmt->execute([$bookId]);
+    return $stmt->fetch() ?: null;
 }
 
 /**
- * Update request status
+ * Update request status in DB
  */
 function updateRequestStatus($requestId, $status, $additionalData = []) {
-    $requests = loadAllRequests();
-    $updated = false;
-    $requestData = null;
+    global $adminId, $adminName;
+    $db = getDB();
     
-    foreach ($requests as &$request) {
-        if ($request['id'] === $requestId) {
-            $request['status'] = $status;
-            $request['updated_at'] = date('Y-m-d H:i:s');
-            
-            if ($status === 'approved') {
-                $request['approved_at'] = date('Y-m-d H:i:s');
-                $request['approved_by'] = $GLOBALS['adminId'];
-            } elseif ($status === 'rejected') {
-                $request['rejected_at'] = date('Y-m-d H:i:s');
-                $request['rejected_by'] = $GLOBALS['adminId'];
-                $request['rejection_reason'] = $additionalData['reason'] ?? '';
-            } elseif ($status === 'closed') {
-                $request['closed_at'] = date('Y-m-d H:i:s');
-                $request['closed_by'] = $GLOBALS['adminId'];
-                $request['closed_notes'] = $additionalData['notes'] ?? '';
-            }
-            
-            // Add to history
-            if (!isset($request['history'])) $request['history'] = [];
-            $request['history'][] = [
-                'action' => $status . '_by_admin',
-                'timestamp' => date('Y-m-d H:i:s'),
-                'admin_id' => $GLOBALS['adminId'],
-                'admin_name' => $GLOBALS['adminName'],
-                'data' => $additionalData
-            ];
-            
-            $requestData = $request;
-            $updated = true;
-            break;
-        }
+    // Get current request data
+    $stmt = $db->prepare("SELECT * FROM borrow_requests WHERE id = ?");
+    $stmt->execute([$requestId]);
+    $requestData = $stmt->fetch();
+    
+    if (!$requestData) return false;
+    
+    $sql = "UPDATE borrow_requests SET 
+                status = :status, 
+                updated_at = :updated_at";
+    
+    $params = [
+        ':status' => $status,
+        ':updated_at' => date('Y-m-d H:i:s'),
+        ':id' => $requestId
+    ];
+    
+    if ($status === 'approved') {
+        $sql .= ", approved_at = :approved_at, approved_by = :approved_by";
+        $params[':approved_at'] = date('Y-m-d H:i:s');
+        $params[':approved_by'] = $adminId;
+    } elseif ($status === 'rejected') {
+        $sql .= ", rejected_at = :rejected_at, rejected_by = :rejected_by, rejection_reason = :rejection_reason";
+        $params[':rejected_at'] = date('Y-m-d H:i:s');
+        $params[':rejected_by'] = $adminId;
+        $params[':rejection_reason'] = $additionalData['reason'] ?? '';
+    } elseif ($status === 'closed') {
+        $sql .= ", closed_at = :closed_at, closed_by = :closed_by, closed_notes = :closed_notes";
+        $params[':closed_at'] = date('Y-m-d H:i:s');
+        $params[':closed_by'] = $adminId;
+        $params[':closed_notes'] = $additionalData['notes'] ?? '';
     }
     
+    // Handle history (stored as JSON)
+    $history = json_decode($requestData['history'] ?? '[]', true);
+    $history[] = [
+        'action' => $status . '_by_admin',
+        'timestamp' => date('Y-m-d H:i:s'),
+        'admin_id' => $adminId,
+        'admin_name' => $adminName,
+        'data' => $additionalData
+    ];
+    
+    $sql .= ", history = :history WHERE id = :id";
+    $params[':history'] = json_encode($history);
+    
+    $stmt = $db->prepare($sql);
+    $updated = $stmt->execute($params);
+    
     if ($updated) {
-        file_put_contents(DATA_PATH . 'borrow_requests.json', json_encode($requests, JSON_PRETTY_PRINT));
-        
         // Update book status if approved or rejected
         if ($status === 'approved') {
             updateBookStatus($requestData['book_id'], 'borrowed', $requestData['borrower_id']);
@@ -102,83 +119,87 @@ function updateRequestStatus($requestId, $status, $additionalData = []) {
 }
 
 /**
- * Update book status
+ * Update book status in DB
  */
 function updateBookStatus($bookId, $status, $borrowerId = null) {
-    // Update individual book file
-    $bookFile = BOOKS_PATH . $bookId . '.json';
-    if (file_exists($bookFile)) {
-        $book = json_decode(file_get_contents($bookFile), true);
-        $book['status'] = $status;
-        $book['updated_at'] = date('Y-m-d H:i:s');
-        if ($status === 'borrowed' && $borrowerId) {
-            $book['current_borrower_id'] = $borrowerId;
-            $book['borrowed_since'] = date('Y-m-d H:i:s');
-        } elseif ($status === 'available') {
-            unset($book['current_borrower_id']);
-            unset($book['borrowed_since']);
-        }
-        file_put_contents($bookFile, json_encode($book, JSON_PRETTY_PRINT));
+    if (empty($bookId)) return;
+    $db = getDB();
+    
+    $sql = "UPDATE books SET 
+                status = :status, 
+                updated_at = :updated_at";
+    
+    $params = [
+        ':status' => $status,
+        ':updated_at' => date('Y-m-d H:i:s'),
+        ':id' => $bookId
+    ];
+    
+    if ($status === 'borrowed' && $borrowerId) {
+        $sql .= ", current_borrower_id = :borrower_id, borrowed_since = :borrowed_since";
+        $params[':borrower_id'] = $borrowerId;
+        $params[':borrowed_since'] = date('Y-m-d H:i:s');
+    } elseif ($status === 'available') {
+        $sql .= ", current_borrower_id = NULL, borrowed_since = NULL";
     }
     
-    // Update master books.json
-    $masterFile = DATA_PATH . 'books.json';
-    if (file_exists($masterFile)) {
-        $books = json_decode(file_get_contents($masterFile), true);
-        foreach ($books as &$b) {
-            if ($b['id'] === $bookId) {
-                $b['status'] = $status;
-                break;
-            }
-        }
-        file_put_contents($masterFile, json_encode($books, JSON_PRETTY_PRINT));
-    }
+    $sql .= " WHERE id = :id";
+    
+    $stmt = $db->prepare($sql);
+    $stmt->execute($params);
 }
 
 /**
- * Extend return date
+ * Extend return date in DB
  */
 function extendReturnDate($requestId, $additionalDays, $reason = '') {
-    $requests = loadAllRequests();
-    $updated = false;
+    global $adminId;
+    $db = getDB();
     
-    foreach ($requests as &$request) {
-        if ($request['id'] === $requestId) {
-            if (!in_array($request['status'], ['approved', 'borrowed'])) {
-                return false;
-            }
-            
-            $oldDate = $request['expected_return_date'];
-            $newDate = date('Y-m-d H:i:s', strtotime($oldDate . " +{$additionalDays} days"));
-            
-            $request['expected_return_date'] = $newDate;
-            $request['extended_at'] = date('Y-m-d H:i:s');
-            $request['extended_by'] = $GLOBALS['adminId'];
-            $request['extension_days'] = ($request['extension_days'] ?? 0) + $additionalDays;
-            $request['extension_reason'] = $reason;
-            $request['updated_at'] = date('Y-m-d H:i:s');
-            
-            // Add to history
-            if (!isset($request['history'])) $request['history'] = [];
-            $request['history'][] = [
-                'action' => 'extended_by_admin',
-                'timestamp' => date('Y-m-d H:i:s'),
-                'admin_id' => $GLOBALS['adminId'],
-                'additional_days' => $additionalDays,
-                'reason' => $reason
-            ];
-            
-            $updated = true;
-            break;
-        }
-    }
+    // Get current request data
+    $stmt = $db->prepare("SELECT * FROM borrow_requests WHERE id = ?");
+    $stmt->execute([$requestId]);
+    $request = $stmt->fetch();
+    
+    if (!$request) return false;
+    if (!in_array($request['status'], ['approved', 'borrowed'])) return false;
+    
+    $oldDate = $request['expected_return_date'];
+    $newDate = date('Y-m-d H:i:s', strtotime($oldDate . " +{$additionalDays} days"));
+    
+    $history = json_decode($request['history'] ?? '[]', true);
+    $history[] = [
+        'action' => 'extended_by_admin',
+        'timestamp' => date('Y-m-d H:i:s'),
+        'admin_id' => $adminId,
+        'additional_days' => $additionalDays,
+        'reason' => $reason
+    ];
+    
+    $stmt = $db->prepare("UPDATE borrow_requests SET 
+                            expected_return_date = :new_date, 
+                            extended_at = :extended_at, 
+                            extended_by = :extended_by, 
+                            extension_days = extension_days + :additional_days, 
+                            extension_reason = :reason, 
+                            updated_at = :updated_at, 
+                            history = :history 
+                          WHERE id = :id");
+    
+    $updated = $stmt->execute([
+        ':new_date' => $newDate,
+        ':extended_at' => date('Y-m-d H:i:s'),
+        ':extended_by' => $adminId,
+        ':additional_days' => $additionalDays,
+        ':reason' => $reason,
+        ':updated_at' => date('Y-m-d H:i:s'),
+        ':history' => json_encode($history),
+        ':id' => $requestId
+    ]);
     
     if ($updated) {
-        file_put_contents(DATA_PATH . 'borrow_requests.json', json_encode($requests, JSON_PRETTY_PRINT));
-        
-        // Create notification
+        $request['expected_return_date'] = $newDate;
         createExtensionNotification($request, $additionalDays);
-        
         return true;
     }
     return false;

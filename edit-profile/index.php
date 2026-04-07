@@ -18,6 +18,9 @@ define('ALLOWED_TYPES', ['image/jpeg', 'image/png', 'image/gif', 'image/webp']);
 define('THUMBNAIL_SIZE', 300);
 define('COMPRESSION_QUALITY', 80);
 
+// Include database connection
+require_once dirname(__DIR__) . '/includes/db.php';
+
 // Check if user is logged in
 if (!isset($_SESSION['user_id'])) {
     $_SESSION['redirect_after_login'] = '/edit-profile/';
@@ -28,33 +31,21 @@ if (!isset($_SESSION['user_id'])) {
 $userId = $_SESSION['user_id'];
 
 /**
- * Load user data from both files
+ * Load user data from DB and profile file
  */
 function loadUserData($userId) {
-    // Load from master users.json
-    $usersFile = DATA_PATH . 'users.json';
-    if (!file_exists($usersFile)) {
-        return null;
-    }
+    if (empty($userId)) return null;
+    $db = getDB();
+    $stmt = $db->prepare("SELECT * FROM users WHERE id = ?");
+    $stmt->execute([$userId]);
+    $masterUser = $stmt->fetch();
     
-    $users = json_decode(file_get_contents($usersFile), true) ?? [];
-    $masterUser = null;
-    
-    foreach ($users as $user) {
-        if ($user['id'] === $userId) {
-            $masterUser = $user;
-            break;
-        }
-    }
-    
-    if (!$masterUser) {
-        return null;
-    }
+    if (!$masterUser) return null;
     
     // Load detailed profile
     $profileFile = USERS_PATH . $userId . '.json';
     if (!file_exists($profileFile)) {
-        return null;
+        return ['master' => $masterUser, 'profile' => null];
     }
     
     $profileData = json_decode(file_get_contents($profileFile), true);
@@ -80,23 +71,13 @@ function validateSession($session) {
 }
 
 /**
- * Check if phone is unique (excluding current user)
+ * Check if phone is unique (excluding current user) from DB
  */
 function isPhoneUnique($phone, $userId) {
-    $usersFile = DATA_PATH . 'users.json';
-    if (!file_exists($usersFile)) {
-        return true;
-    }
-    
-    $users = json_decode(file_get_contents($usersFile), true) ?? [];
-    
-    foreach ($users as $user) {
-        if ($user['phone'] === $phone && $user['id'] !== $userId) {
-            return false;
-        }
-    }
-    
-    return true;
+    $db = getDB();
+    $stmt = $db->prepare("SELECT id FROM users WHERE phone = ? AND id != ?");
+    $stmt->execute([$phone, $userId]);
+    return $stmt->fetch() === false;
 }
 
 /**
@@ -188,47 +169,53 @@ function processProfileImage($file, $userId) {
 }
 
 /**
- * Update user profile data
+ * Update user profile data in DB and JSON files
  */
 function updateUserProfile($userId, $data, $newImageFile = null) {
-    // Filesystem path for profile uploads
+    $db = getDB();
     $uploadPath = dirname(__DIR__) . '/uploads/profile/';
     
-    // Update master users.json
-    $usersFile = DATA_PATH . 'users.json';
-    $users = json_decode(file_get_contents($usersFile), true);
-    $currentProfilePic = 'default-avatar.jpg';
+    // Get current profile pic
+    $stmt = $db->prepare("SELECT profile_pic FROM users WHERE id = ?");
+    $stmt->execute([$userId]);
+    $currentProfilePic = $stmt->fetchColumn() ?: 'default-avatar.jpg';
     
-    foreach ($users as &$user) {
-        if ($user['id'] === $userId) {
-            $currentProfilePic = $user['profile_pic'] ?? 'default-avatar.jpg';
-            
-            $user['name'] = $data['name'];
-            $user['phone'] = $data['phone'];
-            $user['department'] = $data['department'];
-            $user['session'] = $data['session'];
-            $user['room_number'] = $data['room_number'];
-            $user['updated_at'] = date('Y-m-d H:i:s');
-            
-            if ($newImageFile) {
-                // Delete previous profile pic if it's not the default
-                if ($currentProfilePic !== 'default-avatar.jpg') {
-                    $oldFilePath = $uploadPath . $currentProfilePic;
-                    if (file_exists($oldFilePath)) {
-                        unlink($oldFilePath);
-                    }
-                }
-                $user['profile_pic'] = $newImageFile;
-                $currentProfilePic = $newImageFile;
+    // Prepare update query
+    $sql = "UPDATE users SET 
+                name = :name, 
+                phone = :phone, 
+                department = :department, 
+                session = :session, 
+                room_number = :room_number, 
+                updated_at = :updated_at";
+    
+    $params = [
+        ':name' => $data['name'],
+        ':phone' => $data['phone'],
+        ':department' => $data['department'],
+        ':session' => $data['session'],
+        ':room_number' => $data['room_number'],
+        ':updated_at' => date('Y-m-d H:i:s'),
+        ':id' => $userId
+    ];
+    
+    if ($newImageFile) {
+        // Delete previous profile pic if it's not the default
+        if ($currentProfilePic !== 'default-avatar.jpg') {
+            $oldFilePath = $uploadPath . $currentProfilePic;
+            if (file_exists($oldFilePath)) {
+                unlink($oldFilePath);
             }
-            break;
         }
+        $sql .= ", profile_pic = :profile_pic";
+        $params[':profile_pic'] = $newImageFile;
+        $currentProfilePic = $newImageFile;
     }
     
-    $masterSaved = file_put_contents(
-        $usersFile,
-        json_encode($users, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)
-    );
+    $sql .= " WHERE id = :id";
+    
+    $stmt = $db->prepare($sql);
+    $masterSaved = $stmt->execute($params);
     
     // Update individual profile JSON
     $profileFile = USERS_PATH . $userId . '.json';
@@ -243,7 +230,7 @@ function updateUserProfile($userId, $data, $newImageFile = null) {
             'phone' => $data['phone'],
             'room_number' => $data['room_number'],
             'bio' => $data['bio'],
-            'profile_pic' => $currentProfilePic // Always add/update the reference
+            'profile_pic' => $currentProfilePic
         ];
         
         $profileSaved = file_put_contents(
@@ -251,7 +238,7 @@ function updateUserProfile($userId, $data, $newImageFile = null) {
             json_encode($profileData, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)
         );
     } else {
-        $profileSaved = true; // Profile file missing but we updated master
+        $profileSaved = true;
     }
     
     // Update session

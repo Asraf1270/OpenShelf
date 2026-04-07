@@ -7,29 +7,22 @@ define('DATA_PATH', dirname(__DIR__, 2) . '/data/');
 define('BASE_URL', 'https://openshelf.free.nf');
 define('OTP_EXPIRY', 300); // 5 minutes
 
+// Include database connection
+require_once dirname(__DIR__, 2) . '/includes/db.php';
+
 // Load mailer
 require_once dirname(__DIR__, 2) . '/vendor/autoload.php';
 $mailer = new Mailer();
 
 /**
- * Load admins from JSON file
+ * Find admin by email in DB
  */
-function loadAdmins() {
-    $adminsFile = DATA_PATH . 'admins.json';
-    if (!file_exists($adminsFile)) return [];
-    return json_decode(file_get_contents($adminsFile), true) ?? [];
-}
-
-/**
- * Find admin by email
- */
-function findAdminByEmail($email, $admins) {
-    foreach ($admins as $admin) {
-        if ($admin['email'] === $email && $admin['status'] === 'active') {
-            return $admin;
-        }
-    }
-    return null;
+function findAdminByEmail($email) {
+    if (empty($email)) return null;
+    $db = getDB();
+    $stmt = $db->prepare("SELECT * FROM admins WHERE email = ? AND status = 'active'");
+    $stmt->execute([$email]);
+    return $stmt->fetch() ?: null;
 }
 
 /**
@@ -40,64 +33,58 @@ function generateOTP() {
 }
 
 /**
- * Save OTP to storage
+ * Save OTP to DB
  */
 function saveOTP($email, $otp) {
-    $otpFile = DATA_PATH . 'login_otp.json';
-    $otps = file_exists($otpFile) ? json_decode(file_get_contents($otpFile), true) ?? [] : [];
+    $db = getDB();
     
-    // Clean expired OTPs
-    $otps = array_filter($otps, fn($item) => strtotime($item['expires_at']) > time());
+    // Clean expired and old OTPs for this email
+    $stmt = $db->prepare("DELETE FROM login_otps WHERE email = ? OR expires_at < NOW()");
+    $stmt->execute([$email]);
     
     $otpId = 'otp_' . uniqid() . '_' . bin2hex(random_bytes(4));
-    $otps[$otpId] = [
-        'email' => $email,
-        'otp_hash' => password_hash($otp, PASSWORD_BCRYPT),
-        'created_at' => date('Y-m-d H:i:s'),
-        'expires_at' => date('Y-m-d H:i:s', time() + OTP_EXPIRY),
-        'attempts' => 0,
-        'verified' => false
-    ];
+    $stmt = $db->prepare("INSERT INTO login_otps (id, email, otp_hash, expires_at) VALUES (?, ?, ?, ?)");
+    $stmt->execute([
+        $otpId,
+        $email,
+        password_hash($otp, PASSWORD_BCRYPT),
+        date('Y-m-d H:i:s', time() + OTP_EXPIRY)
+    ]);
     
-    file_put_contents($otpFile, json_encode($otps, JSON_PRETTY_PRINT));
     return $otpId;
 }
 
 /**
- * Verify OTP
+ * Verify OTP in DB
  */
 function verifyOTP($otpId, $submittedOtp) {
-    $otpFile = DATA_PATH . 'login_otp.json';
-    if (!file_exists($otpFile)) return false;
+    if (empty($otpId)) return false;
+    $db = getDB();
     
-    $otps = json_decode(file_get_contents($otpFile), true) ?? [];
+    $stmt = $db->prepare("SELECT * FROM login_otps WHERE id = ?");
+    $stmt->execute([$otpId]);
+    $otpData = $stmt->fetch();
     
-    if (!isset($otps[$otpId])) return false;
-    
-    $otpData = $otps[$otpId];
+    if (!$otpData) return false;
     
     // Check expiry
     if (strtotime($otpData['expires_at']) < time()) {
-        unset($otps[$otpId]);
-        file_put_contents($otpFile, json_encode($otps, JSON_PRETTY_PRINT));
+        $db->prepare("DELETE FROM login_otps WHERE id = ?")->execute([$otpId]);
         return false;
     }
     
     // Check attempts
     if ($otpData['attempts'] >= 3) {
-        unset($otps[$otpId]);
-        file_put_contents($otpFile, json_encode($otps, JSON_PRETTY_PRINT));
+        $db->prepare("DELETE FROM login_otps WHERE id = ?")->execute([$otpId]);
         return false;
     }
     
     // Increment attempts
-    $otps[$otpId]['attempts']++;
-    file_put_contents($otpFile, json_encode($otps, JSON_PRETTY_PRINT));
+    $db->prepare("UPDATE login_otps SET attempts = attempts + 1 WHERE id = ?")->execute([$otpId]);
     
     // Verify OTP
     if (password_verify($submittedOtp, $otpData['otp_hash'])) {
-        $otps[$otpId]['verified'] = true;
-        file_put_contents($otpFile, json_encode($otps, JSON_PRETTY_PRINT));
+        $db->prepare("UPDATE login_otps SET verified = 1 WHERE id = ?")->execute([$otpId]);
         return $otpData['email'];
     }
     
@@ -126,8 +113,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             exit;
         }
         
-        $admins = loadAdmins();
-        $admin = findAdminByEmail($email, $admins);
+        $admin = findAdminByEmail($email);
         
         if (!$admin) {
             $_SESSION['error'] = 'No active admin account found';
@@ -178,10 +164,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $email = verifyOTP($otpId, $submittedOtp);
         
         if ($email) {
-            $admins = loadAdmins();
-            $admin = findAdminByEmail($email, $admins);
+            $admin = findAdminByEmail($email);
             
             if ($admin) {
+                $db = getDB();
+                $db->prepare("UPDATE admins SET last_login = NOW() WHERE id = ?")->execute([$admin['id']]);
+                
                 // Set ALL session variables
                 $_SESSION['admin_id'] = $admin['id'];
                 $_SESSION['admin_email'] = $admin['email'];

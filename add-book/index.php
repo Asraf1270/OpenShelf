@@ -41,40 +41,34 @@ function generateBookId() {
 }
 
 /**
- * Load existing books from master list
+ * Check if book ID exists in database
  */
-function loadMasterBooks() {
-    $booksFile = DATA_PATH . 'books.json';
-    if (!file_exists($booksFile)) {
-        return [];
-    }
-    return json_decode(file_get_contents($booksFile), true) ?? [];
+function bookIdExists($bookId) {
+    $db = getDB();
+    $stmt = $db->prepare("SELECT id FROM books WHERE id = ?");
+    $stmt->execute([$bookId]);
+    return $stmt->fetch() !== false;
 }
 
 /**
- * Save to master books.json
+ * Save book data to MySQL database
  */
-function saveMasterBook($bookData) {
-    $books = loadMasterBooks();
-    $books[] = $bookData;
-    return file_put_contents(
-        DATA_PATH . 'books.json',
-        json_encode($books, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)
-    );
-}
-
-/**
- * Save detailed book data to /data/book/[book_id].json
- */
-function saveDetailedBook($bookId, $bookData) {
-    if (!file_exists(BOOKS_DATA_PATH)) {
-        mkdir(BOOKS_DATA_PATH, 0755, true);
-    }
-    $bookFile = BOOKS_DATA_PATH . $bookId . '.json';
-    return file_put_contents(
-        $bookFile,
-        json_encode($bookData, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)
-    );
+function saveBookToDB($data) {
+    $db = getDB();
+    $sql = "INSERT INTO books (
+                id, title, author, description, category, `condition`, 
+                cover_image, owner_id, owner_name, status, created_at, 
+                updated_at, views, times_borrowed, isbn, publication_year, 
+                publisher, pages, language, reviews, comments, tags
+            ) VALUES (
+                :id, :title, :author, :description, :category, :condition, 
+                :cover_image, :owner_id, :owner_name, :status, :created_at, 
+                :updated_at, :views, :times_borrowed, :isbn, :publication_year, 
+                :publisher, :pages, :language, :reviews, :comments, :tags
+            )";
+    
+    $stmt = $db->prepare($sql);
+    return $stmt->execute($data);
 }
 
 /**
@@ -248,17 +242,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
     if (empty($errors)) {
         // Generate unique book ID
-        $masterBooks = loadMasterBooks();
         do {
             $bookId = generateBookId();
-            $idExists = false;
-            foreach ($masterBooks as $book) {
-                if ($book['id'] === $bookId) {
-                    $idExists = true;
-                    break;
-                }
-            }
-        } while ($idExists);
+        } while (bookIdExists($bookId));
         
         // Process image
         $uploadResult = processCoverImage($_FILES['cover_image'], $bookId);
@@ -268,21 +254,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } else {
             $coverImage = $uploadResult['filename'];
             
-            // Create master book data (simple info)
-            $masterBookData = [
-                'id' => $bookId,
-                'title' => $title,
-                'author' => $author,
-                'category' => $category,
-                'cover_image' => $coverImage,
-                'owner_id' => $userId,
-                'owner_name' => $userName,
-                'status' => 'available',
-                'created_at' => date('Y-m-d H:i:s')
-            ];
-            
-            // Create detailed book data (full info)
-            $detailedBookData = [
+            // Prepare book data for DB
+            $bookData = [
                 'id' => $bookId,
                 'title' => $title,
                 'author' => $author,
@@ -302,16 +275,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'publisher' => $publisher ?: null,
                 'pages' => $pages ? intval($pages) : null,
                 'language' => $language,
-                'reviews' => [],
-                'comments' => []
+                'reviews' => json_encode([]),
+                'comments' => json_encode([]),
+                'tags' => json_encode([])
             ];
             
-            // Save to both files
-            $masterSaved = saveMasterBook($masterBookData);
-            $detailedSaved = saveDetailedBook($bookId, $detailedBookData);
+            // Save to database
+            $saved = saveBookToDB($bookData);
             $userUpdated = updateUserBooksList($userId, $bookId);
             
-            if ($masterSaved && $detailedSaved && $userUpdated) {
+            if ($saved && $userUpdated) {
                 $success = true;
                 $addedBookId = $bookId;
                 
@@ -319,7 +292,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $title = $author = $description = '';
                 $category = $condition = '';
             } else {
-                $errors['general'] = 'Failed to save book. Please try again.';
+                $errors['general'] = 'Failed to save book to database. Please try again.';
                 
                 // Clean up uploaded image if save failed
                 if (file_exists(UPLOAD_PATH . $coverImage)) {

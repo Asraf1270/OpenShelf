@@ -4,10 +4,11 @@
  * Create and manage backups
  */
 
-session_start();
-
 define('DATA_PATH', dirname(__DIR__) . '/data/');
 define('BACKUP_PATH', dirname(__DIR__) . '/backups/');
+
+// Include database connection
+require_once dirname(__DIR__) . '/includes/db.php';
 
 if (!isset($_SESSION['admin_id'])) {
     header('Location: /admin/login/');
@@ -23,17 +24,25 @@ function createBackup() {
     $backupDir = BACKUP_PATH . $timestamp . '/';
     mkdir($backupDir, 0755, true);
     
+    // Backup JSON files (configs, etc.)
     $files = glob(DATA_PATH . '*.json');
     foreach ($files as $file) {
         copy($file, $backupDir . basename($file));
     }
     
-    $booksDir = DATA_PATH . 'book/';
-    if (is_dir($booksDir)) {
-        $bookFiles = glob($booksDir . '*.json');
-        mkdir($backupDir . 'book/', 0755, true);
-        foreach ($bookFiles as $file) {
-            copy($file, $backupDir . 'book/' . basename($file));
+    // Backup Database Tables
+    $db = getDB();
+    $tables = ['users', 'books', 'borrow_requests', 'announcements', 'categories', 'admins', 'announcement_read_status', 'login_otps'];
+    
+    mkdir($backupDir . 'database/', 0755, true);
+    foreach ($tables as $table) {
+        try {
+            $stmt = $db->query("SELECT * FROM $table");
+            $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            file_put_contents($backupDir . 'database/' . $table . '.json', json_encode($data, JSON_PRETTY_PRINT));
+        } catch (Exception $e) {
+            // Table might not exist yet
+            file_put_contents($backupDir . 'database/' . $table . '_error.txt', $e->getMessage());
         }
     }
     

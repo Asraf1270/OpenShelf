@@ -13,6 +13,9 @@ define('DATA_PATH', dirname(__DIR__) . '/data/');
 define('USERS_PATH', dirname(__DIR__) . '/users/');
 define('BOOKS_PATH', dirname(__DIR__) . '/books/');
 
+// Include database connection
+require_once dirname(__DIR__) . '/includes/db.php';
+
 $viewUserId = $_GET['id'] ?? ($_SESSION['user_id'] ?? null);
 if (!$viewUserId) {
     header('Location: /books/');
@@ -29,48 +32,48 @@ function loadUserData($userId) {
 }
 
 /**
- * Load user's books
+ * Load user's books from DB
  */
 function loadUserBooks($userId) {
-    $booksFile = DATA_PATH . 'books.json';
-    if (!file_exists($booksFile)) return [];
-    
-    $allBooks = json_decode(file_get_contents($booksFile), true) ?? [];
-    return array_filter($allBooks, fn($book) => ($book['owner_id'] ?? '') === $userId);
+    if (empty($userId)) return [];
+    $db = getDB();
+    $stmt = $db->prepare("SELECT * FROM books WHERE owner_id = ?");
+    $stmt->execute([$userId]);
+    return $stmt->fetchAll();
 }
 
 /**
- * Get detailed user stats and book lists
+ * Get detailed user stats and book lists from DB
  */
 function getUserProfileData($userId, $ownedBooks) {
-    $requestsFile = DATA_PATH . 'borrow_requests.json';
-    $requests = file_exists($requestsFile) ? json_decode(file_get_contents($requestsFile), true) ?? [] : [];
+    $db = getDB();
+    $stmt = $db->prepare("SELECT * FROM borrow_requests WHERE (borrower_id = ? OR owner_id = ?) AND (status = 'approved' OR status = 'returned')");
+    $stmt->execute([$userId, $userId]);
+    $requests = $stmt->fetchAll();
     
     $borrowedBooks = [];
     $lentBooks = [];
     
     foreach ($requests as $r) {
-        if ($r['status'] === 'approved' || $r['status'] === 'returned') {
-            if ($r['borrower_id'] === $userId) {
-                $borrowedBooks[] = [
-                    'id' => $r['book_id'],
-                    'title' => $r['book_title'],
-                    'author' => $r['book_author'],
-                    'cover_image' => $r['book_cover'],
-                    'status' => $r['status'],
-                    'owner_name' => $r['owner_name']
-                ];
-            }
-            if ($r['owner_id'] === $userId) {
-                $lentBooks[] = [
-                    'id' => $r['book_id'],
-                    'title' => $r['book_title'],
-                    'author' => $r['book_author'],
-                    'cover_image' => $r['book_cover'],
-                    'status' => $r['status'],
-                    'borrower_name' => $r['borrower_name']
-                ];
-            }
+        if ($r['borrower_id'] === $userId) {
+            $borrowedBooks[] = [
+                'id' => $r['book_id'],
+                'title' => $r['book_title'],
+                'author' => $r['book_author'],
+                'cover_image' => $r['book_cover'],
+                'status' => $r['status'],
+                'owner_name' => $r['owner_name']
+            ];
+        }
+        if ($r['owner_id'] === $userId) {
+            $lentBooks[] = [
+                'id' => $r['book_id'],
+                'title' => $r['book_title'],
+                'author' => $r['book_author'],
+                'cover_image' => $r['book_cover'],
+                'status' => $r['status'],
+                'borrower_name' => $r['borrower_name']
+            ];
         }
     }
     
@@ -102,17 +105,11 @@ $isOwnProfile = isset($_SESSION['user_id']) && $_SESSION['user_id'] === $viewUse
 // --- Profile Image Logic (Robust) ---
 $profileImageName = 'default.jpg'; // Initialize
 
-// 1. Primary Source: Load from master users.json
-$masterUsersFile = dirname(__DIR__) . '/data/users.json';
-if (file_exists($masterUsersFile)) {
-    $masterUsers = json_decode(file_get_contents($masterUsersFile), true) ?? [];
-    foreach ($masterUsers as $u) {
-        if ($u['id'] === $viewUserId) {
-            $profileImageName = $u['profile_pic'] ?? $profileImageName;
-            break;
-        }
-    }
-}
+// 1. Primary Source: Load from DB
+$db = getDB();
+$stmt = $db->prepare("SELECT profile_pic FROM users WHERE id = ?");
+$stmt->execute([$viewUserId]);
+$profileImageName = $stmt->fetchColumn() ?: 'default.jpg';
 
 // 2. Secondary Source: Supplement from private user JSON if not already found or if it overrides
 $userFile = USERS_PATH . $viewUserId . '.json';

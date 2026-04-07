@@ -17,6 +17,9 @@ define('COVER_WIDTH', 800);
 define('COVER_HEIGHT', 1200);
 define('COMPRESSION_QUALITY', 85);
 
+// Include database connection
+require_once dirname(__DIR__) . '/includes/db.php';
+
 // Check if user is logged in
 if (!isset($_SESSION['user_id'])) {
     $_SESSION['redirect_after_login'] = $_SERVER['REQUEST_URI'];
@@ -35,49 +38,53 @@ if (empty($bookId)) {
 }
 
 /**
- * Load book data
+ * Load book data from DB
  */
 function loadBookData($bookId) {
-    $bookFile = BOOKS_PATH . $bookId . '.json';
-    if (!file_exists($bookFile)) return null;
-    return json_decode(file_get_contents($bookFile), true);
+    if (empty($bookId)) return null;
+    $db = getDB();
+    $stmt = $db->prepare("SELECT * FROM books WHERE id = ?");
+    $stmt->execute([$bookId]);
+    return $stmt->fetch() ?: null;
 }
 
 /**
- * Save book data to both files
+ * Save book data to DB
  */
 function saveBookData($bookId, $bookData) {
-    // Save individual book file
-    $bookFile = BOOKS_PATH . $bookId . '.json';
-    $individualSaved = file_put_contents(
-        $bookFile,
-        json_encode($bookData, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)
-    );
+    $db = getDB();
     
-    // Update master books.json
-    $masterBooksFile = DATA_PATH . 'books.json';
-    if (file_exists($masterBooksFile)) {
-        $masterBooks = json_decode(file_get_contents($masterBooksFile), true);
-        foreach ($masterBooks as &$book) {
-            if ($book['id'] === $bookId) {
-                $book['title'] = $bookData['title'];
-                $book['author'] = $bookData['author'];
-                $book['description'] = $bookData['description'];
-                $book['category'] = $bookData['category'];
-                $book['condition'] = $bookData['condition'];
-                $book['isbn'] = $bookData['isbn'];
-                $book['publication_year'] = $bookData['publication_year'];
-                $book['publisher'] = $bookData['publisher'];
-                $book['pages'] = $bookData['pages'];
-                $book['language'] = $bookData['language'];
-                $book['updated_at'] = $bookData['updated_at'];
-                break;
-            }
-        }
-        file_put_contents($masterBooksFile, json_encode($masterBooks, JSON_PRETTY_PRINT));
-    }
+    $sql = "UPDATE books SET 
+                title = :title, 
+                author = :author, 
+                description = :description, 
+                category = :category, 
+                `condition` = :condition, 
+                isbn = :isbn, 
+                publication_year = :publication_year, 
+                publisher = :publisher, 
+                pages = :pages, 
+                language = :language, 
+                cover_image = :cover_image,
+                updated_at = :updated_at
+            WHERE id = :id";
     
-    return $individualSaved;
+    $stmt = $db->prepare($sql);
+    return $stmt->execute([
+        ':title' => $bookData['title'],
+        ':author' => $bookData['author'],
+        ':description' => $bookData['description'],
+        ':category' => $bookData['category'],
+        ':condition' => $bookData['condition'],
+        ':isbn' => $bookData['isbn'],
+        ':publication_year' => $bookData['publication_year'],
+        ':publisher' => $bookData['publisher'],
+        ':pages' => $bookData['pages'],
+        ':language' => $bookData['language'],
+        ':cover_image' => $bookData['cover_image'],
+        ':updated_at' => $bookData['updated_at'],
+        ':id' => $bookId
+    ]);
 }
 
 /**
@@ -230,32 +237,27 @@ function processUserProfileImage($file, $userId) {
 }
 
 /**
- * Update user profile picture in JSON files
+ * Update user profile picture in DB and JSON files
  */
 function updateUserProfilePic($userId, $filename) {
+    $db = getDB();
     $uploadPath = dirname(__DIR__) . '/uploads/profile/';
     
-    // Update master users.json
-    $usersFile = DATA_PATH . 'users.json';
-    if (file_exists($usersFile)) {
-        $users = json_decode(file_get_contents($usersFile), true);
-        foreach ($users as &$user) {
-            if ($user['id'] === $userId) {
-                $oldPic = $user['profile_pic'] ?? 'default-avatar.jpg';
-                
-                // Delete previous profile pic if it's not the default
-                if ($oldPic !== 'default-avatar.jpg' && $oldPic !== $filename) {
-                    $oldFilePath = $uploadPath . $oldPic;
-                    if (file_exists($oldFilePath)) {
-                        unlink($oldFilePath);
-                    }
-                }
-                
-                $user['profile_pic'] = $filename;
-                break;
+    // Get old profile pic to delete
+    $stmt = $db->prepare("SELECT profile_pic FROM users WHERE id = ?");
+    $stmt->execute([$userId]);
+    $oldPic = $stmt->fetchColumn() ?: 'default-avatar.jpg';
+    
+    // Update DB
+    $stmt = $db->prepare("UPDATE users SET profile_pic = ?, updated_at = ? WHERE id = ?");
+    if ($stmt->execute([$filename, date('Y-m-d H:i:s'), $userId])) {
+        // Delete previous profile pic if it's not the default
+        if ($oldPic !== 'default-avatar.jpg' && $oldPic !== $filename) {
+            $oldFilePath = $uploadPath . $oldPic;
+            if (file_exists($oldFilePath)) {
+                unlink($oldFilePath);
             }
         }
-        file_put_contents($usersFile, json_encode($users, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
     }
     
     // Update individual profile JSON

@@ -4,9 +4,10 @@
  * Analytics and reports dashboard
  */
 
-session_start();
-
 define('DATA_PATH', dirname(__DIR__) . '/data/');
+
+// Include database connection
+require_once dirname(__DIR__) . '/includes/db.php';
 
 if (!isset($_SESSION['admin_id'])) {
     header('Location: /admin/login/');
@@ -14,110 +15,108 @@ if (!isset($_SESSION['admin_id'])) {
 }
 
 /**
- * Load all data
+ * Get all users from DB
  */
 function loadAllUsers() {
-    $usersFile = DATA_PATH . 'users.json';
-    return file_exists($usersFile) ? json_decode(file_get_contents($usersFile), true) ?? [] : [];
-}
-
-function loadAllBooks() {
-    $booksFile = DATA_PATH . 'books.json';
-    return file_exists($booksFile) ? json_decode(file_get_contents($booksFile), true) ?? [] : [];
-}
-
-function loadAllRequests() {
-    $requestsFile = DATA_PATH . 'borrow_requests.json';
-    return file_exists($requestsFile) ? json_decode(file_get_contents($requestsFile), true) ?? [] : [];
+    $db = getDB();
+    $stmt = $db->query("SELECT * FROM users");
+    return $stmt->fetchAll();
 }
 
 /**
- * Get monthly stats
+ * Get all books from DB
  */
-function getMonthlyStats($data, $dateField, $months = 6) {
+function loadAllBooks() {
+    $db = getDB();
+    $stmt = $db->query("SELECT * FROM books");
+    return $stmt->fetchAll();
+}
+
+/**
+ * Get all requests from DB
+ */
+function loadAllRequests() {
+    $db = getDB();
+    $stmt = $db->query("SELECT * FROM borrow_requests");
+    return $stmt->fetchAll();
+}
+
+/**
+ * Get monthly stats from DB
+ */
+function getMonthlyStatsFromDB($table, $dateField, $months = 6) {
+    $db = getDB();
     $stats = [];
     for ($i = $months - 1; $i >= 0; $i--) {
         $date = date('Y-m', strtotime("-$i months"));
         $stats[$date] = 0;
     }
     
-    foreach ($data as $item) {
-        if (!empty($item[$dateField])) {
-            $month = date('Y-m', strtotime($item[$dateField]));
-            if (isset($stats[$month])) {
-                $stats[$month]++;
-            }
+    $startDate = date('Y-m-01', strtotime("-".($months-1)." months"));
+    $stmt = $db->prepare("SELECT DATE_FORMAT($dateField, '%Y-%m') as month, COUNT(*) as count 
+                          FROM $table 
+                          WHERE $dateField >= ? 
+                          GROUP BY month");
+    $stmt->execute([$startDate]);
+    $results = $stmt->fetchAll();
+    
+    foreach ($results as $row) {
+        if (isset($stats[$row['month']])) {
+            $stats[$row['month']] = (int)$row['count'];
         }
     }
     return $stats;
 }
 
 /**
- * Get top books by borrow count
+ * Get top books by borrow count from DB
  */
-function getTopBooks($books, $requests, $limit = 10) {
-    $borrowCount = [];
-    foreach ($requests as $request) {
-        if ($request['status'] === 'approved') {
-            $bookId = $request['book_id'];
-            $borrowCount[$bookId] = ($borrowCount[$bookId] ?? 0) + 1;
-        }
-    }
-    
-    arsort($borrowCount);
-    $topBookIds = array_slice(array_keys($borrowCount), 0, $limit);
-    
-    $topBooks = [];
-    foreach ($books as $book) {
-        if (in_array($book['id'], $topBookIds)) {
-            $topBooks[] = [
-                'title' => $book['title'],
-                'author' => $book['author'],
-                'borrow_count' => $borrowCount[$book['id']]
-            ];
-        }
-    }
-    return $topBooks;
+function getTopBooksFromDB($limit = 10) {
+    $db = getDB();
+    $stmt = $db->prepare("SELECT book_title as title, book_author as author, COUNT(*) as borrow_count 
+                          FROM borrow_requests 
+                          WHERE status = 'approved' 
+                          GROUP BY book_id 
+                          ORDER BY borrow_count DESC 
+                          LIMIT ?");
+    $stmt->execute([$limit]);
+    return $stmt->fetchAll();
 }
 
 /**
- * Get user activity stats
+ * Get user activity stats from DB
  */
-function getUserActivityStats($users) {
-    $now = time();
-    $stats = [
-        'today' => 0,
-        'this_week' => 0,
-        'this_month' => 0,
-        'total' => count($users)
-    ];
+function getUserActivityStatsFromDB() {
+    $db = getDB();
+    $stats = [];
     
-    foreach ($users as $user) {
-        if (!empty($user['last_login'])) {
-            $lastLogin = strtotime($user['last_login']);
-            if ($lastLogin > strtotime('today')) $stats['today']++;
-            if ($lastLogin > strtotime('-7 days')) $stats['this_week']++;
-            if ($lastLogin > strtotime('-30 days')) $stats['this_month']++;
-        }
-    }
+    $stmt = $db->query("SELECT COUNT(*) FROM users");
+    $stats['total'] = (int)$stmt->fetchColumn();
+    
+    $stmt = $db->prepare("SELECT COUNT(*) FROM users WHERE last_login > ?");
+    $stmt->execute([date('Y-m-d 00:00:00')]);
+    $stats['today'] = (int)$stmt->fetchColumn();
+    
+    $stmt->execute([date('Y-m-d H:i:s', strtotime('-7 days'))]);
+    $stats['this_week'] = (int)$stmt->fetchColumn();
+    
+    $stmt->execute([date('Y-m-d H:i:s', strtotime('-30 days'))]);
+    $stats['this_month'] = (int)$stmt->fetchColumn();
     
     return $stats;
 }
 
-$users = loadAllUsers();
-$books = loadAllBooks();
-$requests = loadAllRequests();
+$db = getDB();
+$userGrowth = getMonthlyStatsFromDB('users', 'created_at');
+$bookGrowth = getMonthlyStatsFromDB('books', 'created_at');
+$topBooks = getTopBooksFromDB();
+$userActivity = getUserActivityStatsFromDB();
 
-$userGrowth = getMonthlyStats($users, 'created_at');
-$bookGrowth = getMonthlyStats($books, 'created_at');
-$topBooks = getTopBooks($books, $requests);
-$userActivity = getUserActivityStats($users);
-
-$totalUsers = count($users);
-$totalBooks = count($books);
-$totalRequests = count($requests);
-$pendingUsers = count(array_filter($users, fn($u) => !($u['verified'] ?? false)));
-$pendingRequests = count(array_filter($requests, fn($r) => ($r['status'] ?? '') === 'pending'));
+$totalUsers = $userActivity['total'];
+$totalBooks = (int)$db->query("SELECT COUNT(*) FROM books")->fetchColumn();
+$totalRequests = (int)$db->query("SELECT COUNT(*) FROM borrow_requests")->fetchColumn();
+$pendingUsers = (int)$db->query("SELECT COUNT(*) FROM users WHERE verified = 0")->fetchColumn();
+$pendingRequests = (int)$db->query("SELECT COUNT(*) FROM borrow_requests WHERE status = 'pending'")->fetchColumn();
 
 $reportType = $_GET['type'] ?? 'overview';
 ?>

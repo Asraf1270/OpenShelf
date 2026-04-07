@@ -11,14 +11,12 @@ include dirname(__DIR__) . '/includes/header.php';
 define('DATA_PATH', dirname(__DIR__) . '/data/');
 
 /**
- * Load all books
+ * Load all books from DB
  */
 function loadAllBooks() {
-    $booksFile = DATA_PATH . 'books.json';
-    if (!file_exists($booksFile)) {
-        return [];
-    }
-    return json_decode(file_get_contents($booksFile), true) ?? [];
+    $db = getDB();
+    $stmt = $db->query("SELECT * FROM books ORDER BY created_at DESC");
+    return $stmt->fetchAll();
 }
 
 /**
@@ -62,23 +60,17 @@ function filterBooks($books, $search, $categories, $availability) {
 }
 
 /**
- * Get user info (Optimized Single Load)
+ * Get user info from DB
  */
 function getUserInfo($userId) {
-    static $users = null;
-    if ($users === null) {
-        $usersFile = DATA_PATH . 'users.json';
-        $users = file_exists($usersFile) ? json_decode(file_get_contents($usersFile), true) ?? [] : [];
-    }
-    foreach ($users as $user) {
-        if ($user['id'] === $userId) {
-            return [
-                'name' => $user['name'] ?? 'Unknown',
-                'avatar' => $user['profile_pic'] ?? 'default-avatar.jpg'
-            ];
-        }
-    }
-    return ['name' => 'Unknown', 'avatar' => 'default-avatar.jpg'];
+    if (empty($userId)) return ['name' => 'Unknown', 'avatar' => 'default-avatar.jpg'];
+    
+    $db = getDB();
+    $stmt = $db->prepare("SELECT name, profile_pic as avatar FROM users WHERE id = ?");
+    $stmt->execute([$userId]);
+    $user = $stmt->fetch();
+    
+    return $user ?: ['name' => 'Unknown', 'avatar' => 'default-avatar.jpg'];
 }
 
 // Load and filter books

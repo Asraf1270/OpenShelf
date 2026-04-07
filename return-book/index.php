@@ -12,6 +12,8 @@ define('BOOKS_DATA_PATH', dirname(__DIR__) . '/data/book/');
 define('USERS_PATH', dirname(__DIR__) . '/users/');
 define('BASE_URL', 'https://openshelf.free.nf');
 
+require_once dirname(__DIR__) . '/includes/db.php';
+
 // Enable error reporting for debugging
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
@@ -37,25 +39,26 @@ if (file_exists(dirname(__DIR__) . '/vendor/autoload.php')) {
  * Load request data
  */
 function loadRequest($requestId) {
-    $requestsFile = DATA_PATH . 'borrow_requests.json';
-    if (!file_exists($requestsFile)) return null;
-    
-    $requests = json_decode(file_get_contents($requestsFile), true) ?? [];
-    foreach ($requests as $request) {
-        if ($request['id'] === $requestId) {
-            return $request;
-        }
+    if (empty($requestId)) return null;
+    $db = getDB();
+    $stmt = $db->prepare("SELECT * FROM borrow_requests WHERE id = ?");
+    $stmt->execute([$requestId]);
+    $request = $stmt->fetch();
+    if ($request) {
+        $request['history'] = json_decode($request['history'] ?? '[]', true);
     }
-    return null;
+    return $request ?: null;
 }
 
 /**
  * Load detailed book data
  */
 function loadBookData($bookId) {
-    $bookFile = BOOKS_DATA_PATH . $bookId . '.json';
-    if (!file_exists($bookFile)) return null;
-    return json_decode(file_get_contents($bookFile), true);
+    if (empty($bookId)) return null;
+    $db = getDB();
+    $stmt = $db->prepare("SELECT * FROM books WHERE id = ?");
+    $stmt->execute([$bookId]);
+    return $stmt->fetch() ?: null;
 }
 
 /**
@@ -71,86 +74,62 @@ function loadUserData($userId) {
  * Update request status to returned
  */
 function updateRequestStatus($requestId, $status, $additionalData = []) {
-    $requestsFile = DATA_PATH . 'borrow_requests.json';
-    if (!file_exists($requestsFile)) return false;
+    $request = loadRequest($requestId);
+    if (!$request) return false;
     
-    $requests = json_decode(file_get_contents($requestsFile), true);
-    $updated = false;
+    $db = getDB();
     
-    foreach ($requests as &$request) {
-        if ($request['id'] === $requestId) {
-            $request['status'] = $status;
-            $request['updated_at'] = date('Y-m-d H:i:s');
-            
-            if ($status === 'returned') {
-                $request['returned_at'] = date('Y-m-d H:i:s');
-                $request['actual_return_date'] = date('Y-m-d H:i:s');
-            }
-            
-            // Merge additional data
-            foreach ($additionalData as $key => $value) {
-                $request[$key] = $value;
-            }
-            
-            // Add to history
-            if (!isset($request['history'])) {
-                $request['history'] = [];
-            }
-            $request['history'][] = [
-                'action' => 'returned',
-                'timestamp' => date('Y-m-d H:i:s'),
-                'user_id' => $GLOBALS['currentUserId'],
-                'user_name' => $GLOBALS['currentUserName'],
-                'notes' => $additionalData['notes'] ?? '',
-                'condition' => $additionalData['return_condition'] ?? 'same',
-                'rating' => $additionalData['rating'] ?? 0
-            ];
-            
-            $updated = true;
-            break;
-        }
+    $history = $request['history'] ?? [];
+    $history[] = [
+        'action' => 'returned',
+        'timestamp' => date('Y-m-d H:i:s'),
+        'user_id' => $GLOBALS['currentUserId'],
+        'user_name' => $GLOBALS['currentUserName'],
+        'notes' => $additionalData['notes'] ?? '',
+        'condition' => $additionalData['return_condition'] ?? 'same',
+        'rating' => $additionalData['rating'] ?? 0
+    ];
+    
+    // Base SQL
+    $sql = "UPDATE borrow_requests SET status = :status, history = :history, updated_at = :updated_at";
+    
+    $params = [
+        ':status' => $status,
+        ':history' => json_encode($history),
+        ':updated_at' => date('Y-m-d H:i:s'),
+        ':id' => $requestId
+    ];
+    
+    if ($status === 'returned') {
+        $sql .= ", returned_at = :returned_at, actual_return_date = :actual_return_date, notes = :notes, return_condition = :return_condition, returned_by = :returned_by, returned_by_name = :returned_by_name, rating = :rating";
+        
+        $params[':returned_at'] = date('Y-m-d H:i:s');
+        $params[':actual_return_date'] = date('Y-m-d H:i:s');
+        $params[':notes'] = $additionalData['notes'] ?? null;
+        $params[':return_condition'] = $additionalData['return_condition'] ?? null;
+        $params[':returned_by'] = $additionalData['returned_by'] ?? null;
+        $params[':returned_by_name'] = $additionalData['returned_by_name'] ?? null;
+        $params[':rating'] = $additionalData['rating'] ?? 0;
     }
     
-    if ($updated) {
-        return file_put_contents($requestsFile, json_encode($requests, JSON_PRETTY_PRINT));
-    }
-    return false;
+    $sql .= " WHERE id = :id";
+    
+    $stmt = $db->prepare($sql);
+    return $stmt->execute($params);
 }
 
 /**
  * Update book status in both master and detailed files
  */
 function updateBookStatus($bookId, $status) {
-    // Update master books.json
-    $masterBooksFile = DATA_PATH . 'books.json';
-    if (file_exists($masterBooksFile)) {
-        $masterBooks = json_decode(file_get_contents($masterBooksFile), true);
-        foreach ($masterBooks as &$book) {
-            if ($book['id'] === $bookId) {
-                $book['status'] = $status;
-                $book['updated_at'] = date('Y-m-d H:i:s');
-                break;
-            }
-        }
-        file_put_contents($masterBooksFile, json_encode($masterBooks, JSON_PRETTY_PRINT));
-    }
-    
-    // Update detailed book file
-    $bookFile = BOOKS_DATA_PATH . $bookId . '.json';
-    if (file_exists($bookFile)) {
-        $bookData = json_decode(file_get_contents($bookFile), true);
-        $bookData['status'] = $status;
-        $bookData['updated_at'] = date('Y-m-d H:i:s');
-        
-        if ($status === 'available') {
-            unset($bookData['current_borrower_id']);
-            unset($bookData['borrowed_since']);
-        }
-        
-        return file_put_contents($bookFile, json_encode($bookData, JSON_PRETTY_PRINT));
-    }
-    
-    return false;
+    if (empty($bookId)) return false;
+    $db = getDB();
+    $stmt = $db->prepare("UPDATE books SET status = :status, updated_at = :updated_at WHERE id = :id");
+    return $stmt->execute([
+        ':status' => $status,
+        ':updated_at' => date('Y-m-d H:i:s'),
+        ':id' => $bookId
+    ]);
 }
 
 /**

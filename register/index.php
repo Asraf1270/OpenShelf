@@ -15,6 +15,9 @@ define('BASE_URL', 'https://openshelf.free.nf');
 require_once dirname(__DIR__) . '/vendor/autoload.php';
 $mailer = new Mailer();
 
+// Include database connection
+require_once dirname(__DIR__) . '/includes/db.php';
+
 /**
  * Generate a secure 16-character user ID
  */
@@ -36,23 +39,25 @@ function validateEmail($email) {
 }
 
 /**
- * Check if email exists
+ * Check if email exists in DB
  */
-function isEmailExists($email, $users) {
-    foreach ($users as $user) {
-        if ($user['email'] === $email) return true;
-    }
-    return false;
+function isEmailExists($email) {
+    if (empty($email)) return false;
+    $db = getDB();
+    $stmt = $db->prepare("SELECT id FROM users WHERE email = ?");
+    $stmt->execute([$email]);
+    return $stmt->fetch() !== false;
 }
 
 /**
- * Check if phone exists
+ * Check if phone exists in DB
  */
-function isPhoneExists($phone, $users) {
-    foreach ($users as $user) {
-        if ($user['phone'] === $phone) return true;
-    }
-    return false;
+function isPhoneExists($phone) {
+    if (empty($phone)) return false;
+    $db = getDB();
+    $stmt = $db->prepare("SELECT phone FROM users WHERE phone = ?");
+    $stmt->execute([$phone]);
+    return $stmt->fetch() !== false;
 }
 
 // Initialize variables
@@ -95,54 +100,55 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($password !== $confirmPassword) $errors['confirm_password'] = 'Passwords do not match';
     
     if (empty($errors)) {
-        $usersFile = DATA_PATH . 'users.json';
-        $users = file_exists($usersFile) ? json_decode(file_get_contents($usersFile), true) : [];
-        
-        if (isEmailExists($email, $users)) {
+        if (isEmailExists($email)) {
             $errors['email'] = 'This email is already registered';
         }
         
-        if (isPhoneExists($phone, $users)) {
+        if (isPhoneExists($phone)) {
             $errors['phone'] = 'This phone number is already registered';
         }
         
         if (empty($errors)) {
             // Generate unique ID
+            $db = getDB();
             do {
                 $userId = generateUserId();
-                $idExists = false;
-                foreach ($users as $user) {
-                    if ($user['id'] === $userId) {
-                        $idExists = true;
-                        break;
-                    }
-                }
+                $stmt = $db->prepare("SELECT id FROM users WHERE id = ?");
+                $stmt->execute([$userId]);
+                $idExists = $stmt->fetch() !== false;
             } while ($idExists);
             
             // Create user data
-            $passwordHash = password_hash($password, PASSWORD_BCRYPT);
+            // Save user to DB
+            $sql = "INSERT INTO users (
+                        id, name, email, department, session, phone, room_number, 
+                        password_hash, verified, role, profile_pic, created_at, 
+                        updated_at, status
+                    ) VALUES (
+                        :id, :name, :email, :department, :session, :phone, :room_number, 
+                        :password_hash, :verified, :role, :profile_pic, :created_at, 
+                        :updated_at, :status
+                    )";
             
-            $userData = [
-                'id' => $userId,
-                'name' => $name,
-                'email' => $email,
-                'department' => $department,
-                'session' => $session,
-                'phone' => $phone,
-                'room_number' => $roomNumber,
-                'password_hash' => $passwordHash,
-                'verified' => false,
-                'role' => 'user',
-                'profile_pic' => 'default-avatar.jpg',
-                'created_at' => date('Y-m-d H:i:s'),
-                'updated_at' => date('Y-m-d H:i:s'),
-                'last_login' => null,
-                'status' => 'pending'
-            ];
+            $stmt = $db->prepare($sql);
+            $success_db = $stmt->execute([
+                ':id' => $userId,
+                ':name' => $name,
+                ':email' => $email,
+                ':department' => $department,
+                ':session' => $session,
+                ':phone' => $phone,
+                ':room_number' => $roomNumber,
+                ':password_hash' => $passwordHash,
+                ':verified' => 0,
+                ':role' => 'user',
+                ':profile_pic' => 'default-avatar.jpg',
+                ':created_at' => date('Y-m-d H:i:s'),
+                ':updated_at' => date('Y-m-d H:i:s'),
+                ':status' => 'pending'
+            ]);
             
-            $users[] = $userData;
-            
-            if (file_put_contents($usersFile, json_encode($users, JSON_PRETTY_PRINT))) {
+            if ($success_db) {
                 
                 // Create individual profile
                 $profileFile = USERS_PATH . $userId . '.json';
@@ -248,114 +254,110 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #6d28d9;
-            --primary-light: #8b5cf6;
+            --primary: #4f46e5;
+            --primary-light: #6366f1;
             --secondary: #0ea5e9;
             --bg-dark: #0f172a;
-            --glass-bg: rgba(255, 255, 255, 0.03);
-            --glass-border: rgba(255, 255, 255, 0.08);
+            --surface: #1e293b;
+            --surface-hover: #334155;
+            --border-color: #334155;
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
             --error: #ef4444;
             --success: #10b981;
             --warning: #f59e0b;
+            --focus-ring: rgba(99, 102, 241, 0.5);
         }
 
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Outfit', sans-serif;
+            font-family: 'Outfit', system-ui, sans-serif;
         }
 
         body {
             background-color: var(--bg-dark);
             color: var(--text-main);
-            overflow-x: hidden;
             min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Ambient Background */
+        .ambient-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: -1;
+            overflow: hidden;
+            background: radial-gradient(circle at 15% 50%, rgba(79, 70, 229, 0.1) 0%, transparent 40%),
+                        radial-gradient(circle at 85% 30%, rgba(14, 165, 233, 0.08) 0%, transparent 40%);
         }
 
         .registration-container {
-            min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 3rem 1.5rem;
-            position: relative;
-            background: radial-gradient(circle at 100% 0%, rgba(109, 40, 217, 0.1) 0%, transparent 40%),
-                        radial-gradient(circle at 0% 100%, rgba(14, 165, 233, 0.1) 0%, transparent 40%);
-        }
-
-        /* Animated background blobs */
-        .blob {
-            position: absolute;
-            width: 600px;
-            height: 600px;
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-            filter: blur(100px);
-            border-radius: 50%;
-            z-index: -1;
-            opacity: 0.1;
-            animation: move 25s infinite alternate;
-        }
-
-        .blob-1 { top: -150px; right: -150px; animation-delay: 0s; }
-        .blob-2 { bottom: -150px; left: -150px; animation-delay: -7s; }
-
-        @keyframes move {
-            from { transform: translate(0, 0) scale(1); }
-            to { transform: translate(-100px, 100px) scale(1.1); }
+            flex: 1;
+            padding: 1.5rem;
+            width: 100%;
         }
 
         .registration-card {
-            background: var(--glass-bg);
-            backdrop-filter: blur(25px);
-            -webkit-backdrop-filter: blur(25px);
-            border: 1px solid var(--glass-border);
-            border-radius: 28px;
+            background: var(--surface);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
             width: 100%;
             max-width: 850px;
-            padding: 3.5rem;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-            animation: fadeInScale 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+            padding: 2.5rem 1.5rem;
+            box-shadow: 0 10px 30px -10px rgba(0,0,0,0.5);
+            animation: slideUp 0.5s ease-out forwards;
+            position: relative;
+            z-index: 10;
         }
 
-        @keyframes fadeInScale {
-            from { opacity: 0; transform: scale(0.98) translateY(20px); }
-            to { opacity: 1; transform: scale(1) translateY(0); }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .registration-header {
             text-align: center;
-            margin-bottom: 3.5rem;
+            margin-bottom: 2rem;
         }
 
         .brand-logo {
-            width: 72px;
-            height: 72px;
-            border-radius: 20px;
+            width: 64px;
+            height: 64px;
+            border-radius: 16px;
             margin-bottom: 1rem;
-            filter: drop-shadow(0 4px 15px rgba(99, 102, 241, 0.4));
+            display: inline-block;
+            box-shadow: 0 4px 20px rgba(99, 102, 241, 0.3);
         }
 
         .registration-header h1 {
-            font-size: 2.5rem;
+            font-size: 1.75rem;
             font-weight: 700;
-            letter-spacing: -0.02em;
-            margin-bottom: 0.5rem;
             color: #fff;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.02em;
         }
 
         .registration-header p {
             color: var(--text-muted);
-            font-size: 1.1rem;
+            font-size: 0.95rem;
         }
 
         /* Form Layout */
         .form-grid {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 1.5rem;
+            grid-template-columns: 1fr;
+            gap: 1.25rem;
             margin-bottom: 1.5rem;
         }
 
@@ -364,48 +366,52 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         .full-width {
-            grid-column: span 2;
+            grid-column: span 1;
         }
 
         .input-group {
             position: relative;
-            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
         }
 
-        .input-group i:not(.toggle-password, .check-icon) {
+        .input-group > i:first-child:not(.toggle-password, .check-icon) {
             position: absolute;
             left: 1.25rem;
-            top: 50%;
-            transform: translateY(-50%);
             color: var(--text-muted);
-            font-size: 1.1rem;
-            transition: all 0.3s ease;
+            font-size: 1rem;
+            transition: color 0.3s ease;
             pointer-events: none;
         }
 
         .input-group input,
         .input-group select {
             width: 100%;
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid var(--glass-border);
-            border-radius: 14px;
-            padding: 1.1rem 1.25rem 1.1rem 3.25rem;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 0.875rem 1.25rem 0.875rem 3rem;
             color: #fff;
             font-size: 1rem;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.2s ease;
         }
 
         .input-group input:focus,
         .input-group select:focus {
             outline: none;
             border-color: var(--primary-light);
-            background: rgba(255, 255, 255, 0.05);
-            box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.15);
+            background: var(--bg-dark);
+            box-shadow: 0 0 0 3px var(--focus-ring);
         }
 
-        .input-group input:focus + i {
+        .input-group input:focus ~ i:first-child:not(.toggle-password, .check-icon) {
             color: var(--primary-light);
-            transform: translateY(-50%) scale(1.1);
+        }
+
+        /* Password Input Extra Padding */
+        .input-group input[type="password"],
+        .input-group input[name="confirm_password"] {
+            padding-right: 3rem;
         }
 
         /* Error Messages */
@@ -420,18 +426,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         /* Alerts */
         .alert {
-            padding: 1.25rem;
-            border-radius: 16px;
-            margin-bottom: 2.5rem;
+            padding: 1rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
             display: flex;
             align-items: center;
             gap: 1rem;
+            font-size: 0.95rem;
             animation: slideIn 0.5s ease;
-        }
-
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateY(-15px); }
-            to { opacity: 1; transform: translateY(0); }
         }
 
         .alert-success {
@@ -458,7 +460,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         .password-strength-bar {
             height: 6px;
-            background: rgba(255, 255, 255, 0.05);
+            background: rgba(15, 23, 42, 0.6);
             border-radius: 10px;
             overflow: hidden;
             margin-bottom: 0.75rem;
@@ -476,7 +478,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         .password-requirements {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
+            grid-template-columns: 1fr;
             gap: 0.5rem;
             font-size: 0.8rem;
             color: var(--text-muted);
@@ -489,98 +491,103 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             transition: all 0.2s ease;
         }
 
-        .requirement.met {
-            color: var(--success);
-        }
+        .requirement.met { color: var(--success); }
 
         /* Terms */
         .terms-group {
-            margin: 2rem 0;
+            margin: 1.5rem 0;
             display: flex;
             align-items: center;
-            gap: 0.75rem;
+            gap: 0.5rem;
             color: var(--text-muted);
-            font-size: 0.95rem;
+            font-size: 0.9rem;
         }
 
+        .terms-group input { display: none; }
+
         .custom-checkbox {
-            width: 22px;
-            height: 22px;
-            border: 1px solid var(--glass-border);
+            width: 20px;
+            height: 20px;
+            border: 1.5px solid var(--border-color);
             border-radius: 6px;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
             transition: all 0.2s ease;
-            background: rgba(255, 255, 255, 0.02);
-            position: relative;
+            background: rgba(15, 23, 42, 0.5);
         }
 
-        .terms-group input { display: none; }
-
         .terms-group input:checked + .custom-checkbox {
-            background: var(--primary);
-            border-color: var(--primary);
+            background: var(--primary-light);
+            border-color: var(--primary-light);
         }
 
         .custom-checkbox i {
             color: #fff;
-            font-size: 0.8rem;
-            display: none;
+            font-size: 0.7rem;
+            opacity: 0;
+            transform: scale(0.5);
+            transition: all 0.2s ease;
         }
 
         .terms-group input:checked + .custom-checkbox i {
-            display: block;
+            opacity: 1;
+            transform: scale(1);
         }
 
         .terms-group a {
             color: var(--primary-light);
             text-decoration: none;
+            transition: color 0.2s;
         }
+
+        .terms-group a:hover { color: var(--primary); }
 
         /* Buttons */
         .btn-register {
             width: 100%;
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            background: var(--primary);
             color: #fff;
             border: none;
-            border-radius: 14px;
-            padding: 1.25rem;
-            font-size: 1.1rem;
+            border-radius: 12px;
+            padding: 1rem;
+            font-size: 1rem;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.2s ease;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 0.75rem;
-            box-shadow: 0 10px 15px -3px rgba(109, 40, 217, 0.3);
         }
 
         .btn-register:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 20px 25px -5px rgba(109, 40, 217, 0.4);
-            filter: brightness(1.1);
+            background: var(--primary-light);
+            transform: translateY(-1px);
+        }
+
+        .btn-register:active:not(:disabled) {
+            transform: translateY(1px);
         }
 
         .btn-register:disabled {
-            opacity: 0.5;
+            opacity: 0.6;
             cursor: not-allowed;
         }
 
         /* Footer */
         .login-link {
             text-align: center;
-            margin-top: 2.5rem;
-            padding-top: 2rem;
-            border-top: 1px solid var(--glass-border);
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border-color);
             color: var(--text-muted);
-            font-size: 1rem;
+            font-size: 0.95rem;
         }
 
         .login-link a {
-            color: #fff;
+            color: var(--primary-light);
             text-decoration: none;
             font-weight: 600;
             margin-left: 0.25rem;
@@ -588,30 +595,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         .login-link a:hover {
-            color: var(--secondary);
+            color: var(--primary);
+            text-decoration: underline;
         }
 
-        /* Responsive */
-        @media (max-width: 768px) {
+        /* Desktop enhancements */
+        @media (min-width: 640px) {
             .registration-card {
-                padding: 2.5rem 1.5rem;
+                padding: 3rem;
+            }
+            .registration-header h1 {
+                font-size: 2.25rem;
             }
             .form-grid {
-                grid-template-columns: 1fr;
+                grid-template-columns: repeat(2, 1fr);
             }
             .full-width {
-                grid-column: span 1;
+                grid-column: span 2;
             }
             .password-requirements {
-                grid-template-columns: 1fr;
+                grid-template-columns: repeat(2, 1fr);
             }
         }
     </style>
 </head>
 <body>
+    <div class="ambient-bg"></div>
     <div class="registration-container">
-        <div class="blob blob-1"></div>
-        <div class="blob blob-2"></div>
         
         <div class="registration-card">
             <div class="registration-header">
@@ -757,7 +767,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <label for="terms" class="custom-checkbox">
                         <i class="fas fa-check"></i>
                     </label>
-                    <label for="terms">I accept the <a href="/terms.php">Terms</a> & <a href="/privacy.php">Privacy</a></label>
+                    <label for="terms">I accept the <a href="/terms.php">Terms</a> and <a href="/privacy.php">Privacy Policy</a></label>
                 </div>
                 
                 <button type="submit" class="btn-register" id="submitBtn">
@@ -767,14 +777,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </form>
             
             <div class="login-link">
-                Already part of the community? <a href="/login/">Sign In</a>
-            </div>
-        </div>
-    </div>
-                
-                <div class="login-link">
-                    Already have an account? <a href="/login/">Login here</a>
-                </div>
+                Already part of the community? <a href="/login/">Sign in here</a>
             </div>
         </div>
     </div>

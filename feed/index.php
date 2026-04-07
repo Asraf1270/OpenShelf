@@ -12,22 +12,25 @@ define('DATA_PATH', dirname(__DIR__) . '/data/');
 define('BOOKS_PATH', dirname(__DIR__) . '/books/');
 define('USERS_PATH', dirname(__DIR__) . '/users/');
 
+// Include database connection
+require_once dirname(__DIR__) . '/includes/db.php';
+
 /**
- * Load all books
+ * Load all books from DB
  */
 function loadAllBooks() {
-    $booksFile = DATA_PATH . 'books.json';
-    if (!file_exists($booksFile)) return [];
-    return json_decode(file_get_contents($booksFile), true) ?? [];
+    $db = getDB();
+    $stmt = $db->query("SELECT * FROM books ORDER BY created_at DESC LIMIT 50");
+    return $stmt->fetchAll();
 }
 
 /**
- * Load all requests
+ * Load all requests from DB
  */
 function loadAllRequests() {
-    $requestsFile = DATA_PATH . 'borrow_requests.json';
-    if (!file_exists($requestsFile)) return [];
-    return json_decode(file_get_contents($requestsFile), true) ?? [];
+    $db = getDB();
+    $stmt = $db->query("SELECT * FROM borrow_requests WHERE status IN ('approved', 'returned') ORDER BY updated_at DESC LIMIT 50");
+    return $stmt->fetchAll();
 }
 
 /**

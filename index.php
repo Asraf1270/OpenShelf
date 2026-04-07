@@ -10,34 +10,34 @@ include 'includes/header.php';
 // Configuration
 define('DATA_PATH', __DIR__ . '/data/');
 
+// Include database connection
+require_once __DIR__ . '/includes/db.php';
+
 /**
- * Get total books count
+ * Get total books count from DB
  */
 function getTotalBooks() {
-    $booksFile = DATA_PATH . 'books.json';
-    if (!file_exists($booksFile)) return 0;
-    $books = json_decode(file_get_contents($booksFile), true) ?? [];
-    return count($books);
+    $db = getDB();
+    $stmt = $db->query("SELECT COUNT(*) FROM books");
+    return (int) $stmt->fetchColumn();
 }
 
 /**
- * Get total users count
+ * Get total users count from DB
  */
 function getTotalUsers() {
-    $usersFile = DATA_PATH . 'users.json';
-    if (!file_exists($usersFile)) return 0;
-    $users = json_decode(file_get_contents($usersFile), true) ?? [];
-    return count($users);
+    $db = getDB();
+    $stmt = $db->query("SELECT COUNT(*) FROM users");
+    return (int) $stmt->fetchColumn();
 }
 
 /**
- * Get available books count
+ * Get available books count from DB
  */
 function getAvailableBooks() {
-    $booksFile = DATA_PATH . 'books.json';
-    if (!file_exists($booksFile)) return 0;
-    $books = json_decode(file_get_contents($booksFile), true) ?? [];
-    return count(array_filter($books, fn($b) => ($b['status'] ?? '') === 'available'));
+    $db = getDB();
+    $stmt = $db->query("SELECT COUNT(*) FROM books WHERE status = 'available'");
+    return (int) $stmt->fetchColumn();
 }
 
 // Load statistics

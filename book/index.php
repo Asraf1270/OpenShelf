@@ -12,6 +12,9 @@ define('BOOKS_DATA_PATH', dirname(__DIR__) . '/data/book/');
 define('USERS_PATH', dirname(__DIR__) . '/users/');
 define('BASE_URL', 'https://openshelf.free.nf');
 
+// Include database connection
+require_once dirname(__DIR__) . '/includes/db.php';
+
 // Initialize mailer
 $mailer = null;
 try {
@@ -30,14 +33,22 @@ if (empty($bookId)) {
 }
 
 /**
- * Load detailed book data from /data/book/[book_id].json
+ * Load detailed book data from DB
  */
 function loadDetailedBook($bookId) {
-    $bookFile = BOOKS_DATA_PATH . $bookId . '.json';
-    if (!file_exists($bookFile)) {
-        return null;
+    if (empty($bookId)) return null;
+    $db = getDB();
+    $stmt = $db->prepare("SELECT * FROM books WHERE id = ?");
+    $stmt->execute([$bookId]);
+    $book = $stmt->fetch();
+    
+    if ($book) {
+        $book['tags'] = json_decode($book['tags'] ?? '[]', true);
+        $book['reviews'] = json_decode($book['reviews'] ?? '[]', true);
+        $book['comments'] = json_decode($book['comments'] ?? '[]', true);
     }
-    return json_decode(file_get_contents($bookFile), true);
+    
+    return $book ?: null;
 }
 
 /**
@@ -50,32 +61,23 @@ function loadUserData($userId) {
 }
 
 /**
- * Load all borrow requests for this book
+ * Load all borrow requests for this book from DB
  */
 function loadBorrowRequests($bookId) {
-    $requestsFile = DATA_PATH . 'borrow_requests.json';
-    if (!file_exists($requestsFile)) return [];
-    
-    $allRequests = json_decode(file_get_contents($requestsFile), true) ?? [];
-    return array_filter($allRequests, fn($r) => ($r['book_id'] ?? '') === $bookId);
+    $db = getDB();
+    $stmt = $db->prepare("SELECT * FROM borrow_requests WHERE book_id = ?");
+    $stmt->execute([$bookId]);
+    return $stmt->fetchAll();
 }
 
 /**
- * Check if user has already requested this book
+ * Check if user has already requested this book from DB
  */
 function hasUserRequested($bookId, $userId) {
-    $requestsFile = DATA_PATH . 'borrow_requests.json';
-    if (!file_exists($requestsFile)) return false;
-    
-    $requests = json_decode(file_get_contents($requestsFile), true) ?? [];
-    foreach ($requests as $r) {
-        if (($r['book_id'] ?? '') === $bookId && 
-            ($r['borrower_id'] ?? '') === $userId && 
-            ($r['status'] ?? '') === 'pending') {
-            return true;
-        }
-    }
-    return false;
+    $db = getDB();
+    $stmt = $db->prepare("SELECT id FROM borrow_requests WHERE book_id = ? AND borrower_id = ? AND status = 'pending'");
+    $stmt->execute([$bookId, $userId]);
+    return $stmt->fetch() !== false;
 }
 
 /**
@@ -210,54 +212,49 @@ $borrowError = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     if ($_POST['action'] === 'borrow' && $canBorrow) {
-        $requestsFile = DATA_PATH . 'borrow_requests.json';
-        $requests = file_exists($requestsFile) ? json_decode(file_get_contents($requestsFile), true) : [];
-        if (!is_array($requests)) $requests = [];
-
-        
         $requestId = 'REQ' . time() . bin2hex(random_bytes(4));
         $duration = intval($_POST['duration'] ?? 14);
         $message = trim($_POST['message'] ?? '');
         
         $newRequest = [
-            'id' => $requestId,
-            'book_id' => $bookId,
-            'book_title' => $book['title'],
-            'book_author' => $book['author'],
-            'book_cover' => $book['cover_image'] ?? null,
-            'owner_id' => $book['owner_id'],
-            'owner_name' => $owner['personal_info']['name'] ?? 'Unknown',
-            'owner_email' => $owner['personal_info']['email'] ?? null,
-            'borrower_id' => $currentUserId,
-            'borrower_name' => $currentUserName,
-            'borrower_email' => $_SESSION['user_email'] ?? null,
-            'status' => 'pending',
-            'request_date' => date('Y-m-d H:i:s'),
-            'expected_return_date' => date('Y-m-d H:i:s', strtotime("+{$duration} days")),
-            'duration_days' => $duration,
-            'message' => $message,
-            'updated_at' => date('Y-m-d H:i:s')
+            ':id' => $requestId,
+            ':book_id' => $bookId,
+            ':book_title' => $book['title'],
+            ':book_author' => $book['author'],
+            ':book_cover' => $book['cover_image'] ?? null,
+            ':owner_id' => $book['owner_id'],
+            ':owner_name' => $owner['personal_info']['name'] ?? 'Unknown',
+            ':owner_email' => $owner['personal_info']['email'] ?? null,
+            ':borrower_id' => $currentUserId,
+            ':borrower_name' => $currentUserName,
+            ':borrower_email' => $_SESSION['user_email'] ?? null,
+            ':status' => 'pending',
+            ':request_date' => date('Y-m-d H:i:s'),
+            ':expected_return_date' => date('Y-m-d H:i:s', strtotime("+{$duration} days")),
+            ':duration_days' => $duration,
+            ':message' => $message,
+            ':updated_at' => date('Y-m-d H:i:s')
         ];
         
-        $requests[] = $newRequest;
+        $db = getDB();
+        $sql = "INSERT INTO borrow_requests (
+                    id, book_id, book_title, book_author, book_cover, owner_id, 
+                    owner_name, owner_email, borrower_id, borrower_name, 
+                    borrower_email, status, request_date, expected_return_date, 
+                    duration_days, message, updated_at
+                ) VALUES (
+                    :id, :book_id, :book_title, :book_author, :book_cover, :owner_id, 
+                    :owner_name, :owner_email, :borrower_id, :borrower_name, 
+                    :borrower_email, :status, :request_date, :expected_return_date, 
+                    :duration_days, :message, :updated_at
+                )";
         
-        if (file_put_contents($requestsFile, json_encode($requests, JSON_PRETTY_PRINT))) {
-            // Update book status
-            $book['status'] = 'reserved';
-            file_put_contents(BOOKS_DATA_PATH . $bookId . '.json', json_encode($book, JSON_PRETTY_PRINT));
-            
-            // Update master books.json
-            $masterBooksFile = DATA_PATH . 'books.json';
-            if (file_exists($masterBooksFile)) {
-                $masterBooks = json_decode(file_get_contents($masterBooksFile), true);
-                foreach ($masterBooks as &$b) {
-                    if ($b['id'] === $bookId) {
-                        $b['status'] = 'reserved';
-                        break;
-                    }
-                }
-                file_put_contents($masterBooksFile, json_encode($masterBooks, JSON_PRETTY_PRINT));
-            }
+        $stmt = $db->prepare($sql);
+        
+        if ($stmt->execute($newRequest)) {
+            // Update book status in DB
+            $stmt = $db->prepare("UPDATE books SET status = 'reserved', updated_at = ? WHERE id = ?");
+            $stmt->execute([date('Y-m-d H:i:s'), $bookId]);
             
             // Create notification for owner
             createNotification(
@@ -293,7 +290,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 );
             }
 
-            
             $borrowMessage = 'Request sent successfully!';
             $hasRequested = true;
             
@@ -348,10 +344,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['ajax_action']) && $_P
     
     $book['reviews'][] = $newReview;
     
-    if (file_put_contents(BOOKS_DATA_PATH . $bookId . '.json', json_encode($book, JSON_PRETTY_PRINT))) {
+    $db = getDB();
+    $stmt = $db->prepare("UPDATE books SET reviews = ?, updated_at = ? WHERE id = ?");
+    if ($stmt->execute([json_encode($book['reviews']), date('Y-m-d H:i:s'), $bookId])) {
         echo json_encode(['success' => true, 'review' => $newReview]);
     } else {
-        echo json_encode(['success' => false, 'message' => 'Failed to save review']);
+        echo json_encode(['success' => false, 'message' => 'Failed to save review to database']);
     }
     exit;
 }
@@ -384,10 +382,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['ajax_action']) && $_P
     
     $book['comments'][] = $newComment;
     
-    if (file_put_contents(BOOKS_DATA_PATH . $bookId . '.json', json_encode($book, JSON_PRETTY_PRINT))) {
+    $db = getDB();
+    $stmt = $db->prepare("UPDATE books SET comments = ?, updated_at = ? WHERE id = ?");
+    if ($stmt->execute([json_encode($book['comments']), date('Y-m-d H:i:s'), $bookId])) {
         echo json_encode(['success' => true, 'comment' => $newComment]);
     } else {
-        echo json_encode(['success' => false, 'message' => 'Failed to save comment']);
+        echo json_encode(['success' => false, 'message' => 'Failed to save comment to database']);
     }
     exit;
 }
@@ -423,10 +423,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['ajax_action']) && $_P
         }
     }
     
-    if ($commentFound && file_put_contents(BOOKS_DATA_PATH . $bookId . '.json', json_encode($book, JSON_PRETTY_PRINT))) {
-        echo json_encode(['success' => true, 'likes' => $likeCount, 'liked' => $liked]);
+    if ($commentFound) {
+        $db = getDB();
+        $stmt = $db->prepare("UPDATE books SET comments = ? WHERE id = ?");
+        if ($stmt->execute([json_encode($book['comments']), $bookId])) {
+            echo json_encode(['success' => true, 'likes' => $likeCount, 'liked' => $liked]);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Failed to like comment in database']);
+        }
     } else {
-        echo json_encode(['success' => false, 'message' => 'Failed to like comment']);
+        echo json_encode(['success' => false, 'message' => 'Comment not found']);
     }
     exit;
 }

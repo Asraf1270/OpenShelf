@@ -23,6 +23,9 @@ $currentUserId = $_SESSION['user_id'];
 $currentUserName = $_SESSION['user_name'] ?? 'Unknown';
 $currentUserEmail = $_SESSION['user_email'] ?? '';
 
+// Include database connection
+require_once dirname(__DIR__) . '/includes/db.php';
+
 // Initialize mailer
 $mailer = null;
 try {
@@ -41,12 +44,14 @@ function generateRequestId() {
 }
 
 /**
- * Load book data
+ * Load book data from DB
  */
 function loadBookData($bookId) {
-    $bookFile = BOOKS_DATA_PATH . $bookId . '.json';
-    if (!file_exists($bookFile)) return null;
-    return json_decode(file_get_contents($bookFile), true);
+    $db = getDB();
+    $stmt = $db->prepare("SELECT * FROM books WHERE id = ?");
+    $stmt->execute([$bookId]);
+    $book = $stmt->fetch();
+    return $book ?: null;
 }
 
 /**
@@ -59,62 +64,43 @@ function loadUserData($userId) {
 }
 
 /**
- * Check for existing pending request
+ * Check for existing pending request in DB
  */
 function hasPendingRequest($bookId, $userId) {
-    $requestsFile = DATA_PATH . 'borrow_requests.json';
-    if (!file_exists($requestsFile)) return false;
-    
-    $requests = json_decode(file_get_contents($requestsFile), true) ?? [];
-    foreach ($requests as $r) {
-        if ($r['book_id'] === $bookId && $r['borrower_id'] === $userId && $r['status'] === 'pending') {
-            return true;
-        }
-    }
-    return false;
+    $db = getDB();
+    $stmt = $db->prepare("SELECT id FROM borrow_requests WHERE book_id = ? AND borrower_id = ? AND status = 'pending'");
+    $stmt->execute([$bookId, $userId]);
+    return $stmt->fetch() !== false;
 }
 
 /**
- * Save borrow request
+ * Save borrow request to DB
  */
 function saveBorrowRequest($requestData) {
-    $requestsFile = DATA_PATH . 'borrow_requests.json';
-    $requests = file_exists($requestsFile) ? json_decode(file_get_contents($requestsFile), true) : [];
-    $requests[] = $requestData;
-    return file_put_contents(
-        $requestsFile,
-        json_encode($requests, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)
-    );
+    $db = getDB();
+    $sql = "INSERT INTO borrow_requests (
+                id, book_id, book_title, book_author, book_cover, 
+                owner_id, owner_name, owner_email, borrower_id, 
+                borrower_name, borrower_email, status, request_date, 
+                expected_return_date, duration_days, message, updated_at
+            ) VALUES (
+                :id, :book_id, :book_title, :book_author, :book_cover, 
+                :owner_id, :owner_name, :owner_email, :borrower_id, 
+                :borrower_name, :borrower_email, :status, :request_date, 
+                :expected_return_date, :duration_days, :message, :updated_at
+            )";
+    
+    $stmt = $db->prepare($sql);
+    return $stmt->execute($requestData);
 }
 
 /**
- * Update book status
+ * Update book status in DB
  */
 function updateBookStatus($bookId, $status) {
-    // Update detailed book file
-    $bookFile = BOOKS_DATA_PATH . $bookId . '.json';
-    if (file_exists($bookFile)) {
-        $bookData = json_decode(file_get_contents($bookFile), true);
-        $bookData['status'] = $status;
-        $bookData['updated_at'] = date('Y-m-d H:i:s');
-        file_put_contents($bookFile, json_encode($bookData, JSON_PRETTY_PRINT));
-    }
-    
-    // Update master books.json
-    $masterFile = DATA_PATH . 'books.json';
-    if (file_exists($masterFile)) {
-        $masterBooks = json_decode(file_get_contents($masterFile), true);
-        foreach ($masterBooks as &$book) {
-            if ($book['id'] === $bookId) {
-                $book['status'] = $status;
-                $book['updated_at'] = date('Y-m-d H:i:s');
-                break;
-            }
-        }
-        file_put_contents($masterFile, json_encode($masterBooks, JSON_PRETTY_PRINT));
-    }
-    
-    return true;
+    $db = getDB();
+    $stmt = $db->prepare("UPDATE books SET status = ?, updated_at = ? WHERE id = ?");
+    return $stmt->execute([$status, date('Y-m-d H:i:s'), $bookId]);
 }
 
 /**

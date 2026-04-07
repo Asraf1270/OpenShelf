@@ -11,6 +11,9 @@ define('DATA_PATH', dirname(__DIR__, 2) . '/data/');
 define('BOOKS_PATH', dirname(__DIR__, 2) . '/books/');
 define('USERS_PATH', dirname(__DIR__, 2) . '/users/');
 
+// Include database connection
+require_once dirname(__DIR__, 2) . '/includes/db.php';
+
 // Check if admin is logged in
 if (!isset($_SESSION['admin_id'])) {
     header('Location: /admin/login/');
@@ -22,36 +25,30 @@ $adminName = $_SESSION['admin_name'] ?? 'Admin';
 $adminRole = $_SESSION['admin_role'] ?? 'admin';
 
 /**
- * Load all users from master JSON
+ * Load all users from DB
  */
 function loadAllUsers() {
-    $usersFile = DATA_PATH . 'users.json';
-    if (!file_exists($usersFile)) {
-        return [];
-    }
-    return json_decode(file_get_contents($usersFile), true) ?? [];
+    $db = getDB();
+    $stmt = $db->query("SELECT * FROM users ORDER BY created_at DESC");
+    return $stmt->fetchAll();
 }
 
 /**
- * Load all books from master JSON
+ * Load all books from DB
  */
 function loadAllBooks() {
-    $booksFile = DATA_PATH . 'books.json';
-    if (!file_exists($booksFile)) {
-        return [];
-    }
-    return json_decode(file_get_contents($booksFile), true) ?? [];
+    $db = getDB();
+    $stmt = $db->query("SELECT * FROM books ORDER BY created_at DESC");
+    return $stmt->fetchAll();
 }
 
 /**
- * Load all borrow requests
+ * Load all borrow requests from DB
  */
 function loadAllRequests() {
-    $requestsFile = DATA_PATH . 'borrow_requests.json';
-    if (!file_exists($requestsFile)) {
-        return [];
-    }
-    return json_decode(file_get_contents($requestsFile), true) ?? [];
+    $db = getDB();
+    $stmt = $db->query("SELECT * FROM borrow_requests ORDER BY request_date DESC");
+    return $stmt->fetchAll();
 }
 
 /**
@@ -161,22 +158,26 @@ function getRecentActivities($users, $books, $requests, $limit = 10) {
     return array_slice($activities, 0, $limit);
 }
 
-// Load data
+// Statistics from DB
+$db = getDB();
+
+$totalUsers = (int) $db->query("SELECT COUNT(*) FROM users")->fetchColumn();
+$totalBooks = (int) $db->query("SELECT COUNT(*) FROM books")->fetchColumn();
+$totalRequests = (int) $db->query("SELECT COUNT(*) FROM borrow_requests")->fetchColumn();
+
+$availableBooks = (int) $db->query("SELECT COUNT(*) FROM books WHERE status = 'available'")->fetchColumn();
+$borrowedBooks = (int) $db->query("SELECT COUNT(*) FROM books WHERE status = 'borrowed'")->fetchColumn();
+
+$pendingUsers = (int) $db->query("SELECT COUNT(*) FROM users WHERE verified = 0 AND status != 'rejected'")->fetchColumn();
+$pendingRequests = (int) $db->query("SELECT COUNT(*) FROM borrow_requests WHERE status = 'pending'")->fetchColumn();
+$approvedRequests = (int) $db->query("SELECT COUNT(*) FROM borrow_requests WHERE status = 'approved'")->fetchColumn();
+$rejectedRequests = (int) $db->query("SELECT COUNT(*) FROM borrow_requests WHERE status = 'rejected'")->fetchColumn();
+$returnedRequests = (int) $db->query("SELECT COUNT(*) FROM borrow_requests WHERE status = 'returned'")->fetchColumn();
+
+// Load arrays for growth and activities (or refactor to SQL later if needed for scale)
 $users = loadAllUsers();
 $books = loadAllBooks();
 $requests = loadAllRequests();
-
-// Statistics
-$totalUsers = count($users);
-$totalBooks = count($books);
-$totalRequests = count($requests);
-$availableBooks = count(array_filter($books, fn($b) => ($b['status'] ?? '') === 'available'));
-$borrowedBooks = count(array_filter($books, fn($b) => ($b['status'] ?? '') === 'borrowed'));
-$pendingUsers = count(array_filter($users, fn($u) => !($u['verified'] ?? false)));
-$pendingRequests = count(array_filter($requests, fn($r) => ($r['status'] ?? '') === 'pending'));
-$approvedRequests = count(array_filter($requests, fn($r) => ($r['status'] ?? '') === 'approved'));
-$rejectedRequests = count(array_filter($requests, fn($r) => ($r['status'] ?? '') === 'rejected'));
-$returnedRequests = count(array_filter($requests, fn($r) => ($r['status'] ?? '') === 'returned'));
 
 // Growth data
 $userGrowth = getUserGrowth($users, 30);

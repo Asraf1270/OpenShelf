@@ -12,6 +12,9 @@ define('BOOKS_PATH', dirname(__DIR__, 2) . '/books/');
 define('USERS_PATH', dirname(__DIR__, 2) . '/users/');
 define('UPLOAD_PATH', dirname(__DIR__, 2) . '/uploads/book_cover/');
 
+// Include database connection
+require_once dirname(__DIR__, 2) . '/includes/db.php';
+
 // Check admin login
 if (!isset($_SESSION['admin_id'])) {
     header('Location: /admin/login/');
@@ -22,87 +25,76 @@ $adminId = $_SESSION['admin_id'];
 $adminName = $_SESSION['admin_name'] ?? 'Admin';
 
 /**
- * Load all books from master JSON
+ * Load all books from DB
  */
 function loadAllBooks() {
-    $booksFile = DATA_PATH . 'books.json';
-    if (!file_exists($booksFile)) return [];
-    return json_decode(file_get_contents($booksFile), true) ?? [];
+    $db = getDB();
+    $stmt = $db->query("SELECT * FROM books ORDER BY created_at DESC");
+    return $stmt->fetchAll();
 }
 
 /**
- * Load detailed book data
+ * Load detailed book data from DB
  */
 function loadBookData($bookId) {
-    $bookFile = BOOKS_PATH . $bookId . '.json';
-    if (!file_exists($bookFile)) return null;
-    return json_decode(file_get_contents($bookFile), true);
+    if (empty($bookId)) return null;
+    $db = getDB();
+    $stmt = $db->prepare("SELECT * FROM books WHERE id = ?");
+    $stmt->execute([$bookId]);
+    return $stmt->fetch() ?: null;
 }
 
 /**
- * Update book status
+ * Update book status in DB
  */
 function updateBookStatus($bookId, $status, $reason = '') {
     global $adminId;
+    $db = getDB();
     
-    // Update master books.json
-    $books = loadAllBooks();
-    $updated = false;
+    $sql = "UPDATE books SET 
+                status = :status, 
+                updated_at = :updated_at, 
+                status_updated_by = :status_updated_by";
     
-    foreach ($books as &$book) {
-        if ($book['id'] === $bookId) {
-            $book['status'] = $status;
-            $book['updated_at'] = date('Y-m-d H:i:s');
-            $book['status_updated_by'] = $adminId;
-            if ($status === 'unavailable') {
-                $book['unavailable_reason'] = $reason;
-            }
-            $updated = true;
-            break;
-        }
+    if ($status === 'unavailable') {
+        $sql .= ", unavailable_reason = :unavailable_reason";
     }
     
-    if ($updated) {
-        file_put_contents(DATA_PATH . 'books.json', json_encode($books, JSON_PRETTY_PRINT));
-        
-        // Update individual book file
-        $bookData = loadBookData($bookId);
-        if ($bookData) {
-            $bookData['status'] = $status;
-            $bookData['updated_at'] = date('Y-m-d H:i:s');
-            $bookData['status_updated_by'] = $adminId;
-            if ($status === 'unavailable') {
-                $bookData['unavailable_reason'] = $reason;
-            }
-            file_put_contents(BOOKS_PATH . $bookId . '.json', json_encode($bookData, JSON_PRETTY_PRINT));
-        }
-        
-        return true;
+    $sql .= " WHERE id = :id";
+    
+    $params = [
+        ':status' => $status,
+        ':updated_at' => date('Y-m-d H:i:s'),
+        ':status_updated_by' => $adminId,
+        ':id' => $bookId
+    ];
+    
+    if ($status === 'unavailable') {
+        $params[':unavailable_reason'] = $reason;
     }
-    return false;
+    
+    $stmt = $db->prepare($sql);
+    return $stmt->execute($params);
 }
 
 /**
- * Delete book
+ * Delete book from DB
  */
 function deleteBook($bookId) {
-    $books = loadAllBooks();
-    $bookIndex = -1;
-    $bookData = null;
+    $db = getDB();
     
-    foreach ($books as $index => $book) {
-        if ($book['id'] === $bookId) {
-            $bookIndex = $index;
-            $bookData = $book;
-            break;
-        }
-    }
+    // Get book data first for cover image deletion
+    $stmt = $db->prepare("SELECT * FROM books WHERE id = ?");
+    $stmt->execute([$bookId]);
+    $bookData = $stmt->fetch();
     
-    if ($bookIndex >= 0) {
-        array_splice($books, $bookIndex, 1);
-        $masterSaved = file_put_contents(DATA_PATH . 'books.json', json_encode($books, JSON_PRETTY_PRINT));
-        
-        // Delete individual book file
+    if (!$bookData) return false;
+    
+    $stmt = $db->prepare("DELETE FROM books WHERE id = ?");
+    $masterSaved = $stmt->execute([$bookId]);
+    
+    if ($masterSaved) {
+        // Archive book data if individual file exists
         $bookFile = BOOKS_PATH . $bookId . '.json';
         if (file_exists($bookFile)) {
             $archiveDir = DATA_PATH . 'archive/books/';
@@ -144,16 +136,14 @@ function updateUserBookList($userId, $bookId, $action) {
 }
 
 /**
- * Get user name by ID
+ * Get user name by ID from DB
  */
 function getUserName($userId) {
-    $usersFile = DATA_PATH . 'users.json';
-    if (!file_exists($usersFile)) return 'Unknown';
-    $users = json_decode(file_get_contents($usersFile), true) ?? [];
-    foreach ($users as $user) {
-        if ($user['id'] === $userId) return $user['name'];
-    }
-    return 'Unknown';
+    if (empty($userId)) return 'Unknown';
+    $db = getDB();
+    $stmt = $db->prepare("SELECT name FROM users WHERE id = ?");
+    $stmt->execute([$userId]);
+    return $stmt->fetchColumn() ?: 'Unknown';
 }
 
 /**
@@ -268,7 +258,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <title>Book Management - OpenShelf Admin</title>
     <link rel="stylesheet" href="/assets/css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <style>
     <style>
         /* Book Management Styles */
         .page-header {
@@ -605,7 +594,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             .filters-bar { padding: 1rem; }
             .search-box input { width: 100%; }
         }
-    </style>
     </style>
 </head>
 <body>

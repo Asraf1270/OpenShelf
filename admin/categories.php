@@ -4,9 +4,10 @@
  * Manage book categories
  */
 
-session_start();
-
 define('DATA_PATH', dirname(__DIR__) . '/data/');
+
+// Include database connection
+require_once dirname(__DIR__) . '/includes/db.php';
 
 if (!isset($_SESSION['admin_id'])) {
     header('Location: /admin/login/');
@@ -14,27 +15,29 @@ if (!isset($_SESSION['admin_id'])) {
 }
 
 function loadCategories() {
-    $categoriesFile = DATA_PATH . 'categories.json';
-    if (file_exists($categoriesFile)) {
-        return json_decode(file_get_contents($categoriesFile), true) ?? [];
+    $db = getDB();
+    $sql = "SELECT c.*, (SELECT COUNT(*) FROM books b WHERE b.category = c.name) as count 
+            FROM categories c 
+            ORDER BY c.name ASC";
+    $stmt = $db->query($sql);
+    $categories = $stmt->fetchAll();
+    
+    if (empty($categories)) {
+        // Initial data if table is empty
+        return [
+            ['id' => 1, 'name' => 'Fiction', 'count' => 0],
+            ['id' => 2, 'name' => 'Non-Fiction', 'count' => 0],
+            ['id' => 3, 'name' => 'Science Fiction', 'count' => 0],
+            ['id' => 4, 'name' => 'Fantasy', 'count' => 0],
+            ['id' => 5, 'name' => 'Mystery', 'count' => 0],
+            ['id' => 6, 'name' => 'Biography', 'count' => 0],
+            ['id' => 7, 'name' => 'History', 'count' => 0],
+            ['id' => 8, 'name' => 'Programming', 'count' => 0],
+            ['id' => 9, 'name' => 'Science', 'count' => 0],
+            ['id' => 10, 'name' => 'Self-Help', 'count' => 0]
+        ];
     }
-    return [
-        ['id' => 1, 'name' => 'Fiction', 'count' => 0],
-        ['id' => 2, 'name' => 'Non-Fiction', 'count' => 0],
-        ['id' => 3, 'name' => 'Science Fiction', 'count' => 0],
-        ['id' => 4, 'name' => 'Fantasy', 'count' => 0],
-        ['id' => 5, 'name' => 'Mystery', 'count' => 0],
-        ['id' => 6, 'name' => 'Biography', 'count' => 0],
-        ['id' => 7, 'name' => 'History', 'count' => 0],
-        ['id' => 8, 'name' => 'Programming', 'count' => 0],
-        ['id' => 9, 'name' => 'Science', 'count' => 0],
-        ['id' => 10, 'name' => 'Self-Help', 'count' => 0]
-    ];
-}
-
-function saveCategories($categories) {
-    $categoriesFile = DATA_PATH . 'categories.json';
-    return file_put_contents($categoriesFile, json_encode($categories, JSON_PRETTY_PRINT));
+    return $categories;
 }
 
 $categories = loadCategories();
@@ -42,6 +45,7 @@ $message = '';
 $error = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $db = getDB();
     $action = $_POST['action'] ?? '';
     
     if ($action === 'add') {
@@ -49,9 +53,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (empty($name)) {
             $error = 'Category name is required';
         } else {
-            $newId = max(array_column($categories, 'id')) + 1;
-            $categories[] = ['id' => $newId, 'name' => $name, 'count' => 0];
-            if (saveCategories($categories)) {
+            $stmt = $db->prepare("INSERT IGNORE INTO categories (name) VALUES (?)");
+            if ($stmt->execute([$name])) {
                 $message = 'Category added successfully';
             } else {
                 $error = 'Failed to add category';
@@ -60,20 +63,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif ($action === 'edit') {
         $id = intval($_POST['id'] ?? 0);
         $name = trim($_POST['name'] ?? '');
-        foreach ($categories as &$cat) {
-            if ($cat['id'] === $id) {
-                $cat['name'] = $name;
-                break;
-            }
-        }
-        if (saveCategories($categories)) {
+        $stmt = $db->prepare("UPDATE categories SET name = ? WHERE id = ?");
+        if ($stmt->execute([$name, $id])) {
             $message = 'Category updated';
+        } else {
+            $error = 'Failed to update category';
         }
     } elseif ($action === 'delete') {
         $id = intval($_POST['id'] ?? 0);
-        $categories = array_filter($categories, fn($c) => $c['id'] !== $id);
-        if (saveCategories(array_values($categories))) {
+        $stmt = $db->prepare("DELETE FROM categories WHERE id = ?");
+        if ($stmt->execute([$id])) {
             $message = 'Category deleted';
+        } else {
+            $error = 'Failed to delete category';
         }
     }
 }

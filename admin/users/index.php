@@ -10,6 +10,9 @@ session_start();
 define('DATA_PATH', dirname(__DIR__, 2) . '/data/');
 define('USERS_PATH', dirname(__DIR__, 2) . '/users/');
 
+// Include database connection
+require_once dirname(__DIR__, 2) . '/includes/db.php';
+
 // Check admin login
 if (!isset($_SESSION['admin_id'])) {
     header('Location: /admin/login/');
@@ -20,84 +23,75 @@ $adminId = $_SESSION['admin_id'];
 $adminName = $_SESSION['admin_name'] ?? 'Admin';
 
 /**
- * Load all users
+ * Load all users from DB
  */
 function loadAllUsers() {
-    $usersFile = DATA_PATH . 'users.json';
-    if (!file_exists($usersFile)) return [];
-    return json_decode(file_get_contents($usersFile), true) ?? [];
+    $db = getDB();
+    $stmt = $db->query("SELECT * FROM users ORDER BY created_at DESC");
+    return $stmt->fetchAll();
 }
 
 /**
- * Update user verified status
+ * Update user verified status in DB and profile file
  */
 function updateUserVerifiedStatus($userId, $verified, $rejectionReason = '') {
-    global $adminId, $adminName;
+    global $adminId;
+    $db = getDB();
     
-    $users = loadAllUsers();
-    $updated = false;
-    $userData = null;
+    $status = $verified ? 'active' : 'rejected';
+    $verifiedAt = date('Y-m-d H:i:s');
     
-    foreach ($users as &$user) {
-        if ($user['id'] === $userId) {
-            $user['verified'] = $verified;
-            $user['status'] = $verified ? 'active' : 'rejected';
-            $user['updated_at'] = date('Y-m-d H:i:s');
-            $user['rejection_reason'] = $rejectionReason;
-            $user['verified_by'] = $adminId;
-            $user['verified_at'] = date('Y-m-d H:i:s');
-            $userData = $user;
-            $updated = true;
-            break;
-        }
-    }
+    $sql = "UPDATE users SET 
+                verified = :verified, 
+                status = :status, 
+                updated_at = :updated_at, 
+                rejection_reason = :rejection_reason, 
+                verified_by = :verified_by, 
+                verified_at = :verified_at 
+            WHERE id = :id";
+    
+    $stmt = $db->prepare($sql);
+    $updated = $stmt->execute([
+        ':verified' => $verified ? 1 : 0,
+        ':status' => $status,
+        ':updated_at' => date('Y-m-d H:i:s'),
+        ':rejection_reason' => $rejectionReason,
+        ':verified_by' => $adminId,
+        ':verified_at' => $verifiedAt,
+        ':id' => $userId
+    ]);
     
     if ($updated) {
-        file_put_contents(DATA_PATH . 'users.json', json_encode($users, JSON_PRETTY_PRINT));
-        
         $profileFile = USERS_PATH . $userId . '.json';
         if (file_exists($profileFile)) {
             $profile = json_decode(file_get_contents($profileFile), true);
             $profile['account_info']['verified'] = $verified;
-            $profile['account_info']['status'] = $verified ? 'active' : 'rejected';
-            $profile['account_info']['verified_at'] = date('Y-m-d H:i:s');
+            $profile['account_info']['status'] = $status;
+            $profile['account_info']['verified_at'] = $verifiedAt;
             $profile['account_info']['verified_by'] = $adminId;
             if (!$verified) $profile['account_info']['rejection_reason'] = $rejectionReason;
             file_put_contents($profileFile, json_encode($profile, JSON_PRETTY_PRINT));
         }
-        
         return true;
     }
     return false;
 }
 
 /**
- * Delete user
+ * Delete user from DB
  */
 function deleteUser($userId) {
-    $users = loadAllUsers();
-    $userIndex = -1;
-    $userData = null;
+    $db = getDB();
+    $stmt = $db->prepare("DELETE FROM users WHERE id = ?");
+    $masterSaved = $stmt->execute([$userId]);
     
-    foreach ($users as $index => $user) {
-        if ($user['id'] === $userId) {
-            $userIndex = $index;
-            $userData = $user;
-            break;
-        }
-    }
-    
-    if ($userIndex >= 0) {
-        array_splice($users, $userIndex, 1);
-        $masterSaved = file_put_contents(DATA_PATH . 'users.json', json_encode($users, JSON_PRETTY_PRINT));
-        
+    if ($masterSaved) {
         $profileFile = USERS_PATH . $userId . '.json';
         if (file_exists($profileFile)) {
             $archiveDir = DATA_PATH . 'archive/users/';
             if (!file_exists($archiveDir)) mkdir($archiveDir, 0755, true);
             rename($profileFile, $archiveDir . $userId . '_' . time() . '.json');
         }
-        
         return true;
     }
     return false;

@@ -9,6 +9,9 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
+// Include database connection
+require_once __DIR__ . '/db.php';
+
 // Get current page for active states
 $currentPage = basename($_SERVER['PHP_SELF']);
 $currentPath = $_SERVER['REQUEST_URI'];
@@ -23,18 +26,16 @@ $notificationCount = 0;
 if ($isLoggedIn && isset($_SESSION['user_id'])) {
     $userId = $_SESSION['user_id'];
     
-    // Primary source: Load from master users.json for session-global data
-    $masterUsersFile = dirname(__DIR__) . '/data/users.json';
-    if (file_exists($masterUsersFile)) {
-        $masterUsers = json_decode(file_get_contents($masterUsersFile), true) ?? [];
-        foreach ($masterUsers as $u) {
-            if ($u['id'] === $userId) {
-                $userName = $u['name'] ?? $userName;
-                $userEmail = $u['email'] ?? $userEmail;
-                $userAvatar = $u['profile_pic'] ?? 'default-avatar.jpg';
-                break;
-            }
-        }
+    // Primary source: Load from MySQL users table
+    $db = getDB();
+    $stmt = $db->prepare("SELECT * FROM users WHERE id = ?");
+    $stmt->execute([$userId]);
+    $u = $stmt->fetch();
+    
+    if ($u) {
+        $userName = $u['name'] ?? $userName;
+        $userEmail = $u['email'] ?? $userEmail;
+        $userAvatar = $u['profile_pic'] ?? 'default-avatar.jpg';
     }
 
     // Fallback/Detailed: Load from detailed profile

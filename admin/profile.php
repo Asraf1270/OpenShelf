@@ -4,9 +4,10 @@
  * Manage admin account settings
  */
 
-session_start();
-
 define('DATA_PATH', dirname(__DIR__) . '/data/');
+
+// Include database connection
+require_once dirname(__DIR__) . '/includes/db.php';
 
 // Check admin login
 if (!isset($_SESSION['admin_id'])) {
@@ -20,40 +21,37 @@ $adminEmail = $_SESSION['admin_email'];
 $adminRole = $_SESSION['admin_role'];
 
 /**
- * Load admin data
+ * Load admin data from DB
  */
 function loadAdminData($adminId) {
-    $adminsFile = DATA_PATH . 'admins.json';
-    if (!file_exists($adminsFile)) return null;
-    
-    $admins = json_decode(file_get_contents($adminsFile), true);
-    foreach ($admins as $admin) {
-        if ($admin['id'] === $adminId) {
-            return $admin;
-        }
-    }
-    return null;
+    if (empty($adminId)) return null;
+    $db = getDB();
+    $stmt = $db->prepare("SELECT * FROM admins WHERE id = ?");
+    $stmt->execute([$adminId]);
+    return $stmt->fetch() ?: null;
 }
 
 /**
- * Update admin data
+ * Update admin data in DB
  */
 function updateAdmin($adminId, $data) {
-    $adminsFile = DATA_PATH . 'admins.json';
-    $admins = json_decode(file_get_contents($adminsFile), true);
+    $db = getDB();
     
-    foreach ($admins as &$admin) {
-        if ($admin['id'] === $adminId) {
-            $admin['name'] = $data['name'];
-            if (!empty($data['password'])) {
-                $admin['password_hash'] = password_hash($data['password'], PASSWORD_BCRYPT);
-            }
-            $admin['updated_at'] = date('Y-m-d H:i:s');
-            break;
-        }
+    $sql = "UPDATE admins SET name = :name";
+    $params = [
+        ':name' => $data['name'],
+        ':id' => $adminId
+    ];
+    
+    if (!empty($data['password'])) {
+        $sql .= ", password_hash = :password_hash";
+        $params[':password_hash'] = password_hash($data['password'], PASSWORD_BCRYPT);
     }
     
-    return file_put_contents($adminsFile, json_encode($admins, JSON_PRETTY_PRINT));
+    $sql .= " WHERE id = :id";
+    
+    $stmt = $db->prepare($sql);
+    return $stmt->execute($params);
 }
 
 $admin = loadAdminData($adminId);

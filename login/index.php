@@ -9,6 +9,9 @@
 // Start session for user login state
 session_start();
 
+// Include database connection
+require_once dirname(__DIR__) . '/includes/db.php';
+
 // Configuration
 define('DATA_PATH', dirname(__DIR__) . '/data/');
 define('USERS_PATH', dirname(__DIR__) . '/users/');
@@ -18,34 +21,17 @@ define('COOKIE_HTTPONLY', true);
 define('COOKIE_SAMESITE', 'Strict');
 
 /**
- * Load users from JSON file
- * 
- * @return array Array of users
- */
-function loadUsers()
-{
-    $usersFile = DATA_PATH . 'users.json';
-    if (!file_exists($usersFile)) {
-        return [];
-    }
-    return json_decode(file_get_contents($usersFile), true) ?? [];
-}
-
-/**
- * Find user by phone number
+ * Find user by phone number from database
  * 
  * @param string $phone Phone number to search for
- * @param array $users Array of users
  * @return array|null User data or null if not found
  */
-function findUserByPhone($phone, $users)
+function findUserByPhone($phone)
 {
-    foreach ($users as $user) {
-        if ($user['phone'] === $phone) {
-            return $user;
-        }
-    }
-    return null;
+    $db = getDB();
+    $stmt = $db->prepare("SELECT * FROM users WHERE phone = ?");
+    $stmt->execute([$phone]);
+    return $stmt->fetch() ?: null;
 }
 
 /**
@@ -248,9 +234,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error = 'Password is required';
     } else {
 
-        // Load users and find by phone
-        $users = loadUsers();
-        $user = findUserByPhone($phone, $users);
+        // Find user by phone in database
+        $user = findUserByPhone($phone);
 
         if (!$user) {
             // Use generic message to prevent user enumeration
@@ -294,17 +279,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             }
                         }
 
-                        // Update last login time in users.json
-                        foreach ($users as &$u) {
-                            if ($u['id'] === $user['id']) {
-                                $u['last_login'] = date('Y-m-d H:i:s');
-                                break;
-                            }
-                        }
-                        file_put_contents(
-                            DATA_PATH . 'users.json',
-                            json_encode($users, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)
-                        );
+                        // Update last login time in database
+                        $db = getDB();
+                        $stmt = $db->prepare("UPDATE users SET last_login = ? WHERE id = ?");
+                        $stmt->execute([date('Y-m-d H:i:s'), $user['id']]);
 
                         // Regenerate session ID to prevent session fixation
                         session_regenerate_id(true);
@@ -352,203 +330,180 @@ if (isset($_GET['redirect'])) {
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #6d28d9;
-            --primary-light: #8b5cf6;
+            --primary: #4f46e5;
+            --primary-light: #6366f1;
             --secondary: #0ea5e9;
             --bg-dark: #0f172a;
-            --glass-bg: rgba(255, 255, 255, 0.03);
-            --glass-border: rgba(255, 255, 255, 0.08);
+            --surface: #1e293b;
+            --surface-hover: #334155;
+            --border-color: #334155;
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
             --error: #ef4444;
             --success: #10b981;
+            --focus-ring: rgba(99, 102, 241, 0.5);
         }
 
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Outfit', sans-serif;
+            font-family: 'Outfit', system-ui, sans-serif;
         }
 
         body {
             background-color: var(--bg-dark);
             color: var(--text-main);
-            overflow-x: hidden;
             min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Ambient Background */
+        .ambient-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: -1;
+            overflow: hidden;
+            background: radial-gradient(circle at 15% 50%, rgba(79, 70, 229, 0.1) 0%, transparent 40%),
+                        radial-gradient(circle at 85% 30%, rgba(14, 165, 233, 0.08) 0%, transparent 40%);
         }
 
         .login-container {
-            min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 2rem 1.5rem;
-            position: relative;
-            background: radial-gradient(circle at 0% 0%, rgba(109, 40, 217, 0.15) 0%, transparent 50%),
-                radial-gradient(circle at 100% 100%, rgba(14, 165, 233, 0.15) 0%, transparent 50%);
-        }
-
-        /* Animated background blobs */
-        .blob {
-            position: absolute;
-            width: 500px;
-            height: 500px;
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-            filter: blur(80px);
-            border-radius: 50%;
-            z-index: -1;
-            opacity: 0.15;
-            animation: move 20s infinite alternate;
-        }
-
-        .blob-1 {
-            top: -100px;
-            left: -100px;
-            animation-delay: 0s;
-        }
-
-        .blob-2 {
-            bottom: -100px;
-            right: -100px;
-            animation-delay: -5s;
-        }
-
-        @keyframes move {
-            from {
-                transform: translate(0, 0) scale(1);
-            }
-
-            to {
-                transform: translate(100px, 100px) scale(1.2);
-            }
+            flex: 1;
+            padding: 1.5rem;
+            width: 100%;
         }
 
         .login-card {
-            background: var(--glass-bg);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid var(--glass-border);
-            border-radius: 24px;
+            background: var(--surface);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
             width: 100%;
-            max-width: 460px;
-            padding: 3rem 2.5rem;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-            animation: fadeInScale 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+            max-width: 420px;
+            padding: 2.5rem 1.5rem;
+            box-shadow: 0 10px 30px -10px rgba(0,0,0,0.5);
+            animation: slideUp 0.5s ease-out forwards;
+            position: relative;
+            z-index: 10;
         }
 
-        @keyframes fadeInScale {
-            from {
-                opacity: 0;
-                transform: scale(0.95) translateY(10px);
-            }
-
-            to {
-                opacity: 1;
-                transform: scale(1) translateY(0);
-            }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .login-header {
             text-align: center;
-            margin-bottom: 2.5rem;
+            margin-bottom: 2rem;
         }
 
         .brand-logo {
-            width: 72px;
-            height: 72px;
-            border-radius: 20px;
-            margin-bottom: 0.75rem;
-            filter: drop-shadow(0 4px 15px rgba(99, 102, 241, 0.4));
+            width: 64px;
+            height: 64px;
+            border-radius: 16px;
+            margin-bottom: 1rem;
+            display: inline-block;
+            box-shadow: 0 4px 20px rgba(99, 102, 241, 0.3);
         }
 
         .login-header h1 {
-            font-size: 2.25rem;
+            font-size: 1.75rem;
             font-weight: 700;
-            letter-spacing: -0.02em;
-            margin-bottom: 0.5rem;
             color: #fff;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.02em;
         }
 
         .login-header p {
             color: var(--text-muted);
-            font-size: 1.05rem;
+            font-size: 0.95rem;
         }
 
         /* Forms */
         .form-group {
-            margin-bottom: 1.5rem;
-            position: relative;
+            margin-bottom: 1.25rem;
         }
 
         .input-group {
             position: relative;
-            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
         }
 
-        .input-group i {
+        .input-group > i:first-child {
             position: absolute;
             left: 1.25rem;
-            top: 50%;
-            transform: translateY(-50%);
             color: var(--text-muted);
-            font-size: 1.1rem;
-            transition: all 0.3s ease;
+            font-size: 1rem;
+            transition: color 0.3s ease;
             pointer-events: none;
         }
 
         .input-group input {
             width: 100%;
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid var(--glass-border);
-            border-radius: 14px;
-            padding: 1.1rem 1.25rem 1.1rem 3.25rem;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 0.875rem 1.25rem 0.875rem 3rem;
             color: #fff;
             font-size: 1rem;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.2s ease;
+        }
+
+        /* Fix eye button overlap by adding right padding */
+        .input-group input[type="password"],
+        .input-group input[type="text"] {
+            padding-right: 3rem;
         }
 
         .input-group input:focus {
             outline: none;
             border-color: var(--primary-light);
-            background: rgba(255, 255, 255, 0.05);
-            box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.15);
+            background: var(--bg-dark);
+            box-shadow: 0 0 0 3px var(--focus-ring);
         }
 
-        .input-group input:focus+i {
+        .input-group input:focus ~ i:first-child {
             color: var(--primary-light);
-            transform: translateY(-50%) scale(1.1);
         }
 
         .input-group .toggle-password {
-            left: auto;
+            position: absolute;
             right: 1.25rem;
+            color: var(--text-muted);
             cursor: pointer;
-            pointer-events: auto;
+            padding: 0.5rem;
+            margin: -0.5rem; /* Increase hit area */
+            transition: color 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+        }
+
+        .input-group .toggle-password:hover {
+            color: #fff;
         }
 
         /* Alerts */
         .alert {
-            padding: 1rem 1.25rem;
-            border-radius: 14px;
-            margin-bottom: 2rem;
+            padding: 0.875rem 1rem;
+            border-radius: 10px;
+            margin-bottom: 1.5rem;
             display: flex;
             align-items: center;
             gap: 0.75rem;
-            font-size: 0.95rem;
-            animation: slideIn 0.4s ease;
-        }
-
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            font-size: 0.9rem;
+            font-weight: 500;
         }
 
         .alert-error {
@@ -568,14 +523,14 @@ if (isset($_GET['redirect'])) {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin: 1.5rem 0 2rem;
+            margin: 1.25rem 0;
             font-size: 0.9rem;
         }
 
         .remember-me {
             display: flex;
             align-items: center;
-            gap: 0.6rem;
+            gap: 0.5rem;
             cursor: pointer;
             color: var(--text-muted);
             user-select: none;
@@ -586,70 +541,73 @@ if (isset($_GET['redirect'])) {
         }
 
         .custom-checkbox {
-            width: 20px;
-            height: 20px;
-            border: 1px solid var(--glass-border);
-            border-radius: 6px;
+            width: 18px;
+            height: 18px;
+            border: 1.5px solid var(--border-color);
+            border-radius: 5px;
             display: flex;
             align-items: center;
             justify-content: center;
             transition: all 0.2s ease;
-            background: rgba(255, 255, 255, 0.02);
+            background: rgba(15, 23, 42, 0.5);
         }
 
-        .remember-me input:checked+.custom-checkbox {
-            background: var(--primary);
-            border-color: var(--primary);
+        .remember-me input:checked + .custom-checkbox {
+            background: var(--primary-light);
+            border-color: var(--primary-light);
         }
 
         .custom-checkbox i {
             color: #fff;
-            font-size: 0.7rem;
-            display: none;
+            font-size: 0.65rem;
+            opacity: 0;
+            transform: scale(0.5);
+            transition: all 0.2s ease;
         }
 
-        .remember-me input:checked+.custom-checkbox i {
-            display: block;
+        .remember-me input:checked + .custom-checkbox i {
+            opacity: 1;
+            transform: scale(1);
         }
 
         .forgot-password {
-            color: var(--primary-light);
+            color: var(--text-muted);
             text-decoration: none;
             font-weight: 500;
             transition: color 0.2s ease;
         }
 
         .forgot-password:hover {
-            color: #fff;
+            color: var(--text-main);
         }
 
         /* Buttons */
         .btn-login {
             width: 100%;
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            background: var(--primary);
             color: #fff;
             border: none;
-            border-radius: 14px;
-            padding: 1.1rem;
-            font-size: 1.05rem;
+            border-radius: 12px;
+            padding: 1rem;
+            font-size: 1rem;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.2s ease;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 0.75rem;
-            box-shadow: 0 10px 15px -3px rgba(109, 40, 217, 0.3);
+            position: relative;
+            overflow: hidden;
         }
 
         .btn-login:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 20px 25px -5px rgba(109, 40, 217, 0.4);
-            filter: brightness(1.1);
+            background: var(--primary-light);
+            transform: translateY(-1px);
         }
 
         .btn-login:active {
-            transform: translateY(0);
+            transform: translateY(1px);
         }
 
         .btn-login i {
@@ -663,15 +621,15 @@ if (isset($_GET['redirect'])) {
         /* Footer */
         .register-link {
             text-align: center;
-            margin-top: 2.5rem;
-            padding-top: 2rem;
-            border-top: 1px solid var(--glass-border);
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border-color);
             color: var(--text-muted);
             font-size: 0.95rem;
         }
 
         .register-link a {
-            color: #fff;
+            color: var(--primary-light);
             text-decoration: none;
             font-weight: 600;
             margin-left: 0.25rem;
@@ -679,7 +637,8 @@ if (isset($_GET['redirect'])) {
         }
 
         .register-link a:hover {
-            color: var(--secondary);
+            color: var(--primary);
+            text-decoration: underline;
         }
 
         .security-info {
@@ -696,8 +655,8 @@ if (isset($_GET['redirect'])) {
         /* Spinner */
         .spinner {
             display: none;
-            width: 20px;
-            height: 20px;
+            width: 18px;
+            height: 18px;
             border: 2px solid rgba(255, 255, 255, 0.3);
             border-top-color: #fff;
             border-radius: 50%;
@@ -705,9 +664,7 @@ if (isset($_GET['redirect'])) {
         }
 
         @keyframes spin {
-            to {
-                transform: rotate(360deg);
-            }
+            to { transform: rotate(360deg); }
         }
 
         .loading .btn-text,
@@ -719,23 +676,23 @@ if (isset($_GET['redirect'])) {
             display: block;
         }
 
-        /* Responsive */
-        @media (max-width: 480px) {
+        /* Desktop enhancements */
+        @media (min-width: 640px) {
             .login-card {
-                padding: 2.5rem 1.5rem;
+                padding: 3rem 2.5rem;
             }
 
             .login-header h1 {
-                font-size: 1.75rem;
+                font-size: 2rem;
             }
         }
     </style>
 </head>
 
 <body>
+    <div class="ambient-bg"></div>
+
     <div class="login-container">
-        <div class="blob blob-1"></div>
-        <div class="blob blob-2"></div>
 
         <div class="login-card">
             <div class="login-header">
@@ -822,18 +779,7 @@ if (isset($_GET['redirect'])) {
             this.classList.toggle('fa-eye-slash');
         });
 
-        // Show loading state on form submit
-        const loginForm = document.getElementById('loginForm');
-        const loginBtn = document.getElementById('loginBtn');
 
-        loginForm.addEventListener('submit', function () {
-            loginBtn.classList.add('loading');
-            loginBtn.disabled = true;
-        });
-        // Toggle icon
-        this.classList.toggle('fa-eye');
-        this.classList.toggle('fa-eye-slash');
-        });
 
         // Phone number formatting
         const phoneInput = document.getElementById('phone');
@@ -873,15 +819,7 @@ if (isset($_GET['redirect'])) {
             loginBtn.disabled = true;
         });
 
-        // Remember me checkbox styling
-        const rememberMe = document.getElementById('remember_me');
-        const rememberLabel = document.querySelector('.remember-me');
 
-        rememberLabel.addEventListener('click', function (e) {
-            if (e.target.type !== 'checkbox') {
-                rememberMe.checked = !rememberMe.checked;
-            }
-        });
 
         // Auto-focus phone input on page load
         phoneInput.focus();

@@ -4,9 +4,10 @@
  * Export data as CSV
  */
 
-session_start();
-
 define('DATA_PATH', dirname(__DIR__, 2) . '/data/');
+
+// Include database connection
+require_once dirname(__DIR__, 2) . '/includes/db.php';
 
 if (!isset($_SESSION['admin_id'])) {
     header('Location: /admin/login/');
@@ -14,18 +15,21 @@ if (!isset($_SESSION['admin_id'])) {
 }
 
 function loadAllUsers() {
-    $usersFile = DATA_PATH . 'users.json';
-    return file_exists($usersFile) ? json_decode(file_get_contents($usersFile), true) ?? [] : [];
+    $db = getDB();
+    $stmt = $db->query("SELECT * FROM users ORDER BY created_at DESC");
+    return $stmt->fetchAll();
 }
 
 function loadAllBooks() {
-    $booksFile = DATA_PATH . 'books.json';
-    return file_exists($booksFile) ? json_decode(file_get_contents($booksFile), true) ?? [] : [];
+    $db = getDB();
+    $stmt = $db->query("SELECT * FROM books ORDER BY created_at DESC");
+    return $stmt->fetchAll();
 }
 
 function loadAllRequests() {
-    $requestsFile = DATA_PATH . 'borrow_requests.json';
-    return file_exists($requestsFile) ? json_decode(file_get_contents($requestsFile), true) ?? [] : [];
+    $db = getDB();
+    $stmt = $db->query("SELECT * FROM borrow_requests ORDER BY request_date DESC");
+    return $stmt->fetchAll();
 }
 
 $type = $_GET['type'] ?? 'users';

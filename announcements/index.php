@@ -18,68 +18,12 @@ if (!isset($_SESSION['user_id'])) {
 
 $currentUserId = $_SESSION['user_id'];
 
-/**
- * Load announcements
- */
-function loadAnnouncements() {
-    $announcementsFile = DATA_PATH . 'announcements.json';
-    if (!file_exists($announcementsFile)) {
-        return ['announcements' => [], 'user_read_status' => []];
-    }
-    return json_decode(file_get_contents($announcementsFile), true) ?? ['announcements' => [], 'user_read_status' => []];
-}
+// No need for loadAnnouncements/saveAnnouncements functions with DB
 
-/**
- * Save announcements
- */
-function saveAnnouncements($data) {
-    $announcementsFile = DATA_PATH . 'announcements.json';
-    return file_put_contents($announcementsFile, json_encode($data, JSON_PRETTY_PRINT));
-}
-
-// Load data
-$data = loadAnnouncements();
-$announcements = $data['announcements'];
-$userReadStatus = $data['user_read_status'];
-
-// Mark announcement as read if viewing specific one
-$selectedId = $_GET['id'] ?? '';
-if ($selectedId) {
-    $alreadyRead = false;
-    foreach ($userReadStatus as $status) {
-        if ($status['announcement_id'] === $selectedId && $status['user_id'] === $currentUserId) {
-            $alreadyRead = true;
-            break;
-        }
-    }
-    
-    if (!$alreadyRead) {
-        $userReadStatus[] = [
-            'announcement_id' => $selectedId,
-            'user_id' => $currentUserId,
-            'read_at' => date('Y-m-d H:i:s')
-        ];
-        
-        // Update stats
-        foreach ($announcements as &$ann) {
-            if ($ann['id'] === $selectedId) {
-                $ann['stats']['read']++;
-                break;
-            }
-        }
-        
-        saveAnnouncements(['announcements' => $announcements, 'user_read_status' => $userReadStatus]);
-    }
-    
-    // Find selected announcement
-    $selectedAnnouncement = null;
-    foreach ($announcements as $ann) {
-        if ($ann['id'] === $selectedId) {
-            $selectedAnnouncement = $ann;
-            break;
-        }
-    }
-}
+// Load announcements from database
+$db = getDB();
+$stmt = $db->query("SELECT * FROM announcements ORDER BY created_at DESC");
+$announcements = $stmt->fetchAll();
 
 // Filter active announcements
 $activeAnnouncements = array_filter($announcements, function($ann) {
@@ -94,8 +38,58 @@ $activeAnnouncements = array_filter($announcements, function($ann) {
     return true;
 });
 
-// Sort by date (newest first)
-usort($activeAnnouncements, fn($a, $b) => strtotime($b['created_at']) - strtotime($a['created_at']));
+// Load user read status for these announcements
+$userReadStatus = [];
+if (!empty($activeAnnouncements)) {
+    $stmt = $db->prepare("SELECT announcement_id, read_at FROM announcement_read_status WHERE user_id = ?");
+    $stmt->execute([$currentUserId]);
+    $userReadStatus = $stmt->fetchAll();
+}
+
+// Mark announcement as read if viewing specific one
+$selectedId = $_GET['id'] ?? '';
+$selectedAnnouncement = null;
+
+if ($selectedId) {
+    // Check if already read
+    $isRead = false;
+    foreach ($userReadStatus as $status) {
+        if ($status['announcement_id'] === $selectedId) {
+            $isRead = true;
+            break;
+        }
+    }
+    
+    if (!$isRead) {
+        // Mark as read in DB
+        $stmt = $db->prepare("INSERT IGNORE INTO announcement_read_status (announcement_id, user_id, read_at) VALUES (?, ?, ?)");
+        $stmt->execute([$selectedId, $currentUserId, date('Y-m-d H:i:s')]);
+        
+        // Update stats in DB (stats is a JSON string)
+        $stmt = $db->prepare("SELECT stats FROM announcements WHERE id = ?");
+        $stmt->execute([$selectedId]);
+        $ann = $stmt->fetch();
+        if ($ann) {
+            $stats = json_decode($ann['stats'] ?? '{}', true) ?: [];
+            $stats['read'] = ($stats['read'] ?? 0) + 1;
+            $stmt = $db->prepare("UPDATE announcements SET stats = ? WHERE id = ?");
+            $stmt->execute([json_encode($stats), $selectedId]);
+        }
+        
+        // Refresh read status
+        $stmt = $db->prepare("SELECT announcement_id, read_at FROM announcement_read_status WHERE user_id = ?");
+        $stmt->execute([$currentUserId]);
+        $userReadStatus = $stmt->fetchAll();
+    }
+    
+    // Find selected announcement
+    foreach ($announcements as $ann) {
+        if ($ann['id'] === $selectedId) {
+            $selectedAnnouncement = $ann;
+            break;
+        }
+    }
+}
 
 include dirname(__DIR__) . '/includes/header.php';
 ?>
