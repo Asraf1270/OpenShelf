@@ -43,8 +43,8 @@
                         <li><a href="/"><i class="fas fa-chevron-right"></i> Home</a></li>
                         <li><a href="/books/"><i class="fas fa-chevron-right"></i> Browse Books</a></li>
                         <li><a href="/feed/"><i class="fas fa-chevron-right"></i> Activity Feed</a></li>
-                        <li><a href="/about/"><i class="fas fa-chevron-right"></i> About Us</a></li>
-                        <li><a href="/contact/"><i class="fas fa-chevron-right"></i> Contact</a></li>
+                        <li><a href="/about.php"><i class="fas fa-chevron-right"></i> About Us</a></li>
+                        <li><a href="/contact.php"><i class="fas fa-chevron-right"></i> Contact</a></li>
                     </ul>
                 </div>
 
@@ -52,11 +52,11 @@
                 <div class="footer-section">
                     <h3 class="footer-title">Support</h3>
                     <ul class="footer-links">
-                        <li><a href="/faq/"><i class="fas fa-chevron-right"></i> FAQ</a></li>
-                        <li><a href="/guidelines/"><i class="fas fa-chevron-right"></i> Community Guidelines</a></li>
-                        <li><a href="/terms/"><i class="fas fa-chevron-right"></i> Terms of Service</a></li>
-                        <li><a href="/privacy/"><i class="fas fa-chevron-right"></i> Privacy Policy</a></li>
-                        <li><a href="/report/"><i class="fas fa-chevron-right"></i> Report Issue</a></li>
+                        <li><a href="/faq.php"><i class="fas fa-chevron-right"></i> FAQ</a></li>
+                        <li><a href="/guidelines.php"><i class="fas fa-chevron-right"></i> Community Guidelines</a></li>
+                        <li><a href="/terms.php"><i class="fas fa-chevron-right"></i> Terms of Service</a></li>
+                        <li><a href="/privacy.php"><i class="fas fa-chevron-right"></i> Privacy Policy</a></li>
+                        <li><a href="/report.php"><i class="fas fa-chevron-right"></i> Report Issue</a></li>
                     </ul>
                 </div>
 

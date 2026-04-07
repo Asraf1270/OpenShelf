@@ -6,6 +6,9 @@
 
 session_start();
 
+// Include database connection
+require_once dirname(__DIR__) . '/includes/db.php';
+
 // Configuration
 define('DATA_PATH', dirname(__DIR__) . '/data/');
 define('BOOKS_DATA_PATH', dirname(__DIR__) . '/data/book/');
