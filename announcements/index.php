@@ -9,6 +9,9 @@ session_start();
 // Configuration
 define('DATA_PATH', dirname(__DIR__) . '/data/');
 
+// Include database connection (must be before any getDB() calls)
+require_once dirname(__DIR__) . '/includes/db.php';
+
 // Check if user is logged in
 if (!isset($_SESSION['user_id'])) {
     $_SESSION['redirect_after_login'] = '/announcements/';
@@ -41,7 +44,7 @@ $activeAnnouncements = array_filter($announcements, function($ann) {
 // Load user read status for these announcements
 $userReadStatus = [];
 if (!empty($activeAnnouncements)) {
-    $stmt = $db->prepare("SELECT announcement_id, read_at FROM announcement_read_status WHERE user_id = ?");
+    $stmt = $db->prepare("SELECT announcement_id, user_id, read_at FROM announcement_read_status WHERE user_id = ?");
     $stmt->execute([$currentUserId]);
     $userReadStatus = $stmt->fetchAll();
 }
@@ -77,7 +80,7 @@ if ($selectedId) {
         }
         
         // Refresh read status
-        $stmt = $db->prepare("SELECT announcement_id, read_at FROM announcement_read_status WHERE user_id = ?");
+        $stmt = $db->prepare("SELECT announcement_id, user_id, read_at FROM announcement_read_status WHERE user_id = ?");
         $stmt->execute([$currentUserId]);
         $userReadStatus = $stmt->fetchAll();
     }

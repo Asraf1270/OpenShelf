@@ -51,30 +51,27 @@ function updateBookStatus($bookId, $status, $reason = '') {
     global $adminId;
     $db = getDB();
     
+    // Note: only update the columns that actually exist in the schema
     $sql = "UPDATE books SET 
                 status = :status, 
                 updated_at = :updated_at, 
-                status_updated_by = :status_updated_by";
-    
-    if ($status === 'unavailable') {
-        $sql .= ", unavailable_reason = :unavailable_reason";
-    }
-    
-    $sql .= " WHERE id = :id";
+                status_updated_by = :status_updated_by
+            WHERE id = :id";
     
     $params = [
-        ':status' => $status,
-        ':updated_at' => date('Y-m-d H:i:s'),
+        ':status'            => $status,
+        ':updated_at'        => date('Y-m-d H:i:s'),
         ':status_updated_by' => $adminId,
-        ':id' => $bookId
+        ':id'                => $bookId,
     ];
     
-    if ($status === 'unavailable') {
-        $params[':unavailable_reason'] = $reason;
+    try {
+        $stmt = $db->prepare($sql);
+        return $stmt->execute($params);
+    } catch (PDOException $e) {
+        error_log('updateBookStatus error: ' . $e->getMessage());
+        return false;
     }
-    
-    $stmt = $db->prepare($sql);
-    return $stmt->execute($params);
 }
 
 /**
@@ -817,16 +814,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </div>
                     <div class="form-group">
                         <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">New Status</label>
-                        <select name="status" id="statusSelect" class="form-control-admin" onchange="toggleReasonField()">
+                        <select name="status" id="statusSelect" class="form-control-admin">
                             <option value="available">Available</option>
                             <option value="borrowed">Borrowed</option>
                             <option value="reserved">Reserved</option>
                             <option value="unavailable">Unavailable</option>
                         </select>
-                    </div>
-                    <div class="form-group" id="reasonGroup" style="display: none;">
-                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Reason (required for unavailable)</label>
-                        <textarea name="reason" class="form-control-admin" rows="3" placeholder="Please provide a reason..."></textarea>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -872,16 +865,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <div id="bulkBookIds"></div>
                     <div class="form-group">
                         <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">New Status</label>
-                        <select name="bulk_status" id="bulkStatusSelect" class="form-control-admin" onchange="toggleBulkReasonField()">
+                        <select name="bulk_status" id="bulkStatusSelect" class="form-control-admin">
                             <option value="available">Available</option>
                             <option value="borrowed">Borrowed</option>
                             <option value="reserved">Reserved</option>
                             <option value="unavailable">Unavailable</option>
                         </select>
-                    </div>
-                    <div class="form-group" id="bulkReasonGroup" style="display: none;">
-                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Reason (required for unavailable)</label>
-                        <textarea name="bulk_reason" class="form-control-admin" rows="3" placeholder="Please provide a reason..."></textarea>
                     </div>
                     <p style="margin-top: 1rem; color: #64748b;">This will update <span id="bulkCount"></span> selected book(s).</p>
                 </div>

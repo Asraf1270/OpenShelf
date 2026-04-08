@@ -744,7 +744,7 @@ if (isset($_GET['redirect'])) {
                         </span>
                         <span>Remember me</span>
                     </label>
-                    <a href="/forgot-password/" class="forgot-password">Forgot password?</a>
+                    <a href="/forget_password.php" class="forgot-password">Forgot password?</a>
                 </div>
 
                 <button type="submit" class="btn-login" id="loginBtn">

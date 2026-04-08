@@ -683,6 +683,9 @@ if (!file_exists($fullAvatarPath) || $userAvatar === 'default-avatar.jpg') {
             <a href="/feed/" class="nav-link <?php echo strpos($currentPath, '/feed/') !== false ? 'active' : ''; ?>">
                 <i class="fas fa-rss"></i> Feed
             </a>
+            <a href="/announcements/" class="nav-link <?php echo strpos($currentPath, '/announcements/') !== false ? 'active' : ''; ?>">
+                <i class="fas fa-bullhorn"></i> Announcements
+            </a>
             <?php if ($isLoggedIn): ?>
                 <a href="/notifications/" class="nav-link <?php echo strpos($currentPath, '/notifications/') !== false ? 'active' : ''; ?>">
                     <i class="fas fa-bell"></i> Notifications
@@ -735,6 +738,9 @@ if (!file_exists($fullAvatarPath) || $userAvatar === 'default-avatar.jpg') {
                     </a>
                     <a href="/requests/" class="dropdown-item">
                         <i class="fas fa-exchange-alt"></i> My Requests
+                    </a>
+                    <a href="/my-borrowed/" class="dropdown-item">
+                        <i class="fas fa-book-reader"></i> My Borrowed
                     </a>
                     <a href="/edit-profile/" class="dropdown-item">
                         <i class="fas fa-cog"></i> Settings
@@ -800,8 +806,18 @@ if (!file_exists($fullAvatarPath) || $userAvatar === 'default-avatar.jpg') {
                 </a>
             </li>
             <li class="mobile-nav-item">
+                <a href="/my-borrowed/" class="mobile-nav-link <?php echo strpos($currentPath, '/my-borrowed/') !== false ? 'active' : ''; ?>">
+                    <i class="fas fa-book-reader"></i> My Borrowed
+                </a>
+            </li>
+            <li class="mobile-nav-item">
                 <a href="/feed/" class="mobile-nav-link <?php echo strpos($currentPath, '/feed/') !== false ? 'active' : ''; ?>">
                     <i class="fas fa-rss"></i> Feed
+                </a>
+            </li>
+            <li class="mobile-nav-item">
+                <a href="/announcements/" class="mobile-nav-link <?php echo strpos($currentPath, '/announcements/') !== false ? 'active' : ''; ?>">
+                    <i class="fas fa-bullhorn"></i> Announcements
                 </a>
             </li>
             <?php if ($isLoggedIn): ?>
