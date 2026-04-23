@@ -72,7 +72,9 @@ class Mailer {
             $this->mailer->WordWrap = $this->config['email']['wordwrap'];
             
         } catch (Exception $e) {
-            $this->logError("Mailer initialization failed: " . $e->getMessage());
+            $errorMsg = "Mailer initialization failed: " . $e->getMessage();
+            $this->logError($errorMsg);
+            error_log(" [Mailer] " . $errorMsg);
         }
     }
     
@@ -138,7 +140,9 @@ class Mailer {
             return true;
             
         } catch (Exception $e) {
-            $this->logError("Failed to send email to {$to}: " . $e->getMessage());
+            $errorMsg = "Failed to send email to {$to}: " . $e->getMessage();
+            $this->logError($errorMsg);
+            error_log(" [Mailer] " . $errorMsg);
             return false;
         }
     }
@@ -157,7 +161,9 @@ class Mailer {
         $templateFile = $this->config['templates'] . $template . '.php';
         
         if (!file_exists($templateFile)) {
-            $this->logError("Template not found: {$template}");
+            $errorMsg = "Template not found: {$template}";
+            $this->logError($errorMsg);
+            error_log(" [Mailer] " . $errorMsg);
             return false;
         }
         

@@ -19,6 +19,7 @@ require_once dirname(__DIR__) . '/includes/db.php';
 $mailer = null;
 try {
     require_once dirname(__DIR__) . '/vendor/autoload.php';
+    require_once dirname(__DIR__) . '/lib/Mailer.php';
     $mailer = new Mailer();
 } catch (Exception $e) {
     error_log("❌ Mailer initialization failed in book/index.php: " . $e->getMessage());

@@ -13,6 +13,12 @@ define('USERS_PATH', dirname(__DIR__, 2) . '/users/');
 
 // Include database connection
 require_once dirname(__DIR__, 2) . '/includes/db.php';
+define('BASE_URL', 'https://openshelf.free.nf');
+
+// Load mailer
+require_once dirname(__DIR__, 2) . '/vendor/autoload.php';
+require_once dirname(__DIR__, 2) . '/lib/Mailer.php';
+$mailer = new Mailer();
 
 // Check admin login
 if (!isset($_SESSION['admin_id'])) {
@@ -113,6 +119,39 @@ function updateRequestStatus($requestId, $status, $additionalData = []) {
         // Create notification for user
         createNotification($requestData, $status);
         
+        // Send email notification
+        global $mailer;
+        if ($mailer && !empty($requestData['borrower_email'])) {
+            if ($status === 'approved') {
+                $mailer->sendTemplate(
+                    $requestData['borrower_email'],
+                    $requestData['borrower_name'],
+                    'request_approved',
+                    [
+                        'subject'           => 'Your Borrow Request Has Been Approved!',
+                        'user_name'         => $requestData['borrower_name'],
+                        'book_title'        => $requestData['book_title'],
+                        'owner_name'        => $requestData['owner_name'],
+                        'expected_return'   => $requestData['expected_return_date'],
+                        'base_url'          => BASE_URL
+                    ]
+                );
+            } elseif ($status === 'rejected') {
+                $mailer->sendTemplate(
+                    $requestData['borrower_email'],
+                    $requestData['borrower_name'],
+                    'request_rejected',
+                    [
+                        'subject'           => 'Update on Your Borrow Request',
+                        'user_name'         => $requestData['borrower_name'],
+                        'book_title'        => $requestData['book_title'],
+                        'rejection_reason'  => $additionalData['reason'] ?? 'No reason provided',
+                        'base_url'          => BASE_URL
+                    ]
+                );
+            }
+        }
+        
         return true;
     }
     return false;
@@ -200,6 +239,27 @@ function extendReturnDate($requestId, $additionalDays, $reason = '') {
     if ($updated) {
         $request['expected_return_date'] = $newDate;
         createExtensionNotification($request, $additionalDays);
+        
+        // Send email notification
+        global $mailer;
+        if ($mailer && !empty($request['borrower_email'])) {
+            try {
+                $mailer->sendTemplate(
+                    $request['borrower_email'],
+                    $request['borrower_name'],
+                    'overdue', // Or a custom extension template if available
+                    [
+                        'subject'           => 'Return Date Extended for ' . $request['book_title'],
+                        'user_name'         => $request['borrower_name'],
+                        'book_title'        => $request['book_title'],
+                        'new_due_date'      => $newDate,
+                        'additional_days'   => $additionalDays,
+                        'reason'            => $reason,
+                        'base_url'          => BASE_URL
+                    ]
+                );
+            } catch (Exception $e) { /* Logged */ }
+        }
         return true;
     }
     return false;

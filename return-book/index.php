@@ -17,6 +17,8 @@ require_once dirname(__DIR__) . '/includes/db.php';
 // Enable error reporting for debugging
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
+require_once dirname(__DIR__) . '/includes/db.php';
+require_once dirname(__DIR__) . '/includes/helpers.php';
 
 // Check if user is logged in
 if (!isset($_SESSION['user_id'])) {
@@ -28,11 +30,14 @@ if (!isset($_SESSION['user_id'])) {
 $currentUserId = $_SESSION['user_id'];
 $currentUserName = $_SESSION['user_name'] ?? 'Unknown';
 
-// Load mailer if exists (optional)
+// Load mailer
 $mailer = null;
-if (file_exists(dirname(__DIR__) . '/vendor/autoload.php')) {
+try {
     require_once dirname(__DIR__) . '/vendor/autoload.php';
+    require_once dirname(__DIR__) . '/lib/Mailer.php';
     $mailer = new Mailer();
+} catch (Exception $e) {
+    error_log("❌ Mailer init failed in return-book: " . $e->getMessage());
 }
 
 /**
@@ -51,23 +56,17 @@ function loadRequest($requestId) {
 }
 
 /**
- * Load detailed book data
+ * Load detailed book data using helper
  */
 function loadBookData($bookId) {
-    if (empty($bookId)) return null;
-    $db = getDB();
-    $stmt = $db->prepare("SELECT * FROM books WHERE id = ?");
-    $stmt->execute([$bookId]);
-    return $stmt->fetch() ?: null;
+    return getBookById($bookId);
 }
 
 /**
- * Load user data
+ * Load user data using helper
  */
 function loadUserData($userId) {
-    $userFile = USERS_PATH . $userId . '.json';
-    if (!file_exists($userFile)) return null;
-    return json_decode(file_get_contents($userFile), true);
+    return getUserById($userId);
 }
 
 /**
@@ -344,6 +343,55 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
             
             $_SESSION['success'] = 'Book returned successfully!';
+            
+            // Send return confirmation emails
+            if ($mailer) {
+                $returnDate = date('Y-m-d');
+                
+                // Email to borrower
+                if (!empty($borrower['personal_info']['email'])) {
+                    try {
+                        $mailer->sendTemplate(
+                            $borrower['personal_info']['email'],
+                            $borrower['personal_info']['name'] ?? $request['borrower_name'],
+                            'book_returned',
+                            [
+                                'subject'       => "Book Return Confirmed: \"{$request['book_title']}\"",
+                                'borrower_name' => $borrower['personal_info']['name'] ?? $request['borrower_name'],
+                                'book_title'    => $request['book_title'],
+                                'return_date'   => $returnDate,
+                                'base_url'      => BASE_URL
+                            ]
+                        );
+                        error_log("✅ Return email sent to borrower: " . $borrower['personal_info']['email']);
+                    } catch (Exception $e) {
+                        error_log("❌ Failed to send return email to borrower: " . $e->getMessage());
+                    }
+                }
+                
+                // Email to owner
+                if (!empty($owner['personal_info']['email'])) {
+                    try {
+                        $mailer->sendTemplate(
+                            $owner['personal_info']['email'],
+                            $owner['personal_info']['name'] ?? $request['owner_name'],
+                            'book_returned_owner',
+                            [
+                                'subject'       => "\"{$request['book_title']}\" Has Been Returned",
+                                'owner_name'    => $owner['personal_info']['name'] ?? $request['owner_name'],
+                                'book_title'    => $request['book_title'],
+                                'return_date'   => $returnDate,
+                                'borrower_name' => $currentUserName,
+                                'book_id'       => $request['book_id'],
+                                'base_url'      => BASE_URL
+                            ]
+                        );
+                        error_log("✅ Return email sent to owner: " . $owner['personal_info']['email']);
+                    } catch (Exception $e) {
+                        error_log("❌ Failed to send return email to owner: " . $e->getMessage());
+                    }
+                }
+            }
             
             // Redirect based on who returned
             if ($isBorrower) {

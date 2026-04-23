@@ -1,20 +1,21 @@
 <?php
-/**
- * OpenShelf Mail Configuration
- * 
- * Configuration file for PHPMailer settings
- */
+// Try to load from .env file if it exists
+if (file_exists(__DIR__ . '/../.env')) {
+    $env = parse_ini_file(__DIR__ . '/../.env');
+} else {
+    $env = [];
+}
 
 // Return configuration array
 return [
     // SMTP settings
     'smtp' => [
-        'host' => getenv('SMTP_HOST') ?: 'smtp-relay.brevo.com',
-        'port' => getenv('SMTP_PORT') ?: 587,
-        'secure' => getenv('SMTP_SECURE') ?: 'tls',
+        'host' => $env['SMTP_HOST'] ?? getenv('SMTP_HOST') ?: 'smtp-relay.brevo.com',
+        'port' => $env['SMTP_PORT'] ?? getenv('SMTP_PORT') ?: 587,
+        'secure' => $env['SMTP_SECURE'] ?? getenv('SMTP_SECURE') ?: 'tls',
         'auth' => true,
-        'username' => getenv('SMTP_USERNAME'),
-        'password' => getenv('SMTP_PASSWORD'),
+        'username' => $env['SMTP_USERNAME'] ?? getenv('SMTP_USERNAME') ?: '',
+        'password' => $env['SMTP_PASSWORD'] ?? getenv('SMTP_PASSWORD') ?: '',
         'timeout' => 30,
         'debug' => 0
     ],
@@ -22,14 +23,14 @@ return [
     // Email settings
     'email' => [
         'from' => [
-            'address' => getenv('MAIL_FROM_ADDRESS') ?: 'no-reply@openshelf.org',
-            'name' => getenv('MAIL_FROM_NAME') ?: 'OpenShelf'
+            'address' => $env['MAIL_FROM_ADDRESS'] ?? getenv('MAIL_FROM_ADDRESS') ?: 'no-reply@openshelf.org',
+            'name' => $env['MAIL_FROM_NAME'] ?? getenv('MAIL_FROM_NAME') ?: 'OpenShelf'
         ],
         'reply_to' => [
-            'address' => getenv('MAIL_REPLY_TO') ?: 'support@openshelf.org',
-            'name' => getenv('MAIL_FROM_NAME') ?: 'OpenShelf Support'
+            'address' => $env['MAIL_REPLY_TO'] ?? getenv('MAIL_REPLY_TO') ?: 'support@openshelf.org',
+            'name' => $env['MAIL_FROM_NAME'] ?? getenv('MAIL_FROM_NAME') ?: 'OpenShelf Support'
         ],
-        'admin_email' => getenv('ADMIN_EMAIL') ?: 'admin@openshelf.org',
+        'admin_email' => $env['ADMIN_EMAIL'] ?? getenv('ADMIN_EMAIL') ?: 'admin@openshelf.org',
         'charset' => 'UTF-8',
         'encoding' => 'base64',
         'wordwrap' => 50

@@ -26,6 +26,7 @@ $adminRole = $_SESSION['admin_role'] ?? 'admin';
 
 // Load mailer for email notifications
 require_once dirname(__DIR__, 2) . '/vendor/autoload.php';
+require_once dirname(__DIR__, 2) . '/lib/Mailer.php';
 $mailer = new Mailer();
 
 /**
@@ -75,12 +76,13 @@ function sendAnnouncementEmail($userEmail, $userName, $announcement) {
             $userName,
             'announcement',
             [
-                'user_name' => $userName,
-                'announcement_title' => $announcement['title'],
-                'announcement_content' => $announcement['content'],
-                'announcement_priority' => $announcement['priority'],
-                'announcement_link' => BASE_URL . '/announcements/?id=' . $announcement['id'],
-                'base_url' => BASE_URL
+                'subject'                => '[OpenShelf] ' . $announcement['title'],
+                'user_name'              => $userName,
+                'announcement_title'     => $announcement['title'],
+                'announcement_content'   => $announcement['content'],
+                'announcement_priority'  => $announcement['priority'],
+                'announcement_link'      => BASE_URL . '/announcements/?id=' . $announcement['id'],
+                'base_url'               => BASE_URL
             ]
         );
     } catch (Exception $e) {

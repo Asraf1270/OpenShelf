@@ -23,15 +23,16 @@ $currentUserId = $_SESSION['user_id'];
 $currentUserName = $_SESSION['user_name'] ?? 'Unknown';
 $currentUserEmail = $_SESSION['user_email'] ?? '';
 
-// Include database connection
+// Include database connection and helpers
 require_once dirname(__DIR__) . '/includes/db.php';
+require_once dirname(__DIR__) . '/includes/helpers.php';
 
 // Initialize mailer
 $mailer = null;
 try {
     require_once dirname(__DIR__) . '/vendor/autoload.php';
+    require_once dirname(__DIR__) . '/lib/Mailer.php';
     $mailer = new Mailer();
-    error_log("✅ Mailer initialized for borrow request");
 } catch (Exception $e) {
     error_log("❌ Mailer init failed: " . $e->getMessage());
 }
@@ -44,23 +45,17 @@ function generateRequestId() {
 }
 
 /**
- * Load book data from DB
+ * Load book data using helper
  */
 function loadBookData($bookId) {
-    $db = getDB();
-    $stmt = $db->prepare("SELECT * FROM books WHERE id = ?");
-    $stmt->execute([$bookId]);
-    $book = $stmt->fetch();
-    return $book ?: null;
+    return getBookById($bookId);
 }
 
 /**
- * Load user data
+ * Load user data using helper
  */
 function loadUserData($userId) {
-    $userFile = USERS_PATH . $userId . '.json';
-    if (!file_exists($userFile)) return null;
-    return json_decode(file_get_contents($userFile), true);
+    return getUserById($userId);
 }
 
 /**
@@ -155,18 +150,19 @@ function sendOwnerEmail($ownerEmail, $ownerName, $borrowerName, $bookTitle, $boo
             $ownerName,
             'borrow_request',
             [
-                'owner_name' => $ownerName,
-                'borrower_name' => $borrowerName,
-                'book_title' => $bookTitle,
-                'book_author' => $bookAuthor,
-                'duration_days' => $duration,
-                'message' => $message,
-                'request_id' => $requestId,
-                'borrower_department' => $borrowerData['personal_info']['department'] ?? 'N/A',
-                'borrower_session' => $borrowerData['personal_info']['session'] ?? 'N/A',
-                'borrower_room' => $borrowerData['personal_info']['room_number'] ?? 'N/A',
-                'borrower_phone' => $borrowerData['personal_info']['phone'] ?? 'N/A',
-                'base_url' => BASE_URL
+                'subject'            => "New Borrow Request: {$bookTitle}",
+                'owner_name'         => $ownerName,
+                'borrower_name'      => $borrowerName,
+                'book_title'         => $bookTitle,
+                'book_author'        => $bookAuthor,
+                'duration_days'      => $duration,
+                'message'            => $message,
+                'request_id'         => $requestId,
+                'borrower_department'=> $borrowerData['personal_info']['department'] ?? 'N/A',
+                'borrower_session'   => $borrowerData['personal_info']['session'] ?? 'N/A',
+                'borrower_room'      => $borrowerData['personal_info']['room_number'] ?? 'N/A',
+                'borrower_phone'     => $borrowerData['personal_info']['phone'] ?? 'N/A',
+                'base_url'           => BASE_URL
             ]
         );
         

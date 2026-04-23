@@ -13,6 +13,7 @@ define('BASE_URL', 'https://openshelf.free.nf');
 
 // Load mailer
 require_once dirname(__DIR__) . '/vendor/autoload.php';
+require_once dirname(__DIR__) . '/lib/Mailer.php';
 $mailer = new Mailer();
 
 // Include database connection
@@ -109,6 +110,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         
         if (empty($errors)) {
+            $passwordHash = password_hash($password, PASSWORD_DEFAULT);
+            
             // Generate unique ID
             $db = getDB();
             do {
@@ -188,10 +191,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $name,
                         'welcome',
                         [
-                            'user_name' => $name,
+                            'subject'    => 'Welcome to OpenShelf!',
+                            'user_name'  => $name,
                             'user_email' => $email,
-                            'login_url' => BASE_URL . '/login/',
-                            'base_url' => BASE_URL
+                            'login_url'  => BASE_URL . '/login/',
+                            'base_url'   => BASE_URL
                         ]
                     );
                 } catch (Exception $e) {
@@ -210,14 +214,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 $admin['name'],
                                 'admin_notification',
                                 [
-                                    'admin_name' => $admin['name'],
+                                    'subject'           => 'New User Registration: ' . $name,
+                                    'admin_name'        => $admin['name'],
                                     'notification_type' => 'new_registration',
-                                    'user_name' => $name,
-                                    'user_email' => $email,
-                                    'user_department' => $department,
-                                    'user_session' => $session,
-                                    'admin_url' => BASE_URL . '/admin/users/',
-                                    'base_url' => BASE_URL
+                                    'user_name'         => $name,
+                                    'user_email'        => $email,
+                                    'user_department'   => $department,
+                                    'user_session'      => $session,
+                                    'admin_url'         => BASE_URL . '/admin/users/',
+                                    'base_url'          => BASE_URL
                                 ]
                             );
                         } catch (Exception $e) {

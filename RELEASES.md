@@ -1,46 +1,76 @@
-# 🚀 Release Notes: OpenShelf v2.0.0 — The Database Evolution
-
-We are thrilled to announce the release of **OpenShelf v2.0.0**, our most significant architectural update yet. This version marks a major transition from flat JSON file storage to a robust, scalable **MySQL Database**, bringing unprecedented performance, security, and reliability to your community library.
+# 📦 OpenShelf — Release History
 
 ---
 
-### 🗄️ What's New: The Database Integration
+## 🚀 v2.2.0 — The Complete Experience
+**Release Date:** April 23, 2026
 
-The core of v2.0.0 is a complete backend overhaul. By shifting to a relational database, we've laid the groundwork for future-proof growth:
+A comprehensive update delivering powerful new user features, a modernized admin panel, and a fully restored email notification system.
 
-- **MySQL Power:** Replaced all core JSON data handlers (Users, Books, Requests, Notifications) with a high-performance MySQL schema.
-- **Enhanced Data Integrity:** Implemented foreign key constraints and ACID transactions to ensure your library data remains consistent and corruption-free.
-- **Lightning Speed:** Dramatically reduced response times for large book catalogs and complex search queries through optimized SQL indexing.
-- **Industrial-Grade Security:** Improved protection against data collisions and unauthorized file access by centralizing data management in a secure database layer.
+### Highlights
+- 📖 **My Borrowed Books** — Track active borrows with visual due-date progress and one-click returns.
+- 🔑 **Forget Password** — Secure, two-factor (email + phone) password recovery with OTP verification.
+- 🎨 **Admin Panel Modernization** — Mobile-first redesign with card-based layouts and full dark mode compatibility.
+- 📧 **Email Notifications Restored** — End-to-end SMTP notifications for borrow requests, approvals, rejections, and returns.
+- 📢 **Announcements Navigation** — Quick-access links added to desktop and mobile menus.
+- 🐛 **Bug Fixes** — Resolved 500 errors on Announcements and Admin Books pages, fixed add-book DB connection, login Remember Me, and return-book workflow.
 
----
-
-### 🎨 Refined Administrative Tools
-
-To complement the new database, we've updated the administrator experience:
-
-- **Enhanced Dashboard:** Real-time statistics are now pulled directly from SQL queries, providing instant insights into library activity.
-- **Robust Reporting:** Generate and export CSV reports for users, books, and borrow history with improved accuracy.
-- **Optimized Backups:** The backup system now captures both the remaining configuration files and a structured export of the database state.
-- **Advanced Audit Logs:** System activities are now more thoroughly tracked within the database for better transparency.
+📄 Full details: [v2.2.0 Release Notes](v2.2.0_release_notes.md)
 
 ---
 
-### 🛠️ Technical Improvements
+## 🚀 v2.1.0 — Feature Expansion
+**Release Date:** April 9, 2026
 
-- **PDO-Powered Backend:** Standardized database interactions using PHP Data Objects (PDO) with prepared statements for top-tier security against SQL injection.
-- **Scalable Notification System:** Notifications are now managed more efficiently, supporting larger user bases without file-system overhead.
-- **Simplified Configuration:** Centralized database settings in `config/database.php` for easier environment-based deployments.
-
----
-
-### 📦 How to Upgrade
-
-1. **Backup:** Always backup your existing `/data` directory before proceeding.
-2. **Database Setup:** Import the provided `data/schema.sql` into your MySQL server.
-3. **Configure:** Update your `.env` file with your new database credentials.
-4. **Migrate:** Run the included migration script (if applicable) or start fresh with the new relational structure.
+Introduced the Forget Password and My Borrowed Books features, along with critical bug fixes for announcements and admin book management.
 
 ---
 
-**OpenShelf v2.0.0** is more than just an update — it's a new foundation for your community. Happy sharing! 📚✨
+## 🚀 v2.0.0 — The Database Evolution
+**Release Date:** April 7, 2026
+
+The most significant architectural update — migrated from JSON flat-file storage to a robust **MySQL Database** backend.
+
+### Highlights
+- 🗄️ **Full Database Integration** — MySQL-powered data management replacing all JSON handlers.
+- ⚡ **Lightning-Fast Performance** — Optimized SQL indexing for large catalogs.
+- 🧪 **Industrial-Grade Security** — PDO prepared statements for all database interactions.
+- 📊 **Real-time Admin Dashboard** — SQL-powered statistics and reporting.
+- 🔄 **Data Integrity** — Foreign key constraints and ACID transactions.
+- 💾 **Hybrid Backup System** — Config files + structured database export.
+
+📄 Full details: [v2.0.0 Release Notes — The Database Evolution](RELEASES.md#-v200--the-database-evolution)
+
+---
+
+## 🚀 v1.5.0 — Global Dark Mode
+Implemented a persistent dark mode toggle with comprehensive CSS overrides across the entire platform.
+
+---
+
+## 🚀 v1.4.0 — Progressive Web App
+Upgraded OpenShelf to a fully installable PWA with Service Worker support and offline capabilities.
+
+---
+
+## 🚀 v1.3.0 — Notification Overhaul
+Refactored the notification system with per-user storage, sorted by creation date, and limited to 25 recent items.
+
+---
+
+## 🚀 v1.2.0 — Email Templates
+Standardized email templates with responsive, table-based layouts for cross-client compatibility.
+
+---
+
+## 🚀 v1.1.0 — UI Modernization
+Major UI overhaul with mobile-first enhancements, dark glassmorphism login/register pages, and critical bug fixes.
+
+---
+
+## 🚀 v1.0.0 — Initial Release
+The original OpenShelf platform with community book sharing, user profiles, admin dashboard, and basic library management.
+
+---
+
+**OpenShelf** — Empowering communities, one shared book at a time. 📚✨

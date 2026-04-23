@@ -12,6 +12,7 @@ require_once dirname(__DIR__, 2) . '/includes/db.php';
 
 // Load mailer
 require_once dirname(__DIR__, 2) . '/vendor/autoload.php';
+require_once dirname(__DIR__, 2) . '/lib/Mailer.php';
 $mailer = new Mailer();
 
 /**
@@ -130,11 +131,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $admin['name'],
                 'otp',
                 [
-                    'otp' => $otp,
-                    'expiry_minutes' => 5,
-                    'ip_address' => $_SERVER['REMOTE_ADDR'],
-                    'user_agent' => $_SERVER['HTTP_USER_AGENT'],
-                    'base_url' => BASE_URL
+                    'subject'      => 'Your OpenShelf Admin Login OTP',
+                    'otp'          => $otp,
+                    'expiry_minutes'=> 5,
+                    'ip_address'   => $_SERVER['REMOTE_ADDR'],
+                    'user_agent'   => $_SERVER['HTTP_USER_AGENT'],
+                    'base_url'     => BASE_URL
                 ]
             );
             

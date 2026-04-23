@@ -1,6 +1,6 @@
 # 📚 OpenShelf — Community Library Management System
 
-[![Version](https://img.shields.io/badge/version-2.0.0-blue.svg)](https://github.com/Asraf1270/OpenShelf/releases/tag/v2.0.0)
+[![Version](https://img.shields.io/badge/version-2.2.0-blue.svg)](https://github.com/Asraf1270/OpenShelf/releases/tag/v2.2.0)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![PHP](https://img.shields.io/badge/PHP-7.4%2B-777bb4.svg)](https://www.php.net/)
 [![MySQL](https://img.shields.io/badge/MySQL-5.7%2B-4479A1.svg)](https://www.mysql.com/)
@@ -9,17 +9,16 @@
 
 ---
 
-## ✨ What's New in v2.0.0
+## ✨ What's New in v2.2.0
 
-This milestone release, v2.0.0, introduces the most significant architectural evolution for **OpenShelf**:
+**OpenShelf v2.2.0** delivers a polished, feature-rich experience for both users and administrators:
 
-- 🗄️ **Full Database Integration:** Migrated from JSON flat-file storage to a robust, scalable **MySQL Database** for core data management.
-- ⚡ **Lightning-Fast Performance:** Enjoy significantly faster library browsing and search queries through optimized SQL indexing.
-- 🧪 **Industrial-Grade Security:** Implemented **PDO-powered prepared statements** for all database interactions, protecting your library against SQL injection.
-- 📊 **Real-time Administration:** The admin dashboard now pulls data directly from SQL, offering instant insights into user growth and book activity.
-- 🔄 **Consistent Data Integrity:** Introduced relational constraints (Foreign Keys) to ensure that users, books, and requests are always synchronized and error-free.
-- 💾 **Hybrid Backup System:** Capture both configuration files and a full structured database export with one click.
-- 🌙 **Improved Global Dark Mode:** Further refined the premium dark theme for a more consistent, late-night browsing experience.
+- 📖 **My Borrowed Books:** A dedicated page for users to track their active borrows, view due-date progress indicators, and initiate returns — all in one place.
+- 🔑 **Forget Password Flow:** Secure, email-verified password recovery using a two-factor approach (email + phone verification) with OTP codes.
+- 🎨 **Admin Panel Modernization:** Complete UI overhaul of the admin interface with mobile-first responsive design, card-based layouts, and full dark mode compatibility.
+- 📧 **Email Notification System:** Restored and hardened end-to-end email notifications for borrow requests, approvals, rejections, and returns via PHPMailer/SMTP.
+- 📢 **Announcements Navigation:** Added dedicated "Announcement" links to both desktop and mobile navigation menus for instant community access.
+- 🛠️ **Bug Fixes:** Resolved 500 errors on the Announcements page and Admin Books management, fixed add-book database connectivity, and corrected footer links.
 
 ---
 
@@ -30,6 +29,8 @@ This milestone release, v2.0.0, introduces the most significant architectural ev
 - **Glassmorphic Catalog:** Browse books through an elegant, interactive grid layout.
 - **Easy Sharing:** Add your own books with custom cover uploads in seconds.
 - **Smart Requests:** Request books directly with automated email alerts to the owner.
+- **My Borrowed Books:** Track active borrows with visual due-date progress and one-click returns.
+- **Password Recovery:** Secure "Forget Password" flow with email + phone verification and OTP codes.
 - **Personalized Profiles:** A beautiful split-screen UI to manage your shared books and reading history.
 - **Real-time Notifications:** Stay updated with in-app alerts for borrows, approvals, and community news.
 - 🌙 **Native Dark Mode:** Toggle between light and dark themes with a persistent interface that remembers your preference.
@@ -37,6 +38,7 @@ This milestone release, v2.0.0, introduces the most significant architectural ev
 
 ### 🛡️ For Administrators
 - **Dynamic Dashboard:** Real-time statistics with interactive charts and system health monitoring.
+- **Mobile-First Admin Panel:** Fully responsive management interface optimized for smartphones and tablets.
 - **Full Moderation:** Manage users, verify book entries, and oversee borrow requests.
 - **Announcement Engine:** Broadcast community-wide updates with premium styling, scheduling, and delivery via email and in-app alerts.
 - **Audit Logs:** Track every system activity for complete transparency and security.
@@ -109,7 +111,10 @@ openshelf/
 ├── assets/           # Premium CSS, JS, design tokens, and branding assets
 ├── config/           # Centralized configuration (Database, Mail, App)
 ├── data/             # SQL schema and configuration files
+├── emails/           # Email notification templates
 ├── includes/         # Shared UI components and database singleton
+├── lib/              # Core libraries (Mailer, utilities)
+├── my-borrowed/      # User's active borrowed books tracker
 ├── uploads/          # User-uploaded covers and profile media
 ├── backups/          # Automatically generated system snapshots
 └── vendor/           # Composer dependencies
@@ -122,6 +127,7 @@ openshelf/
 - ✅ **Domain-Locked Registration:** Prevent unauthorized access by restricting email domains.
 - ✅ **Encrypted Sessions:** Secure user state management.
 - ✅ **Environment Protection:** Sensitive database credentials and passwords kept in `.env`.
+- ✅ **OTP-Based Recovery:** Two-factor password reset prevents unauthorized account takeover.
 - ✅ **Data Separation:** Core media uploads isolated from critical system files.
 
 ---

@@ -12,6 +12,12 @@ define('USERS_PATH', dirname(__DIR__, 2) . '/users/');
 
 // Include database connection
 require_once dirname(__DIR__, 2) . '/includes/db.php';
+define('BASE_URL', 'https://openshelf.free.nf');
+
+// Load mailer
+require_once dirname(__DIR__, 2) . '/vendor/autoload.php';
+require_once dirname(__DIR__, 2) . '/lib/Mailer.php';
+$mailer = new Mailer();
 
 // Check admin login
 if (!isset($_SESSION['admin_id'])) {
@@ -29,6 +35,16 @@ function loadAllUsers() {
     $db = getDB();
     $stmt = $db->query("SELECT * FROM users ORDER BY created_at DESC");
     return $stmt->fetchAll();
+}
+
+/**
+ * Get user by ID
+ */
+function getUserById($userId) {
+    $db = getDB();
+    $stmt = $db->prepare("SELECT * FROM users WHERE id = ?");
+    $stmt->execute([$userId]);
+    return $stmt->fetch();
 }
 
 /**
@@ -108,6 +124,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($action === 'approve') {
         if (updateUserVerifiedStatus($userId, true)) {
             $message = 'User approved successfully';
+            
+            // Send approval email
+            $user = getUserById($userId);
+            if ($user && !empty($user['email'])) {
+                try {
+                    $mailer->sendTemplate(
+                        $user['email'],
+                        $user['name'],
+                        'account_approved',
+                        [
+                            'subject'   => 'Your OpenShelf Account Has Been Approved!',
+                            'user_name' => $user['name'],
+                            'login_url' => BASE_URL . '/login/',
+                            'base_url'  => BASE_URL
+                        ]
+                    );
+                } catch (Exception $e) {
+                    error_log("Failed to send approval email: " . $e->getMessage());
+                }
+            }
         } else {
             $error = 'Failed to approve user';
         }
@@ -115,6 +151,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $reason = trim($_POST['rejection_reason'] ?? 'No reason provided');
         if (updateUserVerifiedStatus($userId, false, $reason)) {
             $message = 'User rejected successfully';
+            
+            // Send rejection email
+            $user = getUserById($userId);
+            if ($user && !empty($user['email'])) {
+                try {
+                    $mailer->sendTemplate(
+                        $user['email'],
+                        $user['name'],
+                        'account_rejected',
+                        [
+                            'subject'           => 'Account Status Update - OpenShelf',
+                            'user_name'         => $user['name'],
+                            'rejection_reason'  => $reason,
+                            'support_email'     => 'support@openshelf.org',
+                            'base_url'          => BASE_URL
+                        ]
+                    );
+                } catch (Exception $e) {
+                    error_log("Failed to send rejection email: " . $e->getMessage());
+                }
+            }
         } else {
             $error = 'Failed to reject user';
         }
@@ -128,7 +185,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $userIds = $_POST['user_ids'] ?? [];
         $count = 0;
         foreach ($userIds as $uid) {
-            if (updateUserVerifiedStatus($uid, true)) $count++;
+            if (updateUserVerifiedStatus($uid, true)) {
+                $count++;
+                // Send approval email
+                $user = getUserById($uid);
+                if ($user && !empty($user['email'])) {
+                    try {
+                        $mailer->sendTemplate(
+                            $user['email'],
+                            $user['name'],
+                            'account_approved',
+                            [
+                                'subject'   => 'Your OpenShelf Account Has Been Approved!',
+                                'user_name' => $user['name'],
+                                'login_url' => BASE_URL . '/login/',
+                                'base_url'  => BASE_URL
+                            ]
+                        );
+                    } catch (Exception $e) { /* Logged in Mailer */ }
+                }
+            }
         }
         $message = "Approved {$count} users successfully";
     } elseif ($action === 'bulk_reject') {
@@ -136,7 +212,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $reason = trim($_POST['bulk_rejection_reason'] ?? 'Account rejected by admin');
         $count = 0;
         foreach ($userIds as $uid) {
-            if (updateUserVerifiedStatus($uid, false, $reason)) $count++;
+            if (updateUserVerifiedStatus($uid, false, $reason)) {
+                $count++;
+                // Send rejection email
+                $user = getUserById($uid);
+                if ($user && !empty($user['email'])) {
+                    try {
+                        $mailer->sendTemplate(
+                            $user['email'],
+                            $user['name'],
+                            'account_rejected',
+                            [
+                                'subject'           => 'Account Status Update - OpenShelf',
+                                'user_name'         => $user['name'],
+                                'rejection_reason'  => $reason,
+                                'support_email'     => 'support@openshelf.org',
+                                'base_url'          => BASE_URL
+                            ]
+                        );
+                    } catch (Exception $e) { /* Logged in Mailer */ }
+                }
+            }
         }
         $message = "Rejected {$count} users successfully";
     } elseif ($action === 'bulk_delete') {

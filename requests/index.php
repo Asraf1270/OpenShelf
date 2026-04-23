@@ -12,8 +12,9 @@ define('BOOKS_DATA_PATH', dirname(__DIR__) . '/data/book/');
 define('USERS_PATH', dirname(__DIR__) . '/users/');
 define('BASE_URL', 'https://openshelf.free.nf');
 
-// Include database connection
+// Include database connection and helpers
 require_once dirname(__DIR__) . '/includes/db.php';
+require_once dirname(__DIR__) . '/includes/helpers.php';
 
 // Check login
 if (!isset($_SESSION['user_id'])) {
@@ -29,6 +30,7 @@ $currentUserName = $_SESSION['user_name'] ?? 'Unknown';
 $mailer = null;
 try {
     require_once dirname(__DIR__) . '/vendor/autoload.php';
+    require_once dirname(__DIR__) . '/lib/Mailer.php';
     $mailer = new Mailer();
     error_log("✅ Mailer initialized for requests");
 } catch (Exception $e) {
@@ -45,23 +47,17 @@ function loadAllRequests() {
 }
 
 /**
- * Load user data
+ * Load user data using helper
  */
 function loadUserData($userId) {
-    $userFile = USERS_PATH . $userId . '.json';
-    if (!file_exists($userFile)) return null;
-    return json_decode(file_get_contents($userFile), true);
+    return getUserById($userId);
 }
 
 /**
- * Load book data from DB
+ * Load book data using helper
  */
 function loadBookData($bookId) {
-    if (empty($bookId)) return null;
-    $db = getDB();
-    $stmt = $db->prepare("SELECT * FROM books WHERE id = ?");
-    $stmt->execute([$bookId]);
-    return $stmt->fetch() ?: null;
+    return getBookById($bookId);
 }
 
 /**
@@ -220,15 +216,16 @@ function sendApprovalEmail($borrowerEmail, $borrowerName, $ownerName, $bookTitle
         $borrowerName,
         'request_approved',
         [
-            'borrower_name' => $borrowerName,
-            'owner_name' => $ownerName,
-            'book_title' => $bookTitle,
-            'book_author' => $bookAuthor,
-            'due_date' => $dueDate,
-            'owner_room' => $ownerRoom,
-            'owner_phone' => $ownerPhone,
-            'request_id' => $requestId,
-            'base_url' => BASE_URL
+            'subject'      => "Your Borrow Request for \"$bookTitle\" Has Been Approved!",
+            'borrower_name'=> $borrowerName,
+            'owner_name'   => $ownerName,
+            'book_title'   => $bookTitle,
+            'book_author'  => $bookAuthor,
+            'due_date'     => $dueDate,
+            'owner_room'   => $ownerRoom,
+            'owner_phone'  => $ownerPhone,
+            'request_id'   => $requestId,
+            'base_url'     => BASE_URL
         ]
     );
 }
@@ -242,11 +239,12 @@ function sendRejectionEmail($borrowerEmail, $borrowerName, $bookTitle, $reason, 
         $borrowerName,
         'request_rejected',
         [
-            'borrower_name' => $borrowerName,
-            'book_title' => $bookTitle,
+            'subject'          => "Update on Your Borrow Request for \"$bookTitle\"",
+            'borrower_name'    => $borrowerName,
+            'book_title'       => $bookTitle,
             'rejection_reason' => $reason,
-            'request_id' => $requestId,
-            'base_url' => BASE_URL
+            'request_id'       => $requestId,
+            'base_url'         => BASE_URL
         ]
     );
 }
@@ -260,11 +258,12 @@ function sendReturnEmailToBorrower($borrowerEmail, $borrowerName, $bookTitle, $r
         $borrowerName,
         'book_returned',
         [
+            'subject'       => "Book Return Confirmed: \"$bookTitle\"",
             'borrower_name' => $borrowerName,
-            'book_title' => $bookTitle,
-            'return_date' => $returnDate,
-            'request_id' => $requestId,
-            'base_url' => BASE_URL
+            'book_title'    => $bookTitle,
+            'return_date'   => $returnDate,
+            'request_id'    => $requestId,
+            'base_url'      => BASE_URL
         ]
     );
 }
@@ -272,18 +271,20 @@ function sendReturnEmailToBorrower($borrowerEmail, $borrowerName, $bookTitle, $r
 /**
  * Send return confirmation email to owner
  */
-function sendReturnEmailToOwner($ownerEmail, $ownerName, $bookTitle, $returnDate, $borrowerName, $requestId) {
+function sendReturnEmailToOwner($ownerEmail, $ownerName, $bookTitle, $returnDate, $borrowerName, $requestId, $bookId = '') {
     return sendEmail(
         $ownerEmail,
         $ownerName,
         'book_returned_owner',
         [
-            'owner_name' => $ownerName,
-            'book_title' => $bookTitle,
-            'return_date' => $returnDate,
+            'subject'       => "\"$bookTitle\" Has Been Returned",
+            'owner_name'    => $ownerName,
+            'book_title'    => $bookTitle,
+            'return_date'   => $returnDate,
             'borrower_name' => $borrowerName,
-            'request_id' => $requestId,
-            'base_url' => BASE_URL
+            'request_id'    => $requestId,
+            'book_id'       => $bookId,
+            'base_url'      => BASE_URL
         ]
     );
 }
@@ -491,7 +492,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $request['book_title'],
                         $returnDate,
                         $currentUserName,
-                        $requestId
+                        $requestId,
+                        $request['book_id']
                     );
                     
                     if ($emailSent) {

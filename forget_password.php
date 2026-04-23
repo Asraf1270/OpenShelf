@@ -10,6 +10,7 @@ session_start();
 // Include necessary files
 require_once __DIR__ . '/includes/db.php';
 require_once __DIR__ . '/vendor/autoload.php';
+require_once __DIR__ . '/lib/Mailer.php';
 
 // Configuration
 define('OTP_EXPIRY', 600); // 10 minutes
