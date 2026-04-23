@@ -1,4 +1,5 @@
 <?php
+session_start();
 /**
  * OpenShelf Admin Reports
  * Analytics and reports dashboard

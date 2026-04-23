@@ -1,4 +1,5 @@
 <?php
+session_start();
 /**
  * OpenShelf Admin Backup Manager
  * Create and manage backups
@@ -19,30 +20,64 @@ if (!file_exists(BACKUP_PATH)) {
     mkdir(BACKUP_PATH, 0755, true);
 }
 
+function recursiveCopy($source, $destination) {
+    if (!is_dir($destination)) {
+        mkdir($destination, 0755, true);
+    }
+    $files = scandir($source);
+    foreach ($files as $file) {
+        if ($file === '.' || $file === '..') continue;
+        $src = $source . DIRECTORY_SEPARATOR . $file;
+        $dst = $destination . DIRECTORY_SEPARATOR . $file;
+        if (is_dir($src)) {
+            recursiveCopy($src, $dst);
+        } else {
+            copy($src, $dst);
+        }
+    }
+}
+
+function recursiveDelete($dir) {
+    if (!is_dir($dir)) return;
+    $files = scandir($dir);
+    foreach ($files as $file) {
+        if ($file === '.' || $file === '..') continue;
+        $path = $dir . DIRECTORY_SEPARATOR . $file;
+        if (is_dir($path)) {
+            recursiveDelete($path);
+        } else {
+            unlink($path);
+        }
+    }
+    rmdir($dir);
+}
+
 function createBackup() {
     $timestamp = date('Y-m-d_H-i-s');
     $backupDir = BACKUP_PATH . $timestamp . '/';
-    mkdir($backupDir, 0755, true);
     
-    // Backup JSON files (configs, etc.)
-    $files = glob(DATA_PATH . '*.json');
-    foreach ($files as $file) {
-        copy($file, $backupDir . basename($file));
+    if (!is_dir($backupDir)) {
+        mkdir($backupDir, 0755, true);
     }
+    
+    // Backup Data Files (Recursive)
+    recursiveCopy(DATA_PATH, $backupDir . 'data');
     
     // Backup Database Tables
     $db = getDB();
     $tables = ['users', 'books', 'borrow_requests', 'announcements', 'categories', 'admins', 'announcement_read_status', 'login_otps'];
     
-    mkdir($backupDir . 'database/', 0755, true);
+    $dbBackupDir = $backupDir . 'database/';
+    mkdir($dbBackupDir, 0755, true);
+    
     foreach ($tables as $table) {
         try {
             $stmt = $db->query("SELECT * FROM $table");
             $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
-            file_put_contents($backupDir . 'database/' . $table . '.json', json_encode($data, JSON_PRETTY_PRINT));
+            file_put_contents($dbBackupDir . $table . '.json', json_encode($data, JSON_PRETTY_PRINT));
         } catch (Exception $e) {
             // Table might not exist yet
-            file_put_contents($backupDir . 'database/' . $table . '_error.txt', $e->getMessage());
+            file_put_contents($dbBackupDir . $table . '_error.txt', $e->getMessage());
         }
     }
     
@@ -54,11 +89,16 @@ function getBackups() {
     $dirs = glob(BACKUP_PATH . '*', GLOB_ONLYDIR);
     foreach ($dirs as $dir) {
         $name = basename($dir);
+        // Handle names like Y-m-d_H-i-s or Y-m-d_H-i-s_auto
+        $timestampPart = substr($name, 0, 19); 
+        $dateObj = DateTime::createFromFormat('Y-m-d_H-i-s', $timestampPart);
+        
         $backups[] = [
             'name' => $name,
-            'date' => DateTime::createFromFormat('Y-m-d_H-i-s', $name)->format('M j, Y H:i:s'),
+            'date' => $dateObj ? $dateObj->format('M j, Y H:i:s') : 'Unknown',
             'size' => round(getDirSize($dir) / 1024, 2),
-            'path' => $dir
+            'path' => $dir,
+            'is_auto' => strpos($name, '_auto') !== false
         ];
     }
     rsort($backups);
@@ -73,8 +113,11 @@ function getDirSize($dir) {
     return $size;
 }
 
-$message = '';
-$error = '';
+$message = $_SESSION['success'] ?? '';
+$error = $_SESSION['error'] ?? '';
+
+// Clear session messages
+unset($_SESSION['success'], $_SESSION['error']);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = $_POST['action'] ?? '';
@@ -85,10 +128,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif ($action === 'delete') {
         $name = $_POST['name'] ?? '';
         $path = BACKUP_PATH . $name;
-        if (is_dir($path)) {
-            array_map('unlink', glob("$path/*/*"));
-            array_map('unlink', glob("$path/*"));
-            rmdir($path);
+        if (is_dir($path) && strpos($name, '..') === false) {
+            recursiveDelete($path);
             $message = "Backup deleted";
         }
     }
@@ -170,7 +211,15 @@ $backups = getBackups();
             <h1 style="margin-bottom: 1.5rem;">Backup Manager</h1>
             
             <?php if ($message): ?>
-                <div class="alert alert-success" style="background: rgba(16,185,129,0.1); color: #10b981; padding: 1rem; border-radius: 0.5rem; margin-bottom: 1rem;"><?php echo $message; ?></div>
+                <div class="alert alert-success" style="background: rgba(16,185,129,0.1); color: #10b981; padding: 1rem; border-radius: 0.5rem; margin-bottom: 1rem;">
+                    <i class="fas fa-check-circle"></i> <?php echo $message; ?>
+                </div>
+            <?php endif; ?>
+            
+            <?php if ($error): ?>
+                <div class="alert alert-danger" style="background: rgba(239,68,68,0.1); color: #ef4444; padding: 1rem; border-radius: 0.5rem; margin-bottom: 1rem;">
+                    <i class="fas fa-exclamation-circle"></i> <?php echo $error; ?>
+                </div>
             <?php endif; ?>
             
             <div class="create-card">
@@ -194,9 +243,14 @@ $backups = getBackups();
                     <?php foreach ($backups as $backup): ?>
                         <div class="backup-item">
                             <div>
-                                <div class="backup-name"><?php echo $backup['name']; ?></div>
-                                <div class="backup-date"><?php echo $backup['date']; ?></div>
-                                <div class="backup-size"><?php echo $backup['size']; ?> KB</div>
+                                <div class="backup-name">
+                                    <?php echo $backup['name']; ?>
+                                    <?php if ($backup['is_auto']): ?>
+                                        <span style="background: #e2e8f0; color: #64748b; font-size: 0.7rem; padding: 0.1rem 0.4rem; border-radius: 1rem; margin-left: 0.5rem;">Auto</span>
+                                    <?php endif; ?>
+                                </div>
+                                <div class="backup-date"><i class="far fa-calendar-alt"></i> <?php echo $backup['date']; ?></div>
+                                <div class="backup-size"><i class="fas fa-hdd"></i> <?php echo $backup['size']; ?> KB</div>
                             </div>
                             <div class="actions" style="display: flex; gap: 0.5rem;">
                                 <a href="/admin/backup/restore.php?name=<?php echo urlencode($backup['name']); ?>" class="btn btn-primary btn-sm" onclick="return confirm('Restore this backup? Current data will be overwritten.')">Restore</a>

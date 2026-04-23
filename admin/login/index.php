@@ -2,18 +2,8 @@
 // /admin/login/index.php
 session_start();
 
-// Configuration
-define('DATA_PATH', dirname(__DIR__, 2) . '/data/');
-define('BASE_URL', 'https://openshelf.free.nf');
-define('OTP_EXPIRY', 300); // 5 minutes
-
 // Include database connection
 require_once dirname(__DIR__, 2) . '/includes/db.php';
-
-// Load mailer
-require_once dirname(__DIR__, 2) . '/vendor/autoload.php';
-require_once dirname(__DIR__, 2) . '/lib/Mailer.php';
-$mailer = new Mailer();
 
 /**
  * Find admin by email in DB
@@ -26,75 +16,7 @@ function findAdminByEmail($email) {
     return $stmt->fetch() ?: null;
 }
 
-/**
- * Generate OTP
- */
-function generateOTP() {
-    return sprintf("%06d", random_int(0, 999999));
-}
-
-/**
- * Save OTP to DB
- */
-function saveOTP($email, $otp) {
-    $db = getDB();
-    
-    // Clean expired and old OTPs for this email
-    $stmt = $db->prepare("DELETE FROM login_otps WHERE email = ? OR expires_at < NOW()");
-    $stmt->execute([$email]);
-    
-    $otpId = 'otp_' . uniqid() . '_' . bin2hex(random_bytes(4));
-    $stmt = $db->prepare("INSERT INTO login_otps (id, email, otp_hash, expires_at) VALUES (?, ?, ?, ?)");
-    $stmt->execute([
-        $otpId,
-        $email,
-        password_hash($otp, PASSWORD_BCRYPT),
-        date('Y-m-d H:i:s', time() + OTP_EXPIRY)
-    ]);
-    
-    return $otpId;
-}
-
-/**
- * Verify OTP in DB
- */
-function verifyOTP($otpId, $submittedOtp) {
-    if (empty($otpId)) return false;
-    $db = getDB();
-    
-    $stmt = $db->prepare("SELECT * FROM login_otps WHERE id = ?");
-    $stmt->execute([$otpId]);
-    $otpData = $stmt->fetch();
-    
-    if (!$otpData) return false;
-    
-    // Check expiry
-    if (strtotime($otpData['expires_at']) < time()) {
-        $db->prepare("DELETE FROM login_otps WHERE id = ?")->execute([$otpId]);
-        return false;
-    }
-    
-    // Check attempts
-    if ($otpData['attempts'] >= 3) {
-        $db->prepare("DELETE FROM login_otps WHERE id = ?")->execute([$otpId]);
-        return false;
-    }
-    
-    // Increment attempts
-    $db->prepare("UPDATE login_otps SET attempts = attempts + 1 WHERE id = ?")->execute([$otpId]);
-    
-    // Verify OTP
-    if (password_verify($submittedOtp, $otpData['otp_hash'])) {
-        $db->prepare("UPDATE login_otps SET verified = 1 WHERE id = ?")->execute([$otpId]);
-        return $otpData['email'];
-    }
-    
-    return false;
-}
-
 // Initialize variables
-$step = $_SESSION['admin_login_step'] ?? 'email';
-$email = $_SESSION['admin_email'] ?? '';
 $error = $_SESSION['error'] ?? '';
 $success = $_SESSION['success'] ?? '';
 
@@ -104,99 +26,39 @@ unset($_SESSION['success']);
 
 // Handle form submissions
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $email = trim($_POST['email'] ?? '');
+    $password = $_POST['password'] ?? '';
     
-    if (isset($_POST['action']) && $_POST['action'] === 'request_otp') {
-        $email = trim($_POST['email'] ?? '');
-        
-        if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            $_SESSION['error'] = 'Valid email is required';
-            header('Location: ' . $_SERVER['PHP_SELF']);
-            exit;
-        }
-        
+    if (empty($email) || empty($password)) {
+        $_SESSION['error'] = 'Email and password are required';
+    } else {
         $admin = findAdminByEmail($email);
         
-        if (!$admin) {
-            $_SESSION['error'] = 'No active admin account found';
-            header('Location: ' . $_SERVER['PHP_SELF']);
+        if ($admin && password_verify($password, $admin['password_hash'])) {
+            $db = getDB();
+            $db->prepare("UPDATE admins SET last_login = NOW() WHERE id = ?")->execute([$admin['id']]);
+            
+            // Set ALL session variables
+            $_SESSION['admin_id'] = $admin['id'];
+            $_SESSION['admin_email'] = $admin['email'];
+            $_SESSION['admin_name'] = $admin['name'];
+            $_SESSION['admin_role'] = $admin['role'];
+            $_SESSION['admin_logged_in'] = true;
+            $_SESSION['admin_login_time'] = time();
+            
+            // Force session write and close
+            session_write_close();
+            
+            // Redirect to dashboard
+            header('Location: /admin/dashboard/');
             exit;
+        } else {
+            $_SESSION['error'] = 'Invalid email or password';
         }
-        
-        $otp = generateOTP();
-        $otpId = saveOTP($email, $otp);
-        
-        try {
-            $mailer->sendTemplate(
-                $email,
-                $admin['name'],
-                'otp',
-                [
-                    'subject'      => 'Your OpenShelf Admin Login OTP',
-                    'otp'          => $otp,
-                    'expiry_minutes'=> 5,
-                    'ip_address'   => $_SERVER['REMOTE_ADDR'],
-                    'user_agent'   => $_SERVER['HTTP_USER_AGENT'],
-                    'base_url'     => BASE_URL
-                ]
-            );
-            
-            $_SESSION['admin_login_step'] = 'otp';
-            $_SESSION['admin_email'] = $email;
-            $_SESSION['admin_otp_id'] = $otpId;
-            $_SESSION['success'] = "OTP sent to $email";
-            
-        } catch (Exception $e) {
-            $_SESSION['error'] = 'Failed to send OTP: ' . $e->getMessage();
-        }
-        
-        header('Location: ' . $_SERVER['PHP_SELF']);
-        exit;
     }
     
-    elseif (isset($_POST['action']) && $_POST['action'] === 'verify_otp') {
-        $submittedOtp = trim($_POST['otp'] ?? '');
-        $otpId = $_SESSION['admin_otp_id'] ?? '';
-        
-        if (!preg_match('/^\d{6}$/', $submittedOtp)) {
-            $_SESSION['error'] = 'Please enter a valid 6-digit OTP';
-            header('Location: ' . $_SERVER['PHP_SELF']);
-            exit;
-        }
-        
-        $email = verifyOTP($otpId, $submittedOtp);
-        
-        if ($email) {
-            $admin = findAdminByEmail($email);
-            
-            if ($admin) {
-                $db = getDB();
-                $db->prepare("UPDATE admins SET last_login = NOW() WHERE id = ?")->execute([$admin['id']]);
-                
-                // Set ALL session variables
-                $_SESSION['admin_id'] = $admin['id'];
-                $_SESSION['admin_email'] = $admin['email'];
-                $_SESSION['admin_name'] = $admin['name'];
-                $_SESSION['admin_role'] = $admin['role'];
-                $_SESSION['admin_logged_in'] = true;
-                $_SESSION['admin_login_time'] = time();
-                
-                // Clear OTP session data
-                unset($_SESSION['admin_login_step']);
-                unset($_SESSION['admin_otp_id']);
-                
-                // Force session write and close
-                session_write_close();
-                
-                // Redirect to dashboard
-                header('Location: /admin/dashboard/');
-                exit;
-            }
-        }
-        
-        $_SESSION['error'] = 'Invalid or expired OTP';
-        header('Location: ' . $_SERVER['PHP_SELF']);
-        exit;
-    }
+    header('Location: ' . $_SERVER['PHP_SELF']);
+    exit;
 }
 
 // If already logged in, redirect to dashboard
@@ -206,36 +68,135 @@ if (isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true
 }
 ?>
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Login - OpenShelf</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: Arial, sans-serif; background: linear-gradient(135deg, #667eea, #764ba2); height: 100vh; display: flex; justify-content: center; align-items: center; margin: 0; }
-        .login-box { background: white; padding: 40px; border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); width: 350px; }
-        h2 { text-align: center; color: #333; margin-bottom: 30px; }
+        :root {
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --bg: #f8fafc;
+            --text: #1e293b;
+            --text-muted: #64748b;
+        }
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+            height: 100vh; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            margin: 0; 
+            color: var(--text);
+        }
+        .login-box { 
+            background: rgba(255, 255, 255, 0.95); 
+            padding: 40px; 
+            border-radius: 20px; 
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); 
+            width: 100%;
+            max-width: 400px; 
+            backdrop-filter: blur(10px);
+        }
+        .login-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .login-header h2 { 
+            margin: 0;
+            font-size: 24px;
+            font-weight: 700;
+            color: #1e293b;
+        }
+        .login-header p {
+            margin: 10px 0 0;
+            color: var(--text-muted);
+            font-size: 14px;
+        }
         .form-group { margin-bottom: 20px; }
-        label { display: block; margin-bottom: 5px; color: #666; font-weight: 600; }
-        input { width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 5px; font-size: 16px; box-sizing: border-box; }
-        input:focus { outline: none; border-color: #667eea; }
-        button { width: 100%; padding: 12px; background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: none; border-radius: 5px; font-size: 16px; font-weight: 600; cursor: pointer; }
-        button:hover { opacity: 0.9; }
-        .alert { padding: 10px; border-radius: 5px; margin-bottom: 20px; text-align: center; }
-        .alert-error { background: #fee; color: #c33; border: 1px solid #fcc; }
-        .alert-success { background: #efe; color: #3c3; border: 1px solid #cfc; }
-        .step-indicator { display: flex; justify-content: center; margin-bottom: 30px; }
-        .step { width: 30px; height: 30px; border-radius: 50%; background: #e0e0e0; color: #666; display: flex; align-items: center; justify-content: center; margin: 0 10px; }
-        .step.active { background: #667eea; color: white; }
-        .otp-inputs { display: flex; gap: 10px; justify-content: center; margin-bottom: 20px; }
-        .otp-input { width: 45px; height: 50px; text-align: center; font-size: 24px; border: 2px solid #e0e0e0; border-radius: 5px; }
+        label { 
+            display: block; 
+            margin-bottom: 8px; 
+            color: #475569; 
+            font-weight: 500; 
+            font-size: 14px;
+        }
+        input { 
+            width: 100%; 
+            padding: 12px 16px; 
+            border: 1px solid #e2e8f0; 
+            border-radius: 10px; 
+            font-size: 15px; 
+            box-sizing: border-box; 
+            transition: all 0.2s;
+            background: #fff;
+        }
+        input:focus { 
+            outline: none; 
+            border-color: var(--primary); 
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+        }
+        button { 
+            width: 100%; 
+            padding: 14px; 
+            background: var(--primary); 
+            color: white; 
+            border: none; 
+            border-radius: 10px; 
+            font-size: 16px; 
+            font-weight: 600; 
+            cursor: pointer; 
+            transition: all 0.2s;
+            margin-top: 10px;
+        }
+        button:hover { 
+            background: var(--primary-hover);
+            transform: translateY(-1px);
+        }
+        button:active {
+            transform: translateY(0);
+        }
+        .alert { 
+            padding: 12px; 
+            border-radius: 10px; 
+            margin-bottom: 20px; 
+            text-align: center; 
+            font-size: 14px;
+            font-weight: 500;
+        }
+        .alert-error { 
+            background: #fef2f2; 
+            color: #dc2626; 
+            border: 1px solid #fee2e2; 
+        }
+        .alert-success { 
+            background: #f0fdf4; 
+            color: #16a34a; 
+            border: 1px solid #dcfce7; 
+        }
+        .footer-links {
+            margin-top: 25px;
+            text-align: center;
+            font-size: 14px;
+        }
+        .footer-links a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .footer-links a:hover {
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body>
     <div class="login-box">
-        <h2>Admin Login</h2>
-        
-        <div class="step-indicator">
-            <div class="step <?php echo $step === 'email' ? 'active' : ''; ?>">1</div>
-            <div class="step <?php echo $step === 'otp' ? 'active' : ''; ?>">2</div>
+        <div class="login-header">
+            <h2>Admin Portal</h2>
+            <p>Welcome back! Please login to continue.</p>
         </div>
         
         <?php if ($error): ?>
@@ -246,67 +207,23 @@ if (isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true
             <div class="alert alert-success"><?php echo htmlspecialchars($success); ?></div>
         <?php endif; ?>
         
-        <?php if ($step === 'email'): ?>
-            <form method="POST">
-                <input type="hidden" name="action" value="request_otp">
-                <div class="form-group">
-                    <label>Email Address</label>
-                    <input type="email" name="email" value="<?php echo htmlspecialchars($email); ?>" required autofocus>
-                </div>
-                <button type="submit">Send OTP</button>
-            </form>
+        <form method="POST">
+            <div class="form-group">
+                <label>Email Address</label>
+                <input type="email" name="email" placeholder="admin@openshelf.com" required autofocus>
+            </div>
             
-        <?php else: ?>
-            <form method="POST" id="otpForm">
-                <input type="hidden" name="action" value="verify_otp">
-                <input type="hidden" name="otp" id="otpHidden">
-                
-                <div class="form-group">
-                    <label>Enter 6-Digit OTP</label>
-                    <div class="otp-inputs">
-                        <?php for ($i = 0; $i < 6; $i++): ?>
-                            <input type="text" class="otp-input" maxlength="1" pattern="[0-9]" inputmode="numeric">
-                        <?php endfor; ?>
-                    </div>
-                </div>
-                
-                <p style="text-align: center; color: #666; margin-bottom: 20px;">
-                    OTP sent to: <strong><?php echo htmlspecialchars($email); ?></strong>
-                </p>
-                
-                <button type="submit">Verify & Login</button>
-            </form>
-        <?php endif; ?>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" name="password" placeholder="••••••••" required>
+            </div>
+            
+            <button type="submit">Sign In</button>
+        </form>
+
+        <div class="footer-links">
+            <a href="/">&larr; Back to OpenShelf</a>
+        </div>
     </div>
-    
-    <script>
-        const inputs = document.querySelectorAll('.otp-input');
-        const hidden = document.getElementById('otpHidden');
-        
-        if (inputs.length > 0) {
-            inputs.forEach((input, index) => {
-                input.addEventListener('input', function() {
-                    if (this.value.length === 1 && index < 5) {
-                        inputs[index + 1].focus();
-                    }
-                    updateOTP();
-                });
-                
-                input.addEventListener('keydown', function(e) {
-                    if (e.key === 'Backspace' && !this.value && index > 0) {
-                        inputs[index - 1].focus();
-                    }
-                });
-            });
-            
-            inputs[0].focus();
-        }
-        
-        function updateOTP() {
-            let otp = '';
-            inputs.forEach(i => otp += i.value);
-            hidden.value = otp;
-        }
-    </script>
 </body>
 </html>

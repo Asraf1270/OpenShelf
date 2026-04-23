@@ -1,4 +1,5 @@
 <?php
+session_start();
 /**
  * OpenShelf Admin Category Management
  * Manage book categories

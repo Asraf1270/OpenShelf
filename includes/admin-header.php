@@ -491,7 +491,7 @@ $adminRole = $_SESSION['admin_role'] ?? 'admin';
                         <i class="fas fa-chart-line"></i>
                         Reports & Analytics
                     </a>
-                    <a href="/admin/logs/" class="menu-item <?php echo strpos($currentPath, '/admin/logs/') !== false ? 'active' : ''; ?>">
+                    <a href="/admin/logs.php" class="menu-item <?php echo strpos($currentPath, '/admin/logs.php') !== false ? 'active' : ''; ?>">
                         <i class="fas fa-history"></i>
                         System Logs
                     </a>
@@ -499,6 +499,10 @@ $adminRole = $_SESSION['admin_role'] ?? 'admin';
 
                 <div class="menu-section">
                     <div class="menu-title">System</div>
+                    <a href="/admin/profile.php" class="menu-item <?php echo strpos($currentPath, '/admin/profile.php') !== false ? 'active' : ''; ?>">
+                        <i class="fas fa-user-circle"></i>
+                        My Profile
+                    </a>
                     <a href="/admin/backup.php" class="menu-item <?php echo strpos($currentPath, '/admin/backup/') !== false ? 'active' : ''; ?>">
                         <i class="fas fa-database"></i>
                         Backup Manager

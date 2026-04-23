@@ -1,4 +1,5 @@
 <?php
+session_start();
 /**
  * OpenShelf Export Reports
  * Export data as CSV
