@@ -5,6 +5,13 @@
  */
 
 session_start();
+
+// Redirect logged-in users to books page
+if (isset($_SESSION['user_id'])) {
+    header('Location: /books/');
+    exit;
+}
+
 include 'includes/header.php';
 
 // Configuration

@@ -211,7 +211,7 @@ if (!isset($_SESSION['user_id']) && isset($_COOKIE['remember_token'])) {
         session_regenerate_id(true);
 
         // Redirect to dashboard
-        header('Location: /');
+        header('Location: /books/');
         exit;
     } else {
         // Invalid token, clear cookie
@@ -288,7 +288,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         session_regenerate_id(true);
 
                         // Redirect to homepage or requested page
-                        $redirect = $_SESSION['redirect_after_login'] ?? '/';
+                        $redirect = $_SESSION['redirect_after_login'] ?? '/books/';
                         unset($_SESSION['redirect_after_login']);
                         header('Location: ' . $redirect);
                         exit;

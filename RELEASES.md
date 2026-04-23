@@ -2,6 +2,21 @@
 
 ---
 
+## 🚀 v2.3.0 — Enhanced Security & Admin Workflow
+**Release Date:** April 23, 2026
+
+A focused update streamlining the administrative experience, fortifying backup reliability, and resolving cross-browser compatibility issues.
+
+### Highlights
+- 🛡️ **Simplified Admin Authentication** — Replaced OTP-based admin login with a standard, secure email and password flow.
+- 🔑 **Admin Password Management** — Added a seamless "Change Password" feature to the admin profile.
+- 💾 **Reliable Backups Audited** — Verified full system dump and restoration integrity for flawless data preservation.
+- 🎨 **CSS Compatibility Fixed** — Resolved `background-clip` warnings for broad cross-browser standards compliance.
+
+📄 Full details: [v2.3.0 Release Notes](v2.3.0_release_notes.md)
+
+---
+
 ## 🚀 v2.2.0 — The Complete Experience
 **Release Date:** April 23, 2026
 

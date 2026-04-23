@@ -11,11 +11,16 @@ include dirname(__DIR__) . '/includes/header.php';
 define('DATA_PATH', dirname(__DIR__) . '/data/');
 
 /**
- * Load all books from DB
+ * Load all books from DB with owner names
  */
 function loadAllBooks() {
     $db = getDB();
-    $stmt = $db->query("SELECT * FROM books ORDER BY created_at DESC");
+    $stmt = $db->query("
+        SELECT b.*, u.name as owner_name 
+        FROM books b 
+        LEFT JOIN users u ON b.owner_id = u.id 
+        ORDER BY b.created_at DESC
+    ");
     return $stmt->fetchAll();
 }
 
@@ -34,29 +39,104 @@ function getCategories($books) {
 }
 
 /**
- * Filter books
+ * Advanced Search & Filter
  */
-function filterBooks($books, $search, $categories, $availability) {
-    return array_filter($books, function($book) use ($search, $categories, $availability) {
-        if (!empty($search)) {
-            $searchLower = strtolower($search);
-            $titleMatch = stripos($book['title'] ?? '', $searchLower) !== false;
-            $authorMatch = stripos($book['author'] ?? '', $searchLower) !== false;
-            if (!$titleMatch && !$authorMatch) return false;
-        }
-        
+function advancedSearchBooks($books, $search, $categories, $availability) {
+    // 1. Hard filters (Category & Availability)
+    $filtered = array_filter($books, function($book) use ($categories, $availability) {
         if (!empty($categories) && !in_array($book['category'] ?? '', (array)$categories)) {
             return false;
         }
-        
         if (!empty($availability)) {
             $status = $book['status'] ?? 'available';
             if ($availability === 'available' && $status !== 'available') return false;
             if ($availability === 'borrowed' && $status !== 'borrowed') return false;
         }
-        
         return true;
     });
+
+    if (empty($search)) {
+        return $filtered;
+    }
+
+    $searchLower = strtolower(trim($search));
+    $searchTerms = array_filter(explode(' ', $searchLower));
+
+    $scoredBooks = [];
+    $directMatchAuthors = [];
+    $directMatchCategories = [];
+    $directMatchOwners = [];
+
+    // First pass: Find direct matches
+    foreach ($filtered as $book) {
+        $score = 0;
+        
+        $title = strtolower($book['title'] ?? '');
+        $author = strtolower($book['author'] ?? '');
+        $publisher = strtolower($book['publisher'] ?? '');
+        $owner = strtolower($book['owner_name'] ?? '');
+        $category = strtolower($book['category'] ?? '');
+        $isbn = strtolower($book['isbn'] ?? '');
+
+        // Exact match
+        if ($title === $searchLower) $score += 1000;
+        if ($author === $searchLower) $score += 800;
+        if ($isbn === $searchLower) $score += 1000;
+
+        // Partial exact match
+        if (strpos($title, $searchLower) !== false) $score += 500;
+        if (strpos($author, $searchLower) !== false) $score += 400;
+        if (strpos($publisher, $searchLower) !== false) $score += 300;
+        if (strpos($owner, $searchLower) !== false) $score += 200;
+        if (strpos($category, $searchLower) !== false) $score += 100;
+        
+        // Term matches
+        foreach ($searchTerms as $term) {
+            if (strlen($term) < 2) continue; // Skip single letters
+            if (strpos($title, $term) !== false) $score += 50;
+            if (strpos($author, $term) !== false) $score += 40;
+            if (strpos($publisher, $term) !== false) $score += 30;
+            if (strpos($owner, $term) !== false) $score += 20;
+            if (strpos($category, $term) !== false) $score += 10;
+        }
+
+        if ($score > 0) {
+            $book['_score'] = $score;
+            $book['_match_type'] = 'direct';
+            $bookId = $book['id'] ?? uniqid();
+            $scoredBooks[$bookId] = $book;
+
+            if (!empty($book['author'])) $directMatchAuthors[$book['author']] = true;
+            if (!empty($book['category'])) $directMatchCategories[$book['category']] = true;
+            if (!empty($book['owner_id'])) $directMatchOwners[$book['owner_id']] = true;
+        }
+    }
+
+    // Second pass: Find related matches
+    foreach ($filtered as $book) {
+        $bookId = $book['id'] ?? '';
+        if ($bookId && isset($scoredBooks[$bookId])) continue;
+
+        $relatedScore = 0;
+        
+        if (!empty($book['author']) && isset($directMatchAuthors[$book['author']])) $relatedScore += 15; // Same author
+        if (!empty($book['category']) && isset($directMatchCategories[$book['category']])) $relatedScore += 5; // Same category
+        if (!empty($book['owner_id']) && isset($directMatchOwners[$book['owner_id']])) $relatedScore += 10; // Same owner
+
+        if ($relatedScore > 0) {
+            $book['_score'] = $relatedScore;
+            $book['_match_type'] = 'related';
+            $useId = $bookId ?: uniqid();
+            $scoredBooks[$useId] = $book;
+        }
+    }
+
+    // Sort by score descending
+    usort($scoredBooks, function($a, $b) {
+        return $b['_score'] <=> $a['_score'];
+    });
+
+    return $scoredBooks;
 }
 
 /**
@@ -79,7 +159,7 @@ $search = $_GET['search'] ?? '';
 $selectedCategories = isset($_GET['categories']) ? (array)$_GET['categories'] : [];
 $availability = $_GET['availability'] ?? '';
 
-$filteredBooks = filterBooks($allBooks, $search, $selectedCategories, $availability);
+$filteredBooks = advancedSearchBooks($allBooks, $search, $selectedCategories, $availability);
 $categories = getCategories($allBooks);
 
 // Stats
@@ -171,107 +251,114 @@ function toggleCategoryUrl($cat) {
             overflow-x: hidden;
         }
 
-        /* Hero Section (Mobile First) */
-        .books-hero {
-            position: relative;
-            padding: 3rem 1rem 4rem;
-            text-align: center;
-            background: linear-gradient(135deg, #e0e7ff 0%, #ede9fe 100%);
-            overflow: hidden;
-            margin-bottom: 2rem;
-        }
-
-        .hero-shape {
-            position: absolute;
-            background: radial-gradient(circle, rgba(99,102,241,0.2) 0%, transparent 70%);
-            border-radius: 50%;
-            filter: blur(40px);
-            z-index: 0;
-        }
-        .hero-shape-1 {
-            width: 300px; height: 300px; top: -10%; left: -20%;
-            animation: float 10s infinite;
-        }
-        .hero-shape-2 {
-            width: 350px; height: 350px; bottom: -20%; right: -20%;
-            animation: float 12s infinite reverse;
-            background: radial-gradient(circle, rgba(139,92,246,0.2) 0%, transparent 70%);
-        }
-
-        .books-hero-content {
-            position: relative; z-index: 2;
-        }
-        .books-hero h1 {
-            font-size: 2.2rem; font-weight: 800;
-            background: linear-gradient(135deg, var(--gray-900), var(--primary));
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            margin-bottom: 0.75rem;
-            animation: slideDown 0.6s ease-out;
-        }
-        .books-hero p {
-            font-size: 1rem; color: var(--gray-600); max-width: 600px; margin: 0 auto;
-            animation: slideDown 0.8s ease-out 0.1s both;
-        }
-
-        /* Stats Bar (Mobile First) */
-        .stats-bar {
-            display: flex; flex-direction: column; gap: 1rem;
-            margin: -2.5rem 1rem 2rem; position: relative; z-index: 10;
-        }
-        .stat-item {
-            background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(20px);
-            border: 1px solid var(--glass-border); border-radius: var(--radius-lg);
-            padding: 1.25rem 1rem; text-align: center;
-            box-shadow: var(--shadow-sm); transition: var(--transition);
-        }
-        .stat-value { font-size: 2rem; font-weight: 800; color: var(--primary); line-height: 1.1; }
-        .stat-label { font-size: 0.8rem; font-weight: 600; color: var(--gray-600); text-transform: uppercase; letter-spacing: 1px; margin-top: 0.25rem; }
-
         /* Main Container */
         .books-main {
-            padding: 0 1rem 4rem; width: 100%; max-width: 1400px; margin: 0 auto;
+            padding: 2rem 1rem 4rem; width: 100%; max-width: 1400px; margin: 0 auto;
         }
 
-        /* Category Pills Scrollbar */
-        .category-pills-wrap {
-            margin-bottom: 1.5rem; position: relative;
+        /* YouTube-Style Top Bar */
+        .minimal-top-bar {
+            background: var(--header-bg);
+            backdrop-filter: var(--header-blur);
+            padding: 1rem;
+            border-bottom: 1px solid var(--header-border);
+            margin: 0;
+            position: sticky;
+            top: 56px; /* Adjust to sit below global header */
+            z-index: 990;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            align-items: center;
         }
-        .category-pills {
-            display: flex; gap: 0.75rem; overflow-x: auto; padding: 0.5rem 0 1rem 0;
-            scrollbar-width: none; -ms-overflow-style: none; scroll-behavior: smooth;
-        }
-        .category-pills::-webkit-scrollbar { display: none; }
-        .category-pill {
-            padding: 0.6rem 1.25rem; background: white; border: 1px solid var(--gray-200);
-            border-radius: 2rem; color: var(--gray-600); font-size: 0.9rem; font-weight: 600;
-            white-space: nowrap; text-decoration: none; transition: var(--transition);
-            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
-        }
-        .category-pill:hover { background: var(--gray-50); color: var(--primary); border-color: var(--primary); transform: translateY(-2px); }
-        .category-pill.active { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; border-color: transparent; box-shadow: 0 4px 10px rgba(99,102,241,0.3); }
 
-        /* Filter Section */
-        .filter-glass {
-            background: white; border-radius: var(--radius-lg); padding: 1rem;
-            display: flex; flex-direction: column; gap: 1rem;
-            box-shadow: var(--shadow-sm); border: 1px solid var(--gray-200); margin-bottom: 2rem;
+        .search-row {
+            width: 100%;
+            max-width: 720px;
+            display: flex;
+            justify-content: center;
         }
-        .search-box { position: relative; width: 100%; }
-        .search-box i { position: absolute; left: 1.25rem; top: 50%; transform: translateY(-50%); color: var(--gray-500); }
+
+        .youtube-search {
+            display: flex;
+            width: 100%;
+            background: var(--gray-50);
+            border: 1px solid var(--gray-200);
+            border-radius: 40px;
+            overflow: hidden;
+            transition: all 0.2s;
+        }
+
+        .youtube-search:focus-within {
+            border-color: var(--primary);
+            box-shadow: inset 0 1px 2px rgba(0,0,0,0.05);
+            background: white;
+        }
+
         .search-input {
-            width: 100%; padding: 0.85rem 1rem 0.85rem 3rem; border: 2px solid var(--gray-100);
-            border-radius: var(--radius-md); background: var(--gray-50);
-            font-size: 0.95rem; transition: all 0.3s ease; color: var(--gray-800);
+            flex: 1;
+            border: none;
+            background: transparent;
+            padding: 0.6rem 1.25rem;
+            font-size: 1rem;
+            outline: none;
+            color: var(--gray-800);
         }
-        .search-input:focus { background: white; border-color: var(--primary); outline: none; box-shadow: 0 0 0 4px rgba(99,102,241,0.1); }
-        
-        .filter-controls { display: flex; flex-direction: column; gap: 0.75rem; width: 100%; }
+
+        .search-btn {
+            background: var(--gray-100);
+            border: none;
+            border-left: 1px solid var(--gray-200);
+            padding: 0 1.5rem;
+            cursor: pointer;
+            color: var(--gray-600);
+            transition: all 0.2s;
+        }
+
+        .search-btn:hover {
+            background: var(--gray-200);
+            color: var(--gray-900);
+        }
+
+        /* Category Pills (YouTube Chips) */
+        .category-row {
+            width: 100%;
+            overflow-x: auto;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+            display: flex;
+            gap: 0.75rem;
+            padding: 0.25rem 0;
+        }
+        .category-row::-webkit-scrollbar { display: none; }
+
+        .chip {
+            padding: 0.4rem 1rem;
+            background: rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: 20px;
+            color: var(--gray-800);
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 500;
+            white-space: nowrap;
+            transition: all 0.2s;
+        }
+
+        .chip:hover { background: rgba(0, 0, 0, 0.1); }
+        .chip.active {
+            background: var(--gray-900);
+            color: white;
+            border-color: var(--gray-900);
+        }
+
+        .filter-controls { display: flex; gap: 0.5rem; align-items: center; }
         .styled-select {
-            padding: 0.85rem 1.25rem; border: 2px solid var(--gray-100); border-radius: var(--radius-md);
-            background: var(--gray-50); font-size: 0.9rem; font-weight: 500; color: var(--gray-800);
+            padding: 0.5rem 2rem 0.5rem 0.75rem; border: 1px solid var(--gray-200); border-radius: 8px;
+            background: var(--gray-50); font-size: 0.85rem; font-weight: 600; color: var(--gray-700);
             cursor: pointer; transition: all 0.3s ease; outline: none; appearance: none;
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23475569' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
-            background-repeat: no-repeat; background-position: right 1rem center; padding-right: 2.5rem; width: 100%;
+            background-repeat: no-repeat; background-position: right 0.5rem center;
         }
         .styled-select:focus { background-color: white; border-color: var(--primary); box-shadow: 0 0 0 4px rgba(99,102,241,0.1); }
 
@@ -389,18 +476,13 @@ function toggleCategoryUrl($cat) {
         }
 
         @media (min-width: 640px) {
-            .books-hero { padding: 4rem 2rem 5rem; }
-            .books-hero h1 { font-size: 3rem; }
-            .hero-shape-1 { width: 400px; height: 400px; }
-            .hero-shape-2 { width: 500px; height: 500px; }
+            .top-bar-row { flex-direction: row; }
+            .minimal-top-bar { padding: 0.5rem 2rem; gap: 1rem; }
             
-            .stats-bar { flex-direction: row; margin: -3.5rem auto 3rem; max-width: 900px; padding: 0 1.5rem; }
-            .stat-item { flex: 1; padding: 1.5rem; }
-            .stat-value { font-size: 2.5rem; }
+            .search-box { max-width: 500px; }
             
-            .filter-glass { flex-direction: row; padding: 1.25rem 1.5rem; }
-            .filter-controls { flex-direction: row; flex: 1; justify-content: flex-end; width: auto; }
-            .styled-select { width: auto; min-width: 180px; }
+            .filter-controls { justify-content: flex-end; }
+            .styled-select { width: auto; min-width: 160px; }
             
             .books-header { flex-direction: row; }
         }
@@ -410,16 +492,14 @@ function toggleCategoryUrl($cat) {
             .book-grid { grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 2rem; }
         }
 
-        /* Dark Mode Overrides */
-        [data-theme="dark"] .books-hero { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); }
-        [data-theme="dark"] .books-hero h1 { background: linear-gradient(135deg, #f8fafc, #818cf8); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
-        [data-theme="dark"] .stat-item { background: rgba(30, 41, 59, 0.85); border-color: #334155; }
-        [data-theme="dark"] .stat-value { color: #818cf8; }
-        [data-theme="dark"] .stat-label { color: #cbd5e1; }
-        [data-theme="dark"] .category-pill { background: #1e293b; border-color: #334155; color: #cbd5e1; }
-        [data-theme="dark"] .category-pill:hover { background: #334155; color: #818cf8; border-color: #818cf8; }
-        [data-theme="dark"] .filter-glass { background: #1e293b; border-color: #334155; }
-        [data-theme="dark"] .search-input { background: #0f172a; border-color: #334155; color: #f8fafc; }
+        [data-theme="dark"] .minimal-top-bar { border-bottom-color: #334155; }
+        [data-theme="dark"] .youtube-search { background: #0f172a; border-color: #334155; }
+        [data-theme="dark"] .search-input { color: #f8fafc; }
+        [data-theme="dark"] .search-btn { background: #1e293b; border-left-color: #334155; color: #cbd5e1; }
+        [data-theme="dark"] .search-btn:hover { background: #334155; color: white; }
+        [data-theme="dark"] .chip { background: rgba(255, 255, 255, 0.1); color: #cbd5e1; }
+        [data-theme="dark"] .chip:hover { background: rgba(255, 255, 255, 0.15); }
+        [data-theme="dark"] .chip.active { background: #f8fafc; color: #0f172a; }
         [data-theme="dark"] .styled-select { background-color: #0f172a; border-color: #334155; color: #f8fafc; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23cbd5e1' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E"); }
         [data-theme="dark"] .books-count { color: #cbd5e1; }
         [data-theme="dark"] .books-count strong { color: #f8fafc; }
@@ -434,84 +514,71 @@ function toggleCategoryUrl($cat) {
 </head>
 <body>
 
-    <!-- Hero Section -->
-    <section class="books-hero">
-        <div class="hero-shape hero-shape-1"></div>
-        <div class="hero-shape hero-shape-2"></div>
-        <div class="books-hero-content">
-            <h1><i class="fas fa-layer-group"></i> Library Collection</h1>
-            <p>Explore thousands of books shared by the community. Find your next great read tailored to your interests.</p>
-        </div>
-    </section>
-    
-    <!-- Quick Stats -->
-    <div class="stats-bar">
-        <div class="stat-item">
-            <div class="stat-value"><?php echo $totalBooks; ?></div>
-            <div class="stat-label">Total Books</div>
-        </div>
-        <div class="stat-item">
-            <div class="stat-value" style="color: var(--success);"><?php echo $availableBooks; ?></div>
-            <div class="stat-label">Available Now</div>
-        </div>
-        <div class="stat-item">
-            <div class="stat-value" style="color: var(--secondary);"><?php echo $totalCategories; ?></div>
-            <div class="stat-label">Categories</div>
-        </div>
-    </div>
+    <!-- YouTube-Style Top Bar -->
+    <div class="minimal-top-bar">
+        <!-- Search Row -->
+        <div class="search-row">
+            <form method="GET" class="youtube-search">
+                <!-- Preserve categories & availability -->
+                <?php if (!empty($selectedCategories)): ?>
+                    <?php foreach ($selectedCategories as $cat): ?>
+                        <input type="hidden" name="categories[]" value="<?php echo htmlspecialchars($cat); ?>">
+                    <?php endforeach; ?>
+                <?php endif; ?>
+                <?php if (!empty($availability)): ?>
+                    <input type="hidden" name="availability" value="<?php echo htmlspecialchars($availability); ?>">
+                <?php endif; ?>
 
-<main class="books-main">
+                <input type="text" name="search" class="search-input" 
+                       placeholder="Search books, authors, publishers, owners..." 
+                       value="<?php echo htmlspecialchars($search); ?>">
+                <button type="submit" class="search-btn" title="Search">
+                    <i class="fas fa-search"></i>
+                </button>
+            </form>
+        </div>
 
-    <!-- Horizontal Category Top Bar -->
-    <div class="category-pills-wrap">
-        <div class="category-pills">
+        <!-- Category Row -->
+        <div class="category-row">
             <a href="<?php echo getUrlWithParam('categories', ''); ?>" 
-               class="category-pill <?php echo empty($selectedCategories) ? 'active' : ''; ?>">
-                <i class="fas fa-th-large"></i> All Categories
+               class="chip <?php echo empty($selectedCategories) ? 'active' : ''; ?>">
+                All
             </a>
             <?php foreach ($categories as $cat): 
                 $isActive = in_array($cat, $selectedCategories);
             ?>
                 <a href="<?php echo toggleCategoryUrl($cat); ?>" 
-                   class="category-pill <?php echo $isActive ? 'active' : ''; ?>">
-                   <?php if($isActive): ?><i class="fas fa-check-circle"></i> <?php endif; ?>
+                   class="chip <?php echo $isActive ? 'active' : ''; ?>">
                    <?php echo htmlspecialchars($cat); ?>
                 </a>
             <?php endforeach; ?>
+            
+            <div class="filter-controls" style="margin-left: auto; padding-left: 1rem; border-left: 1px solid var(--gray-200);">
+                <form method="GET" style="display: flex; gap: 0.5rem;">
+                    <!-- Preserve search and categories -->
+                    <?php if (!empty($search)): ?>
+                        <input type="hidden" name="search" value="<?php echo htmlspecialchars($search); ?>">
+                    <?php endif; ?>
+                    <?php if (!empty($selectedCategories)): ?>
+                        <?php foreach ($selectedCategories as $cat): ?>
+                            <input type="hidden" name="categories[]" value="<?php echo htmlspecialchars($cat); ?>">
+                        <?php endforeach; ?>
+                    <?php endif; ?>
+
+                    <select name="availability" class="styled-select" onchange="this.form.submit()">
+                        <option value="">Status: All</option>
+                        <option value="available" <?php echo $availability === 'available' ? 'selected' : ''; ?>>Available</option>
+                        <option value="borrowed" <?php echo $availability === 'borrowed' ? 'selected' : ''; ?>>Borrowed</option>
+                    </select>
+
+                    <?php if (!empty($search) || !empty($selectedCategories) || !empty($availability)): ?>
+                        <a href="/books/" class="chip" style="color: var(--danger); background: rgba(244, 63, 94, 0.1);">
+                            Clear
+                        </a>
+                    <?php endif; ?>
+                </form>
+            </div>
         </div>
-    </div>
-    
-    <!-- Search and Filter -->
-    <div class="filter-glass">
-        <form method="GET" style="display: contents;">
-            <!-- Preserve multiple category selection when searching -->
-            <?php if (!empty($selectedCategories)): ?>
-                <?php foreach ($selectedCategories as $cat): ?>
-                    <input type="hidden" name="categories[]" value="<?php echo htmlspecialchars($cat); ?>">
-                <?php endforeach; ?>
-            <?php endif; ?>
-            
-            <div class="search-box">
-                <i class="fas fa-search"></i>
-                <input type="text" name="search" class="search-input" 
-                       placeholder="Search by book title or author..." 
-                       value="<?php echo htmlspecialchars($search); ?>">
-            </div>
-            
-            <div class="filter-controls">
-                <select name="availability" class="styled-select" onchange="this.form.submit()">
-                    <option value="">Status: All</option>
-                    <option value="available" <?php echo $availability === 'available' ? 'selected' : ''; ?>>Available Now</option>
-                    <option value="borrowed" <?php echo $availability === 'borrowed' ? 'selected' : ''; ?>>Currently Borrowed</option>
-                </select>
-                
-                <?php if (!empty($search) || !empty($selectedCategories) || !empty($availability)): ?>
-                    <a href="/books/" class="styled-select" style="text-align: center; text-decoration: none; color: var(--danger); background-image: none; padding-right: 1.25rem;">
-                        <i class="fas fa-times"></i> Clear Filters
-                    </a>
-                <?php endif; ?>
-            </div>
-        </form>
     </div>
     
     <!-- Results Header -->
@@ -571,8 +638,13 @@ function toggleCategoryUrl($cat) {
                     </div>
                     
                     <div class="book-info">
-                        <div class="book-category-tag">
-                            <?php echo htmlspecialchars($book['category'] ?? 'General'); ?>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                            <div class="book-category-tag" style="margin-bottom: 0;">
+                                <?php echo htmlspecialchars($book['category'] ?? 'General'); ?>
+                            </div>
+                            <?php if (isset($book['_match_type']) && $book['_match_type'] === 'related'): ?>
+                                <span style="font-size: 0.65rem; color: var(--gray-500); background: var(--gray-100); padding: 0.2rem 0.5rem; border-radius: 4px; font-weight: 600;"><i class="fas fa-sparkles"></i> Related</span>
+                            <?php endif; ?>
                         </div>
                         <h3 class="book-title">
                             <a href="/book/?id=<?php echo htmlspecialchars($book['id'] ?? ''); ?>">
@@ -650,15 +722,7 @@ function sortBooks(criteria) {
     }, 300);
 }
 
-// Debounce search input for automatic submission
-let searchTimeout;
-const searchInput = document.querySelector('input[name="search"]');
-if (searchInput) {
-    searchInput.addEventListener('input', function() {
-        clearTimeout(searchTimeout);
-        searchTimeout = setTimeout(() => this.form.submit(), 600);
-    });
-}
+// Removed auto-submit on search input as requested
 </script>
 
 <?php include dirname(__DIR__) . '/includes/footer.php'; ?>

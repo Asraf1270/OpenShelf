@@ -1,6 +1,6 @@
 # 📚 OpenShelf — Community Library Management System
 
-[![Version](https://img.shields.io/badge/version-2.2.0-blue.svg)](https://github.com/Asraf1270/OpenShelf/releases/tag/v2.2.0)
+[![Version](https://img.shields.io/badge/version-2.3.0-blue.svg)](https://github.com/Asraf1270/OpenShelf/releases/tag/v2.3.0)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![PHP](https://img.shields.io/badge/PHP-7.4%2B-777bb4.svg)](https://www.php.net/)
 [![MySQL](https://img.shields.io/badge/MySQL-5.7%2B-4479A1.svg)](https://www.mysql.com/)
@@ -9,16 +9,14 @@
 
 ---
 
-## ✨ What's New in v2.2.0
+## ✨ What's New in v2.3.0
 
-**OpenShelf v2.2.0** delivers a polished, feature-rich experience for both users and administrators:
+**OpenShelf v2.3.0** delivers a streamlined administrative experience and enhanced system stability:
 
-- 📖 **My Borrowed Books:** A dedicated page for users to track their active borrows, view due-date progress indicators, and initiate returns — all in one place.
-- 🔑 **Forget Password Flow:** Secure, email-verified password recovery using a two-factor approach (email + phone verification) with OTP codes.
-- 🎨 **Admin Panel Modernization:** Complete UI overhaul of the admin interface with mobile-first responsive design, card-based layouts, and full dark mode compatibility.
-- 📧 **Email Notification System:** Restored and hardened end-to-end email notifications for borrow requests, approvals, rejections, and returns via PHPMailer/SMTP.
-- 📢 **Announcements Navigation:** Added dedicated "Announcement" links to both desktop and mobile navigation menus for instant community access.
-- 🛠️ **Bug Fixes:** Resolved 500 errors on the Announcements page and Admin Books management, fixed add-book database connectivity, and corrected footer links.
+- 🛡️ **Simplified Admin Authentication:** Replaced OTP-based admin login with a robust, standard email and password authentication system.
+- 🔑 **Admin Profile Management:** Added a functional "Change Password" feature directly within the admin profile section for improved account security.
+- 💾 **Reliable Backup System:** Audited and verified the integrity of the full backup and restore processes to ensure flawless data preservation.
+- 🎨 **CSS Compatibility:** Fixed background-clip CSS property warnings to ensure strict cross-browser compliance.
 
 ---
 
