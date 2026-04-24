@@ -1,6 +1,6 @@
 # 📚 OpenShelf — Community Library Management System
 
-[![Version](https://img.shields.io/badge/version-2.3.0-blue.svg)](https://github.com/Asraf1270/OpenShelf/releases/tag/v2.3.0)
+[![Version](https://img.shields.io/badge/version-2.4.0-blue.svg)](https://github.com/Asraf1270/OpenShelf/releases/tag/v2.4.0)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![PHP](https://img.shields.io/badge/PHP-7.4%2B-777bb4.svg)](https://www.php.net/)
 [![MySQL](https://img.shields.io/badge/MySQL-5.7%2B-4479A1.svg)](https://www.mysql.com/)
@@ -9,14 +9,15 @@
 
 ---
 
-## ✨ What's New in v2.3.0
+## ✨ What's New in v2.4.0
 
-**OpenShelf v2.3.0** delivers a streamlined administrative experience and enhanced system stability:
+**OpenShelf v2.4.0** focuses on visual excellence, user feedback, and community sustainability:
 
-- 🛡️ **Simplified Admin Authentication:** Replaced OTP-based admin login with a robust, standard email and password authentication system.
-- 🔑 **Admin Profile Management:** Added a functional "Change Password" feature directly within the admin profile section for improved account security.
-- 💾 **Reliable Backup System:** Audited and verified the integrity of the full backup and restore processes to ensure flawless data preservation.
-- 🎨 **CSS Compatibility:** Fixed background-clip CSS property warnings to ensure strict cross-browser compliance.
+- 🎨 **Reimagined Landing Page** — A complete homepage overhaul with a focus on mission clarity, mobile-first design, and interactive community stats.
+- 🚩 **Integrated Reporting System** — Introduced `report.php` for users to safely submit bug reports, user misconduct, or content issues.
+- 🌗 **Global Info Modernization** — Full visual refresh of `About`, `Contact`, `FAQ`, `Privacy`, and `Terms` pages with native dark/light mode support.
+- 📚 **Community Growth Policy** — Implemented a new mandatory term requiring users to share at least 2 books within 30 days to ensure library health.
+- 🛠️ **Refined UX** — Smoother animations, improved navigation accessibility, and an interactive FAQ experience.
 
 ---
 
@@ -142,6 +143,7 @@ This project is open-source and released under the **MIT License**.
 
 ## 📞 Support & Community
 - **Email:** support@openshelf.free.nf
+- **Reporting:** Use `/report.php` for bugs or misconduct
 - **Feedback:** Use the built-in `/contact.php` form
 - **FAQ:** Check `/faq.php` for common questions
 
