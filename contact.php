@@ -21,330 +21,244 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $error = 'Please enter a valid email address';
     } else {
-        // Send email (you can implement actual email sending here)
+        // Send email (logic placeholder)
         $message = 'Thank you for contacting us! We will get back to you soon.';
     }
 }
 ?>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contact Us - OpenShelf</title>
-    <link rel="stylesheet" href="/assets/css/style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
+<style>
+    :root {
+        --primary: #6366f1;
+        --bg: #f8fafc;
+        --surface: #ffffff;
+        --text: #0f172a;
+        --text-muted: #64748b;
+        --border: #e2e8f0;
+        --radius: 20px;
+        --shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.05);
+    }
 
-        :root {
-            --primary: #6366f1;
-            --primary-light: #818cf8;
-            --success: #10b981;
-            --error: #ef4444;
-            --bg: #f8fafc;
-            --glass-bg: rgba(255, 255, 255, 0.7);
-            --glass-border: rgba(255, 255, 255, 0.4);
-            --text-main: #0f172a;
-            --text-muted: #64748b;
-            --shadow-premium: 0 20px 40px -15px rgba(0, 0, 0, 0.1);
-            --radius-lg: 24px;
-            --radius-xl: 32px;
-            --transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-        }
+    [data-theme="dark"] {
+        --bg: #0f172a;
+        --surface: #1e293b;
+        --text: #f8fafc;
+        --text-muted: #94a3b8;
+        --border: #334155;
+        --shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.3);
+    }
 
-        body {
-            background-color: var(--bg);
-            font-family: 'Outfit', system-ui, -apple-system, sans-serif;
-            color: var(--text-main);
-            line-height: 1.6;
-        }
+    body {
+        background-color: var(--bg);
+        color: var(--text);
+        font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    }
 
-        .contact-page {
-            max-width: 1100px;
-            margin: 0 auto;
-            padding: 4rem 1.5rem;
-        }
+    .contact-container {
+        max-width: 1100px;
+        margin: 4rem auto;
+        padding: 0 1.5rem;
+    }
 
-        .hero-section {
-            text-align: center;
-            margin-bottom: 4rem;
-        }
+    .hero-section {
+        text-align: center;
+        margin-bottom: 4rem;
+    }
 
-        .hero-section h1 {
-            font-size: clamp(2.5rem, 5vw, 3.5rem);
-            font-weight: 800;
-            letter-spacing: -1px;
-            background: linear-gradient(135deg, #0f172a 0%, #6366f1 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 1rem;
-        }
+    .hero-section h1 {
+        font-size: clamp(2.5rem, 6vw, 3.5rem);
+        font-weight: 800;
+        letter-spacing: -0.03em;
+        margin-bottom: 1rem;
+        background: linear-gradient(135deg, var(--primary), #8b5cf6);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
 
-        .hero-section p {
-            font-size: 1.1rem;
-            color: var(--text-muted);
-        }
+    .contact-grid {
+        display: grid;
+        grid-template-columns: 1fr 1.5fr;
+        gap: 3rem;
+    }
 
-        .contact-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 3rem;
-            align-items: start;
-        }
+    .info-card {
+        background: var(--surface);
+        padding: 3rem;
+        border-radius: var(--radius);
+        border: 1px solid var(--border);
+        box-shadow: var(--shadow);
+        height: fit-content;
+    }
 
-        .contact-info {
-            background: var(--glass-bg);
-            backdrop-filter: blur(20px);
-            padding: 3rem;
-            border-radius: var(--radius-xl);
-            border: 1px solid var(--glass-border);
-            box-shadow: var(--shadow-premium);
-        }
+    .info-item {
+        display: flex;
+        gap: 1.25rem;
+        margin-bottom: 2.5rem;
+    }
 
-        .contact-info h2 {
-            font-size: 1.75rem;
-            font-weight: 700;
-            margin-bottom: 2rem;
-            color: var(--text-main);
-        }
+    .info-item:last-child {
+        margin-bottom: 0;
+    }
 
-        .info-item {
-            display: flex;
-            align-items: center;
-            gap: 1.5rem;
-            padding: 1.25rem 0;
-            border-bottom: 1px solid rgba(226, 232, 240, 0.5);
-        }
+    .info-icon {
+        width: 48px;
+        height: 48px;
+        background: rgba(99, 102, 241, 0.1);
+        color: var(--primary);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.25rem;
+        flex-shrink: 0;
+    }
 
-        .info-item:last-child {
-            border-bottom: none;
-        }
+    .info-content h3 {
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: var(--text-muted);
+        margin-bottom: 0.5rem;
+    }
 
-        .info-icon {
-            width: 56px;
-            height: 56px;
-            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(99, 102, 241, 0.2));
-            border-radius: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--primary);
-            font-size: 1.5rem;
-            transition: var(--transition);
-        }
+    .info-content p {
+        font-weight: 600;
+        font-size: 1.1rem;
+        margin: 0;
+    }
 
-        .info-item:hover .info-icon {
-            background: var(--primary);
-            color: white;
-            transform: scale(1.1) rotate(-5deg);
-        }
+    .form-card {
+        background: var(--surface);
+        padding: 3rem;
+        border-radius: var(--radius);
+        border: 1px solid var(--border);
+        box-shadow: var(--shadow);
+    }
 
-        .info-content strong {
-            display: block;
-            font-size: 0.9rem;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 0.25rem;
-        }
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
 
-        .info-content span, .info-content a {
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: var(--text-main);
-            text-decoration: none;
-        }
+    .form-group label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        font-size: 0.95rem;
+    }
 
-        .contact-form {
-            background: white;
-            padding: 3rem;
-            border-radius: var(--radius-xl);
-            border: 1px solid var(--glass-border);
-            box-shadow: var(--shadow-premium);
-        }
+    .form-control {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border: 1.5px solid var(--border);
+        border-radius: 10px;
+        background: var(--bg);
+        color: var(--text);
+        font-family: inherit;
+        transition: all 0.2s ease;
+    }
 
-        .contact-form h2 {
-            font-size: 1.75rem;
-            font-weight: 700;
-            margin-bottom: 2rem;
-            color: var(--text-main);
-        }
+    .form-control:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+    }
 
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
+    .btn-submit {
+        width: 100%;
+        padding: 1rem;
+        background: var(--primary);
+        color: white;
+        border: none;
+        border-radius: 10px;
+        font-weight: 700;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        margin-top: 1rem;
+    }
 
-        .form-group label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 600;
-            font-size: 0.9rem;
-            color: var(--text-main);
-        }
+    .btn-submit:hover {
+        background: #4f46e5;
+        transform: translateY(-2px);
+        box-shadow: 0 10px 15px -3px rgba(99, 102, 241, 0.3);
+    }
 
-        .form-control {
-            width: 100%;
-            padding: 1rem;
-            background: #f8fafc;
-            border: 2px solid #f1f5f9;
-            border-radius: 12px;
-            font-family: inherit;
-            font-size: 1rem;
-            transition: var(--transition);
-        }
+    .alert {
+        padding: 1rem;
+        border-radius: 10px;
+        margin-bottom: 2rem;
+        font-weight: 500;
+    }
 
-        .form-control:focus {
-            outline: none;
-            border-color: var(--primary);
-            background: white;
-            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
-        }
+    .alert-success { background: rgba(16, 185, 129, 0.1); color: #059669; border: 1px solid rgba(16, 185, 129, 0.2); }
+    .alert-error { background: rgba(239, 68, 68, 0.1); color: #dc2626; border: 1px solid rgba(239, 68, 68, 0.2); }
 
-        textarea.form-control {
-            resize: vertical;
-            min-height: 120px;
-        }
+    @media (max-width: 900px) {
+        .contact-grid { grid-template-columns: 1fr; }
+        .hero-section { margin-bottom: 2rem; }
+    }
+</style>
 
-        .btn-submit {
-            background: linear-gradient(135deg, #6366f1, #8b5cf6);
-            color: white;
-            padding: 1rem 2rem;
-            border: none;
-            border-radius: 12px;
-            font-weight: 700;
-            font-size: 1rem;
-            cursor: pointer;
-            width: 100%;
-            transition: var(--transition);
-            box-shadow: 0 10px 20px -5px rgba(99, 102, 241, 0.4);
-        }
+<main class="contact-container">
+    <section class="hero-section">
+        <h1>Get in Touch</h1>
+        <p style="color: var(--text-muted); font-size: 1.2rem;">Have questions? We're here to help.</p>
+    </section>
 
-        .btn-submit:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 15px 30px -5px rgba(99, 102, 241, 0.5);
-        }
-
-        .alert {
-            padding: 1rem 1.5rem;
-            border-radius: 12px;
-            margin-bottom: 2rem;
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-        }
-
-        .alert-success {
-            background: rgba(16, 185, 129, 0.1);
-            color: var(--success);
-            border: 1px solid rgba(16, 185, 129, 0.2);
-        }
-
-        .alert-error {
-            background: rgba(239, 68, 68, 0.1);
-            color: var(--error);
-            border: 1px solid rgba(239, 68, 68, 0.2);
-        }
-
-        @media (max-width: 992px) {
-            .contact-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .contact-page { padding: 2rem 1rem; }
-            .contact-info, .contact-form { padding: 2rem; }
-        }
-    </style>
-</head>
-<body>
-
-
-    <main>
-        <div class="contact-page">
-            <div class="hero-section">
-                <h1>Get in Touch</h1>
-                <p>Have questions? We'd love to hear from you</p>
-            </div>
-
-            <div class="contact-grid">
-                <div class="contact-info">
-                    <h2 style="margin-bottom: 1.5rem;">Contact Information</h2>
-                    
-                    <div class="info-item">
-                        <div class="info-icon"><i class="fas fa-envelope"></i></div>
-                        <div>
-                            <strong>Email</strong><br>
-                            <a href="mailto:support@openshelf.com" style="color: #6366f1;">support@openshelf.com</a>
-                        </div>
-                    </div>
-                    
-                    <div class="info-item">
-                        <div class="info-icon"><i class="fab fa-whatsapp"></i></div>
-                        <div>
-                            <strong>WhatsApp</strong><br>
-                            <a href="https://wa.me/880123456789" style="color: #25D366;">+880 1234 56789</a>
-                        </div>
-                    </div>
-                    
-                    <div class="info-item">
-                        <div class="info-icon"><i class="fas fa-map-marker-alt"></i></div>
-                        <div>
-                            <strong>Location</strong><br>
-                            Dhaka University, Bangladesh
-                        </div>
-                    </div>
-                    
-                    <div class="info-item">
-                        <div class="info-icon"><i class="fas fa-clock"></i></div>
-                        <div>
-                            <strong>Response Time</strong><br>
-                            Within 24-48 hours
-                        </div>
-                    </div>
+    <div class="contact-grid">
+        <div class="info-card">
+            <div class="info-item">
+                <div class="info-icon"><i class="fas fa-envelope"></i></div>
+                <div class="info-content">
+                    <h3>Email Us</h3>
+                    <p>support@openshelf.com</p>
                 </div>
-
-                <div class="contact-form">
-                    <h2 style="margin-bottom: 1.5rem;">Send us a Message</h2>
-                    
-                    <?php if ($message): ?>
-                        <div class="alert alert-success"><?php echo $message; ?></div>
-                    <?php endif; ?>
-                    <?php if ($error): ?>
-                        <div class="alert alert-error"><?php echo $error; ?></div>
-                    <?php endif; ?>
-                    
-                    <form method="POST">
-                        <div class="form-group">
-                            <label>Your Name</label>
-                            <input type="text" name="name" class="form-control" required>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label>Email Address</label>
-                            <input type="email" name="email" class="form-control" required>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label>Subject</label>
-                            <input type="text" name="subject" class="form-control" required>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label>Message</label>
-                            <textarea name="message" class="form-control" rows="5" required></textarea>
-                        </div>
-                        
-                        <button type="submit" class="btn-submit">Send Message</button>
-                    </form>
+            </div>
+            <div class="info-item">
+                <div class="info-icon"><i class="fab fa-whatsapp"></i></div>
+                <div class="info-content">
+                    <h3>WhatsApp</h3>
+                    <p>+880 1234 56789</p>
+                </div>
+            </div>
+            <div class="info-item">
+                <div class="info-icon"><i class="fas fa-map-marker-alt"></i></div>
+                <div class="info-content">
+                    <h3>Location</h3>
+                    <p>Campus Hub, Dhaka</p>
                 </div>
             </div>
         </div>
-    </main>
 
-    <?php include 'includes/footer.php'; ?>
-</body>
-</html>
+        <div class="form-card">
+            <?php if ($message): ?>
+                <div class="alert alert-success"><?php echo $message; ?></div>
+            <?php endif; ?>
+            <?php if ($error): ?>
+                <div class="alert alert-error"><?php echo $error; ?></div>
+            <?php endif; ?>
+
+            <form method="POST">
+                <div class="form-group">
+                    <label>Your Name</label>
+                    <input type="text" name="name" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <input type="email" name="email" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label>Subject</label>
+                    <input type="text" name="subject" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label>Message</label>
+                    <textarea name="message" class="form-control" rows="5" required></textarea>
+                </div>
+                <button type="submit" class="btn-submit">Send Message</button>
+            </form>
+        </div>
+    </div>
+</main>
+
+<?php include 'includes/footer.php'; ?>

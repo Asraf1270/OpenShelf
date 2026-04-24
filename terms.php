@@ -7,238 +7,194 @@ session_start();
 include 'includes/header.php';
 ?>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Terms of Service - OpenShelf</title>
-    <link rel="stylesheet" href="/assets/css/style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
+<style>
+    :root {
+        --primary: #6366f1;
+        --bg: #f8fafc;
+        --surface: #ffffff;
+        --text: #0f172a;
+        --text-muted: #64748b;
+        --border: #e2e8f0;
+        --radius: 24px;
+        --shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.05);
+    }
 
-        :root {
-            --primary: #6366f1;
-            --primary-light: #818cf8;
-            --bg: #f8fafc;
-            --glass-bg: rgba(255, 255, 255, 0.7);
-            --glass-border: rgba(255, 255, 255, 0.4);
-            --text-main: #0f172a;
-            --text-muted: #64748b;
-            --shadow-premium: 0 20px 40px -15px rgba(0, 0, 0, 0.1);
-            --radius-lg: 24px;
-            --radius-xl: 32px;
-            --transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-        }
+    [data-theme="dark"] {
+        --bg: #0f172a;
+        --surface: #1e293b;
+        --text: #f8fafc;
+        --text-muted: #94a3b8;
+        --border: #334155;
+        --shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.3);
+    }
 
-        body {
-            background-color: var(--bg);
-            font-family: 'Outfit', system-ui, -apple-system, sans-serif;
-            color: var(--text-main);
-            line-height: 1.6;
-        }
+    body {
+        background-color: var(--bg);
+        color: var(--text);
+        font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    }
 
-        .terms-page {
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 4rem 1.5rem;
-        }
+    .terms-container {
+        max-width: 900px;
+        margin: 4rem auto;
+        padding: 0 1.5rem;
+    }
 
-        .hero-section {
-            text-align: center;
-            margin-bottom: 4rem;
-        }
+    .hero-section {
+        text-align: center;
+        margin-bottom: 4rem;
+    }
 
-        .hero-section h1 {
-            font-size: clamp(2.5rem, 5vw, 3.5rem);
-            font-weight: 800;
-            letter-spacing: -1px;
-            background: linear-gradient(135deg, #0f172a 0%, #6366f1 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 1rem;
-        }
+    .hero-section h1 {
+        font-size: clamp(2.5rem, 6vw, 3.5rem);
+        font-weight: 800;
+        letter-spacing: -0.03em;
+        margin-bottom: 1rem;
+        background: linear-gradient(135deg, var(--primary), #8b5cf6);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
 
-        .hero-section p {
-            font-size: 1.1rem;
-            color: var(--text-muted);
-        }
+    .terms-card {
+        background: var(--surface);
+        padding: 4rem;
+        border-radius: var(--radius);
+        border: 1px solid var(--border);
+        box-shadow: var(--shadow);
+    }
 
-        .terms-content {
-            background: var(--glass-bg);
-            backdrop-filter: blur(25px);
-            padding: 4rem;
-            border-radius: var(--radius-xl);
-            border: 1px solid var(--glass-border);
-            box-shadow: var(--shadow-premium);
-        }
+    .terms-section {
+        margin-bottom: 3.5rem;
+    }
 
-        .terms-section {
-            margin-bottom: 3rem;
-        }
+    .terms-section h2 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
 
-        .terms-section h2 {
-            font-size: 1.5rem;
-            font-weight: 700;
-            margin-bottom: 1.5rem;
-            color: var(--text-main);
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-        }
+    .terms-section h2 i {
+        color: var(--primary);
+        font-size: 1.25rem;
+    }
 
-        .terms-section h2::before {
-            content: '';
-            width: 4px;
-            height: 24px;
-            background: var(--primary);
-            border-radius: 4px;
-        }
+    .terms-section p {
+        color: var(--text-muted);
+        line-height: 1.8;
+        margin-bottom: 1.25rem;
+        font-size: 1.05rem;
+    }
 
-        .terms-section p {
-            color: #475569;
-            line-height: 1.8;
-            margin-bottom: 1rem;
-            font-size: 1.05rem;
-        }
+    .terms-section ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
 
-        .terms-section ul {
-            margin-left: 1.5rem;
-            margin-bottom: 1.5rem;
-            color: #475569;
-        }
+    .terms-section li {
+        position: relative;
+        padding-left: 2rem;
+        margin-bottom: 1rem;
+        color: var(--text-muted);
+        line-height: 1.6;
+    }
 
-        .terms-section li {
-            margin-bottom: 0.75rem;
-        }
+    .terms-section li::before {
+        content: '→';
+        position: absolute;
+        left: 0;
+        color: var(--primary);
+        font-weight: 800;
+    }
 
-        .last-updated {
-            text-align: center;
-            color: var(--text-muted);
-            font-size: 0.9rem;
-            margin-top: 3rem;
-            padding-top: 2rem;
-            border-top: 1px solid rgba(226, 232, 240, 0.5);
-            font-weight: 500;
-        }
+    .important-note {
+        background: rgba(99, 102, 241, 0.05);
+        border-left: 4px solid var(--primary);
+        padding: 1.5rem;
+        border-radius: 0 12px 12px 0;
+        margin: 1.5rem 0;
+    }
 
-        @media (max-width: 768px) {
-            .terms-page { padding: 2rem 1rem; }
-            .terms-content { padding: 2rem; }
-        }
-    </style>
-</head>
-<body>
+    .important-note p {
+        margin: 0;
+        font-weight: 600;
+        color: var(--text);
+    }
 
-    <main>
-        <div class="terms-page">
-            <div class="hero-section">
-                <h1>Terms of Service</h1>
-                <p>Please read these terms carefully before using OpenShelf</p>
-            </div>
+    .last-updated {
+        text-align: center;
+        margin-top: 4rem;
+        color: var(--text-muted);
+        font-size: 0.9rem;
+        font-weight: 500;
+    }
 
-            <div class="terms-content">
-                <div class="terms-section">
-                    <h2>1. Acceptance of Terms</h2>
-                    <p>By accessing or using OpenShelf, you agree to be bound by these Terms of Service. If you do not agree to these terms, please do not use our service.</p>
-                </div>
+    @media (max-width: 768px) {
+        .terms-card { padding: 2.5rem 1.5rem; }
+        .hero-section { margin-bottom: 2rem; }
+    }
+</style>
 
-                <div class="terms-section">
-                    <h2>2. Eligibility</h2>
-                    <p>To use OpenShelf, you must:</p>
-                    <ul>
-                        <li>Be a currently enrolled student at a recognized university</li>
-                        <li>Have a valid university email address</li>
-                        <li>Be at least 18 years old</li>
-                        <li>Provide accurate and complete registration information</li>
-                    </ul>
-                </div>
+<main class="terms-container">
+    <div class="hero-section">
+        <h1>Terms of Service</h1>
+        <p style="color: var(--text-muted); font-size: 1.2rem;">Our guidelines for a better community</p>
+    </div>
 
-                <div class="terms-section">
-                    <h2>3. User Accounts</h2>
-                    <p>You are responsible for maintaining the confidentiality of your account credentials. You agree to:</p>
-                    <ul>
-                        <li>Notify us immediately of any unauthorized use of your account</li>
-                        <li>Not share your account with others</li>
-                        <li>Keep your profile information accurate and up-to-date</li>
-                    </ul>
-                </div>
-
-                <div class="terms-section">
-                    <h2>4. Book Sharing Rules</h2>
-                    <p>When sharing books on OpenShelf, you agree to:</p>
-                    <ul>
-                        <li>Only share books you own and have permission to share</li>
-                        <li>Accurately describe the condition of your books</li>
-                        <li>Respond to borrow requests in a timely manner</li>
-                        <li>Respect agreed return dates</li>
-                        <li>Not share prohibited or inappropriate content</li>
-                    </ul>
-                </div>
-
-                <div class="terms-section">
-                    <h2>5. Borrowing Rules</h2>
-                    <p>When borrowing books on OpenShelf, you agree to:</p>
-                    <ul>
-                        <li>Return books by the agreed date</li>
-                        <li>Handle books with care and return them in the same condition</li>
-                        <li>Communicate with owners if you need an extension</li>
-                        <li>Report any damage to books</li>
-                        <li>Not resell borrowed books</li>
-                    </ul>
-                </div>
-
-                <div class="terms-section">
-                    <h2>6. User Conduct</h2>
-                    <p>You agree not to:</p>
-                    <ul>
-                        <li>Harass, threaten, or intimidate other users</li>
-                        <li>Post false or misleading information</li>
-                        <li>Use the platform for any illegal purpose</li>
-                        <li>Attempt to gain unauthorized access to our systems</li>
-                        <li>Upload malicious content or viruses</li>
-                    </ul>
-                </div>
-
-                <div class="terms-section">
-                    <h2>7. Content Ownership</h2>
-                    <p>You retain ownership of the books you list and the reviews you write. By posting content on OpenShelf, you grant us permission to display and share it within the platform. You are responsible for ensuring you have the right to share any content you post.</p>
-                </div>
-
-                <div class="terms-section">
-                    <h2>8. Limitation of Liability</h2>
-                    <p>OpenShelf is a platform that connects users. We are not responsible for:</p>
-                    <ul>
-                        <li>The condition of books shared on the platform</li>
-                        <li>Transactions between users</li>
-                        <li>Loss or damage to books</li>
-                        <li>User interactions outside the platform</li>
-                    </ul>
-                </div>
-
-                <div class="terms-section">
-                    <h2>9. Termination</h2>
-                    <p>We reserve the right to suspend or terminate accounts that violate these terms. You may delete your account at any time by contacting support.</p>
-                </div>
-
-                <div class="terms-section">
-                    <h2>10. Changes to Terms</h2>
-                    <p>We may update these terms from time to time. Continued use of OpenShelf after changes constitutes acceptance of the new terms. We will notify users of significant changes via email or platform notification.</p>
-                </div>
-
-                <div class="terms-section">
-                    <h2>11. Contact Information</h2>
-                    <p>If you have any questions about these terms, please contact us at <a href="mailto:support@openshelf.com" style="color: #6366f1;">support@openshelf.com</a>.</p>
-                </div>
-
-                <div class="last-updated">
-                    Last Updated: March 2024
-                </div>
-            </div>
+    <div class="terms-card">
+        <div class="terms-section">
+            <h2><i class="fas fa-check-circle"></i> 1. Acceptance</h2>
+            <p>By using OpenShelf, you agree to these terms. We aim to foster a safe, trust-based environment for sharing knowledge.</p>
         </div>
-    </main>
 
-    <?php include 'includes/footer.php'; ?>
-</body>
-</html>
+        <div class="terms-section">
+            <h2><i class="fas fa-user-graduate"></i> 2. Eligibility</h2>
+            <ul>
+                <li>Current university student with a valid .edu email.</li>
+                <li>At least 18 years of age.</li>
+                <li>Provide accurate personal information during registration.</li>
+            </ul>
+        </div>
+
+        <div class="terms-section">
+            <h2><i class="fas fa-book"></i> 3. Contribution Rule</h2>
+            <div class="important-note">
+                <p>To maintain a healthy library, every user is required to list at least 2 books for sharing within 30 days of registration.</p>
+            </div>
+            <p>This ensures that our community continues to grow and that everyone contributes to the shared pool of knowledge.</p>
+        </div>
+
+        <div class="terms-section">
+            <h2><i class="fas fa-hand-holding-heart"></i> 4. Sharing Rules</h2>
+            <ul>
+                <li>Only list books you actually own.</li>
+                <li>Accurately describe the condition of the book.</li>
+                <li>Respond to borrow requests within 48 hours.</li>
+                <li>Coordinate safe handoffs on campus.</li>
+            </ul>
+        </div>
+
+        <div class="terms-section">
+            <h2><i class="fas fa-undo"></i> 5. Borrowing & Returns</h2>
+            <ul>
+                <li>Return books on or before the agreed date.</li>
+                <li>Handle books with care; no writing or highlighting unless permitted by the owner.</li>
+                <li>If a book is lost or damaged, you are responsible for replacement or compensation.</li>
+            </ul>
+        </div>
+
+        <div class="terms-section">
+            <h2><i class="fas fa-shield-alt"></i> 6. User Conduct</h2>
+            <p>Harassment, spamming, or fraudulent activity will result in immediate and permanent account suspension. Respect your fellow students.</p>
+        </div>
+
+        <div class="last-updated">
+            Last Updated: April 2024
+        </div>
+    </div>
+</main>
+
+<?php include 'includes/footer.php'; ?>

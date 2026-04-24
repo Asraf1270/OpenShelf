@@ -2,6 +2,21 @@
 
 ---
 
+## 🚀 v2.4.0 — Aesthetic Overhaul & Community Safety
+**Release Date:** April 24, 2026
+
+A major visual and functional update introducing a reimagined landing page, a dedicated reporting system, and a comprehensive modernization of all informational pages with full dark mode support.
+
+### Highlights
+- 🎨 **Reimagined Landing Page** — Complete overhaul of the homepage with a focus on community mission and mobile-first aesthetics.
+- 🚩 **Integrated Reporting System** — New `report.php` page for users to safely report bugs, misconduct, or content issues.
+- 🌗 **Global Info Modernization** — Full visual refresh of `About`, `Contact`, `FAQ`, `Privacy`, and `Terms` pages with native dark/light mode support.
+- 📚 **Community Growth Policy** — Introduced a new term requiring users to share at least 2 books within 30 days.
+
+📄 Full details: [v2.4.0 Release Notes](v2.4.0_release_notes.md)
+
+---
+
 ## 🚀 v2.3.0 — Enhanced Security & Admin Workflow
 **Release Date:** April 23, 2026
 

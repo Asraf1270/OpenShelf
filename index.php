@@ -1,7 +1,7 @@
 <?php
 /**
- * OpenShelf - Simple Animated Library Dashboard
- * Shows only member count, book count, and available books with smooth animation
+ * OpenShelf - Reimagined Landing Page
+ * A clean, informative, and modern entry point for the community library.
  */
 
 session_start();
@@ -12,562 +12,441 @@ if (isset($_SESSION['user_id'])) {
     exit;
 }
 
-include 'includes/header.php';
-
-// Configuration
-define('DATA_PATH', __DIR__ . '/data/');
-
 // Include database connection
 require_once __DIR__ . '/includes/db.php';
 
 /**
- * Get total books count from DB
+ * Get statistics from DB
  */
-function getTotalBooks() {
+function getStats() {
     $db = getDB();
-    $stmt = $db->query("SELECT COUNT(*) FROM books");
-    return (int) $stmt->fetchColumn();
+    $stats = [];
+    try {
+        $stats['books'] = (int) $db->query("SELECT COUNT(*) FROM books")->fetchColumn();
+        $stats['users'] = (int) $db->query("SELECT COUNT(*) FROM users")->fetchColumn();
+        $stats['available'] = (int) $db->query("SELECT COUNT(*) FROM books WHERE status = 'available'")->fetchColumn();
+    } catch (Exception $e) {
+        $stats = ['books' => 0, 'users' => 0, 'available' => 0];
+    }
+    return $stats;
 }
 
-/**
- * Get total users count from DB
- */
-function getTotalUsers() {
-    $db = getDB();
-    $stmt = $db->query("SELECT COUNT(*) FROM users");
-    return (int) $stmt->fetchColumn();
-}
+$stats = getStats();
 
-/**
- * Get available books count from DB
- */
-function getAvailableBooks() {
-    $db = getDB();
-    $stmt = $db->query("SELECT COUNT(*) FROM books WHERE status = 'available'");
-    return (int) $stmt->fetchColumn();
-}
-
-// Load statistics
-$totalBooks = getTotalBooks();
-$totalUsers = getTotalUsers();
-$availableBooks = getAvailableBooks();
+include 'includes/header.php';
 ?>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>OpenShelf - Share Books, Share Knowledge</title>
-    <link rel="stylesheet" href="/assets/css/style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <style>
-        /* ========================================
-           PREMIUM GLASSMORPHIC DASHBOARD
-        ======================================== */
-        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
+<style>
+    /* ---------------------------------------------------------
+       NEW DESIGN SYSTEM: OPEN SHELF 2.0
+       Mobile-first, Clean, Responsive, Theme-aware
+    --------------------------------------------------------- */
+    :root {
+        --primary-brand: #6366f1;
+        --primary-soft: rgba(99, 102, 241, 0.1);
+        --accent-brand: #10b981;
+        --surface-1: #ffffff;
+        --surface-2: #f8fafc;
+        --text-primary: #0f172a;
+        --text-secondary: #475569;
+        --border-color: rgba(226, 232, 240, 0.8);
+        --shadow-soft: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+        --shadow-hover: 0 20px 30px -10px rgba(99, 102, 241, 0.15);
+        --radius: 24px;
+        --transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
 
-        :root {
-            --primary: #6366f1;
-            --primary-h: 239;
-            --primary-s: 84%;
-            --primary-l: 67%;
-            --primary-rgb: 99, 102, 241;
-            --accent: #10b981;
-            --bg: #f8fafc;
-            --glass-bg: rgba(255, 255, 255, 0.7);
-            --glass-border: rgba(255, 255, 255, 0.4);
-            --text-main: #0f172a;
-            --text-muted: #64748b;
-            --shadow-premium: 0 20px 40px -15px rgba(0, 0, 0, 0.1);
-            --radius-lg: 24px;
-            --radius-xl: 32px;
-            --transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-        }
+    [data-theme="dark"] {
+        --surface-1: #0f172a;
+        --surface-2: #1e293b;
+        --text-primary: #f8fafc;
+        --text-secondary: #94a3b8;
+        --border-color: rgba(51, 65, 85, 0.5);
+        --shadow-soft: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+        --primary-soft: rgba(99, 102, 241, 0.2);
+    }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+        background-color: var(--surface-1);
+        color: var(--text-primary);
+        font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        line-height: 1.6;
+        margin: 0;
+        padding: 0;
+    }
 
-        body {
-            background-color: var(--bg);
-            font-family: 'Outfit', system-ui, -apple-system, sans-serif;
-            color: var(--text-main);
-            overflow-x: hidden;
-            line-height: 1.6;
-        }
+    .landing-wrapper {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 1.5rem;
+    }
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 1.5rem;
-        }
+    /* Hero Section */
+    .hero {
+        padding: 6rem 0 4rem;
+        text-align: center;
+    }
 
-        /* Hero Section */
-        .hero {
-            position: relative;
-            padding: 8rem 0 10rem;
-            background: radial-gradient(circle at top right, rgba(99, 102, 241, 0.15), transparent 40%),
-                        radial-gradient(circle at bottom left, rgba(139, 92, 246, 0.1), transparent 40%),
-                        linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
-            color: white;
-            text-align: center;
-            overflow: hidden;
-        }
+    .hero-h1 {
+        font-size: clamp(2.5rem, 8vw, 4.5rem);
+        font-weight: 800;
+        letter-spacing: -0.04em;
+        line-height: 1.1;
+        margin-bottom: 1.5rem;
+        background: linear-gradient(135deg, var(--primary-brand), #8b5cf6);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
 
-        .hero::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            height: 100px;
-            background: linear-gradient(to bottom, transparent, var(--bg));
-        }
+    .hero-p {
+        font-size: clamp(1.1rem, 2.5vw, 1.35rem);
+        color: var(--text-secondary);
+        max-width: 650px;
+        margin: 0 auto 2.5rem;
+    }
 
-        .hero-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.6rem 1.2rem;
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border-radius: 100px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            font-size: 0.85rem;
-            font-weight: 500;
-            color: #a5b4fc;
-            margin-bottom: 2rem;
-            animation: fadeInDown 0.8s ease;
-        }
+    .hero-cta {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
 
-        .hero-title {
-            font-size: clamp(3rem, 10vw, 5.5rem);
-            font-weight: 800;
-            line-height: 1.1;
-            margin-bottom: 1.5rem;
-            letter-spacing: -2px;
-            background: linear-gradient(135deg, #fff 30%, #a5b4fc 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            animation: fadeInUp 1s ease 0.2s both;
-        }
+    .btn-main {
+        padding: 0.9rem 2.2rem;
+        border-radius: 100px;
+        font-weight: 700;
+        text-decoration: none;
+        transition: var(--transition);
+        display: inline-flex;
+        align-items: center;
+        gap: 0.6rem;
+        font-size: 1rem;
+    }
 
-        .hero-subtitle {
-            font-size: clamp(1.1rem, 3vw, 1.4rem);
-            color: rgba(255, 255, 255, 0.7);
-            max-width: 700px;
-            margin: 0 auto 3rem;
-            animation: fadeInUp 1s ease 0.4s both;
-        }
+    .btn-primary {
+        background: var(--primary-brand);
+        color: white;
+        box-shadow: 0 10px 20px rgba(99, 102, 241, 0.2);
+    }
 
-        .hero-buttons {
-            display: flex;
-            gap: 1.5rem;
-            justify-content: center;
-            flex-wrap: wrap;
-            animation: fadeInUp 1s ease 0.6s both;
-        }
+    .btn-primary:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 15px 30px rgba(99, 102, 241, 0.3);
+    }
 
-        /* Stats Cards */
-        .stats-dashboard {
-            margin-top: -5rem;
-            margin-bottom: 6rem;
-            position: relative;
-            z-index: 10;
-        }
+    .btn-outline {
+        border: 2.5px solid var(--border-color);
+        color: var(--text-primary);
+    }
 
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-        }
+    .btn-outline:hover {
+        background: var(--surface-2);
+        border-color: var(--primary-brand);
+        transform: translateY(-3px);
+    }
 
-        .stat-card {
-            background: var(--glass-bg);
-            backdrop-filter: blur(20px);
-            padding: 3rem 2rem;
-            border-radius: var(--radius-xl);
-            border: 1px solid var(--glass-border);
-            box-shadow: var(--shadow-premium);
-            transition: var(--transition);
-            text-align: center;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 1rem;
-        }
+    /* About Cards */
+    .section-title {
+        text-align: center;
+        margin: 6rem 0 3.5rem;
+    }
 
-        .stat-card:hover {
-            transform: translateY(-10px) scale(1.02);
-            border-color: rgba(99, 102, 241, 0.4);
-            background: rgba(255, 255, 255, 0.85);
-        }
+    .section-title h2 {
+        font-size: clamp(1.8rem, 4vw, 2.5rem);
+        font-weight: 800;
+        margin-bottom: 0.75rem;
+        letter-spacing: -0.02em;
+    }
 
-        .stat-icon {
-            width: 70px;
-            height: 70px;
-            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(99, 102, 241, 0.2));
-            color: var(--primary);
-            border-radius: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2rem;
-            margin-bottom: 0.5rem;
-            transition: var(--transition);
-        }
+    .section-title p {
+        color: var(--text-secondary);
+        font-size: 1.1rem;
+    }
 
-        .stat-card:hover .stat-icon {
-            background: var(--primary);
-            color: white;
-            transform: rotate(10deg);
-        }
+    .about-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        gap: 2.5rem;
+        margin-bottom: 8rem;
+    }
 
-        .stat-value {
-            font-size: 3.5rem;
-            font-weight: 800;
-            color: var(--text-main);
-            letter-spacing: -1px;
-            line-height: 1;
-        }
+    .about-card {
+        background: var(--surface-2);
+        padding: 3rem 2.5rem;
+        border-radius: var(--radius);
+        border: 1px solid var(--border-color);
+        transition: var(--transition);
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+    }
 
-        .stat-label {
-            font-size: 0.9rem;
-            font-weight: 600;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
+    .about-card:hover {
+        transform: translateY(-8px);
+        box-shadow: var(--shadow-hover);
+        border-color: var(--primary-brand);
+    }
 
-        /* Feature Section */
-        .features-section {
-            padding: 6rem 0;
-        }
+    .card-icon {
+        width: 64px;
+        height: 64px;
+        background: var(--primary-soft);
+        color: var(--primary-brand);
+        border-radius: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.75rem;
+        margin-bottom: 1.5rem;
+        transition: var(--transition);
+    }
 
-        .section-header {
-            text-align: center;
-            margin-bottom: 5rem;
-        }
+    .about-card:hover .card-icon {
+        background: var(--primary-brand);
+        color: white;
+        transform: rotate(8deg) scale(1.1);
+    }
 
-        .section-tag {
-            color: var(--primary);
-            font-weight: 700;
-            font-size: 0.9rem;
-            text-transform: uppercase;
-            letter-spacing: 3px;
-            margin-bottom: 1rem;
-            display: block;
-        }
+    .about-card h3 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+    }
 
-        .section-title {
-            font-size: clamp(2.5rem, 5vw, 3.5rem);
-            font-weight: 800;
-            letter-spacing: -1px;
-            margin-bottom: 1.5rem;
-        }
+    .about-card p {
+        color: var(--text-secondary);
+        font-size: 1.05rem;
+    }
 
-        .features-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 2.5rem;
-        }
+    /* How it works */
+    .how-it-works {
+        background: var(--surface-2);
+        border-radius: 48px;
+        padding: 5rem 2rem;
+        margin: 5rem 0;
+        border: 1px solid var(--border-color);
+    }
 
-        .feature-card {
-            background: white;
-            padding: 3rem 2rem;
-            border-radius: var(--radius-lg);
-            border: 1px solid var(--glass-border);
-            transition: var(--transition);
-            position: relative;
-            overflow: hidden;
-        }
+    .step-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 3rem;
+        position: relative;
+    }
 
-        .feature-card::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; width: 4px; height: 100%;
-            background: var(--primary);
-            opacity: 0;
-            transition: var(--transition);
-        }
+    .step-item {
+        text-align: center;
+        position: relative;
+    }
 
-        .feature-card:hover {
-            transform: translateX(10px);
-            box-shadow: var(--shadow-premium);
-        }
+    .step-number {
+        font-size: 1rem;
+        font-weight: 800;
+        color: var(--primary-brand);
+        background: var(--surface-1);
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1.5rem;
+        box-shadow: var(--shadow-soft);
+        border: 2px solid var(--primary-soft);
+    }
 
-        .feature-card:hover::before { opacity: 1; }
+    .step-item h4 {
+        font-size: 1.25rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+    }
 
-        .feature-icon-box {
-            font-size: 2.5rem;
-            color: var(--primary);
-            margin-bottom: 2rem;
-            opacity: 0.8;
-        }
+    .step-item p {
+        font-size: 1rem;
+        color: var(--text-secondary);
+    }
 
-        .feature-title {
-            font-size: 1.5rem;
-            font-weight: 700;
-            margin-bottom: 1rem;
-        }
+    /* Stats Banner */
+    .stats-banner {
+        display: flex;
+        justify-content: space-around;
+        padding: 4rem 0;
+        border-top: 1px solid var(--border-color);
+        border-bottom: 1px solid var(--border-color);
+        margin: 6rem 0;
+        flex-wrap: wrap;
+        gap: 3rem;
+    }
 
-        .feature-description {
-            color: var(--text-muted);
-            line-height: 1.7;
-        }
+    .stat-item {
+        text-align: center;
+        min-width: 150px;
+    }
 
-        /* Steps Section */
-        .steps-container {
-            background: #fff;
-            padding: 8rem 0;
-            border-radius: 60px;
-            margin: 4rem 0;
-            box-shadow: inset 0 0 100px rgba(0,0,0,0.02);
-        }
+    .stat-number {
+        display: block;
+        font-size: 3.5rem;
+        font-weight: 800;
+        color: var(--primary-brand);
+        line-height: 1;
+        margin-bottom: 0.5rem;
+    }
 
-        .steps-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-            gap: 3rem;
-            position: relative;
-        }
+    .stat-label {
+        font-size: 1rem;
+        text-transform: uppercase;
+        letter-spacing: 0.15em;
+        font-weight: 700;
+        color: var(--text-secondary);
+    }
 
-        .step-card {
-            text-align: center;
-            position: relative;
-        }
+    /* CTA Section */
+    .final-cta {
+        padding: 6rem 1rem 8rem;
+        text-align: center;
+        background: radial-gradient(circle at center, var(--primary-soft) 0%, transparent 70%);
+    }
 
-        .step-number {
-            font-size: 8rem;
-            font-weight: 900;
-            color: rgba(99, 102, 241, 0.05);
-            position: absolute;
-            top: -2rem;
-            left: 50%;
-            transform: translateX(-50%);
-            line-height: 1;
-            z-index: 1;
-        }
+    /* Animations */
+    @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(30px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
 
-        .step-content {
-            position: relative;
-            z-index: 2;
-        }
+    .animate-in {
+        opacity: 0;
+        animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
 
-        .step-icon {
-            width: 60px;
-            height: 60px;
-            background: var(--primary);
-            color: white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 1.5rem;
-            font-size: 1.5rem;
-            box-shadow: 0 10px 20px rgba(99, 102, 241, 0.3);
-        }
+    .delay-1 { animation-delay: 0.1s; }
+    .delay-2 { animation-delay: 0.2s; }
+    .delay-3 { animation-delay: 0.3s; }
+    .delay-4 { animation-delay: 0.4s; }
 
-        /* Buttons */
-        .btn {
-            padding: 1.2rem 2.5rem;
-            border-radius: 100px;
-            font-weight: 700;
-            font-size: 1rem;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.8rem;
-            transition: var(--transition);
-        }
+    @media (max-width: 768px) {
+        .hero { padding: 4rem 0 3rem; }
+        .about-grid { grid-template-columns: 1fr; }
+        .step-list { grid-template-columns: 1fr; gap: 2.5rem; }
+        .stats-banner { justify-content: center; text-align: center; padding: 3rem 0; }
+        .stat-item { flex: 1 1 100%; }
+        .stat-number { font-size: 3rem; }
+        .how-it-works { border-radius: 32px; padding: 4rem 1.5rem; }
+    }
+</style>
 
-        .btn-primary {
-            background: white;
-            color: var(--primary);
-            box-shadow: 0 15px 30px rgba(0,0,0,0.2);
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
-            background: var(--bg);
-        }
-
-        .btn-outline {
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(10px);
-        }
-
-        .btn-outline:hover {
-            background: rgba(255, 255, 255, 0.2);
-            border-color: white;
-            transform: translateY(-5px);
-        }
-
-        /* Animations */
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes fadeInDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
-
-        @media (max-width: 768px) {
-            .hero { padding: 6rem 0 8rem; }
-            .stats-dashboard { margin-top: -4rem; }
-            .stat-value { font-size: 2.8rem; }
-            .steps-container { padding: 4rem 0; border-radius: 30px; }
-        }
-    </style>
-</head>
-<body>
-    
-    <main>
-        <!-- Hero Section -->
-        <section class="hero">
-            <div class="container">
-                <div class="hero-badge">
-                    <i class="fas fa-sparkles"></i> OpenShelf v1.0.1 Stable
-                </div>
-                <h1 class="hero-title">Share Knowledge.<br>Share Books.</h1>
-                <p class="hero-subtitle">
-                    The ultimate community-powered library for university students. 
-                    Manage your collection, discover new reads, and connect with fellow book lovers.
-                </p>
-                <div class="hero-buttons">
-                    <a href="/books/" class="btn btn-primary">
-                        <i class="fas fa-search"></i> Explore Library
-                    </a>
-                    <a href="/add-book/" class="btn btn-outline">
-                        <i class="fas fa-plus"></i> Share a Book
-                    </a>
-                </div>
-            </div>
-        </section>
-        
-        <div class="container">
-            <!-- Statistics Dashboard -->
-            <div class="stats-dashboard">
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-icon"><i class="fas fa-users-viewfinder"></i></div>
-                        <div class="stat-value" id="stat-totalUsers">0</div>
-                        <div class="stat-label">Active Readers</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon"><i class="fas fa-book-sparkles"></i></div>
-                        <div class="stat-value" id="stat-totalBooks">0</div>
-                        <div class="stat-label">Total Books</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-icon"><i class="fas fa-circle-check"></i></div>
-                        <div class="stat-value" id="stat-availableBooks">0</div>
-                        <div class="stat-label">Available Now</div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Features Section -->
-            <section class="features-section">
-                <div class="section-header">
-                    <span class="section-tag">Features</span>
-                    <h2 class="section-title">Designed for Communities</h2>
-                </div>
-                
-                <div class="features-grid">
-                    <div class="feature-card">
-                        <div class="feature-icon-box"><i class="fas fa-heart-pulse"></i></div>
-                        <h3 class="feature-title">Community Driven</h3>
-                        <p class="feature-description">Built for and by students. Help grow the library by sharing books you've already read.</p>
-                    </div>
-                    <div class="feature-card">
-                        <div class="feature-icon-box"><i class="fas fa-envelope-open-text"></i></div>
-                        <h3 class="feature-title">Smart Notifications</h3>
-                        <p class="feature-description">Instant email and in-app alerts keep you updated on all your borrow requests and returns.</p>
-                    </div>
-                    <div class="feature-card">
-                        <div class="feature-icon-box"><i class="fab fa-whatsapp"></i></div>
-                        <h3 class="feature-title">Fast Coordination</h3>
-                        <p class="feature-description">Direct WhatsApp integration for quick communication between lenders and borrowers.</p>
-                    </div>
-                </div>
-            </section>
-            
-            <!-- Steps Section -->
-            <section class="steps-container">
-                <div class="container">
-                    <div class="section-header">
-                        <span class="section-tag">How it works</span>
-                        <h2 class="section-title">Start Borrowing in Minutes</h2>
-                    </div>
-                    
-                    <div class="steps-grid">
-                        <div class="step-card">
-                            <div class="step-number">01</div>
-                            <div class="step-content">
-                                <div class="step-icon"><i class="fas fa-user-plus"></i></div>
-                                <h3 class="step-title">Join Us</h3>
-                                <p class="step-description">Create your account with your university email.</p>
-                            </div>
-                        </div>
-                        <div class="step-card">
-                            <div class="step-number">02</div>
-                            <div class="step-content">
-                                <div class="step-icon"><i class="fas fa-upload"></i></div>
-                                <h3 class="step-title">List Books</h3>
-                                <p class="step-description">Share your books with the community easily.</p>
-                            </div>
-                        </div>
-                        <div class="step-card">
-                            <div class="step-number">03</div>
-                            <div class="step-content">
-                                <div class="step-icon"><i class="fas fa-magnifying-glass"></i></div>
-                                <h3 class="step-title">Browse</h3>
-                                <p class="step-description">Find the book you need using smart filters.</p>
-                            </div>
-                        </div>
-                        <div class="step-card">
-                            <div class="step-number">04</div>
-                            <div class="step-content">
-                                <div class="step-icon"><i class="fas fa-handshake"></i></div>
-                                <h3 class="step-title">Connect</h3>
-                                <p class="step-description">Request to borrow and coordinate pickup.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
+<main class="landing-wrapper">
+    <!-- Hero Section -->
+    <section class="hero animate-in">
+        <div style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1.25rem; background: var(--primary-soft); color: var(--primary-brand); border-radius: 50px; font-weight: 700; font-size: 0.85rem; margin-bottom: 2rem;">
+            <i class="fas fa-rocket"></i> v2.4.0 Stable
         </div>
-    </main>
-    
-    <script>
-        const statsData = {
-            totalBooks: <?php echo $totalBooks; ?>,
-            totalUsers: <?php echo $totalUsers; ?>,
-            availableBooks: <?php echo $availableBooks; ?>
-        };
+        <h1 class="hero-h1">Knowledge is better <br>when it's shared.</h1>
+        <p class="hero-p">
+            OpenShelf is a student-led library for your campus. 
+            Give your books a second life and discover new worlds from your peers.
+        </p>
+        <div class="hero-cta">
+            <a href="/register/" class="btn-main btn-primary">
+                Join the Community <i class="fas fa-chevron-right" style="font-size: 0.8rem;"></i>
+            </a>
+            <a href="/books/" class="btn-main btn-outline">
+                Explore Books
+            </a>
+        </div>
+    </section>
+
+    <!-- Stats Banner -->
+    <section class="stats-banner animate-in delay-1">
+        <div class="stat-item">
+            <span class="stat-number"><?php echo number_format($stats['books']); ?></span>
+            <span class="stat-label">Total Books</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-number"><?php echo number_format($stats['users']); ?></span>
+            <span class="stat-label">Active Readers</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-number"><?php echo number_format($stats['available']); ?></span>
+            <span class="stat-label">Available Now</span>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section class="section-title animate-in delay-2">
+        <h2>What is OpenShelf?</h2>
+        <p>A modern way to share knowledge without the barriers.</p>
+    </section>
+
+    <div class="about-grid animate-in delay-2">
+        <div class="about-card">
+            <div class="card-icon"><i class="fas fa-hand-holding-heart"></i></div>
+            <h3>Free & Open</h3>
+            <p>No late fees, no fines, no memberships. OpenShelf is built on trust and the shared goal of making reading accessible to every student.</p>
+        </div>
+        <div class="about-card">
+            <div class="card-icon"><i class="fas fa-university"></i></div>
+            <h3>Campus Focused</h3>
+            <p>Designed specifically for university halls and departments. Find books that are literally just a few minutes away from you.</p>
+        </div>
+        <div class="about-card">
+            <div class="card-icon"><i class="fab fa-whatsapp"></i></div>
+            <h3>Seamless Handoff</h3>
+            <p>Once a request is accepted, use our direct WhatsApp integration to coordinate a quick meet-up on campus. It's that simple.</p>
+        </div>
+    </div>
+
+    <!-- How it works -->
+    <section class="how-it-works animate-in delay-3">
+        <div class="section-title" style="margin-top: 0; margin-bottom: 4rem;">
+            <h2>How to Use</h2>
+            <p>Getting started with OpenShelf takes less than two minutes.</p>
+        </div>
         
-        function animateCounter(element, start, end, duration = 2000) {
-            let startTimestamp = null;
-            const step = (timestamp) => {
-                if (!startTimestamp) startTimestamp = timestamp;
-                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
-                // Use easeOutExpo for smoother ending
-                const easeOutExpo = 1 - Math.pow(2, -10 * progress);
-                const currentValue = Math.floor(easeOutExpo * (end - start) + start);
-                element.textContent = currentValue.toLocaleString();
-                if (progress < 1) window.requestAnimationFrame(step);
-                else element.textContent = end.toLocaleString();
-            };
-            window.requestAnimationFrame(step);
-        }
-        
-        document.addEventListener('DOMContentLoaded', () => {
-            setTimeout(() => {
-                animateCounter(document.getElementById('stat-totalUsers'), 0, statsData.totalUsers);
-                animateCounter(document.getElementById('stat-totalBooks'), 0, statsData.totalBooks);
-                animateCounter(document.getElementById('stat-availableBooks'), 0, statsData.availableBooks);
-            }, 500);
-        });
-    </script>
-    
-    <?php include 'includes/footer.php'; ?>
-</body>
-</html>
+        <div class="step-list">
+            <div class="step-item">
+                <div class="step-number">1</div>
+                <h4>Sign Up</h4>
+                <p>Register with your university email to join your local campus hub.</p>
+            </div>
+            <div class="step-item">
+                <div class="step-number">2</div>
+                <h4>Discover</h4>
+                <p>Browse thousands of textbooks, novels, and guides shared by peers.</p>
+            </div>
+            <div class="step-item">
+                <div class="step-number">3</div>
+                <h4>Request</h4>
+                <p>Found something? Send a request. The owner gets notified instantly.</p>
+            </div>
+            <div class="step-item">
+                <div class="step-number">4</div>
+                <h4>Connect</h4>
+                <p>Chat via WhatsApp to arrange a convenient time to pick up the book.</p>
+            </div>
+            <div class="step-item">
+                <div class="step-number">5</div>
+                <h4>Read & Pay Forward</h4>
+                <p>Enjoy your book, then return it or list your own to keep the shelf growing.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Final CTA -->
+    <section class="final-cta animate-in delay-4">
+        <h2 style="font-size: 2.5rem; font-weight: 800; margin-bottom: 1.5rem; letter-spacing: -0.03em;">Ready to join the shelf?</h2>
+        <p class="hero-p" style="margin-bottom: 3rem;">
+            Join hundreds of students who are already sharing knowledge and saving money.
+        </p>
+        <div class="hero-cta">
+            <a href="/register/" class="btn-main btn-primary">
+                Create Your Account
+            </a>
+            <a href="/login/" class="btn-main btn-outline">
+                Sign In
+            </a>
+        </div>
+    </section>
+</main>
+
+<?php include 'includes/footer.php'; ?>

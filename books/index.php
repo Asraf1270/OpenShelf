@@ -256,19 +256,28 @@ function toggleCategoryUrl($cat) {
             padding: 2rem 1rem 4rem; width: 100%; max-width: 1400px; margin: 0 auto;
         }
 
-        /* YouTube-Style Top Bar */
+        /* Search Bar (non-sticky, scrolls with page) */
+        .search-bar-wrap {
+            background: var(--header-bg);
+            backdrop-filter: var(--header-blur);
+            padding: 0.85rem 1rem;
+            border-bottom: 1px solid var(--header-border);
+            display: flex;
+            justify-content: center;
+            position: relative;
+        }
+
+        /* Sticky Category/Filter Bar */
         .minimal-top-bar {
             background: var(--header-bg);
             backdrop-filter: var(--header-blur);
-            padding: 1rem;
+            padding: 0.6rem 1rem;
             border-bottom: 1px solid var(--header-border);
             margin: 0;
             position: sticky;
-            top: 56px; /* Adjust to sit below global header */
+            top: 56px;
             z-index: 990;
             display: flex;
-            flex-direction: column;
-            gap: 1rem;
             align-items: center;
         }
 
@@ -277,6 +286,7 @@ function toggleCategoryUrl($cat) {
             max-width: 720px;
             display: flex;
             justify-content: center;
+            position: relative;
         }
 
         .youtube-search {
@@ -477,7 +487,8 @@ function toggleCategoryUrl($cat) {
 
         @media (min-width: 640px) {
             .top-bar-row { flex-direction: row; }
-            .minimal-top-bar { padding: 0.5rem 2rem; gap: 1rem; }
+            .search-bar-wrap { padding: 0.85rem 2rem; }
+            .minimal-top-bar { padding: 0.5rem 2rem; }
             
             .search-box { max-width: 500px; }
             
@@ -492,6 +503,7 @@ function toggleCategoryUrl($cat) {
             .book-grid { grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 2rem; }
         }
 
+        [data-theme="dark"] .search-bar-wrap { border-bottom-color: #334155; }
         [data-theme="dark"] .minimal-top-bar { border-bottom-color: #334155; }
         [data-theme="dark"] .youtube-search { background: #0f172a; border-color: #334155; }
         [data-theme="dark"] .search-input { color: #f8fafc; }
@@ -514,9 +526,8 @@ function toggleCategoryUrl($cat) {
 </head>
 <body>
 
-    <!-- YouTube-Style Top Bar -->
-    <div class="minimal-top-bar">
-        <!-- Search Row -->
+    <!-- Search Bar (scrolls with page) -->
+    <div class="search-bar-wrap">
         <div class="search-row">
             <form method="GET" class="youtube-search">
                 <!-- Preserve categories & availability -->
@@ -537,7 +548,10 @@ function toggleCategoryUrl($cat) {
                 </button>
             </form>
         </div>
+    </div>
 
+    <!-- Sticky Category / Filter Bar -->
+    <div class="minimal-top-bar">
         <!-- Category Row -->
         <div class="category-row">
             <a href="<?php echo getUrlWithParam('categories', ''); ?>" 
