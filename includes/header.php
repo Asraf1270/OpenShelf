@@ -11,6 +11,7 @@ if (session_status() === PHP_SESSION_NONE) {
 
 // Include database connection
 require_once __DIR__ . '/db.php';
+require_once __DIR__ . '/search_helper.php';
 
 // Get current page for active states
 $currentPage = basename($_SERVER['PHP_SELF']);

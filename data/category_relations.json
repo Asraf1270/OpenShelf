@@ -1,0 +1,12 @@
+{
+    "Fiction": ["Science Fiction", "Fantasy", "Mystery", "History"],
+    "Science Fiction": ["Fiction", "Fantasy", "Science"],
+    "Fantasy": ["Fiction", "Science Fiction", "Mystery"],
+    "Mystery": ["Fiction", "Fantasy"],
+    "Programming": ["Science", "Non-Fiction"],
+    "Science": ["Programming", "Non-Fiction"],
+    "Non-Fiction": ["Biography", "History", "Self-Help", "Science"],
+    "Biography": ["Non-Fiction", "History"],
+    "History": ["Non-Fiction", "Biography", "Fiction"],
+    "Self-Help": ["Non-Fiction"]
+}

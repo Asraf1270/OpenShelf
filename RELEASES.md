@@ -2,6 +2,21 @@
 
 ---
 
+## 🚀 v2.6.0 — Smart Recommendations & UI Refinements
+**Release Date:** April 24, 2026
+
+An intelligent update that enhances book discovery with smart recommendations and refines the core user interface for a cleaner, more responsive experience.
+
+### Highlights
+- 🧠 **Intelligent Related Books** — Added a multi-layered recommendation system that suggests relevant books based on category, owner, and publication data when search results are limited.
+- 📱 **Mobile-First Related Books** — The related books section on the individual book page now features a responsive two-column grid layout specifically optimized for mobile devices.
+- 📚 **Expanded Pagination Limit** — Increased the infinite scroll batch size from 12 to 25 books, making catalog browsing significantly faster and more seamless.
+- 🎨 **Sleeker Books Page UI** — Removed the vertical gap between the header and search bar for a cleaner, more cohesive aesthetic.
+
+📄 Full details: [v2.6.0 Release Notes](v2.6.0_release_notes.md)
+
+---
+
 ## 🚀 v2.5.0 — Infinite Discovery & Community Support
 **Release Date:** April 24, 2026
 

@@ -161,6 +161,29 @@ function createNotification($userId, $type, $title, $message, $link) {
     return file_put_contents($userFile, json_encode($userData, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
 }
 
+/**
+ * Load related books from same category
+ */
+function loadRelatedBooks($category, $excludeId, $limit = 4) {
+    if (empty($category)) return [];
+    $db = getDB();
+    $stmt = $db->prepare("
+        SELECT b.*, u.name as owner_name 
+        FROM books b
+        LEFT JOIN users u ON b.owner_id = u.id
+        WHERE b.category = ? AND b.id != ? AND b.status = 'available'
+        ORDER BY RAND() 
+        LIMIT ?
+    ");
+    // PDO::PARAM_INT for limit
+    $stmt->bindValue(1, $category, PDO::PARAM_STR);
+    $stmt->bindValue(2, $excludeId, PDO::PARAM_STR);
+    $stmt->bindValue(3, (int)$limit, PDO::PARAM_INT);
+    $stmt->execute();
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+
 // Load detailed book data
 $book = loadDetailedBook($bookId);
 if (!$book) {
@@ -173,6 +196,7 @@ $owner = loadUserData($book['owner_id']);
 $reviews = $book['reviews'] ?? [];
 $comments = $book['comments'] ?? [];
 $borrowRequests = loadBorrowRequests($bookId);
+$relatedBooks = loadRelatedBooks($book['category'] ?? '', $bookId);
 
 // Check login status
 $isLoggedIn = isset($_SESSION['user_id']);
@@ -822,6 +846,82 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['ajax_action']) && $_P
         [data-theme="dark"] .form-control { background: #0f172a; border-color: #334155; color: #f8fafc; }
         [data-theme="dark"] .modal-card { background: #1e293b; }
         [data-theme="dark"] .entry-text { color: #cbd5e1; }
+
+        .duration-select {
+            appearance: none;
+            background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2224%22 height=%2224%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22%2364748b%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpath d=%22M6 9l6 6 6-6%22%3E%3C/path%3E%3C/svg%3E');
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            background-size: 1em;
+        }
+
+        /* Related Books Section */
+        .related-section {
+            margin-top: 3rem;
+            margin-bottom: 2.5rem;
+        }
+        .related-title {
+            font-size: 1.6rem;
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        .related-title i { color: var(--primary); }
+        .related-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 1rem;
+        }
+
+        @media (min-width: 900px) {
+            .related-grid {
+                grid-template-columns: repeat(4, minmax(0, 1fr));
+                gap: 1.5rem;
+            }
+        }
+        .related-card {
+            background: white;
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            border: 1px solid var(--border);
+            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+            text-decoration: none;
+            color: inherit;
+        }
+        .related-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            border-color: var(--primary);
+        }
+        .related-cover {
+            aspect-ratio: 3/4.2;
+            overflow: hidden;
+        }
+        .related-cover img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.6s;
+        }
+        .related-card:hover .related-cover img { transform: scale(1.1); }
+        .related-body { padding: 1.25rem; }
+        .related-book-title {
+            font-weight: 700;
+            font-size: 1rem;
+            margin-bottom: 0.4rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            line-height: 1.3;
+            color: var(--text-main);
+        }
+        .related-book-author { font-size: 0.85rem; color: var(--text-muted); }
+
+        [data-theme="dark"] .related-card { background: #1e293b; border-color: #334155; }
+        [data-theme="dark"] .related-book-title { color: #f8fafc; }
     </style>
 </head>
 <body>
@@ -1078,7 +1178,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['ajax_action']) && $_P
                 <input type="hidden" name="action" value="borrow">
                 <div style="margin-bottom:1.5rem">
                     <label style="display:block;margin-bottom:0.75rem;font-weight:600;font-size:0.9rem;color:var(--text-muted)">BORROW DURATION</label>
-                    <select name="duration" class="form-control" style="appearance:none;background-image:url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%2364748b%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpath%20d%3D%22M6%209l6%206%206-6%22%3E%3C%2Fpath%3E%3C%2Fsvg%3E');background-repeat:no-repeat;background-position:right%201rem%20center;background-size:1em">
+                    <select name="duration" class="form-control duration-select">
                         <option value="7">7 days</option>
                         <option value="14" selected>14 days</option>
                         <option value="21">21 days</option>
@@ -1097,6 +1197,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['ajax_action']) && $_P
         </div>
     </div>
     
+    <!-- Related Books Section -->
+    <?php if (!empty($relatedBooks)): ?>
+    <div class="book-detail">
+        <div class="related-section">
+            <h2 class="related-title">
+                <i class="fas fa-layer-group"></i>
+                Related Books
+            </h2>
+            <div class="related-grid">
+                <?php foreach ($relatedBooks as $rBook): 
+                    $rCover = getCoverImagePath($rBook['cover_image'] ?? '');
+                ?>
+                    <a href="/book/?id=<?php echo $rBook['id']; ?>" class="related-card">
+                        <div class="related-cover">
+                            <img src="<?php echo $rCover; ?>" alt="<?php echo htmlspecialchars($rBook['title']); ?>" loading="lazy">
+                        </div>
+                        <div class="related-body">
+                            <h3 class="related-book-title"><?php echo htmlspecialchars($rBook['title']); ?></h3>
+                            <p class="related-book-author">By <?php echo htmlspecialchars($rBook['author']); ?></p>
+                        </div>
+                    </a>
+                <?php endforeach; ?>
+            </div>
+        </div>
+    </div>
+    <?php endif; ?>
+
     <script>
         // Tab switching
         function switchTab(tab) {

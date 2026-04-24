@@ -14,6 +14,7 @@ define('UPLOAD_PATH', dirname(__DIR__, 2) . '/uploads/book_cover/');
 
 // Include database connection
 require_once dirname(__DIR__, 2) . '/includes/db.php';
+require_once dirname(__DIR__, 2) . '/includes/search_helper.php';
 
 // Check admin login
 if (!isset($_SESSION['admin_id'])) {
@@ -29,21 +30,21 @@ $adminName = $_SESSION['admin_name'] ?? 'Admin';
  */
 function loadBooks($status = 'all', $category = 'all', $search = '', $offset = 0, $perPage = 20) {
     $db = getDB();
-    $sql = "SELECT * FROM books WHERE 1=1";
+    $where = ["1=1"];
     $params = [];
 
     if ($status !== 'all') {
-        $sql .= " AND status = :status";
+        $where[] = "status = :status";
         $params[':status'] = $status;
     }
     if ($category !== 'all') {
-        $sql .= " AND category = :category";
+        $where[] = "category = :category";
         $params[':category'] = $category;
     }
-    if (!empty($search)) {
-        $sql .= " AND (title LIKE :search OR author LIKE :search)";
-        $params[':search'] = "%$search%";
-    }
+    
+    applySearchFilter($search, ['title', 'author'], $where, $params);
+
+    $sql = "SELECT * FROM books WHERE " . implode(' AND ', $where);
 
     $sql .= " ORDER BY created_at DESC LIMIT :limit OFFSET :offset";
     
@@ -63,21 +64,21 @@ function loadBooks($status = 'all', $category = 'all', $search = '', $offset = 0
  */
 function getBooksCount($status = 'all', $category = 'all', $search = '') {
     $db = getDB();
-    $sql = "SELECT COUNT(*) FROM books WHERE 1=1";
+    $where = ["1=1"];
     $params = [];
 
     if ($status !== 'all') {
-        $sql .= " AND status = :status";
+        $where[] = "status = :status";
         $params[':status'] = $status;
     }
     if ($category !== 'all') {
-        $sql .= " AND category = :category";
+        $where[] = "category = :category";
         $params[':category'] = $category;
     }
-    if (!empty($search)) {
-        $sql .= " AND (title LIKE :search OR author LIKE :search)";
-        $params[':search'] = "%$search%";
-    }
+    
+    applySearchFilter($search, ['title', 'author'], $where, $params);
+
+    $sql = "SELECT COUNT(*) FROM books WHERE " . implode(' AND ', $where);
 
     $stmt = $db->prepare($sql);
     $stmt->execute($params);

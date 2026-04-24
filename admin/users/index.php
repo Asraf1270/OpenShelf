@@ -12,6 +12,7 @@ define('USERS_PATH', dirname(__DIR__, 2) . '/users/');
 
 // Include database connection
 require_once dirname(__DIR__, 2) . '/includes/db.php';
+require_once dirname(__DIR__, 2) . '/includes/search_helper.php';
 define('BASE_URL', 'https://openshelf.free.nf');
 
 // Load mailer
@@ -33,21 +34,20 @@ $adminName = $_SESSION['admin_name'] ?? 'Admin';
  */
 function loadUsers($status = 'all', $search = '', $offset = 0, $perPage = 15) {
     $db = getDB();
-    $sql = "SELECT * FROM users WHERE 1=1";
+    $where = ["1=1"];
     $params = [];
 
     if ($status === 'pending') {
-        $sql .= " AND verified = 0 AND status != 'rejected'";
+        $where[] = "verified = 0 AND status != 'rejected'";
     } elseif ($status === 'approved') {
-        $sql .= " AND verified = 1 AND status = 'active'";
+        $where[] = "verified = 1 AND status = 'active'";
     } elseif ($status === 'rejected') {
-        $sql .= " AND status = 'rejected'";
+        $where[] = "status = 'rejected'";
     }
 
-    if (!empty($search)) {
-        $sql .= " AND (name LIKE :search OR email LIKE :search OR phone LIKE :search)";
-        $params[':search'] = "%$search%";
-    }
+    applySearchFilter($search, ['name', 'email', 'phone'], $where, $params, '');
+
+    $sql = "SELECT * FROM users WHERE " . implode(' AND ', $where);
 
     $sql .= " ORDER BY created_at DESC LIMIT :limit OFFSET :offset";
     
@@ -67,21 +67,20 @@ function loadUsers($status = 'all', $search = '', $offset = 0, $perPage = 15) {
  */
 function getUsersCount($status = 'all', $search = '') {
     $db = getDB();
-    $sql = "SELECT COUNT(*) FROM users WHERE 1=1";
+    $where = ["1=1"];
     $params = [];
 
     if ($status === 'pending') {
-        $sql .= " AND verified = 0 AND status != 'rejected'";
+        $where[] = "verified = 0 AND status != 'rejected'";
     } elseif ($status === 'approved') {
-        $sql .= " AND verified = 1 AND status = 'active'";
+        $where[] = "verified = 1 AND status = 'active'";
     } elseif ($status === 'rejected') {
-        $sql .= " AND status = 'rejected'";
+        $where[] = "status = 'rejected'";
     }
 
-    if (!empty($search)) {
-        $sql .= " AND (name LIKE :search OR email LIKE :search OR phone LIKE :search)";
-        $params[':search'] = "%$search%";
-    }
+    applySearchFilter($search, ['name', 'email', 'phone'], $where, $params, '');
+
+    $sql = "SELECT COUNT(*) FROM users WHERE " . implode(' AND ', $where);
 
     $stmt = $db->prepare($sql);
     $stmt->execute($params);

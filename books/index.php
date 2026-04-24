@@ -13,32 +13,10 @@ define('DATA_PATH', dirname(__DIR__) . '/data/');
 /**
  * Load books from DB with cursor-based pagination
  */
-function getBooks($search = '', $selectedCategories = [], $availability = '', $limit = 12, $cursor_date = null, $cursor_id = null) {
+function getBooks($search = '', $selectedCategories = [], $availability = '', $limit = 25, $cursor_date = null, $cursor_id = null) {
     $db = getDB();
-    $where = ["1=1"];
-    $params = [];
+    list($where, $params) = prepareBookQuery($search, $selectedCategories, $availability);
 
-    if (!empty($availability)) {
-        $where[] = "b.status = :availability";
-        $params[':availability'] = $availability;
-    }
-
-    if (!empty($selectedCategories)) {
-        $catPlaceholders = [];
-        foreach ($selectedCategories as $i => $cat) {
-            $key = ":cat$i";
-            $catPlaceholders[] = $key;
-            $params[$key] = $cat;
-        }
-        $where[] = "b.category IN (" . implode(',', $catPlaceholders) . ")";
-    }
-
-    if (!empty($search)) {
-        $where[] = "(b.title LIKE :search1 OR b.author LIKE :search2 OR b.publisher LIKE :search3)";
-        $params[':search1'] = "%$search%";
-        $params[':search2'] = "%$search%";
-        $params[':search3'] = "%$search%";
-    }
 
     if ($cursor_date && $cursor_id) {
         $where[] = "(b.created_at < :c_date1 OR (b.created_at = :c_date2 AND b.id < :c_id))";
@@ -48,7 +26,7 @@ function getBooks($search = '', $selectedCategories = [], $availability = '', $l
     }
 
     $sql = "
-        SELECT b.*, u.name as owner_name 
+        SELECT b.*, u.name as owner_name, u.profile_pic as owner_avatar 
         FROM books b 
         LEFT JOIN users u ON b.owner_id = u.id 
         WHERE " . implode(' AND ', $where) . "
@@ -71,28 +49,7 @@ function getBooks($search = '', $selectedCategories = [], $availability = '', $l
  */
 function getBooksCount($search = '', $selectedCategories = [], $availability = '') {
     $db = getDB();
-    $where = ["1=1"];
-    $params = [];
-
-    if (!empty($availability)) {
-        $where[] = "b.status = :availability";
-        $params[':availability'] = $availability;
-    }
-
-    if (!empty($selectedCategories)) {
-        $catPlaceholders = [];
-        foreach ($selectedCategories as $i => $cat) {
-            $key = ":cat$i";
-            $catPlaceholders[] = $key;
-            $params[$key] = $cat;
-        }
-        $where[] = "b.category IN (" . implode(',', $catPlaceholders) . ")";
-    }
-
-    if (!empty($search)) {
-        $where[] = "(b.title LIKE :search OR b.author LIKE :search OR b.publisher LIKE :search)";
-        $params[':search'] = "%$search%";
-    }
+    list($where, $params) = prepareBookQuery($search, $selectedCategories, $availability);
 
     $sql = "SELECT COUNT(*) FROM books b WHERE " . implode(' AND ', $where);
     $stmt = $db->prepare($sql);
@@ -113,9 +70,18 @@ function getCategoriesFromDB() {
 $search = $_GET['search'] ?? '';
 $selectedCategories = isset($_GET['categories']) ? (array)$_GET['categories'] : [];
 $availability = $_GET['availability'] ?? '';
-$limit = 12;
+$limit = 25;
 
 $filteredBooks = getBooks($search, $selectedCategories, $availability, $limit);
+
+// Suggest related books if results are few
+if (!empty($search) && count($filteredBooks) < 4) {
+    $db = getDB();
+    $excludeIds = array_column($filteredBooks, 'id');
+    $related = getRelatedBooksForSearch($db, $search, $excludeIds, 8 - count($filteredBooks));
+    $filteredBooks = array_merge($filteredBooks, $related);
+}
+
 $totalFilteredCount = getBooksCount($search, $selectedCategories, $availability);
 $categories = getCategoriesFromDB();
 
@@ -160,16 +126,7 @@ function toggleCategoryUrl($cat) {
 }
 ?>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Browse Books - OpenShelf</title>
-    <link rel="stylesheet" href="/assets/css/style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    
-    <style>
+<style>
         /* ========================================
            MOBILE-FIRST ULTRA MODERN CSS
         ======================================== */
@@ -212,10 +169,13 @@ function toggleCategoryUrl($cat) {
 
         /* Main Container */
         .books-main {
-            padding: 2rem 1rem 4rem; width: 100%; max-width: 1400px; margin: 0 auto;
+            padding: 0 1rem 4rem;
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
         }
 
-        /* Search Bar (non-sticky, scrolls with page) */
+        /* Search Bar (sticky below the header) */
         .search-bar-wrap {
             background: var(--header-bg);
             backdrop-filter: var(--header-blur);
@@ -223,21 +183,43 @@ function toggleCategoryUrl($cat) {
             border-bottom: 1px solid var(--header-border);
             display: flex;
             justify-content: center;
-            position: relative;
+            position: sticky;
+            top: 72px;
+            z-index: 995;
+            margin: 0;
+            box-shadow: 0 18px 40px rgba(15, 23, 42, 0.08);
+            border-radius: 0 0 1.5rem 1.5rem;
+            transition: transform 0.25s ease, opacity 0.25s ease, max-height 0.25s ease, padding 0.25s ease, border-bottom-width 0.25s ease;
+            max-height: 90px;
+            overflow: hidden;
+        }
+
+        .search-bar-wrap.hidden {
+            transform: translateY(-100%);
+            opacity: 0;
+            max-height: 0;
+            padding-top: 0;
+            padding-bottom: 0;
+            border-bottom-width: 0;
         }
 
         /* Sticky Category/Filter Bar */
         .minimal-top-bar {
             background: var(--header-bg);
             backdrop-filter: var(--header-blur);
-            padding: 0.6rem 1rem;
-            border-bottom: 1px solid var(--header-border);
-            margin: 0;
+            padding: 0.8rem 1rem;
+            border: 1px solid var(--header-border);
+            border-radius: 1rem;
+            margin: 0.5rem auto 1.5rem;
             position: sticky;
-            top: 56px;
+            top: 72px;
             z-index: 990;
             display: flex;
             align-items: center;
+            gap: 1rem;
+            box-shadow: 0 16px 36px rgba(15, 23, 42, 0.06);
+            overflow-x: auto;
+            white-space: nowrap;
         }
 
         .search-row {
@@ -296,10 +278,68 @@ function toggleCategoryUrl($cat) {
             scrollbar-width: none;
             -ms-overflow-style: none;
             display: flex;
+            flex-wrap: nowrap;
+            align-items: center;
             gap: 0.75rem;
             padding: 0.25rem 0;
+            min-height: 48px;
         }
         .category-row::-webkit-scrollbar { display: none; }
+
+        .filter-controls {
+            display: flex;
+            flex-wrap: nowrap;
+            align-items: center;
+            gap: 0.65rem;
+            flex: 0 0 auto;
+            min-width: 220px;
+            padding-left: 0;
+            border-left: none;
+            margin-left: auto;
+        }
+
+        .minimal-top-bar .filter-controls {
+            justify-content: flex-end;
+        }
+
+        .radio-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .radio-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            font-size: 0.85rem;
+            color: var(--gray-700);
+            cursor: pointer;
+        }
+
+        .radio-item input {
+            accent-color: var(--primary);
+        }
+
+        .btn-clear {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: var(--gray-100);
+            color: var(--gray-700);
+            border: 1px solid var(--gray-200);
+            transition: all 0.2s ease;
+        }
+
+        .btn-clear:hover {
+            background: var(--primary);
+            color: white;
+            border-color: transparent;
+        }
 
         .chip {
             padding: 0.4rem 1rem;
@@ -482,14 +522,12 @@ function toggleCategoryUrl($cat) {
         [data-theme="dark"] .empty-glass { background: #1e293b; border-color: #334155; }
         [data-theme="dark"] .empty-glass h3 { color: #f8fafc; }
     </style>
-</head>
-<body>
 
-    <main class="books-main">
+    <div class="books-main">
     <!-- Search Bar (scrolls with page) -->
     <div class="search-bar-wrap">
         <div class="search-row">
-            <form method="GET" class="youtube-search">
+            <form method="GET" action="/books/" class="youtube-search">
                 <!-- Preserve categories & availability -->
                 <?php if (!empty($selectedCategories)): ?>
                     <?php foreach ($selectedCategories as $cat): ?>
@@ -500,9 +538,10 @@ function toggleCategoryUrl($cat) {
                     <input type="hidden" name="availability" value="<?php echo htmlspecialchars($availability); ?>">
                 <?php endif; ?>
 
-                <input type="text" name="search" class="search-input" 
+                <input type="text" name="search" id="searchInput" class="search-input" 
                        placeholder="Search books, authors, publishers, owners..." 
-                       value="<?php echo htmlspecialchars($search); ?>">
+                       value="<?php echo htmlspecialchars($search); ?>"
+                       autocomplete="off">
                 <button type="submit" class="search-btn" title="Search">
                     <i class="fas fa-search"></i>
                 </button>
@@ -515,20 +554,22 @@ function toggleCategoryUrl($cat) {
         <!-- Category Row -->
         <div class="category-row">
             <a href="<?php echo getUrlWithParam('categories', ''); ?>" 
-               class="chip <?php echo empty($selectedCategories) ? 'active' : ''; ?>">
+               class="chip category-chip <?php echo empty($selectedCategories) ? 'active' : ''; ?>"
+               data-category="">
                 All
             </a>
             <?php foreach ($categories as $cat): 
                 $isActive = in_array($cat, $selectedCategories);
             ?>
                 <a href="<?php echo toggleCategoryUrl($cat); ?>" 
-                   class="chip <?php echo $isActive ? 'active' : ''; ?>">
+                   class="chip category-chip <?php echo $isActive ? 'active' : ''; ?>"
+                   data-category="<?php echo htmlspecialchars($cat); ?>">
                    <?php echo htmlspecialchars($cat); ?>
                 </a>
             <?php endforeach; ?>
             
             <div class="filter-controls" style="margin-left: auto; padding-left: 1rem; border-left: 1px solid var(--gray-200);">
-                <form method="GET" style="display: flex; gap: 0.5rem;">
+                <form method="GET" action="/books/" style="display: flex; gap: 0.5rem;">
                     <!-- Preserve search and categories -->
                     <?php if (!empty($search)): ?>
                         <input type="hidden" name="search" value="<?php echo htmlspecialchars($search); ?>">
@@ -539,15 +580,24 @@ function toggleCategoryUrl($cat) {
                         <?php endforeach; ?>
                     <?php endif; ?>
 
-                    <select name="availability" class="styled-select" onchange="this.form.submit()">
-                        <option value="">Status: All</option>
-                        <option value="available" <?php echo $availability === 'available' ? 'selected' : ''; ?>>Available</option>
-                        <option value="borrowed" <?php echo $availability === 'borrowed' ? 'selected' : ''; ?>>Borrowed</option>
-                    </select>
+                    <div class="radio-group">
+                        <label class="radio-item">
+                            <input type="radio" name="availability" value="" class="availability-radio" <?php echo empty($availability) ? 'checked' : ''; ?>>
+                            <span>All</span>
+                        </label>
+                        <label class="radio-item">
+                            <input type="radio" name="availability" value="available" class="availability-radio" <?php echo $availability === 'available' ? 'checked' : ''; ?>>
+                            <span>Available</span>
+                        </label>
+                        <label class="radio-item">
+                            <input type="radio" name="availability" value="borrowed" class="availability-radio" <?php echo $availability === 'borrowed' ? 'checked' : ''; ?>>
+                            <span>Borrowed</span>
+                        </label>
+                    </div>
 
                     <?php if (!empty($search) || !empty($selectedCategories) || !empty($availability)): ?>
-                        <a href="/books/" class="chip" style="color: var(--danger); background: rgba(244, 63, 94, 0.1);">
-                            Clear
+                        <a href="#" class="btn-clear" id="clearFiltersBtn" title="Clear all filters">
+                            <i class="fas fa-times"></i>
                         </a>
                     <?php endif; ?>
                 </form>
@@ -651,7 +701,7 @@ function toggleCategoryUrl($cat) {
             </button>
         </div>
     <?php endif; ?>
-</main>
+</div>
 
 <script>
 let cursorDate = <?php echo json_encode($initialCursor['date']); ?>;
@@ -671,7 +721,169 @@ const currentFilters = {
 
 document.addEventListener("DOMContentLoaded", () => {
     setupIntersectionObserver();
+    setupInstantSearch();
+    setupFilterListeners();
+    setupAutoHideSearchBar();
 });
+
+function setupFilterListeners() {
+    // Category Chips
+    document.querySelectorAll('.category-chip').forEach(chip => {
+        chip.addEventListener('click', (e) => {
+            e.preventDefault();
+            const cat = chip.dataset.category;
+            
+            if (!cat) {
+                currentFilters.categories = [];
+            } else {
+                const index = currentFilters.categories.indexOf(cat);
+                if (index > -1) {
+                    currentFilters.categories.splice(index, 1);
+                } else {
+                    currentFilters.categories.push(cat);
+                }
+            }
+            
+            // Update UI state
+            document.querySelectorAll('.category-chip').forEach(c => {
+                const cCat = c.dataset.category;
+                const isActive = (!cCat && currentFilters.categories.length === 0) || 
+                                 (cCat && currentFilters.categories.includes(cCat));
+                c.classList.toggle('active', isActive);
+            });
+            
+            refreshBooks();
+        });
+    });
+
+    // Availability Radios
+    document.querySelectorAll('.availability-radio').forEach(radio => {
+        radio.addEventListener('change', (e) => {
+            currentFilters.availability = e.target.value;
+            refreshBooks();
+        });
+    });
+
+    // Clear Filters
+    const clearBtn = document.getElementById('clearFiltersBtn');
+    if (clearBtn) {
+        clearBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            currentFilters.search = '';
+            currentFilters.categories = [];
+            currentFilters.availability = '';
+            
+            // Update UI
+            document.getElementById('searchInput').value = '';
+            document.querySelectorAll('.category-chip').forEach(c => {
+                c.classList.toggle('active', !c.dataset.category);
+            });
+            document.querySelectorAll('.availability-radio').forEach(r => {
+                r.checked = r.value === '';
+            });
+            
+            refreshBooks();
+            clearBtn.style.display = 'none';
+        });
+    }
+}
+
+function setupAutoHideSearchBar() {
+    const searchBar = document.querySelector('.search-bar-wrap');
+    if (!searchBar) return;
+
+    let lastScrollY = window.pageYOffset || document.documentElement.scrollTop;
+    let ticking = false;
+
+    window.addEventListener('scroll', () => {
+        if (ticking) return;
+        ticking = true;
+
+        window.requestAnimationFrame(() => {
+            const currentScrollY = window.pageYOffset || document.documentElement.scrollTop;
+            const scrollDelta = currentScrollY - lastScrollY;
+
+            if (scrollDelta > 20 && currentScrollY > 120) {
+                searchBar.classList.add('hidden');
+            } else if (scrollDelta < -20 || currentScrollY <= 120) {
+                searchBar.classList.remove('hidden');
+            }
+
+            lastScrollY = Math.max(currentScrollY, 0);
+            ticking = false;
+        });
+    }, { passive: true });
+}
+
+// Debounce helper to prevent excessive API calls
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+}
+
+function setupInstantSearch() {
+    const searchInput = document.getElementById('searchInput');
+    if (!searchInput) return;
+
+    const handleSearch = debounce(async (e) => {
+        const query = e.target.value.trim();
+        if (query === currentFilters.search) return;
+
+        currentFilters.search = query;
+        await refreshBooks();
+    }, 400);
+
+    searchInput.addEventListener('input', handleSearch);
+    
+    // Prevent form submission to keep it AJAX
+    searchInput.closest('form').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const query = searchInput.value.trim();
+        currentFilters.search = query;
+        refreshBooks();
+    });
+}
+
+async function refreshBooks() {
+    // Reset state
+    cursorDate = null;
+    cursorId = null;
+    hasMore = true;
+    booksGrid.innerHTML = '';
+    
+    // Show loader
+    loader.style.display = 'block';
+    
+    // Trigger first load
+    await loadMoreBooks();
+    
+    // Update URL without reloading
+    const url = new URL(window.location);
+    if (currentFilters.search) url.searchParams.set('search', currentFilters.search);
+    else url.searchParams.delete('search');
+    
+    url.searchParams.delete('categories[]');
+    currentFilters.categories.forEach(cat => url.searchParams.append('categories[]', cat));
+    
+    if (currentFilters.availability) url.searchParams.set('availability', currentFilters.availability);
+    else url.searchParams.delete('availability');
+    
+    window.history.pushState({}, '', url);
+
+    // Show/Hide Clear button
+    const clearBtn = document.getElementById('clearFiltersBtn');
+    if (clearBtn) {
+        const hasFilters = currentFilters.search || currentFilters.categories.length > 0 || currentFilters.availability;
+        clearBtn.style.display = hasFilters ? 'flex' : 'none';
+    }
+}
 
 function setupIntersectionObserver() {
     const trigger = document.getElementById('infiniteScrollTrigger');
@@ -725,7 +937,7 @@ async function loadMoreBooks() {
     if (currentFilters.availability) params.append('availability', currentFilters.availability);
     params.append('cursor_date', cursorDate);
     params.append('cursor_id', cursorId);
-    params.append('limit', 12);
+    params.append('limit', 25);
 
     try {
         const response = await fetch(`../api/books.php?${params.toString()}`);

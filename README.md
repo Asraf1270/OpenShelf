@@ -1,6 +1,6 @@
 # 📚 OpenShelf — Community Library Management System
 
-[![Version](https://img.shields.io/badge/version-2.5.0-blue.svg)](https://github.com/Asraf1270/OpenShelf/releases/tag/v2.5.0)
+[![Version](https://img.shields.io/badge/version-2.6.0-blue.svg)](https://github.com/Asraf1270/OpenShelf/releases/tag/v2.6.0)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![PHP](https://img.shields.io/badge/PHP-7.4%2B-777bb4.svg)](https://www.php.net/)
 [![MySQL](https://img.shields.io/badge/MySQL-5.7%2B-4479A1.svg)](https://www.mysql.com/)
@@ -9,15 +9,14 @@
 
 ---
 
-## ✨ What's New in v2.5.0 — Infinite Discovery & Community Support
+## ✨ What's New in v2.6.0 — Smart Recommendations & UI Refinements
 
-**OpenShelf v2.5.0** removes friction from book discovery and gives the community a direct way to support the platform:
+**OpenShelf v2.6.0** introduces intelligent search recommendations and polishes the user interface for an even smoother browsing experience:
 
-- ♾️ **Infinite Scroll Pagination** — Books load automatically as you scroll via a cursor-based API and native `IntersectionObserver`, fully integrated with search and category filters.
-- 💳 **Support Us Page** — Dedicated payment cards for bKash, Nagad, and Rocket with one-click number copy and TrxID submission for community donors.
-- 🗂️ **Split Sticky Header** — Search bar and category filter separated on the books page; only the category row stays sticky for a cleaner scroll experience.
-- 📱 **Mobile Nav Overhaul** — Auth-aware menu items, clear section labels, and a prominent Support Us CTA in the mobile navigation drawer.
-- 🐛 **API Bug Fix** — Resolved `SQLSTATE[HY093]` PDO parameter binding error causing 500 Internal Server Errors during filtered infinite scroll.
+- 🧠 **Intelligent Related Books** — A multi-layered recommendation system that suggests relevant books based on category, owner, and publication data when search results are limited.
+- 📱 **Mobile-First Related Books** — The related books section now features a responsive two-column grid layout specifically optimized for mobile devices.
+- 📚 **Expanded Pagination** — Increased the infinite scroll book loading limit from 12 to 25 items per batch for faster catalog browsing.
+- 🎨 **Sleeker Books Page UI** — Removed the vertical gap between the header and search bar for a cleaner, cohesive aesthetic.
 
 📄 See full history in [RELEASES.md](RELEASES.md)
 

@@ -13,6 +13,7 @@ define('USERS_PATH', dirname(__DIR__, 2) . '/users/');
 
 // Include database connection
 require_once dirname(__DIR__, 2) . '/includes/db.php';
+require_once dirname(__DIR__, 2) . '/includes/search_helper.php';
 define('BASE_URL', 'https://openshelf.free.nf');
 
 // Load mailer
@@ -34,34 +35,31 @@ $adminName = $_SESSION['admin_name'] ?? 'Admin';
  */
 function loadRequests($status = 'all', $search = '', $fromDate = '', $toDate = '', $offset = 0, $perPage = 15) {
     $db = getDB();
-    $sql = "SELECT * FROM borrow_requests WHERE 1=1";
+    $where = ["1=1"];
     $params = [];
 
     if ($status !== 'all') {
         if ($status === 'overdue') {
-            $sql .= " AND status IN ('approved', 'borrowed') AND expected_return_date < NOW()";
+            $where[] = "status IN ('approved', 'borrowed') AND expected_return_date < NOW()";
         } else {
-            $sql .= " AND status = :status";
+            $where[] = "status = :status";
             $params[':status'] = $status;
         }
     }
 
-    if (!empty($search)) {
-        $sql .= " AND (book_title LIKE :search OR borrower_name LIKE :search OR owner_name LIKE :search)";
-        $params[':search'] = "%$search%";
-    }
+    applySearchFilter($search, ['book_title', 'borrower_name', 'owner_name'], $where, $params, '');
 
     if (!empty($fromDate)) {
-        $sql .= " AND request_date >= :fromDate";
+        $where[] = "request_date >= :fromDate";
         $params[':fromDate'] = $fromDate . ' 00:00:00';
     }
 
     if (!empty($toDate)) {
-        $sql .= " AND request_date <= :toDate";
+        $where[] = "request_date <= :toDate";
         $params[':toDate'] = $toDate . ' 23:59:59';
     }
 
-    $sql .= " ORDER BY request_date DESC LIMIT :limit OFFSET :offset";
+    $sql = "SELECT * FROM borrow_requests WHERE " . implode(' AND ', $where) . " ORDER BY request_date DESC LIMIT :limit OFFSET :offset";
     
     $stmt = $db->prepare($sql);
     foreach ($params as $key => $val) {
@@ -79,33 +77,31 @@ function loadRequests($status = 'all', $search = '', $fromDate = '', $toDate = '
  */
 function getRequestsCount($status = 'all', $search = '', $fromDate = '', $toDate = '') {
     $db = getDB();
-    $sql = "SELECT COUNT(*) FROM borrow_requests WHERE 1=1";
+    $where = ["1=1"];
     $params = [];
 
     if ($status !== 'all') {
         if ($status === 'overdue') {
-            $sql .= " AND status IN ('approved', 'borrowed') AND expected_return_date < NOW()";
+            $where[] = "status IN ('approved', 'borrowed') AND expected_return_date < NOW()";
         } else {
-            $sql .= " AND status = :status";
+            $where[] = "status = :status";
             $params[':status'] = $status;
         }
     }
 
-    if (!empty($search)) {
-        $sql .= " AND (book_title LIKE :search OR borrower_name LIKE :search OR owner_name LIKE :search)";
-        $params[':search'] = "%$search%";
-    }
+    applySearchFilter($search, ['book_title', 'borrower_name', 'owner_name'], $where, $params, '');
 
     if (!empty($fromDate)) {
-        $sql .= " AND request_date >= :fromDate";
+        $where[] = "request_date >= :fromDate";
         $params[':fromDate'] = $fromDate . ' 00:00:00';
     }
 
     if (!empty($toDate)) {
-        $sql .= " AND request_date <= :toDate";
+        $where[] = "request_date <= :toDate";
         $params[':toDate'] = $toDate . ' 23:59:59';
     }
 
+    $sql = "SELECT COUNT(*) FROM borrow_requests WHERE " . implode(' AND ', $where);
     $stmt = $db->prepare($sql);
     $stmt->execute($params);
     return (int)$stmt->fetchColumn();
