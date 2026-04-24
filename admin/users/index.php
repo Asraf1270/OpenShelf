@@ -29,12 +29,63 @@ $adminId = $_SESSION['admin_id'];
 $adminName = $_SESSION['admin_name'] ?? 'Admin';
 
 /**
- * Load all users from DB
+ * Load paginated users from DB with filters
  */
-function loadAllUsers() {
+function loadUsers($status = 'all', $search = '', $offset = 0, $perPage = 15) {
     $db = getDB();
-    $stmt = $db->query("SELECT * FROM users ORDER BY created_at DESC");
+    $sql = "SELECT * FROM users WHERE 1=1";
+    $params = [];
+
+    if ($status === 'pending') {
+        $sql .= " AND verified = 0 AND status != 'rejected'";
+    } elseif ($status === 'approved') {
+        $sql .= " AND verified = 1 AND status = 'active'";
+    } elseif ($status === 'rejected') {
+        $sql .= " AND status = 'rejected'";
+    }
+
+    if (!empty($search)) {
+        $sql .= " AND (name LIKE :search OR email LIKE :search OR phone LIKE :search)";
+        $params[':search'] = "%$search%";
+    }
+
+    $sql .= " ORDER BY created_at DESC LIMIT :limit OFFSET :offset";
+    
+    $stmt = $db->prepare($sql);
+    foreach ($params as $key => $val) {
+        $stmt->bindValue($key, $val);
+    }
+    $stmt->bindValue(':limit', (int)$perPage, PDO::PARAM_INT);
+    $stmt->bindValue(':offset', (int)$offset, PDO::PARAM_INT);
+    $stmt->execute();
+    
     return $stmt->fetchAll();
+}
+
+/**
+ * Get total count of filtered users
+ */
+function getUsersCount($status = 'all', $search = '') {
+    $db = getDB();
+    $sql = "SELECT COUNT(*) FROM users WHERE 1=1";
+    $params = [];
+
+    if ($status === 'pending') {
+        $sql .= " AND verified = 0 AND status != 'rejected'";
+    } elseif ($status === 'approved') {
+        $sql .= " AND verified = 1 AND status = 'active'";
+    } elseif ($status === 'rejected') {
+        $sql .= " AND status = 'rejected'";
+    }
+
+    if (!empty($search)) {
+        $sql .= " AND (name LIKE :search OR email LIKE :search OR phone LIKE :search)";
+        $params[':search'] = "%$search%";
+    }
+
+    $stmt = $db->prepare($sql);
+    $stmt->execute($params);
+    return (int)$stmt->fetchColumn();
 }
 
 /**
@@ -112,6 +163,15 @@ function deleteUser($userId) {
     }
     return false;
 }
+
+// Filters
+$status = $_GET['status'] ?? 'all';
+$search = $_GET['search'] ?? '';
+
+// Pagination
+$page = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
+$perPage = 15;
+$offset = ($page - 1) * $perPage;
 
 // Handle actions
 $message = '';
@@ -243,46 +303,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         $message = "Deleted {$count} users successfully";
     }
-    
-    $users = loadAllUsers();
 }
 
-// Load users
-$users = loadAllUsers();
-
-// Filter by status
-$status = $_GET['status'] ?? 'all';
-$search = $_GET['search'] ?? '';
-
-$filteredUsers = $users;
-if ($status === 'pending') {
-    $filteredUsers = array_filter($filteredUsers, fn($u) => !($u['verified'] ?? false) && ($u['status'] ?? '') !== 'rejected');
-} elseif ($status === 'approved') {
-    $filteredUsers = array_filter($filteredUsers, fn($u) => ($u['verified'] ?? false) && ($u['status'] ?? '') === 'active');
-} elseif ($status === 'rejected') {
-    $filteredUsers = array_filter($filteredUsers, fn($u) => ($u['status'] ?? '') === 'rejected');
-}
-
-if (!empty($search)) {
-    $searchLower = strtolower($search);
-    $filteredUsers = array_filter($filteredUsers, fn($u) => 
-        strpos(strtolower($u['name'] ?? ''), $searchLower) !== false ||
-        strpos(strtolower($u['email'] ?? ''), $searchLower) !== false ||
-        strpos(strtolower($u['phone'] ?? ''), $searchLower) !== false
-    );
-}
-
-$pendingUsers = array_filter($users, fn($u) => !($u['verified'] ?? false) && ($u['status'] ?? '') !== 'rejected');
-$approvedUsers = array_filter($users, fn($u) => ($u['verified'] ?? false) && ($u['status'] ?? '') === 'active');
-$rejectedUsers = array_filter($users, fn($u) => ($u['status'] ?? '') === 'rejected');
-
-// Pagination
-$page = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
-$perPage = 15;
-$total = count($filteredUsers);
+// Load data from DB efficiently
+$paginatedUsers = loadUsers($status, $search, $offset, $perPage);
+$total = getUsersCount($status, $search);
 $totalPages = ceil($total / $perPage);
-$offset = ($page - 1) * $perPage;
-$paginatedUsers = array_slice($filteredUsers, $offset, $perPage);
+
+// Stats for the cards
+$db = getDB();
+$totalUsersCount = (int)$db->query("SELECT COUNT(*) FROM users")->fetchColumn();
+$pendingUsersCount = (int)$db->query("SELECT COUNT(*) FROM users WHERE verified = 0 AND status != 'rejected'")->fetchColumn();
+$approvedUsersCount = (int)$db->query("SELECT COUNT(*) FROM users WHERE verified = 1 AND status = 'active'")->fetchColumn();
+$rejectedUsersCount = (int)$db->query("SELECT COUNT(*) FROM users WHERE status = 'rejected'")->fetchColumn();
 ?>
 
 <!DOCTYPE html>
@@ -670,22 +703,21 @@ $paginatedUsers = array_slice($filteredUsers, $offset, $perPage);
             </div>
         <?php endif; ?>
         
-        <!-- Stats Grid -->
         <div class="stats-grid">
             <div class="stat-card">
-                <div class="stat-value" style="color: var(--primary);"><?php echo count($users); ?></div>
+                <div class="stat-value" style="color: var(--primary);"><?php echo $totalUsersCount; ?></div>
                 <div class="stat-label">Total Users</div>
             </div>
             <div class="stat-card">
-                <div class="stat-value" style="color: #10b981;"><?php echo count($approvedUsers); ?></div>
+                <div class="stat-value" style="color: #10b981;"><?php echo $approvedUsersCount; ?></div>
                 <div class="stat-label">Active Users</div>
             </div>
             <div class="stat-card">
-                <div class="stat-value" style="color: #f59e0b;"><?php echo count($pendingUsers); ?></div>
+                <div class="stat-value" style="color: #f59e0b;"><?php echo $pendingUsersCount; ?></div>
                 <div class="stat-label">Pending Review</div>
             </div>
             <div class="stat-card">
-                <div class="stat-value" style="color: #ef4444;"><?php echo count($rejectedUsers); ?></div>
+                <div class="stat-value" style="color: #ef4444;"><?php echo $rejectedUsersCount; ?></div>
                 <div class="stat-label">Rejected</div>
             </div>
         </div>
@@ -697,13 +729,13 @@ $paginatedUsers = array_slice($filteredUsers, $offset, $perPage);
                     All Users
                 </a>
                 <a href="?status=pending&search=<?php echo urlencode($search); ?>" class="filter-tab <?php echo $status === 'pending' ? 'active' : ''; ?>">
-                    Pending (<?php echo count($pendingUsers); ?>)
+                    Pending (<?php echo $pendingUsersCount; ?>)
                 </a>
                 <a href="?status=approved&search=<?php echo urlencode($search); ?>" class="filter-tab <?php echo $status === 'approved' ? 'active' : ''; ?>">
-                    Approved (<?php echo count($approvedUsers); ?>)
+                    Approved (<?php echo $approvedUsersCount; ?>)
                 </a>
                 <a href="?status=rejected&search=<?php echo urlencode($search); ?>" class="filter-tab <?php echo $status === 'rejected' ? 'active' : ''; ?>">
-                    Rejected (<?php echo count($rejectedUsers); ?>)
+                    Rejected (<?php echo $rejectedUsersCount; ?>)
                 </a>
             </div>
             <form method="GET" class="search-box">

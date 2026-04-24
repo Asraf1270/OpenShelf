@@ -30,12 +30,85 @@ $adminId = $_SESSION['admin_id'];
 $adminName = $_SESSION['admin_name'] ?? 'Admin';
 
 /**
- * Load all borrow requests from DB
+ * Load paginated borrow requests from DB with filters
  */
-function loadAllRequests() {
+function loadRequests($status = 'all', $search = '', $fromDate = '', $toDate = '', $offset = 0, $perPage = 15) {
     $db = getDB();
-    $stmt = $db->query("SELECT * FROM borrow_requests ORDER BY request_date DESC");
+    $sql = "SELECT * FROM borrow_requests WHERE 1=1";
+    $params = [];
+
+    if ($status !== 'all') {
+        if ($status === 'overdue') {
+            $sql .= " AND status IN ('approved', 'borrowed') AND expected_return_date < NOW()";
+        } else {
+            $sql .= " AND status = :status";
+            $params[':status'] = $status;
+        }
+    }
+
+    if (!empty($search)) {
+        $sql .= " AND (book_title LIKE :search OR borrower_name LIKE :search OR owner_name LIKE :search)";
+        $params[':search'] = "%$search%";
+    }
+
+    if (!empty($fromDate)) {
+        $sql .= " AND request_date >= :fromDate";
+        $params[':fromDate'] = $fromDate . ' 00:00:00';
+    }
+
+    if (!empty($toDate)) {
+        $sql .= " AND request_date <= :toDate";
+        $params[':toDate'] = $toDate . ' 23:59:59';
+    }
+
+    $sql .= " ORDER BY request_date DESC LIMIT :limit OFFSET :offset";
+    
+    $stmt = $db->prepare($sql);
+    foreach ($params as $key => $val) {
+        $stmt->bindValue($key, $val);
+    }
+    $stmt->bindValue(':limit', (int)$perPage, PDO::PARAM_INT);
+    $stmt->bindValue(':offset', (int)$offset, PDO::PARAM_INT);
+    $stmt->execute();
+    
     return $stmt->fetchAll();
+}
+
+/**
+ * Get total count of filtered requests
+ */
+function getRequestsCount($status = 'all', $search = '', $fromDate = '', $toDate = '') {
+    $db = getDB();
+    $sql = "SELECT COUNT(*) FROM borrow_requests WHERE 1=1";
+    $params = [];
+
+    if ($status !== 'all') {
+        if ($status === 'overdue') {
+            $sql .= " AND status IN ('approved', 'borrowed') AND expected_return_date < NOW()";
+        } else {
+            $sql .= " AND status = :status";
+            $params[':status'] = $status;
+        }
+    }
+
+    if (!empty($search)) {
+        $sql .= " AND (book_title LIKE :search OR borrower_name LIKE :search OR owner_name LIKE :search)";
+        $params[':search'] = "%$search%";
+    }
+
+    if (!empty($fromDate)) {
+        $sql .= " AND request_date >= :fromDate";
+        $params[':fromDate'] = $fromDate . ' 00:00:00';
+    }
+
+    if (!empty($toDate)) {
+        $sql .= " AND request_date <= :toDate";
+        $params[':toDate'] = $toDate . ' 23:59:59';
+    }
+
+    $stmt = $db->prepare($sql);
+    $stmt->execute($params);
+    return (int)$stmt->fetchColumn();
 }
 
 /**
@@ -377,61 +450,33 @@ function calculateOverdueStatus($requests) {
     return $requests;
 }
 
-// Load requests
-$requests = loadAllRequests();
-$requests = calculateOverdueStatus($requests);
-
 // Filters
 $status = $_GET['status'] ?? 'all';
 $search = $_GET['search'] ?? '';
 $fromDate = $_GET['from'] ?? '';
 $toDate = $_GET['to'] ?? '';
 
-$filteredRequests = $requests;
-if ($status !== 'all') {
-    if ($status === 'overdue') {
-        $filteredRequests = array_filter($filteredRequests, fn($r) => !empty($r['overdue']));
-    } else {
-        $filteredRequests = array_filter($filteredRequests, fn($r) => ($r['status'] ?? '') === $status);
-    }
-}
-if (!empty($search)) {
-    $searchLower = strtolower($search);
-    $filteredRequests = array_filter($filteredRequests, fn($r) => 
-        strpos(strtolower($r['book_title'] ?? ''), $searchLower) !== false ||
-        strpos(strtolower($r['borrower_name'] ?? ''), $searchLower) !== false ||
-        strpos(strtolower($r['owner_name'] ?? ''), $searchLower) !== false
-    );
-}
-if (!empty($fromDate)) {
-    $fromTimestamp = strtotime($fromDate);
-    $filteredRequests = array_filter($filteredRequests, fn($r) => strtotime($r['request_date'] ?? '0') >= $fromTimestamp);
-}
-if (!empty($toDate)) {
-    $toTimestamp = strtotime($toDate . ' 23:59:59');
-    $filteredRequests = array_filter($filteredRequests, fn($r) => strtotime($r['request_date'] ?? '0') <= $toTimestamp);
-}
-
-// Sort by date (newest first)
-usort($filteredRequests, fn($a, $b) => strtotime($b['request_date']) - strtotime($a['request_date']));
-
-// Statistics
-$stats = [
-    'total' => count($requests),
-    'pending' => count(array_filter($requests, fn($r) => ($r['status'] ?? '') === 'pending')),
-    'approved' => count(array_filter($requests, fn($r) => ($r['status'] ?? '') === 'approved')),
-    'rejected' => count(array_filter($requests, fn($r) => ($r['status'] ?? '') === 'rejected')),
-    'returned' => count(array_filter($requests, fn($r) => ($r['status'] ?? '') === 'returned')),
-    'overdue' => count(array_filter($requests, fn($r) => !empty($r['overdue'])))
-];
-
 // Pagination
 $page = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
 $perPage = 15;
-$total = count($filteredRequests);
-$totalPages = ceil($total / $perPage);
 $offset = ($page - 1) * $perPage;
-$paginatedRequests = array_slice($filteredRequests, $offset, $perPage);
+
+// Load data from DB efficiently
+$paginatedRequests = loadRequests($status, $search, $fromDate, $toDate, $offset, $perPage);
+$paginatedRequests = calculateOverdueStatus($paginatedRequests);
+$total = getRequestsCount($status, $search, $fromDate, $toDate);
+$totalPages = ceil($total / $perPage);
+
+// Stats for the cards
+$db = getDB();
+$stats = [
+    'total' => (int)$db->query("SELECT COUNT(*) FROM borrow_requests")->fetchColumn(),
+    'pending' => (int)$db->query("SELECT COUNT(*) FROM borrow_requests WHERE status = 'pending'")->fetchColumn(),
+    'approved' => (int)$db->query("SELECT COUNT(*) FROM borrow_requests WHERE status = 'approved'")->fetchColumn(),
+    'rejected' => (int)$db->query("SELECT COUNT(*) FROM borrow_requests WHERE status = 'rejected'")->fetchColumn(),
+    'returned' => (int)$db->query("SELECT COUNT(*) FROM borrow_requests WHERE status = 'returned'")->fetchColumn(),
+    'overdue' => (int)$db->query("SELECT COUNT(*) FROM borrow_requests WHERE status IN ('approved', 'borrowed') AND expected_return_date < NOW()")->fetchColumn()
+];
 
 // Handle actions
 $message = '';
@@ -486,13 +531,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $message = "Rejected {$count} requests successfully";
     }
     
-    // Reload data
-    $requests = loadAllRequests();
-    $requests = calculateOverdueStatus($requests);
-    $filteredRequests = $requests;
-    if ($status !== 'all') $filteredRequests = array_filter($filteredRequests, fn($r) => ($r['status'] ?? '') === $status);
-    if (!empty($search)) $filteredRequests = array_filter($filteredRequests, fn($r) => strpos(strtolower($r['book_title'] ?? ''), strtolower($search)) !== false);
-    $paginatedRequests = array_slice($filteredRequests, $offset, $perPage);
+    // Refresh data after action
+    $paginatedRequests = loadRequests($status, $search, $fromDate, $toDate, $offset, $perPage);
+    $paginatedRequests = calculateOverdueStatus($paginatedRequests);
+    $total = getRequestsCount($status, $search, $fromDate, $toDate);
+    $totalPages = ceil($total / $perPage);
+    
+    // Refresh stats
+    $stats = [
+        'total' => (int)$db->query("SELECT COUNT(*) FROM borrow_requests")->fetchColumn(),
+        'pending' => (int)$db->query("SELECT COUNT(*) FROM borrow_requests WHERE status = 'pending'")->fetchColumn(),
+        'approved' => (int)$db->query("SELECT COUNT(*) FROM borrow_requests WHERE status = 'approved'")->fetchColumn(),
+        'rejected' => (int)$db->query("SELECT COUNT(*) FROM borrow_requests WHERE status = 'rejected'")->fetchColumn(),
+        'returned' => (int)$db->query("SELECT COUNT(*) FROM borrow_requests WHERE status = 'returned'")->fetchColumn(),
+        'overdue' => (int)$db->query("SELECT COUNT(*) FROM borrow_requests WHERE status IN ('approved', 'borrowed') AND expected_return_date < NOW()")->fetchColumn()
+    ];
 }
 ?>
 

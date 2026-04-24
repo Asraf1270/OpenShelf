@@ -1,6 +1,6 @@
 # 📚 OpenShelf — Community Library Management System
 
-[![Version](https://img.shields.io/badge/version-2.4.0-blue.svg)](https://github.com/Asraf1270/OpenShelf/releases/tag/v2.4.0)
+[![Version](https://img.shields.io/badge/version-2.5.0-blue.svg)](https://github.com/Asraf1270/OpenShelf/releases/tag/v2.5.0)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![PHP](https://img.shields.io/badge/PHP-7.4%2B-777bb4.svg)](https://www.php.net/)
 [![MySQL](https://img.shields.io/badge/MySQL-5.7%2B-4479A1.svg)](https://www.mysql.com/)
@@ -9,15 +9,17 @@
 
 ---
 
-## ✨ What's New in v2.4.0
+## ✨ What's New in v2.5.0 — Infinite Discovery & Community Support
 
-**OpenShelf v2.4.0** focuses on visual excellence, user feedback, and community sustainability:
+**OpenShelf v2.5.0** removes friction from book discovery and gives the community a direct way to support the platform:
 
-- 🎨 **Reimagined Landing Page** — A complete homepage overhaul with a focus on mission clarity, mobile-first design, and interactive community stats.
-- 🚩 **Integrated Reporting System** — Introduced `report.php` for users to safely submit bug reports, user misconduct, or content issues.
-- 🌗 **Global Info Modernization** — Full visual refresh of `About`, `Contact`, `FAQ`, `Privacy`, and `Terms` pages with native dark/light mode support.
-- 📚 **Community Growth Policy** — Implemented a new mandatory term requiring users to share at least 2 books within 30 days to ensure library health.
-- 🛠️ **Refined UX** — Smoother animations, improved navigation accessibility, and an interactive FAQ experience.
+- ♾️ **Infinite Scroll Pagination** — Books load automatically as you scroll via a cursor-based API and native `IntersectionObserver`, fully integrated with search and category filters.
+- 💳 **Support Us Page** — Dedicated payment cards for bKash, Nagad, and Rocket with one-click number copy and TrxID submission for community donors.
+- 🗂️ **Split Sticky Header** — Search bar and category filter separated on the books page; only the category row stays sticky for a cleaner scroll experience.
+- 📱 **Mobile Nav Overhaul** — Auth-aware menu items, clear section labels, and a prominent Support Us CTA in the mobile navigation drawer.
+- 🐛 **API Bug Fix** — Resolved `SQLSTATE[HY093]` PDO parameter binding error causing 500 Internal Server Errors during filtered infinite scroll.
+
+📄 See full history in [RELEASES.md](RELEASES.md)
 
 ---
 
@@ -25,13 +27,15 @@
 
 ### 👤 For Users
 - **Secure Registration:** Email-based authentication with university domain verification.
-- **Glassmorphic Catalog:** Browse books through an elegant, interactive grid layout.
+- **Infinite Book Discovery:** Browse books with seamless infinite scroll powered by cursor-based pagination — no page reloads.
+- **Live Search & Filter:** Instantly filter books by keyword and category with results streaming in as you type.
 - **Easy Sharing:** Add your own books with custom cover uploads in seconds.
 - **Smart Requests:** Request books directly with automated email alerts to the owner.
 - **My Borrowed Books:** Track active borrows with visual due-date progress and one-click returns.
 - **Password Recovery:** Secure "Forget Password" flow with email + phone verification and OTP codes.
 - **Personalized Profiles:** A beautiful split-screen UI to manage your shared books and reading history.
 - **Real-time Notifications:** Stay updated with in-app alerts for borrows, approvals, and community news.
+- 💳 **Support Us:** Easily support the platform via bKash, Nagad, or Rocket with one-click copy and TrxID tracking.
 - 🌙 **Native Dark Mode:** Toggle between light and dark themes with a persistent interface that remembers your preference.
 - 📱 **Installable PWA:** Add OpenShelf to your mobile or desktop home screen for a standalone app experience.
 
@@ -106,14 +110,16 @@ Navigate to your server's URL. For the admin panel, visit `/admin/`.
 ```
 openshelf/
 ├── admin/            # Comprehensive management dashboard
-├── api/              # Dynamic endpoints for frontend interactions
+├── api/              # Dynamic endpoints (books, infinite scroll, etc.)
 ├── assets/           # Premium CSS, JS, design tokens, and branding assets
+├── books/            # Public book discovery page with infinite scroll
 ├── config/           # Centralized configuration (Database, Mail, App)
 ├── data/             # SQL schema and configuration files
 ├── emails/           # Email notification templates
 ├── includes/         # Shared UI components and database singleton
 ├── lib/              # Core libraries (Mailer, utilities)
 ├── my-borrowed/      # User's active borrowed books tracker
+├── support_us/       # Community donation page (bKash, Nagad, Rocket)
 ├── uploads/          # User-uploaded covers and profile media
 ├── backups/          # Automatically generated system snapshots
 └── vendor/           # Composer dependencies
@@ -146,6 +152,7 @@ This project is open-source and released under the **MIT License**.
 - **Reporting:** Use `/report.php` for bugs or misconduct
 - **Feedback:** Use the built-in `/contact.php` form
 - **FAQ:** Check `/faq.php` for common questions
+- **Support Us:** Donate via `/support_us/` to keep OpenShelf running
 
 ---
 **OpenShelf** — Empowering communities, one shared book at a time. 📚✨

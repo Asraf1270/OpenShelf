@@ -2,6 +2,22 @@
 
 ---
 
+## 🚀 v2.5.0 — Infinite Discovery & Community Support
+**Release Date:** April 24, 2026
+
+A refined experience update delivering seamless infinite scroll book discovery, a new community Support Us page, and smarter navigation across desktop and mobile.
+
+### Highlights
+- ♾️ **Infinite Scroll Pagination** — Books load automatically as you scroll using a cursor-based API and `IntersectionObserver`, with full search + filter integration.
+- 💳 **Support Us Page** — Dedicated payment cards for bKash, Nagad, and Rocket with one-click number copy and TrxID submission.
+- 🗂️ **Split Book Header** — Search bar and category filter separated; only the category row stays sticky for a cleaner scroll experience.
+- 📱 **Mobile Nav Overhaul** — Auth-aware menu items, section labels, and a prominent Support Us CTA in the mobile navigation.
+- 🐛 **API Bug Fix** — Resolved `SQLSTATE[HY093]` PDO parameter binding error causing 500 errors during filtered infinite scroll.
+
+📄 Full details: [v2.5.0 Release Notes](v2.5.0_release_notes.md)
+
+---
+
 ## 🚀 v2.4.0 — Aesthetic Overhaul & Community Safety
 **Release Date:** April 24, 2026
 

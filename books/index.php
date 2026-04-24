@@ -11,161 +11,120 @@ include dirname(__DIR__) . '/includes/header.php';
 define('DATA_PATH', dirname(__DIR__) . '/data/');
 
 /**
- * Load all books from DB with owner names
+ * Load books from DB with cursor-based pagination
  */
-function loadAllBooks() {
+function getBooks($search = '', $selectedCategories = [], $availability = '', $limit = 12, $cursor_date = null, $cursor_id = null) {
     $db = getDB();
-    $stmt = $db->query("
+    $where = ["1=1"];
+    $params = [];
+
+    if (!empty($availability)) {
+        $where[] = "b.status = :availability";
+        $params[':availability'] = $availability;
+    }
+
+    if (!empty($selectedCategories)) {
+        $catPlaceholders = [];
+        foreach ($selectedCategories as $i => $cat) {
+            $key = ":cat$i";
+            $catPlaceholders[] = $key;
+            $params[$key] = $cat;
+        }
+        $where[] = "b.category IN (" . implode(',', $catPlaceholders) . ")";
+    }
+
+    if (!empty($search)) {
+        $where[] = "(b.title LIKE :search1 OR b.author LIKE :search2 OR b.publisher LIKE :search3)";
+        $params[':search1'] = "%$search%";
+        $params[':search2'] = "%$search%";
+        $params[':search3'] = "%$search%";
+    }
+
+    if ($cursor_date && $cursor_id) {
+        $where[] = "(b.created_at < :c_date1 OR (b.created_at = :c_date2 AND b.id < :c_id))";
+        $params[':c_date1'] = $cursor_date;
+        $params[':c_date2'] = $cursor_date;
+        $params[':c_id'] = $cursor_id;
+    }
+
+    $sql = "
         SELECT b.*, u.name as owner_name 
         FROM books b 
         LEFT JOIN users u ON b.owner_id = u.id 
-        ORDER BY b.created_at DESC
-    ");
-    return $stmt->fetchAll();
-}
+        WHERE " . implode(' AND ', $where) . "
+        ORDER BY b.created_at DESC, b.id DESC
+        LIMIT :limit
+    ";
 
-/**
- * Get unique categories
- */
-function getCategories($books) {
-    $categories = [];
-    foreach ($books as $book) {
-        if (!empty($book['category']) && !in_array($book['category'], $categories)) {
-            $categories[] = $book['category'];
-        }
+    $stmt = $db->prepare($sql);
+    foreach ($params as $key => $val) {
+        $stmt->bindValue($key, $val);
     }
-    sort($categories);
-    return $categories;
-}
-
-/**
- * Advanced Search & Filter
- */
-function advancedSearchBooks($books, $search, $categories, $availability) {
-    // 1. Hard filters (Category & Availability)
-    $filtered = array_filter($books, function($book) use ($categories, $availability) {
-        if (!empty($categories) && !in_array($book['category'] ?? '', (array)$categories)) {
-            return false;
-        }
-        if (!empty($availability)) {
-            $status = $book['status'] ?? 'available';
-            if ($availability === 'available' && $status !== 'available') return false;
-            if ($availability === 'borrowed' && $status !== 'borrowed') return false;
-        }
-        return true;
-    });
-
-    if (empty($search)) {
-        return $filtered;
-    }
-
-    $searchLower = strtolower(trim($search));
-    $searchTerms = array_filter(explode(' ', $searchLower));
-
-    $scoredBooks = [];
-    $directMatchAuthors = [];
-    $directMatchCategories = [];
-    $directMatchOwners = [];
-
-    // First pass: Find direct matches
-    foreach ($filtered as $book) {
-        $score = 0;
-        
-        $title = strtolower($book['title'] ?? '');
-        $author = strtolower($book['author'] ?? '');
-        $publisher = strtolower($book['publisher'] ?? '');
-        $owner = strtolower($book['owner_name'] ?? '');
-        $category = strtolower($book['category'] ?? '');
-        $isbn = strtolower($book['isbn'] ?? '');
-
-        // Exact match
-        if ($title === $searchLower) $score += 1000;
-        if ($author === $searchLower) $score += 800;
-        if ($isbn === $searchLower) $score += 1000;
-
-        // Partial exact match
-        if (strpos($title, $searchLower) !== false) $score += 500;
-        if (strpos($author, $searchLower) !== false) $score += 400;
-        if (strpos($publisher, $searchLower) !== false) $score += 300;
-        if (strpos($owner, $searchLower) !== false) $score += 200;
-        if (strpos($category, $searchLower) !== false) $score += 100;
-        
-        // Term matches
-        foreach ($searchTerms as $term) {
-            if (strlen($term) < 2) continue; // Skip single letters
-            if (strpos($title, $term) !== false) $score += 50;
-            if (strpos($author, $term) !== false) $score += 40;
-            if (strpos($publisher, $term) !== false) $score += 30;
-            if (strpos($owner, $term) !== false) $score += 20;
-            if (strpos($category, $term) !== false) $score += 10;
-        }
-
-        if ($score > 0) {
-            $book['_score'] = $score;
-            $book['_match_type'] = 'direct';
-            $bookId = $book['id'] ?? uniqid();
-            $scoredBooks[$bookId] = $book;
-
-            if (!empty($book['author'])) $directMatchAuthors[$book['author']] = true;
-            if (!empty($book['category'])) $directMatchCategories[$book['category']] = true;
-            if (!empty($book['owner_id'])) $directMatchOwners[$book['owner_id']] = true;
-        }
-    }
-
-    // Second pass: Find related matches
-    foreach ($filtered as $book) {
-        $bookId = $book['id'] ?? '';
-        if ($bookId && isset($scoredBooks[$bookId])) continue;
-
-        $relatedScore = 0;
-        
-        if (!empty($book['author']) && isset($directMatchAuthors[$book['author']])) $relatedScore += 15; // Same author
-        if (!empty($book['category']) && isset($directMatchCategories[$book['category']])) $relatedScore += 5; // Same category
-        if (!empty($book['owner_id']) && isset($directMatchOwners[$book['owner_id']])) $relatedScore += 10; // Same owner
-
-        if ($relatedScore > 0) {
-            $book['_score'] = $relatedScore;
-            $book['_match_type'] = 'related';
-            $useId = $bookId ?: uniqid();
-            $scoredBooks[$useId] = $book;
-        }
-    }
-
-    // Sort by score descending
-    usort($scoredBooks, function($a, $b) {
-        return $b['_score'] <=> $a['_score'];
-    });
-
-    return $scoredBooks;
-}
-
-/**
- * Get user info from DB
- */
-function getUserInfo($userId) {
-    if (empty($userId)) return ['name' => 'Unknown', 'avatar' => 'default-avatar.jpg'];
+    $stmt->bindValue(':limit', (int)$limit, PDO::PARAM_INT);
+    $stmt->execute();
     
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
+
+/**
+ * Get total books count for current filters
+ */
+function getBooksCount($search = '', $selectedCategories = [], $availability = '') {
     $db = getDB();
-    $stmt = $db->prepare("SELECT name, profile_pic as avatar FROM users WHERE id = ?");
-    $stmt->execute([$userId]);
-    $user = $stmt->fetch();
-    
-    return $user ?: ['name' => 'Unknown', 'avatar' => 'default-avatar.jpg'];
+    $where = ["1=1"];
+    $params = [];
+
+    if (!empty($availability)) {
+        $where[] = "b.status = :availability";
+        $params[':availability'] = $availability;
+    }
+
+    if (!empty($selectedCategories)) {
+        $catPlaceholders = [];
+        foreach ($selectedCategories as $i => $cat) {
+            $key = ":cat$i";
+            $catPlaceholders[] = $key;
+            $params[$key] = $cat;
+        }
+        $where[] = "b.category IN (" . implode(',', $catPlaceholders) . ")";
+    }
+
+    if (!empty($search)) {
+        $where[] = "(b.title LIKE :search OR b.author LIKE :search OR b.publisher LIKE :search)";
+        $params[':search'] = "%$search%";
+    }
+
+    $sql = "SELECT COUNT(*) FROM books b WHERE " . implode(' AND ', $where);
+    $stmt = $db->prepare($sql);
+    $stmt->execute($params);
+    return (int)$stmt->fetchColumn();
+}
+
+/**
+ * Get unique categories from DB
+ */
+function getCategoriesFromDB() {
+    $db = getDB();
+    $stmt = $db->query("SELECT DISTINCT category FROM books WHERE category IS NOT NULL AND category != '' ORDER BY category ASC");
+    return $stmt->fetchAll(PDO::FETCH_COLUMN);
 }
 
 // Load and filter books
-$allBooks = loadAllBooks();
 $search = $_GET['search'] ?? '';
 $selectedCategories = isset($_GET['categories']) ? (array)$_GET['categories'] : [];
 $availability = $_GET['availability'] ?? '';
+$limit = 12;
 
-$filteredBooks = advancedSearchBooks($allBooks, $search, $selectedCategories, $availability);
-$categories = getCategories($allBooks);
+$filteredBooks = getBooks($search, $selectedCategories, $availability, $limit);
+$totalFilteredCount = getBooksCount($search, $selectedCategories, $availability);
+$categories = getCategoriesFromDB();
 
-// Stats
-$totalBooks = count($allBooks);
-$availableBooks = count(array_filter($allBooks, fn($b) => ($b['status'] ?? '') === 'available'));
-$totalCategories = count($categories);
+// Get last book info for initial cursor
+$lastBook = !empty($filteredBooks) ? end($filteredBooks) : null;
+$initialCursor = [
+    'date' => $lastBook ? $lastBook['created_at'] : null,
+    'id' => $lastBook ? $lastBook['id'] : null
+];
 
 // Helper for generating URLs while keeping other GET params
 function getUrlWithParam($param, $value) {
@@ -526,6 +485,7 @@ function toggleCategoryUrl($cat) {
 </head>
 <body>
 
+    <main class="books-main">
     <!-- Search Bar (scrolls with page) -->
     <div class="search-bar-wrap">
         <div class="search-row">
@@ -595,10 +555,9 @@ function toggleCategoryUrl($cat) {
         </div>
     </div>
     
-    <!-- Results Header -->
     <div class="books-header">
-        <div class="books-count">
-            Showing <strong><?php echo count($filteredBooks); ?></strong> books 
+        <div class="books-count" id="booksCountLabel">
+            Showing <strong><?php echo count($filteredBooks); ?></strong> of <strong><?php echo $totalFilteredCount; ?></strong> books 
             <?php if (!empty($selectedCategories)): ?>
                 in <span style="color:var(--primary)"><?php echo implode(', ', array_map('htmlspecialchars', $selectedCategories)); ?></span>
             <?php endif; ?>
@@ -625,10 +584,9 @@ function toggleCategoryUrl($cat) {
     <?php else: ?>
         <div class="book-grid" id="booksGrid">
             <?php foreach ($filteredBooks as $index => $book): 
-                $ownerInfo = getUserInfo($book['owner_id'] ?? '');
-                $ownerName = $ownerInfo['name'];
-                $ownerAvatar = !empty($ownerInfo['avatar']) && $ownerInfo['avatar'] !== 'default-avatar.jpg'
-                    ? '/uploads/profile/' . ltrim($ownerInfo['avatar'], '/')
+                $ownerName = $book['owner_name'];
+                $ownerAvatar = !empty($book['owner_avatar']) && $book['owner_avatar'] !== 'default-avatar.jpg'
+                    ? '/uploads/profile/' . ltrim($book['owner_avatar'], '/')
                     : '/assets/images/avatars/default.jpg';
                 
                 $coverImage = !empty($book['cover_image']) 
@@ -681,28 +639,175 @@ function toggleCategoryUrl($cat) {
             <?php endforeach; ?>
         </div>
     <?php endif; ?>
+
+
+    <?php if ($totalFilteredCount > count($filteredBooks)): ?>
+        <div id="infiniteScrollTrigger" style="height: 100px; margin-top: 2rem; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1rem;">
+            <div id="loader" style="display: none; color: var(--primary);">
+                <i class="fas fa-circle-notch fa-spin fa-2x"></i>
+            </div>
+            <button id="loadMoreBtn" class="btn-elegant" style="display: block; padding: 0.6rem 1.5rem; font-size: 0.9rem;">
+                <i class="fas fa-plus"></i> Load More Books
+            </button>
+        </div>
+    <?php endif; ?>
 </main>
 
 <script>
+let cursorDate = <?php echo json_encode($initialCursor['date']); ?>;
+let cursorId = <?php echo json_encode($initialCursor['id']); ?>;
+let isLoading = false;
+let hasMore = <?php echo ($totalFilteredCount > count($filteredBooks)) ? 'true' : 'false'; ?>;
+const booksGrid = document.getElementById('booksGrid');
+const loader = document.getElementById('loader');
+const countLabel = document.querySelector('#booksCountLabel strong');
+
+// Filters from PHP
+const currentFilters = {
+    search: <?php echo json_encode($search); ?>,
+    categories: <?php echo json_encode($selectedCategories); ?>,
+    availability: <?php echo json_encode($availability); ?>
+};
+
 document.addEventListener("DOMContentLoaded", () => {
-    // Elegant Intersection Observer for stagger entry animations
+    setupIntersectionObserver();
+});
+
+function setupIntersectionObserver() {
+    const trigger = document.getElementById('infiniteScrollTrigger');
+    if (!trigger) return;
+
     const observer = new IntersectionObserver((entries) => {
-        entries.forEach((entry) => {
-            if (entry.isIntersecting) {
-                // Add a slight delay based on the element's position on screen relative to others
-                const rect = entry.target.getBoundingClientRect();
-                const delay = (rect.left / window.innerWidth) * 200 + (rect.top % window.innerHeight / window.innerHeight) * 200;
-                
-                setTimeout(() => {
-                    entry.target.classList.add('show');
-                }, delay);
-                observer.unobserve(entry.target);
+        if (entries[0].isIntersecting && !isLoading && hasMore) {
+            console.log('Infinite scroll triggered');
+            loadMoreBooks();
+        }
+    }, { 
+        threshold: 0,
+        rootMargin: '200px' // Load before the user reaches the very bottom
+    });
+
+    observer.observe(trigger);
+
+    // Manual load more button as fallback
+    const loadMoreBtn = document.getElementById('loadMoreBtn');
+    if (loadMoreBtn) {
+        loadMoreBtn.addEventListener('click', () => {
+            if (!isLoading && hasMore) {
+                loadMoreBooks();
             }
         });
-    }, { threshold: 0.1, rootMargin: "0px 0px -50px 0px" });
+    }
     
-    document.querySelectorAll('.book-card').forEach(card => observer.observe(card));
-});
+    // Initial cards animation
+    const cardObserver = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('show');
+                cardObserver.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.1 });
+    
+    document.querySelectorAll('.book-card').forEach(card => cardObserver.observe(card));
+    window.cardObserver = cardObserver;
+}
+
+async function loadMoreBooks() {
+    if (isLoading || !hasMore) return;
+    
+    isLoading = true;
+    loader.style.display = 'block';
+
+    const params = new URLSearchParams();
+    if (currentFilters.search) params.append('search', currentFilters.search);
+    currentFilters.categories.forEach(cat => params.append('categories[]', cat));
+    if (currentFilters.availability) params.append('availability', currentFilters.availability);
+    params.append('cursor_date', cursorDate);
+    params.append('cursor_id', cursorId);
+    params.append('limit', 12);
+
+    try {
+        const response = await fetch(`../api/books.php?${params.toString()}`);
+        const result = await response.json();
+
+        if (result.success && result.data.length > 0) {
+            result.data.forEach(book => {
+                const card = createBookCard(book);
+                booksGrid.appendChild(card);
+                window.cardObserver.observe(card);
+            });
+
+            cursorDate = result.cursor.date;
+            cursorId = result.cursor.id;
+            hasMore = result.has_more;
+            
+            // Update showing count
+            const currentCount = booksGrid.querySelectorAll('.book-card').length;
+            countLabel.textContent = currentCount;
+        } else {
+            hasMore = false;
+        }
+    } catch (error) {
+        console.error('Error loading more books:', error);
+    } finally {
+        isLoading = false;
+        loader.style.display = 'none';
+        
+        // Hide button if no more books
+        const loadMoreBtn = document.getElementById('loadMoreBtn');
+        if (loadMoreBtn) {
+            loadMoreBtn.style.display = hasMore ? 'block' : 'none';
+        }
+    }
+}
+
+function createBookCard(book) {
+    const div = document.createElement('div');
+    div.className = 'book-card';
+    div.dataset.title = book.title.toLowerCase();
+    div.dataset.author = book.author.toLowerCase();
+    div.dataset.date = book.created_at;
+
+    const status = book.status.toLowerCase();
+    
+    div.innerHTML = `
+        <div class="book-cover-container">
+            <img src="${book.cover_image}" 
+                 alt="${book.title}"
+                 loading="lazy"
+                 onerror="this.src='/assets/images/default-book-cover.jpg';">
+            <span class="book-badge badge-${status}">
+                ${status.charAt(0).toUpperCase() + status.slice(1)}
+            </span>
+        </div>
+        
+        <div class="book-info">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                <div class="book-category-tag" style="margin-bottom: 0;">
+                    ${book.category || 'General'}
+                </div>
+            </div>
+            <h3 class="book-title">
+                <a href="/book/?id=${book.id}">
+                    ${book.title}
+                </a>
+            </h3>
+            <p class="book-author">By ${book.author || 'Unknown'}</p>
+            
+            <div class="book-footer">
+                <div class="owner-info">
+                    <img src="${book.owner_avatar}" 
+                         alt="${book.owner_name}" 
+                         class="owner-avatar"
+                         onerror="this.src='/assets/images/avatars/default.jpg';">
+                    <span class="owner-name">${book.owner_name}</span>
+                </div>
+            </div>
+        </div>
+    `;
+    return div;
+}
 
 function sortBooks(criteria) {
     const grid = document.getElementById('booksGrid');
@@ -715,7 +820,6 @@ function sortBooks(criteria) {
         return new Date(b.dataset.date || 0) - new Date(a.dataset.date || 0);
     });
     
-    // Animate reordering elegantly
     books.forEach(book => {
         book.style.transform = 'scale(0.95)';
         book.style.opacity = '0';
@@ -730,13 +834,11 @@ function sortBooks(criteria) {
                     book.style.transform = '';
                     book.style.opacity = '';
                     book.classList.add('show');
-                }, index * 50); // Stagger re-show
+                }, index * 30);
             });
         }, 50);
     }, 300);
 }
-
-// Removed auto-submit on search input as requested
 </script>
 
 <?php include dirname(__DIR__) . '/includes/footer.php'; ?>

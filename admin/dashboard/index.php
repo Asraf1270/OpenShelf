@@ -25,29 +25,35 @@ $adminName = $_SESSION['admin_name'] ?? 'Admin';
 $adminRole = $_SESSION['admin_role'] ?? 'admin';
 
 /**
- * Load all users from DB
+ * Load recent users for dashboard
  */
-function loadAllUsers() {
+function loadRecentUsers($limit = 10) {
     $db = getDB();
-    $stmt = $db->query("SELECT * FROM users ORDER BY created_at DESC");
+    $stmt = $db->prepare("SELECT * FROM users ORDER BY created_at DESC LIMIT :limit");
+    $stmt->bindValue(':limit', (int)$limit, PDO::PARAM_INT);
+    $stmt->execute();
     return $stmt->fetchAll();
 }
 
 /**
- * Load all books from DB
+ * Load recent books for dashboard
  */
-function loadAllBooks() {
+function loadRecentBooks($limit = 10) {
     $db = getDB();
-    $stmt = $db->query("SELECT * FROM books ORDER BY created_at DESC");
+    $stmt = $db->prepare("SELECT * FROM books ORDER BY created_at DESC LIMIT :limit");
+    $stmt->bindValue(':limit', (int)$limit, PDO::PARAM_INT);
+    $stmt->execute();
     return $stmt->fetchAll();
 }
 
 /**
- * Load all borrow requests from DB
+ * Load recent borrow requests for dashboard
  */
-function loadAllRequests() {
+function loadRecentRequests($limit = 10) {
     $db = getDB();
-    $stmt = $db->query("SELECT * FROM borrow_requests ORDER BY request_date DESC");
+    $stmt = $db->prepare("SELECT * FROM borrow_requests ORDER BY request_date DESC LIMIT :limit");
+    $stmt->bindValue(':limit', (int)$limit, PDO::PARAM_INT);
+    $stmt->execute();
     return $stmt->fetchAll();
 }
 
@@ -174,16 +180,45 @@ $approvedRequests = (int) $db->query("SELECT COUNT(*) FROM borrow_requests WHERE
 $rejectedRequests = (int) $db->query("SELECT COUNT(*) FROM borrow_requests WHERE status = 'rejected'")->fetchColumn();
 $returnedRequests = (int) $db->query("SELECT COUNT(*) FROM borrow_requests WHERE status = 'returned'")->fetchColumn();
 
-// Load arrays for growth and activities (or refactor to SQL later if needed for scale)
-$users = loadAllUsers();
-$books = loadAllBooks();
-$requests = loadAllRequests();
+// Growth data from DB (last 30 days only)
+function getDailyGrowth($table, $dateColumn, $days = 30) {
+    $db = getDB();
+    $sql = "SELECT DATE($dateColumn) as date, COUNT(*) as count 
+            FROM $table 
+            WHERE $dateColumn >= DATE_SUB(CURDATE(), INTERVAL :days DAY)
+            GROUP BY DATE($dateColumn)
+            ORDER BY date ASC";
+    $stmt = $db->prepare($sql);
+    $stmt->bindValue(':days', (int)$days, PDO::PARAM_INT);
+    $stmt->execute();
+    $results = $stmt->fetchAll(PDO::FETCH_KEY_PAIR);
+    
+    $growth = [];
+    for ($i = $days - 1; $i >= 0; $i--) {
+        $date = date('Y-m-d', strtotime("-$i days"));
+        $growth[$date] = (int)($results[$date] ?? 0);
+    }
+    return $growth;
+}
 
-// Growth data
-$userGrowth = getUserGrowth($users, 30);
-$bookGrowth = getBookGrowth($books, 30);
-$topCategories = getTopCategories($books);
-$recentActivities = getRecentActivities($users, $books, $requests, 8);
+$userGrowth = getDailyGrowth('users', 'created_at', 30);
+$bookGrowth = getDailyGrowth('books', 'created_at', 30);
+
+// Top categories directly from DB
+function getTopCategoriesFromDB($limit = 5) {
+    $db = getDB();
+    $stmt = $db->prepare("SELECT category, COUNT(*) as count FROM books GROUP BY category ORDER BY count DESC LIMIT :limit");
+    $stmt->bindValue(':limit', (int)$limit, PDO::PARAM_INT);
+    $stmt->execute();
+    return $stmt->fetchAll(PDO::FETCH_KEY_PAIR);
+}
+$topCategories = getTopCategoriesFromDB();
+
+// Recent activities using limited data
+$recentUsers = loadRecentUsers(8);
+$recentBooks = loadRecentBooks(8);
+$recentRequests = loadRecentRequests(8);
+$recentActivities = getRecentActivities($recentUsers, $recentBooks, $recentRequests, 8);
 
 // Calculate growth percentages
 $lastMonthUsers = array_sum(array_slice($userGrowth, 0, 30));

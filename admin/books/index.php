@@ -25,12 +25,63 @@ $adminId = $_SESSION['admin_id'];
 $adminName = $_SESSION['admin_name'] ?? 'Admin';
 
 /**
- * Load all books from DB
+ * Load paginated books from DB with filters
  */
-function loadAllBooks() {
+function loadBooks($status = 'all', $category = 'all', $search = '', $offset = 0, $perPage = 20) {
     $db = getDB();
-    $stmt = $db->query("SELECT * FROM books ORDER BY created_at DESC");
+    $sql = "SELECT * FROM books WHERE 1=1";
+    $params = [];
+
+    if ($status !== 'all') {
+        $sql .= " AND status = :status";
+        $params[':status'] = $status;
+    }
+    if ($category !== 'all') {
+        $sql .= " AND category = :category";
+        $params[':category'] = $category;
+    }
+    if (!empty($search)) {
+        $sql .= " AND (title LIKE :search OR author LIKE :search)";
+        $params[':search'] = "%$search%";
+    }
+
+    $sql .= " ORDER BY created_at DESC LIMIT :limit OFFSET :offset";
+    
+    $stmt = $db->prepare($sql);
+    foreach ($params as $key => $val) {
+        $stmt->bindValue($key, $val);
+    }
+    $stmt->bindValue(':limit', (int)$perPage, PDO::PARAM_INT);
+    $stmt->bindValue(':offset', (int)$offset, PDO::PARAM_INT);
+    $stmt->execute();
+    
     return $stmt->fetchAll();
+}
+
+/**
+ * Get total count of filtered books
+ */
+function getBooksCount($status = 'all', $category = 'all', $search = '') {
+    $db = getDB();
+    $sql = "SELECT COUNT(*) FROM books WHERE 1=1";
+    $params = [];
+
+    if ($status !== 'all') {
+        $sql .= " AND status = :status";
+        $params[':status'] = $status;
+    }
+    if ($category !== 'all') {
+        $sql .= " AND category = :category";
+        $params[':category'] = $category;
+    }
+    if (!empty($search)) {
+        $sql .= " AND (title LIKE :search OR author LIKE :search)";
+        $params[':search'] = "%$search%";
+    }
+
+    $stmt = $db->prepare($sql);
+    $stmt->execute($params);
+    return (int)$stmt->fetchColumn();
 }
 
 /**
@@ -157,42 +208,37 @@ function getAllCategories($books) {
     return $categories;
 }
 
-// Load books
-$books = loadAllBooks();
-
 // Filters
 $status = $_GET['status'] ?? 'all';
 $category = $_GET['category'] ?? 'all';
 $search = $_GET['search'] ?? '';
 
-$filteredBooks = $books;
-if ($status !== 'all') {
-    $filteredBooks = array_filter($filteredBooks, fn($b) => ($b['status'] ?? '') === $status);
-}
-if ($category !== 'all') {
-    $filteredBooks = array_filter($filteredBooks, fn($b) => ($b['category'] ?? '') === $category);
-}
-if (!empty($search)) {
-    $searchLower = strtolower($search);
-    $filteredBooks = array_filter($filteredBooks, fn($b) => 
-        strpos(strtolower($b['title'] ?? ''), $searchLower) !== false ||
-        strpos(strtolower($b['author'] ?? ''), $searchLower) !== false
-    );
-}
-
-$categories = getAllCategories($books);
-$totalBooks = count($books);
-$availableBooks = count(array_filter($books, fn($b) => ($b['status'] ?? '') === 'available'));
-$borrowedBooks = count(array_filter($books, fn($b) => ($b['status'] ?? '') === 'borrowed'));
-$unavailableBooks = count(array_filter($books, fn($b) => ($b['status'] ?? '') === 'unavailable'));
-
 // Pagination
 $page = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
 $perPage = 20;
-$total = count($filteredBooks);
-$totalPages = ceil($total / $perPage);
 $offset = ($page - 1) * $perPage;
-$paginatedBooks = array_slice($filteredBooks, $offset, $perPage);
+
+// Load data from DB efficiently
+$paginatedBooks = loadBooks($status, $category, $search, $offset, $perPage);
+$total = getBooksCount($status, $category, $search);
+$totalPages = ceil($total / $perPage);
+
+// Stats for the cards (cached or separate queries)
+$db = getDB();
+$totalBooks = (int)$db->query("SELECT COUNT(*) FROM books")->fetchColumn();
+$availableBooks = (int)$db->query("SELECT COUNT(*) FROM books WHERE status = 'available'")->fetchColumn();
+$borrowedBooks = (int)$db->query("SELECT COUNT(*) FROM books WHERE status = 'borrowed'")->fetchColumn();
+$unavailableBooks = (int)$db->query("SELECT COUNT(*) FROM books WHERE status = 'unavailable'")->fetchColumn();
+
+/**
+ * Get unique categories from DB
+ */
+function getCategoriesFromDB() {
+    $db = getDB();
+    $stmt = $db->query("SELECT DISTINCT category FROM books WHERE category IS NOT NULL AND category != '' ORDER BY category ASC");
+    return $stmt->fetchAll(PDO::FETCH_COLUMN);
+}
+$categories = getCategoriesFromDB();
 
 // Handle actions
 $message = '';
@@ -234,16 +280,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $message = "Updated status for {$count} books successfully";
     }
     
-    // Reload books
-    $books = loadAllBooks();
-    $filteredBooks = $books;
-    if ($status !== 'all') $filteredBooks = array_filter($filteredBooks, fn($b) => ($b['status'] ?? '') === $status);
-    if ($category !== 'all') $filteredBooks = array_filter($filteredBooks, fn($b) => ($b['category'] ?? '') === $category);
-    if (!empty($search)) $filteredBooks = array_filter($filteredBooks, fn($b) => 
-        strpos(strtolower($b['title'] ?? ''), $searchLower ?? '') !== false ||
-        strpos(strtolower($b['author'] ?? ''), $searchLower ?? '') !== false
-    );
-    $paginatedBooks = array_slice($filteredBooks, $offset, $perPage);
+    // Refresh data after action
+    $paginatedBooks = loadBooks($status, $category, $search, $offset, $perPage);
+    $total = getBooksCount($status, $category, $search);
+    $totalPages = ceil($total / $perPage);
+    
+    // Refresh stats
+    $totalBooks = (int)$db->query("SELECT COUNT(*) FROM books")->fetchColumn();
+    $availableBooks = (int)$db->query("SELECT COUNT(*) FROM books WHERE status = 'available'")->fetchColumn();
+    $borrowedBooks = (int)$db->query("SELECT COUNT(*) FROM books WHERE status = 'borrowed'")->fetchColumn();
+    $unavailableBooks = (int)$db->query("SELECT COUNT(*) FROM books WHERE status = 'unavailable'")->fetchColumn();
 }
 ?>
 
