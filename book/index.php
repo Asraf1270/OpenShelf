@@ -39,7 +39,19 @@ if (empty($bookId)) {
 function loadDetailedBook($bookId) {
     if (empty($bookId)) return null;
     $db = getDB();
-    $stmt = $db->prepare("SELECT * FROM books WHERE id = ?");
+    $stmt = $db->prepare("
+        SELECT b.*, 
+               u.name as owner_name, 
+               u.profile_pic as owner_profile_pic,
+               u.room_number as owner_room,
+               u.department as owner_dept,
+               u.phone as owner_phone,
+               u.email as owner_email,
+               u.session as owner_session
+        FROM books b
+        LEFT JOIN users u ON b.owner_id = u.id
+        WHERE b.id = ?
+    ");
     $stmt->execute([$bookId]);
     $book = $stmt->fetch();
     
@@ -47,6 +59,19 @@ function loadDetailedBook($bookId) {
         $book['tags'] = json_decode($book['tags'] ?? '[]', true);
         $book['reviews'] = json_decode($book['reviews'] ?? '[]', true);
         $book['comments'] = json_decode($book['comments'] ?? '[]', true);
+        
+        // Construct the owner array in the format expected by the template
+        $book['owner_data'] = [
+            'personal_info' => [
+                'name' => $book['owner_name'] ?? 'Unknown Owner',
+                'profile_pic' => $book['owner_profile_pic'] ?? 'default-avatar.jpg',
+                'room_number' => $book['owner_room'] ?? 'N/A',
+                'department' => $book['owner_dept'] ?? 'N/A',
+                'phone' => $book['owner_phone'] ?? '',
+                'email' => $book['owner_email'] ?? '',
+                'session' => $book['owner_session'] ?? ''
+            ]
+        ];
     }
     
     return $book ?: null;
@@ -56,9 +81,30 @@ function loadDetailedBook($bookId) {
  * Load user data by ID
  */
 function loadUserData($userId) {
-    $userFile = USERS_PATH . $userId . '.json';
-    if (!file_exists($userFile)) return null;
-    return json_decode(file_get_contents($userFile), true);
+    if (empty($userId)) return null;
+    $db = getDB();
+    $stmt = $db->prepare("SELECT * FROM users WHERE id = ?");
+    $stmt->execute([$userId]);
+    $user = $stmt->fetch();
+    
+    if ($user) {
+        // Map DB columns to the old JSON structure to maintain compatibility
+        return [
+            'personal_info' => [
+                'name' => $user['name'],
+                'email' => $user['email'],
+                'department' => $user['department'],
+                'phone' => $user['phone'],
+                'room_number' => $user['room_number'],
+                'profile_pic' => $user['profile_pic'],
+                'session' => $user['session'] ?? ''
+            ],
+            'id' => $user['id'],
+            'role' => $user['role'],
+            'status' => $user['status']
+        ];
+    }
+    return null;
 }
 
 /**
@@ -192,7 +238,7 @@ if (!$book) {
 }
 
 // Load owner data
-$owner = loadUserData($book['owner_id']);
+$owner = $book['owner_data'] ?? null;
 $reviews = $book['reviews'] ?? [];
 $comments = $book['comments'] ?? [];
 $borrowRequests = loadBorrowRequests($bookId);

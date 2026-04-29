@@ -26,9 +26,32 @@ if (!$viewUserId) {
  * Load user data
  */
 function loadUserData($userId) {
-    $userFile = USERS_PATH . $userId . '.json';
-    if (!file_exists($userFile)) return null;
-    return json_decode(file_get_contents($userFile), true);
+    if (empty($userId)) return null;
+    $db = getDB();
+    $stmt = $db->prepare("SELECT * FROM users WHERE id = ?");
+    $stmt->execute([$userId]);
+    $user = $stmt->fetch();
+    
+    if ($user) {
+        return [
+            'personal_info' => [
+                'name' => $user['name'] ?? 'Unknown User',
+                'bio' => $user['bio'] ?? '',
+                'department' => $user['department'] ?? 'N/A',
+                'session' => $user['session'] ?? 'N/A',
+                'hall' => $user['hall'] ?? '',
+                'room_number' => $user['room_number'] ?? 'N/A',
+                'phone' => $user['phone'] ?? '',
+                'profile_pic' => $user['profile_pic'] ?? 'default-avatar.jpg'
+            ],
+            'account_info' => [
+                'created_at' => $user['created_at'] ?? date('Y-m-d H:i:s')
+            ],
+            'id' => $user['id'],
+            'role' => $user['role'] ?? 'user'
+        ];
+    }
+    return null;
 }
 
 /**
