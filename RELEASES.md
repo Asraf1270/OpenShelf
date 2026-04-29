@@ -2,6 +2,20 @@
 
 ---
 
+## 🚀 v2.7.0 — The Notification & UX Evolution
+**Release Date:** April 29, 2026
+
+A major architectural and user experience milestone delivering a standardized notification engine, streamlined registration workflow, and enterprise-grade template stability.
+
+### Highlights
+- 📧 **Unified Mailer Engine** — Centralized all system communications through a powerful new `Mailer` class, providing a consistent and premium design for every user interaction.
+- ⚡ **Streamlined Onboarding** — Removed the mandatory Admin Approval flow; users can now register and start using the platform immediately after email verification.
+- 🛡️ **Template Robustness Audit** — Comprehensive refactoring of all email templates to include safe variable fallbacks and `isset()` checks, eliminating 500 errors and runtime notices.
+- 🎨 **Visual Consistency** — All system emails have been updated to follow our modern, clean design language with responsive layouts and improved readability.
+- 🔧 **Admin Workflow Fixes** — Aligned admin controllers with the new mailer system to ensure consistent data delivery for borrow approvals and rejections.
+
+📄 Full details: [v2.7.0 Release Notes](v2.7.0_release_notes.md)
+
 ## 🚀 v2.6.0 — Smart Recommendations & UI Refinements
 **Release Date:** April 24, 2026
 

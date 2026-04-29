@@ -199,9 +199,10 @@ function updateRequestStatus($requestId, $status, $additionalData = []) {
                     [
                         'subject'           => 'Your Borrow Request Has Been Approved!',
                         'user_name'         => $requestData['borrower_name'],
+                        'borrower_name'     => $requestData['borrower_name'],
                         'book_title'        => $requestData['book_title'],
                         'owner_name'        => $requestData['owner_name'],
-                        'expected_return'   => $requestData['expected_return_date'],
+                        'due_date'          => $requestData['expected_return_date'],
                         'base_url'          => BASE_URL
                     ]
                 );
@@ -213,6 +214,7 @@ function updateRequestStatus($requestId, $status, $additionalData = []) {
                     [
                         'subject'           => 'Update on Your Borrow Request',
                         'user_name'         => $requestData['borrower_name'],
+                        'borrower_name'     => $requestData['borrower_name'],
                         'book_title'        => $requestData['book_title'],
                         'rejection_reason'  => $additionalData['reason'] ?? 'No reason provided',
                         'base_url'          => BASE_URL

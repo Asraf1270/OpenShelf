@@ -246,10 +246,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Verify password
             if (password_verify($password, $user['password_hash'])) {
 
-                // Check if account is verified by admin
+                // Check if email is verified
                 if (!$user['verified']) {
-                    $error = 'Your account is waiting for admin approval. Please check back later.';
-                    logUserActivity($user['id'], 'login_attempt_unverified');
+                    $_SESSION['verify_email'] = $user['email'];
+                    header('Location: /register/verify.php');
+                    exit;
                 } else {
 
                     // Check account status
@@ -262,6 +263,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $_SESSION['user_id'] = $user['id'];
                         $_SESSION['user_name'] = $user['name'];
                         $_SESSION['user_role'] = $user['role'];
+                        $_SESSION['user_hall'] = $user['hall'];
                         $_SESSION['login_time'] = time();
 
                         logUserActivity($user['id'], 'login_successful');
@@ -364,41 +366,54 @@ if (isset($_GET['redirect'])) {
         /* Ambient Background */
         .ambient-bg {
             position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
+            top: 0; left: 0; right: 0; bottom: 0;
             z-index: -1;
             overflow: hidden;
-            background: radial-gradient(circle at 15% 50%, rgba(79, 70, 229, 0.1) 0%, transparent 40%),
-                        radial-gradient(circle at 85% 30%, rgba(14, 165, 233, 0.08) 0%, transparent 40%);
+            background: 
+                radial-gradient(circle at 10% 20%, rgba(79, 70, 229, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(14, 165, 233, 0.12) 0%, transparent 40%),
+                radial-gradient(circle at 50% 50%, rgba(124, 58, 237, 0.05) 0%, transparent 60%),
+                #0f172a;
+        }
+
+        .ambient-bg::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+            opacity: 0.03;
+            pointer-events: none;
         }
 
         .login-container {
             display: flex;
             align-items: center;
             justify-content: center;
-            flex: 1;
+            min-height: 100vh;
             padding: 1.5rem;
             width: 100%;
         }
 
         .login-card {
-            background: var(--surface);
-            border: 1px solid var(--border-color);
-            border-radius: 20px;
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 28px;
             width: 100%;
-            max-width: 420px;
-            padding: 2.5rem 1.5rem;
-            box-shadow: 0 10px 30px -10px rgba(0,0,0,0.5);
-            animation: slideUp 0.5s ease-out forwards;
+            max-width: 440px;
+            padding: 3.5rem 2.5rem;
+            box-shadow: 
+                0 25px 50px -12px rgba(0, 0, 0, 0.5),
+                0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+            animation: cardEntrance 0.8s cubic-bezier(0.16, 1, 0.3, 1);
             position: relative;
             z-index: 10;
         }
 
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+        @keyframes cardEntrance {
+            from { opacity: 0; transform: translateY(40px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
         }
 
         .login-header {

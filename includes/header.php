@@ -12,6 +12,7 @@ if (session_status() === PHP_SESSION_NONE) {
 // Include database connection
 require_once __DIR__ . '/db.php';
 require_once __DIR__ . '/search_helper.php';
+require_once __DIR__ . '/helpers.php';
 
 // Get current page for active states
 $currentPage = basename($_SERVER['PHP_SELF']);
@@ -37,6 +38,11 @@ if ($isLoggedIn && isset($_SESSION['user_id'])) {
         $userName = $u['name'] ?? $userName;
         $userEmail = $u['email'] ?? $userEmail;
         $userAvatar = $u['profile_pic'] ?? 'default-avatar.jpg';
+        
+        // Sync hall to session if missing
+        if (!isset($_SESSION['user_hall']) && isset($u['hall'])) {
+            $_SESSION['user_hall'] = $u['hall'];
+        }
     }
 
     // Fallback/Detailed: Load from detailed profile

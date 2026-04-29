@@ -75,6 +75,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $session = trim($_POST['session'] ?? '');
     $phone = trim($_POST['phone'] ?? '');
     $roomNumber = trim($_POST['roomNumber'] ?? '');
+    $hall = trim($_POST['hall'] ?? '');
     $password = $_POST['password'] ?? '';
     $confirmPassword = $_POST['confirm_password'] ?? '';
     
@@ -94,6 +95,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     elseif (!preg_match('/^01[3-9]\d{8}$/', $phone)) $errors['phone'] = 'Please enter a valid Bangladeshi phone number';
     
     if (empty($roomNumber)) $errors['roomNumber'] = 'Room number is required';
+
+    if (empty($hall)) $errors['hall'] = 'Hall is required';
+    elseif (!in_array($hall, ['1', '2', '3'])) $errors['hall'] = 'Invalid hall selected';
     
     if (empty($password)) $errors['password'] = 'Password is required';
     elseif (strlen($password) < 8) $errors['password'] = 'Password must be at least 8 characters';
@@ -124,15 +128,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Create user data
             // Save user to DB
             $sql = "INSERT INTO users (
-                        id, name, email, department, session, phone, room_number, 
-                        password_hash, verified, role, profile_pic, created_at, 
+                        id, name, email, department, session, phone, room_number, hall,
+                        password_hash, otp_code, otp_expiry, verified, role, profile_pic, created_at, 
                         updated_at, status
                     ) VALUES (
-                        :id, :name, :email, :department, :session, :phone, :room_number, 
-                        :password_hash, :verified, :role, :profile_pic, :created_at, 
+                        :id, :name, :email, :department, :session, :phone, :room_number, :hall,
+                        :password_hash, :otp_code, :otp_expiry, :verified, :role, :profile_pic, :created_at, 
                         :updated_at, :status
                     )";
             
+            $otp = sprintf("%06d", random_int(0, 999999));
+            $otp_expiry = date('Y-m-d H:i:s', strtotime('+15 minutes'));
+
             $stmt = $db->prepare($sql);
             $success_db = $stmt->execute([
                 ':id' => $userId,
@@ -142,13 +149,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 ':session' => $session,
                 ':phone' => $phone,
                 ':room_number' => $roomNumber,
+                ':hall' => $hall,
                 ':password_hash' => $passwordHash,
+                ':otp_code' => $otp,
+                ':otp_expiry' => $otp_expiry,
                 ':verified' => 0,
                 ':role' => 'user',
                 ':profile_pic' => 'default-avatar.jpg',
                 ':created_at' => date('Y-m-d H:i:s'),
                 ':updated_at' => date('Y-m-d H:i:s'),
-                ':status' => 'pending'
+                ':status' => 'unverified'
             ]);
             
             if ($success_db) {
@@ -164,13 +174,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         'session' => $session,
                         'phone' => $phone,
                         'room_number' => $roomNumber,
+                        'hall' => $hall,
                         'bio' => ''
                     ],
                     'account_info' => [
                         'verified' => false,
                         'role' => 'user',
                         'created_at' => date('Y-m-d H:i:s'),
-                        'status' => 'pending'
+                        'status' => 'unverified'
                     ],
                     'stats' => [
                         'books_owned' => 0,
@@ -189,18 +200,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $mailer->sendTemplate(
                         $email,
                         $name,
-                        'welcome',
+                        'registration_otp', // Using the new template
                         [
-                            'subject'    => 'Welcome to OpenShelf!',
+                            'subject'    => 'Verify Your OpenShelf Account',
+                            'otp'        => $otp,
+                            'expiry_minutes' => 15,
                             'user_name'  => $name,
                             'user_email' => $email,
-                            'login_url'  => BASE_URL . '/login/',
-                            'base_url'   => BASE_URL
+                            'base_url'   => BASE_URL,
+                            'ip_address' => $_SERVER['REMOTE_ADDR'] ?? 'unknown',
+                            'user_agent' => $_SERVER['HTTP_USER_AGENT'] ?? 'unknown'
                         ]
                     );
                 } catch (Exception $e) {
-                    // Log email error but don't stop registration
-                    error_log("Welcome email failed: " . $e->getMessage());
+                    error_log("OTP email failed: " . $e->getMessage());
                 }
                 
                 // Notify admin about new registration
@@ -231,8 +244,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     }
                 }
                 
-                $success = true;
-                $name = $email = $department = $session = $phone = $roomNumber = '';
+                $_SESSION['verify_email'] = $email;
+                header('Location: verify.php');
+                exit;
             }
         }
     }
@@ -294,41 +308,54 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         /* Ambient Background */
         .ambient-bg {
             position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
+            top: 0; left: 0; right: 0; bottom: 0;
             z-index: -1;
             overflow: hidden;
-            background: radial-gradient(circle at 15% 50%, rgba(79, 70, 229, 0.1) 0%, transparent 40%),
-                        radial-gradient(circle at 85% 30%, rgba(14, 165, 233, 0.08) 0%, transparent 40%);
+            background: 
+                radial-gradient(circle at 10% 20%, rgba(79, 70, 229, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(14, 165, 233, 0.12) 0%, transparent 40%),
+                radial-gradient(circle at 50% 50%, rgba(124, 58, 237, 0.05) 0%, transparent 60%),
+                #0f172a;
+        }
+
+        .ambient-bg::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+            opacity: 0.03;
+            pointer-events: none;
         }
 
         .registration-container {
             display: flex;
             align-items: center;
             justify-content: center;
-            flex: 1;
-            padding: 1.5rem;
+            min-height: 100vh;
+            padding: 2.5rem 1.5rem;
             width: 100%;
         }
 
         .registration-card {
-            background: var(--surface);
-            border: 1px solid var(--border-color);
-            border-radius: 20px;
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 28px;
             width: 100%;
             max-width: 850px;
-            padding: 2.5rem 1.5rem;
-            box-shadow: 0 10px 30px -10px rgba(0,0,0,0.5);
-            animation: slideUp 0.5s ease-out forwards;
+            padding: 3.5rem 2.5rem;
+            box-shadow: 
+                0 25px 50px -12px rgba(0, 0, 0, 0.5),
+                0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+            animation: cardEntrance 0.8s cubic-bezier(0.16, 1, 0.3, 1);
             position: relative;
             z-index: 10;
         }
 
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+        @keyframes cardEntrance {
+            from { opacity: 0; transform: translateY(40px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
         }
 
         .registration-header {
@@ -719,6 +746,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <?php endif; ?>
                     </div>
                     
+                    <!-- Hall -->
+                    <div class="form-group">
+                        <div class="input-group">
+                            <i class="fas fa-hotel"></i>
+                            <select name="hall" id="hall" required>
+                                <option value="" disabled <?php echo empty($hall) ? 'selected' : ''; ?>>Select Hall</option>
+                                <option value="1" <?php echo $hall === '1' ? 'selected' : ''; ?>>Amar Ekushey Hall</option>
+                                <option value="2" <?php echo $hall === '2' ? 'selected' : ''; ?>>Dr. Muhammad Shahidullah Hall</option>
+                                <option value="3" <?php echo $hall === '3' ? 'selected' : ''; ?>>Fazlul Huq Muslim Hall</option>
+                            </select>
+                        </div>
+                        <?php if (isset($errors['hall'])): ?>
+                            <div class="error-message"><i class="fas fa-circle-exclamation"></i> <?php echo $errors['hall']; ?></div>
+                        <?php endif; ?>
+                    </div>
+
                     <!-- Room Number -->
                     <div class="form-group">
                         <div class="input-group">

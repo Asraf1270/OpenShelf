@@ -25,7 +25,8 @@ function getUserById($userId) {
             'department' => $user['department'],
             'session' => $user['session'],
             'phone' => $user['phone'],
-            'room_number' => $user['room_number']
+            'room_number' => $user['room_number'],
+            'hall' => $user['hall']
         ],
         'account_info' => [
             'verified' => (bool)$user['verified'],
@@ -45,4 +46,16 @@ function getBookById($bookId) {
     $stmt = $db->prepare("SELECT * FROM books WHERE id = ?");
     $stmt->execute([$bookId]);
     return $stmt->fetch() ?: null;
+}
+
+/**
+ * Get Hall Name by ID
+ */
+function getHallName($hallId) {
+    $halls = [
+        '1' => 'Amar Ekushey Hall',
+        '2' => 'Dr. Muhammad Shahidullah Hall',
+        '3' => 'Fazlul Huq Muslim Hall'
+    ];
+    return $halls[$hallId] ?? 'N/A';
 }

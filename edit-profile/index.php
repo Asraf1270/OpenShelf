@@ -187,6 +187,7 @@ function updateUserProfile($userId, $data, $newImageFile = null) {
                 department = :department, 
                 session = :session, 
                 room_number = :room_number, 
+                hall = :hall,
                 updated_at = :updated_at";
     
     $params = [
@@ -195,6 +196,7 @@ function updateUserProfile($userId, $data, $newImageFile = null) {
         ':department' => $data['department'],
         ':session' => $data['session'],
         ':room_number' => $data['room_number'],
+        ':hall' => $data['hall'],
         ':updated_at' => date('Y-m-d H:i:s'),
         ':id' => $userId
     ];
@@ -229,6 +231,7 @@ function updateUserProfile($userId, $data, $newImageFile = null) {
             'session' => $data['session'],
             'phone' => $data['phone'],
             'room_number' => $data['room_number'],
+            'hall' => $data['hall'],
             'bio' => $data['bio'],
             'profile_pic' => $currentProfilePic
         ];
@@ -259,6 +262,7 @@ $phone = $userData['master']['phone'];
 $department = $userData['master']['department'];
 $session = $userData['master']['session'];
 $roomNumber = $userData['master']['room_number'];
+$hall = $userData['master']['hall'];
 $bio = $userData['profile']['personal_info']['bio'] ?? '';
 $profileImage = $userData['master']['profile_pic'] ?? 'default-avatar.jpg';
 
@@ -275,6 +279,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $department = trim($_POST['department'] ?? '');
     $session = trim($_POST['session'] ?? '');
     $roomNumber = trim($_POST['room_number'] ?? '');
+    $hall = trim($_POST['hall'] ?? '');
     $bio = trim($_POST['bio'] ?? '');
     
     // Validation
@@ -311,6 +316,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif (strlen($roomNumber) > 50) {
         $errors['room_number'] = 'Room number is too long';
     }
+
+    if (empty($hall)) {
+        $errors['hall'] = 'Hall is required';
+    } elseif (!in_array($hall, ['1', '2', '3'])) {
+        $errors['hall'] = 'Invalid hall selected';
+    }
     
     if (strlen($bio) > 500) {
         $errors['bio'] = 'Bio must be less than 500 characters';
@@ -337,6 +348,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'department' => $department,
             'session' => $session,
             'room_number' => $roomNumber,
+            'hall' => $hall,
             'bio' => $bio
         ];
         
@@ -843,13 +855,29 @@ $profileImagePath = '/uploads/profile/' . $profileImage;
                             <?php endif; ?>
                         </div>
                         
+                        <!-- Hall -->
+                        <div class="field-group">
+                            <label class="premium-label"><i class="fas fa-hotel"></i> Hall Residence</label>
+                            <div class="premium-input-wrapper">
+                                <select name="hall" class="premium-input" required>
+                                    <option value="1" <?php echo $hall === '1' ? 'selected' : ''; ?>>Amar Ekushey Hall</option>
+                                    <option value="2" <?php echo $hall === '2' ? 'selected' : ''; ?>>Dr. Muhammad Shahidullah Hall</option>
+                                    <option value="3" <?php echo $hall === '3' ? 'selected' : ''; ?>>Fazlul Huq Muslim Hall</option>
+                                </select>
+                                <i class="fas fa-building"></i>
+                            </div>
+                            <?php if (isset($errors['hall'])): ?>
+                                <span class="text-danger" style="font-size: 0.75rem;"><?php echo $errors['hall']; ?></span>
+                            <?php endif; ?>
+                        </div>
+
                         <!-- Room -->
-                        <div class="field-group full-width">
-                            <label class="premium-label"><i class="fas fa-map-marker-alt"></i> Residential Hub</label>
+                        <div class="field-group">
+                            <label class="premium-label"><i class="fas fa-map-marker-alt"></i> Room / Bed Info</label>
                             <div class="premium-input-wrapper">
                                 <input type="text" name="room_number" class="premium-input" 
                                        value="<?php echo htmlspecialchars($roomNumber); ?>"
-                                       placeholder="e.g., 603, Salimullah Hall" required>
+                                       placeholder="e.g., 603" required>
                                 <i class="fas fa-home"></i>
                             </div>
                             <?php if (isset($errors['room_number'])): ?>

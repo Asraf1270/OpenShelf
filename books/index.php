@@ -13,48 +13,58 @@ define('DATA_PATH', dirname(__DIR__) . '/data/');
 /**
  * Load books from DB with cursor-based pagination
  */
-function getBooks($search = '', $selectedCategories = [], $availability = '', $limit = 25, $cursor_date = null, $cursor_id = null) {
-    $db = getDB();
-    list($where, $params) = prepareBookQuery($search, $selectedCategories, $availability);
+function getBooks($search = '', $selectedCategories = [], $availability = '', $hall = '', $limit = 25, $cursor_date = null, $cursor_id = null) {
+    try {
+        $db = getDB();
+        list($where, $params) = prepareBookQuery($search, $selectedCategories, $availability, $hall);
 
 
-    if ($cursor_date && $cursor_id) {
-        $where[] = "(b.created_at < :c_date1 OR (b.created_at = :c_date2 AND b.id < :c_id))";
-        $params[':c_date1'] = $cursor_date;
-        $params[':c_date2'] = $cursor_date;
-        $params[':c_id'] = $cursor_id;
+        if ($cursor_date && $cursor_id) {
+            $where[] = "(b.created_at < :c_date1 OR (b.created_at = :c_date2 AND b.id < :c_id))";
+            $params[':c_date1'] = $cursor_date;
+            $params[':c_date2'] = $cursor_date;
+            $params[':c_id'] = $cursor_id;
+        }
+
+        $sql = "
+            SELECT b.*, u.name as owner_name, u.profile_pic as owner_avatar 
+            FROM books b 
+            LEFT JOIN users u ON b.owner_id = u.id 
+            WHERE " . implode(' AND ', $where) . "
+            ORDER BY b.created_at DESC, b.id DESC
+            LIMIT :limit
+        ";
+
+        $stmt = $db->prepare($sql);
+        foreach ($params as $key => $val) {
+            $stmt->bindValue($key, $val);
+        }
+        $stmt->bindValue(':limit', (int)$limit, PDO::PARAM_INT);
+        $stmt->execute();
+        
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+        error_log("Database Error in getBooks: " . $e->getMessage());
+        return [];
     }
-
-    $sql = "
-        SELECT b.*, u.name as owner_name, u.profile_pic as owner_avatar 
-        FROM books b 
-        LEFT JOIN users u ON b.owner_id = u.id 
-        WHERE " . implode(' AND ', $where) . "
-        ORDER BY b.created_at DESC, b.id DESC
-        LIMIT :limit
-    ";
-
-    $stmt = $db->prepare($sql);
-    foreach ($params as $key => $val) {
-        $stmt->bindValue($key, $val);
-    }
-    $stmt->bindValue(':limit', (int)$limit, PDO::PARAM_INT);
-    $stmt->execute();
-    
-    return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
 /**
  * Get total books count for current filters
  */
-function getBooksCount($search = '', $selectedCategories = [], $availability = '') {
-    $db = getDB();
-    list($where, $params) = prepareBookQuery($search, $selectedCategories, $availability);
+function getBooksCount($search = '', $selectedCategories = [], $availability = '', $hall = '') {
+    try {
+        $db = getDB();
+        list($where, $params) = prepareBookQuery($search, $selectedCategories, $availability, $hall);
 
-    $sql = "SELECT COUNT(*) FROM books b WHERE " . implode(' AND ', $where);
-    $stmt = $db->prepare($sql);
-    $stmt->execute($params);
-    return (int)$stmt->fetchColumn();
+        $sql = "SELECT COUNT(*) FROM books b WHERE " . implode(' AND ', $where);
+        $stmt = $db->prepare($sql);
+        $stmt->execute($params);
+        return (int)$stmt->fetchColumn();
+    } catch (PDOException $e) {
+        error_log("Database Error in getBooksCount: " . $e->getMessage());
+        return 0;
+    }
 }
 
 /**
@@ -70,9 +80,10 @@ function getCategoriesFromDB() {
 $search = $_GET['search'] ?? '';
 $selectedCategories = isset($_GET['categories']) ? (array)$_GET['categories'] : [];
 $availability = $_GET['availability'] ?? '';
+$hallFilter = $_GET['hall'] ?? '';
 $limit = 25;
 
-$filteredBooks = getBooks($search, $selectedCategories, $availability, $limit);
+$filteredBooks = getBooks($search, $selectedCategories, $availability, $hallFilter, $limit);
 
 // Suggest related books if results are few
 if (!empty($search) && count($filteredBooks) < 4) {
@@ -82,7 +93,7 @@ if (!empty($search) && count($filteredBooks) < 4) {
     $filteredBooks = array_merge($filteredBooks, $related);
 }
 
-$totalFilteredCount = getBooksCount($search, $selectedCategories, $availability);
+$totalFilteredCount = getBooksCount($search, $selectedCategories, $availability, $hallFilter);
 $categories = getCategoriesFromDB();
 
 // Get last book info for initial cursor
@@ -595,7 +606,17 @@ function toggleCategoryUrl($cat) {
                         </label>
                     </div>
 
-                    <?php if (!empty($search) || !empty($selectedCategories) || !empty($availability)): ?>
+                    <?php if (isset($_SESSION['user_id']) && !empty($_SESSION['user_hall'])): ?>
+                        <div style="width: 1px; height: 24px; background: var(--gray-200); margin: 0 0.5rem;"></div>
+                        <div class="radio-group">
+                            <label class="radio-item" title="<?php echo htmlspecialchars(getHallName($_SESSION['user_hall'])); ?>">
+                                <input type="checkbox" name="hall" value="<?php echo htmlspecialchars($_SESSION['user_hall']); ?>" class="hall-checkbox" <?php echo $hallFilter === $_SESSION['user_hall'] ? 'checked' : ''; ?>>
+                                <span style="font-weight: 700; color: var(--primary);">My Hall</span>
+                            </label>
+                        </div>
+                    <?php endif; ?>
+
+                    <?php if (!empty($search) || !empty($selectedCategories) || !empty($availability) || !empty($hallFilter)): ?>
                         <a href="#" class="btn-clear" id="clearFiltersBtn" title="Clear all filters">
                             <i class="fas fa-times"></i>
                         </a>
@@ -716,7 +737,8 @@ const countLabel = document.querySelector('#booksCountLabel strong');
 const currentFilters = {
     search: <?php echo json_encode($search); ?>,
     categories: <?php echo json_encode($selectedCategories); ?>,
-    availability: <?php echo json_encode($availability); ?>
+    availability: <?php echo json_encode($availability); ?>,
+    hall: <?php echo json_encode($hallFilter); ?>
 };
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -781,11 +803,22 @@ function setupFilterListeners() {
             document.querySelectorAll('.availability-radio').forEach(r => {
                 r.checked = r.value === '';
             });
+            document.querySelectorAll('.hall-checkbox').forEach(c => {
+                c.checked = false;
+            });
             
             refreshBooks();
             clearBtn.style.display = 'none';
         });
     }
+
+    // Hall Checkbox
+    document.querySelectorAll('.hall-checkbox').forEach(checkbox => {
+        checkbox.addEventListener('change', (e) => {
+            currentFilters.hall = e.target.checked ? e.target.value : '';
+            refreshBooks();
+        });
+    });
 }
 
 function setupAutoHideSearchBar() {
@@ -875,12 +908,15 @@ async function refreshBooks() {
     if (currentFilters.availability) url.searchParams.set('availability', currentFilters.availability);
     else url.searchParams.delete('availability');
     
+    if (currentFilters.hall) url.searchParams.set('hall', currentFilters.hall);
+    else url.searchParams.delete('hall');
+    
     window.history.pushState({}, '', url);
 
     // Show/Hide Clear button
     const clearBtn = document.getElementById('clearFiltersBtn');
     if (clearBtn) {
-        const hasFilters = currentFilters.search || currentFilters.categories.length > 0 || currentFilters.availability;
+        const hasFilters = currentFilters.search || currentFilters.categories.length > 0 || currentFilters.availability || currentFilters.hall;
         clearBtn.style.display = hasFilters ? 'flex' : 'none';
     }
 }
@@ -935,6 +971,7 @@ async function loadMoreBooks() {
     if (currentFilters.search) params.append('search', currentFilters.search);
     currentFilters.categories.forEach(cat => params.append('categories[]', cat));
     if (currentFilters.availability) params.append('availability', currentFilters.availability);
+    if (currentFilters.hall) params.append('hall', currentFilters.hall);
     params.append('cursor_date', cursorDate);
     params.append('cursor_id', cursorId);
     params.append('limit', 25);

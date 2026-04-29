@@ -16,11 +16,12 @@ $limit = isset($_GET['limit']) ? min(100, intval($_GET['limit'])) : 25;
 $search = $_GET['search'] ?? '';
 $selectedCategories = isset($_GET['categories']) ? (array)$_GET['categories'] : [];
 $availability = $_GET['availability'] ?? '';
+$hall = $_GET['hall'] ?? '';
 
 try {
     $db = getDB();
     
-    list($where, $params) = prepareBookQuery($search, $selectedCategories, $availability, 'b');
+    list($where, $params) = prepareBookQuery($search, $selectedCategories, $availability, $hall, 'b');
 
     // Cursor pagination logic (using unique placeholders for date)
     if ($cursor_date && $cursor_id) {

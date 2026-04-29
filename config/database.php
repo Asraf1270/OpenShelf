@@ -16,6 +16,7 @@ if (file_exists(__DIR__ . '/../.env')) {
 return [
     'host' => $env['DB_HOST'] ?? 'localhost',
     'dbname' => $env['DB_NAME'] ?? 'openshelf_db',
+    'username' => $env['DB_USER'] ?? 'root',
     'password' => $env['DB_PASS'] ?? '',
     'charset' => 'utf8mb4',
     'debug' => (isset($env['DEBUG']) && $env['DEBUG'] === 'true'),

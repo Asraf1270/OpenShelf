@@ -90,7 +90,7 @@ class Mailer {
      * @param string $userId User ID for rate limiting (optional)
      * @return bool Success status
      */
-    public function send($to, $toName, $subject, $htmlBody, $textBody = '', $attachments = [], $userId = null) {
+    public function send($to, $toName, $subject, $htmlBody, $textBody = '', $attachments = [], $userId = null, $data = []) {
         try {
             // Check rate limit
             if ($userId && !$this->checkRateLimit($userId)) {
@@ -107,7 +107,7 @@ class Mailer {
             
             // Content
             $this->mailer->Subject = $subject;
-            $this->mailer->Body = $this->buildHTMLTemplate($htmlBody, $toName);
+            $this->mailer->Body = $this->buildHTMLTemplate($htmlBody, $toName, $data['type'] ?? 'info');
             
             if (!empty($textBody)) {
                 $this->mailer->AltBody = strip_tags($textBody);
@@ -158,6 +158,7 @@ class Mailer {
      * @return bool Success status
      */
     public function sendTemplate($to, $toName, $template, $data = [], $userId = null) {
+        $data['type'] = $data['type'] ?? 'info';
         $templateFile = $this->config['templates'] . $template . '.php';
         
         if (!file_exists($templateFile)) {
@@ -178,128 +179,63 @@ class Mailer {
         // Extract subject from template or use default
         $subject = $data['subject'] ?? 'Notification from OpenShelf';
         
-        return $this->send($to, $toName, $subject, $htmlBody, '', [], $userId);
+        return $this->send($to, $toName, $subject, $htmlBody, '', [], $userId, $data);
     }
     
     /**
      * Build HTML email template with header/footer
      */
-    private function buildHTMLTemplate($content, $recipientName) {
+    private function buildHTMLTemplate($content, $recipientName, $type = 'info') {
         $year = date('Y');
         
+        // Define theme colors
+        $themes = [
+            'info'    => ['bg' => 'linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)', 'btn' => '#4f46e5'],
+            'success' => ['bg' => 'linear-gradient(135deg, #10b981 0%, #059669 100%)', 'btn' => '#10b981'],
+            'warning' => ['bg' => 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)', 'btn' => '#f59e0b'],
+            'danger'  => ['bg' => 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)', 'btn' => '#ef4444'],
+            'neutral' => ['bg' => 'linear-gradient(135deg, #1e293b 0%, #334155 100%)', 'btn' => '#1e293b']
+        ];
+        
+        $theme = $themes[$type] ?? $themes['info'];
+        
         return <<<HTML
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <style>
-                body {
-                    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-                    line-height: 1.6;
-                    color: #333;
-                    margin: 0;
-                    padding: 0;
-                    background-color: #f8f9fa;
-                }
-                .email-wrapper {
-                    max-width: 600px;
-                    margin: 0 auto;
-                    background-color: #ffffff;
-                    border-radius: 10px;
-                    overflow: hidden;
-                    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-                }
-                .email-header {
-                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                    padding: 30px 20px;
-                    text-align: center;
-                }
-                .email-header h1 {
-                    color: white;
-                    margin: 0;
-                    font-size: 28px;
-                }
-                .email-header .logo {
-                    font-size: 40px;
-                    color: white;
-                    margin-bottom: 10px;
-                }
-                .email-body {
-                    padding: 30px 20px;
-                }
-                .email-footer {
-                    padding: 20px;
-                    text-align: center;
-                    background-color: #f8f9fa;
-                    color: #8898aa;
-                    font-size: 14px;
-                    border-top: 1px solid #e9ecef;
-                }
-                .button {
-                    display: inline-block;
-                    padding: 12px 30px;
-                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-                    color: white;
-                    text-decoration: none;
-                    border-radius: 25px;
-                    font-weight: 600;
-                    margin: 20px 0;
-                }
-                .otp-box {
-                    background: #f8f9fa;
-                    border: 2px dashed #667eea;
-                    padding: 20px;
-                    text-align: center;
-                    font-size: 36px;
-                    font-weight: bold;
-                    letter-spacing: 10px;
-                    color: #667eea;
-                    border-radius: 10px;
-                    margin: 20px 0;
-                }
-                .warning {
-                    color: #f5365c;
-                    font-size: 14px;
-                }
-                .text-muted {
-                    color: #8898aa;
-                }
-                @media only screen and (max-width: 600px) {
-                    .email-wrapper {
-                        width: 100%;
-                        border-radius: 0;
-                    }
-                }
-            </style>
-        </head>
-        <body>
-            <div class="email-wrapper">
-                <div class="email-header">
-                    <div class="logo">📚</div>
-                    <h1>OpenShelf</h1>
-                </div>
-                <div class="email-body">
-                    <p>Hello <strong>{$recipientName}</strong>,</p>
-                    {$content}
-                    <p style="margin-top: 30px;">
-                        Best regards,<br>
-                        <strong>The OpenShelf Team</strong>
-                    </p>
-                </div>
-                <div class="email-footer">
-                    <p>&copy; {$year} OpenShelf. All rights reserved.</p>
-                    <p style="font-size: 12px; margin-top: 10px;">
-                        This is an automated message, please do not reply to this email.<br>
-                        <a href="#" style="color: #667eea; text-decoration: none;">Privacy Policy</a> | 
-                        <a href="#" style="color: #667eea; text-decoration: none;">Terms of Service</a>
-                    </p>
-                </div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; line-height: 1.6; color: #334155; background-color: #f8fafc; margin: 0; padding: 0; }
+        .wrapper { width: 100%; background-color: #f8fafc; padding: 40px 0; }
+        .container { max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 20px; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
+        .header { background: {$theme['bg']}; padding: 40px 20px; text-align: center; }
+        .header h1 { color: #ffffff; margin: 0; font-size: 26px; font-weight: 700; }
+        .content { padding: 40px 35px; color: #1e293b; }
+        .footer { padding: 25px; text-align: center; background-color: #f8fafc; border-top: 1px solid #f1f5f9; font-size: 13px; color: #94a3b8; }
+        .button { display: inline-block; padding: 14px 35px; background-color: {$theme['btn']}; color: #ffffff !important; text-decoration: none; border-radius: 12px; font-weight: 600; margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <div class="wrapper">
+        <div class="container">
+            <div class="header">
+                <h1 style="color: #ffffff;">OpenShelf</h1>
             </div>
-        </body>
-        </html>
-        HTML;
+            <div class="content">
+                {$content}
+            </div>
+            <div class="footer">
+                <p>&copy; {$year} OpenShelf. All rights reserved.</p>
+                <p style="font-size: 11px; margin-top: 10px;">This is an automated message, please do not reply.</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+HTML;
     }
+
     
     /**
      * Check rate limit for user

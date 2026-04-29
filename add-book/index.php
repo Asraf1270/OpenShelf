@@ -31,6 +31,14 @@ if (!isset($_SESSION['user_id'])) {
 $userId = $_SESSION['user_id'];
 $userName = $_SESSION['user_name'] ?? 'Unknown';
 
+// Ensure hall is in session
+if (!isset($_SESSION['user_hall'])) {
+    $db = getDB();
+    $stmt = $db->prepare("SELECT hall FROM users WHERE id = ?");
+    $stmt->execute([$userId]);
+    $_SESSION['user_hall'] = $stmt->fetchColumn();
+}
+
 /**
  * Generate a secure 10-character book ID
  */
@@ -60,12 +68,12 @@ function saveBookToDB($data) {
     $db = getDB();
     $sql = "INSERT INTO books (
                 id, title, author, description, category, `condition`, 
-                cover_image, owner_id, owner_name, status, created_at, 
+                cover_image, owner_id, owner_name, hall, status, created_at, 
                 updated_at, views, times_borrowed, isbn, publication_year, 
                 publisher, pages, language, reviews, comments, tags
             ) VALUES (
                 :id, :title, :author, :description, :category, :condition, 
-                :cover_image, :owner_id, :owner_name, :status, :created_at, 
+                :cover_image, :owner_id, :owner_name, :hall, :status, :created_at, 
                 :updated_at, :views, :times_borrowed, :isbn, :publication_year, 
                 :publisher, :pages, :language, :reviews, :comments, :tags
             )";
@@ -268,6 +276,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'cover_image' => $coverImage,
                 'owner_id' => $userId,
                 'owner_name' => $userName,
+                'hall' => $_SESSION['user_hall'] ?? null,
                 'status' => 'available',
                 'created_at' => date('Y-m-d H:i:s'),
                 'updated_at' => date('Y-m-d H:i:s'),

@@ -44,7 +44,7 @@ function applySearchFilter($search, $columns, &$where, &$params, $tableAlias = '
  * Build the WHERE clause and parameters specifically for book filtering.
  * Shared between the main books page and the API.
  */
-function prepareBookQuery($search, $selectedCategories, $availability, $tableAlias = 'b') {
+function prepareBookQuery($search, $selectedCategories, $availability, $hall = '', $tableAlias = 'b') {
     $where = ["1=1"];
     $params = [];
 
@@ -53,6 +53,11 @@ function prepareBookQuery($search, $selectedCategories, $availability, $tableAli
     if (!empty($availability)) {
         $where[] = "{$prefix}status = :availability";
         $params[':availability'] = $availability;
+    }
+
+    if (!empty($hall)) {
+        $where[] = "{$prefix}hall = :hall";
+        $params[':hall'] = $hall;
     }
 
     if (!empty($selectedCategories)) {

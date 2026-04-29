@@ -1,6 +1,6 @@
 # 📚 OpenShelf — Community Library Management System
 
-[![Version](https://img.shields.io/badge/version-2.6.0-blue.svg)](https://github.com/Asraf1270/OpenShelf/releases/tag/v2.6.0)
+[![Version](https://img.shields.io/badge/version-2.7.0-blue.svg)](https://github.com/Asraf1270/OpenShelf/releases/tag/v2.7.0)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![PHP](https://img.shields.io/badge/PHP-7.4%2B-777bb4.svg)](https://www.php.net/)
 [![MySQL](https://img.shields.io/badge/MySQL-5.7%2B-4479A1.svg)](https://www.mysql.com/)
@@ -9,16 +9,19 @@
 
 ---
 
-## ✨ What's New in v2.6.0 — Smart Recommendations & UI Refinements
+## 🚀 v2.7.0 — The Notification & UX Evolution
+**Release Date:** April 29, 2026
 
-**OpenShelf v2.6.0** introduces intelligent search recommendations and polishes the user interface for an even smoother browsing experience:
+A major architectural and user experience milestone delivering a standardized notification engine, streamlined registration workflow, and enterprise-grade template stability.
 
-- 🧠 **Intelligent Related Books** — A multi-layered recommendation system that suggests relevant books based on category, owner, and publication data when search results are limited.
-- 📱 **Mobile-First Related Books** — The related books section now features a responsive two-column grid layout specifically optimized for mobile devices.
-- 📚 **Expanded Pagination** — Increased the infinite scroll book loading limit from 12 to 25 items per batch for faster catalog browsing.
-- 🎨 **Sleeker Books Page UI** — Removed the vertical gap between the header and search bar for a cleaner, cohesive aesthetic.
+### Highlights
+- 📧 **Unified Mailer Engine** — Centralized all system communications through a powerful new `Mailer` class, providing a consistent and premium design for every user interaction.
+- ⚡ **Streamlined Onboarding** — Removed the mandatory Admin Approval flow; users can now register and start using the platform immediately after email verification.
+- 🛡️ **Template Robustness Audit** — Comprehensive refactoring of all email templates to include safe variable fallbacks and `isset()` checks, eliminating 500 errors and runtime notices.
+- 🎨 **Visual Consistency** — All system emails have been updated to follow our modern, clean design language with responsive layouts and improved readability.
+- 🔧 **Admin Workflow Fixes** — Aligned admin controllers with the new mailer system to ensure consistent data delivery for borrow approvals and rejections.
 
-📄 See full history in [RELEASES.md](RELEASES.md)
+📄 Full details: [v2.7.0 Release Notes](v2.7.0_release_notes.md)
 
 ---
 

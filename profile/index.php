@@ -192,6 +192,21 @@ $showSensitiveInfo = $isOwnProfile; // Only owner can see sensitive info like ro
             <?php if ($showSensitiveInfo): ?>
                 <div style="display: flex; gap: 0.75rem; align-items: center;">
                     <div style="background: var(--gray-100); padding: 0.5rem; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; color: var(--profile-accent);">
+                        <i class="fas fa-hotel"></i>
+                    </div>
+                    <div>
+                        <div style="font-size: 0.75rem; color: var(--gray-500);">Hall</div>
+                        <div style="font-weight: 600;">
+                            <?php 
+                            require_once dirname(__DIR__) . '/includes/helpers.php';
+                            echo htmlspecialchars(getHallName($user['personal_info']['hall'] ?? '')); 
+                            ?>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 0.75rem; align-items: center;">
+                    <div style="background: var(--gray-100); padding: 0.5rem; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; color: var(--success);">
                         <i class="fas fa-door-open"></i>
                     </div>
                     <div>
