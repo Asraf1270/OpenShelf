@@ -13,6 +13,7 @@ define('USERS_PATH', dirname(__DIR__, 2) . '/users/');
 
 // Include database connection
 require_once dirname(__DIR__, 2) . '/includes/db.php';
+require_once dirname(__DIR__, 2) . '/includes/helpers.php';
 require_once dirname(__DIR__, 2) . '/includes/search_helper.php';
 define('BASE_URL', 'https://openshelf.free.nf');
 
@@ -191,21 +192,24 @@ function updateRequestStatus($requestId, $status, $additionalData = []) {
         // Send email notification
         global $mailer;
         if ($mailer && !empty($requestData['borrower_email'])) {
-            if ($status === 'approved') {
-                $mailer->sendTemplate(
-                    $requestData['borrower_email'],
-                    $requestData['borrower_name'],
-                    'request_approved',
-                    [
-                        'subject'           => 'Your Borrow Request Has Been Approved!',
-                        'user_name'         => $requestData['borrower_name'],
-                        'borrower_name'     => $requestData['borrower_name'],
-                        'book_title'        => $requestData['book_title'],
-                        'owner_name'        => $requestData['owner_name'],
-                        'due_date'          => $requestData['expected_return_date'],
-                        'base_url'          => BASE_URL
-                    ]
-                );
+                if ($status === 'approved') {
+                    $owner = getUserById($requestData['owner_id']);
+                    $mailer->sendTemplate(
+                        $requestData['borrower_email'],
+                        $requestData['borrower_name'],
+                        'request_approved',
+                        [
+                            'subject'           => 'Your Borrow Request Has Been Approved!',
+                            'user_name'         => $requestData['borrower_name'],
+                            'borrower_name'     => $requestData['borrower_name'],
+                            'book_title'        => $requestData['book_title'],
+                            'owner_name'        => $requestData['owner_name'],
+                            'owner_room'        => $owner['personal_info']['room_number'] ?? 'N/A',
+                            'owner_phone'       => $owner['personal_info']['phone'] ?? 'N/A',
+                            'due_date'          => $requestData['expected_return_date'],
+                            'base_url'          => BASE_URL
+                        ]
+                    );
             } elseif ($status === 'rejected') {
                 $mailer->sendTemplate(
                     $requestData['borrower_email'],

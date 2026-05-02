@@ -348,27 +348,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if ($mailer) {
                 $returnDate = date('Y-m-d');
                 
-                // Email to borrower
-                if (!empty($borrower['personal_info']['email'])) {
-                    try {
-                        $mailer->sendTemplate(
-                            $borrower['personal_info']['email'],
-                            $borrower['personal_info']['name'] ?? $request['borrower_name'],
-                            'book_returned',
-                            [
-                                'subject'       => "Book Return Confirmed: \"{$request['book_title']}\"",
-                                'borrower_name' => $borrower['personal_info']['name'] ?? $request['borrower_name'],
-                                'book_title'    => $request['book_title'],
-                                'return_date'   => $returnDate,
-                                'base_url'      => BASE_URL
-                            ]
-                        );
-                        error_log("✅ Return email sent to borrower: " . $borrower['personal_info']['email']);
-                    } catch (Exception $e) {
-                        error_log("❌ Failed to send return email to borrower: " . $e->getMessage());
-                    }
-                }
-                
                 // Email to owner
                 if (!empty($owner['personal_info']['email'])) {
                     try {
@@ -381,7 +360,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 'owner_name'    => $owner['personal_info']['name'] ?? $request['owner_name'],
                                 'book_title'    => $request['book_title'],
                                 'return_date'   => $returnDate,
-                                'borrower_name' => $currentUserName,
+                                'borrower_name' => $request['borrower_name'] ?? $currentUserName,
                                 'book_id'       => $request['book_id'],
                                 'base_url'      => BASE_URL
                             ]

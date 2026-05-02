@@ -283,6 +283,7 @@ $borrowError = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     if ($_POST['action'] === 'borrow' && $canBorrow) {
+        $borrower = loadUserData($currentUserId);
         $requestId = 'REQ' . time() . bin2hex(random_bytes(4));
         $duration = intval($_POST['duration'] ?? 14);
         $message = trim($_POST['message'] ?? '');
@@ -298,7 +299,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             ':owner_email' => $owner['personal_info']['email'] ?? null,
             ':borrower_id' => $currentUserId,
             ':borrower_name' => $currentUserName,
-            ':borrower_email' => $_SESSION['user_email'] ?? null,
+            ':borrower_email' => $borrower['personal_info']['email'] ?? $_SESSION['user_email'] ?? null,
             ':status' => 'pending',
             ':request_date' => date('Y-m-d H:i:s'),
             ':expected_return_date' => date('Y-m-d H:i:s', strtotime("+{$duration} days")),
@@ -338,7 +339,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             
             // Send email notification to owner
             if ($mailer && !empty($owner['personal_info']['email'])) {
-                $borrower = loadUserData($currentUserId);
                 $mailer->sendTemplate(
                     $owner['personal_info']['email'],
                     $owner['personal_info']['name'] ?? 'Owner',
@@ -346,6 +346,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                     [
                         'owner_name' => $owner['personal_info']['name'] ?? 'Owner',
                         'borrower_name' => $currentUserName,
+                        'borrower_email' => $borrower['personal_info']['email'] ?? 'N/A',
                         'book_title' => $book['title'],
                         'book_author' => $book['author'],
                         'duration_days' => $duration,

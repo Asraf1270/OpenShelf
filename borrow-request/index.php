@@ -153,6 +153,7 @@ function sendOwnerEmail($ownerEmail, $ownerName, $borrowerName, $bookTitle, $boo
                 'subject'            => "New Borrow Request: {$bookTitle}",
                 'owner_name'         => $ownerName,
                 'borrower_name'      => $borrowerName,
+                'borrower_email'     => $borrowerData['personal_info']['email'] ?? 'N/A',
                 'book_title'         => $bookTitle,
                 'book_author'        => $bookAuthor,
                 'duration_days'      => $duration,

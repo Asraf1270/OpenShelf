@@ -249,24 +249,6 @@ function sendRejectionEmail($borrowerEmail, $borrowerName, $bookTitle, $reason, 
     );
 }
 
-/**
- * Send return confirmation email to borrower
- */
-function sendReturnEmailToBorrower($borrowerEmail, $borrowerName, $bookTitle, $returnDate, $requestId) {
-    return sendEmail(
-        $borrowerEmail,
-        $borrowerName,
-        'book_returned',
-        [
-            'subject'       => "Book Return Confirmed: \"$bookTitle\"",
-            'borrower_name' => $borrowerName,
-            'book_title'    => $bookTitle,
-            'return_date'   => $returnDate,
-            'request_id'    => $requestId,
-            'base_url'      => BASE_URL
-        ]
-    );
-}
 
 /**
  * Send return confirmation email to owner
@@ -467,22 +449,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     "/requests/?id={$requestId}"
                 );
                 
-                // Send return confirmation email to borrower
-                if (!empty($borrower['personal_info']['email'])) {
-                    $emailSent = sendReturnEmailToBorrower(
-                        $borrower['personal_info']['email'],
-                        $borrower['personal_info']['name'] ?? $request['borrower_name'],
-                        $request['book_title'],
-                        $returnDate,
-                        $requestId
-                    );
-                    
-                    if ($emailSent) {
-                        error_log("✅ Return email sent to borrower: " . $borrower['personal_info']['email']);
-                    } else {
-                        error_log("❌ Failed to send return email to borrower: " . $borrower['personal_info']['email']);
-                    }
-                }
                 
                 // Send return confirmation email to owner
                 if (!empty($owner['personal_info']['email'])) {
@@ -491,7 +457,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $owner['personal_info']['name'] ?? $request['owner_name'],
                         $request['book_title'],
                         $returnDate,
-                        $currentUserName,
+                        $request['borrower_name'] ?? $currentUserName,
                         $requestId,
                         $request['book_id']
                     );
