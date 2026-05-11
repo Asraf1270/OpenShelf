@@ -61,131 +61,139 @@ include 'includes/header.php';
 
 <style>
     :root {
-        --primary: #6366f1;
-        --bg: #f8fafc;
+        --primary: #2C3E50;
+        --secondary: #4C9F8A;
+        --accent: #3A7B6B;
+        --bg: #F8F9FA;
         --surface: #ffffff;
-        --text: #0f172a;
-        --text-muted: #64748b;
-        --border: #e2e8f0;
-        --radius: 16px;
-        --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+        --text-main: #0F172A;
+        --text-muted: #5A6C7D;
+        --border: #E2E8F0;
+        --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
+        --shadow-md: 0 10px 30px -5px rgba(44, 62, 80, 0.08);
+        --radius-lg: 24px;
+        --radius-md: 16px;
     }
 
     [data-theme="dark"] {
-        --bg: #0f172a;
-        --surface: #1e293b;
-        --text: #f8fafc;
-        --text-muted: #94a3b8;
+        --bg: #0F172A;
+        --surface: #1E293B;
+        --text-main: #F8F9FA;
+        --text-muted: #94A3B8;
         --border: #334155;
-        --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+        --shadow-md: 0 10px 30px -5px rgba(0, 0, 0, 0.3);
     }
 
     body {
         background-color: var(--bg);
-        color: var(--text);
-        font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        color: var(--text-main);
+        font-family: 'Outfit', 'Inter', system-ui, -apple-system, sans-serif;
+        transition: background 0.3s ease;
     }
 
     .report-container {
         max-width: 700px;
-        margin: 4rem auto;
+        margin: 6rem auto;
         padding: 0 1.5rem;
     }
 
     .report-header {
         text-align: center;
-        margin-bottom: 3rem;
+        margin-bottom: 4rem;
     }
 
     .report-header h1 {
-        font-size: 2.5rem;
-        font-weight: 800;
-        letter-spacing: -0.02em;
-        margin-bottom: 0.5rem;
-        background: linear-gradient(135deg, var(--primary), #8b5cf6);
+        font-size: clamp(2.5rem, 6vw, 3.5rem);
+        font-weight: 850;
+        letter-spacing: -0.03em;
+        margin-bottom: 1.5rem;
+        background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
     }
 
     .report-card {
         background: var(--surface);
-        padding: 2.5rem;
-        border-radius: var(--radius);
+        padding: 3.5rem;
+        border-radius: var(--radius-lg);
         border: 1px solid var(--border);
-        box-shadow: var(--shadow);
+        box-shadow: var(--shadow-md);
     }
 
     .form-group {
-        margin-bottom: 1.5rem;
+        margin-bottom: 2rem;
     }
 
     .form-group label {
         display: block;
-        font-weight: 600;
-        margin-bottom: 0.5rem;
+        font-weight: 700;
+        margin-bottom: 0.75rem;
         font-size: 0.95rem;
+        color: var(--text-main);
     }
 
     .form-control {
         width: 100%;
-        padding: 0.75rem 1rem;
+        padding: 1rem 1.25rem;
         border: 1.5px solid var(--border);
-        border-radius: 10px;
+        border-radius: 12px;
         background: var(--bg);
-        color: var(--text);
+        color: var(--text-main);
         font-family: inherit;
-        transition: all 0.2s ease;
+        transition: all 0.3s ease;
+        font-size: 1rem;
     }
 
     .form-control:focus {
         outline: none;
-        border-color: var(--primary);
-        box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+        border-color: var(--secondary);
+        box-shadow: 0 0 0 4px rgba(76, 159, 138, 0.1);
+        background: var(--surface);
     }
 
     .btn-submit {
         width: 100%;
-        padding: 1rem;
+        padding: 1.15rem;
         background: var(--primary);
         color: white;
         border: none;
-        border-radius: 10px;
-        font-weight: 700;
-        font-size: 1rem;
+        border-radius: 12px;
+        font-weight: 800;
+        font-size: 1.05rem;
         cursor: pointer;
-        transition: all 0.2s ease;
+        transition: all 0.3s ease;
         margin-top: 1rem;
+        letter-spacing: 0.5px;
     }
 
     .btn-submit:hover {
-        background: #4f46e5;
+        background: var(--secondary);
         transform: translateY(-2px);
-        box-shadow: 0 10px 15px -3px rgba(99, 102, 241, 0.3);
+        box-shadow: 0 10px 20px -5px rgba(76, 159, 138, 0.4);
     }
 
     .alert {
-        padding: 1rem;
-        border-radius: 10px;
-        margin-bottom: 2rem;
-        font-weight: 500;
+        padding: 1.25rem;
+        border-radius: 12px;
+        margin-bottom: 2.5rem;
+        font-weight: 600;
     }
 
-    .alert-success {
-        background: rgba(16, 185, 129, 0.1);
-        color: #059669;
-        border: 1px solid rgba(16, 185, 129, 0.2);
+    .alert-success { 
+        background: rgba(16, 185, 129, 0.1); 
+        color: #059669; 
+        border: 1px solid rgba(16, 185, 129, 0.2); 
     }
-
-    .alert-error {
-        background: rgba(239, 68, 68, 0.1);
-        color: #dc2626;
-        border: 1px solid rgba(239, 68, 68, 0.2);
+    
+    .alert-error { 
+        background: rgba(239, 68, 68, 0.1); 
+        color: #dc2626; 
+        border: 1px solid rgba(239, 68, 68, 0.2); 
     }
 
     @media (max-width: 640px) {
-        .report-card {
-            padding: 1.5rem;
-        }
+        .report-card { padding: 2.5rem 1.5rem; border-radius: 24px; }
+        .report-header h1 { font-size: 2.25rem; }
     }
 </style>
 

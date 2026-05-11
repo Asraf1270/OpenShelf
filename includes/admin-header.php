@@ -20,12 +20,12 @@ $adminRole = $_SESSION['admin_role'] ?? 'admin';
     <link rel="icon" type="image/svg+xml" href="/assets/images/logo-icon.svg">
     <link rel="apple-touch-icon" href="/assets/images/pwa/icon-192x192.png">
     <link rel="manifest" href="/manifest.json">
-    <meta name="theme-color" content="#6366f1">
+    <meta name="theme-color" content="#2C3E50">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="OpenShelf">
     <meta name="mobile-web-app-capable" content="yes">
-    <meta name="msapplication-TileColor" content="#6366f1">
+    <meta name="msapplication-TileColor" content="#2C3E50">
     <meta name="msapplication-TileImage" content="/assets/images/pwa/icon-144x144.png">
     <link rel="stylesheet" href="/assets/css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -40,12 +40,12 @@ $adminRole = $_SESSION['admin_role'] ?? 'admin';
 
         /* Admin Panel Styles */
         :root {
-            --primary: #6366f1;
-            --primary-dark: #4f46e5;
+            --primary: #2C3E50;
+            --primary-dark: #1a252f;
             --sidebar-bg: #0f172a;
             --sidebar-glass: rgba(15, 23, 42, 0.95);
             --sidebar-hover: rgba(255, 255, 255, 0.05);
-            --sidebar-active: rgba(99, 102, 241, 0.2);
+            --sidebar-active: rgba(44, 62, 80, 0.2);
             --header-bg: rgba(255, 255, 255, 0.8);
             --header-blur: blur(12px);
             --text-main: #0f172a;
@@ -56,8 +56,8 @@ $adminRole = $_SESSION['admin_role'] ?? 'admin';
         }
 
         :root[data-theme="dark"] {
-            --primary: #818cf8;
-            --primary-dark: #6366f1;
+            --primary: #4C9F8A;
+            --primary-dark: #2C3E50;
             --sidebar-bg: #0b1120;
             --header-bg: rgba(15, 23, 42, 0.8);
             --text-main: #f8fafc;
@@ -156,26 +156,26 @@ $adminRole = $_SESSION['admin_role'] ?? 'admin';
             width: 40px;
             height: 40px;
             border-radius: 12px;
-            filter: drop-shadow(0 0 10px rgba(99, 102, 241, 0.5));
+            filter: drop-shadow(0 0 10px rgba(44, 62, 80, 0.5));
         }
 
         .sidebar-logo span {
-            background: linear-gradient(135deg, #ffffff 0%, #a5b4fc 100%);
+            background: linear-gradient(135deg, #ffffff 0%, #4C9F8A 100%);
             -webkit-background-clip: text;
             background-clip: text;
             -webkit-text-fill-color: transparent;
         }
 
         .sidebar-badge {
-            background: rgba(99, 102, 241, 0.15);
-            color: var(--primary-light);
+            background: rgba(44, 62, 80, 0.15);
+            color: #4C9F8A;
             padding: 0.35rem 1rem;
             border-radius: 2rem;
             font-size: 0.75rem;
             font-weight: 600;
             margin-top: 1rem;
             display: inline-block;
-            border: 1px solid rgba(99, 102, 241, 0.2);
+            border: 1px solid rgba(44, 62, 80, 0.2);
             text-transform: uppercase;
             letter-spacing: 1px;
         }
@@ -228,7 +228,7 @@ $adminRole = $_SESSION['admin_role'] ?? 'admin';
         .menu-item.active {
             background: var(--primary);
             color: white;
-            box-shadow: 0 10px 20px -5px rgba(99, 102, 241, 0.4);
+            box-shadow: 0 10px 20px -5px rgba(44, 62, 80, 0.4);
         }
 
         .menu-item.active i {

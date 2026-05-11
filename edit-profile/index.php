@@ -376,15 +376,15 @@ $profileImagePath = '/uploads/profile/' . $profileImage;
 ?>
 <style>
     :root {
-        --primary: #4f46e5;
-        --secondary: #7c3aed;
-        --accent: #db2777;
-        --bg: #f5f7ff;
-        --card: rgba(255, 255, 255, 0.88);
-        --border: rgba(99, 102, 241, 0.18);
-        --text: #1f2937;
-        --muted: #4b5563;
-        --radius: 22px;
+        --primary: #2C3E50;
+        --secondary: #4C9F8A;
+        --accent: #3A7B6B;
+        --bg: #F8F9FA;
+        --card: rgba(255, 255, 255, 0.9);
+        --border: rgba(44, 62, 80, 0.12);
+        --text: #0F172A;
+        --muted: #5A6C7D;
+        --radius: 20px;
     }
 
     * { box-sizing: border-box; }
@@ -423,7 +423,7 @@ $profileImagePath = '/uploads/profile/' . $profileImage;
     }
 
     .info-panel {
-        background: linear-gradient(135deg, rgba(79,70,229,0.85), rgba(124,58,237,0.85));
+        background: linear-gradient(135deg, #2C3E50, #4C9F8A);
         color: #f8fafc;
         border-radius: var(--radius) var(--radius) 0 0;
         position: relative;
@@ -474,10 +474,10 @@ $profileImagePath = '/uploads/profile/' . $profileImage;
     }
 
     .form-panel {
-        background: rgba(255, 255, 255, 0.85);
-        border: 1px solid rgba(99, 102, 241, 0.15);
+        background: rgba(255, 255, 255, 0.95);
+        border: 1px solid var(--border);
         border-radius: 0 0 var(--radius) var(--radius);
-        box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.3);
+        box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.5);
     }
 
     .field-group {
@@ -509,10 +509,10 @@ $profileImagePath = '/uploads/profile/' . $profileImage;
     .avatar-preview-wrapper {
         width: 132px;
         height: 132px;
-        border-radius: 22% 78% 80% 20% / 24% 51% 49% 76%;
+        border-radius: 24px;
         overflow: hidden;
-        border: 4px solid rgba(99,102,241,0.4);
-        box-shadow: 0 16px 30px rgba(79,70,229,0.25);
+        border: 4px solid rgba(44, 62, 80, 0.1);
+        box-shadow: 0 16px 30px rgba(44, 62, 80, 0.15);
         transition: transform 0.45s ease;
     }
 
@@ -548,8 +548,8 @@ $profileImagePath = '/uploads/profile/' . $profileImage;
     .premium-input {
         width: 100%;
         min-height: 44px;
-        border: 1px solid rgba(99, 102, 241, 0.4);
-        border-radius: 14px;
+        border: 1px solid rgba(44, 62, 80, 0.2);
+        border-radius: 12px;
         background: white;
         color: #111827;
         padding: 0.9rem 0.9rem 0.9rem 2.6rem;
@@ -571,7 +571,7 @@ $profileImagePath = '/uploads/profile/' . $profileImage;
         position: absolute;
         right: 0.8rem;
         bottom: 0.5rem;
-        background: rgba(99, 102, 241, 0.14);
+        background: rgba(44, 62, 80, 0.08);
         color: #4b5563;
         padding: 0.2rem 0.46rem;
         border-radius: 999px;
@@ -598,10 +598,10 @@ $profileImagePath = '/uploads/profile/' . $profileImage;
     }
 
     .btn-primary {
-        background: linear-gradient(120deg, var(--primary), var(--accent));
+        background: linear-gradient(120deg, var(--primary), var(--secondary));
         color: white;
         border: none;
-        box-shadow: 0 10px 20px rgba(79,70,229,0.35);
+        box-shadow: 0 10px 20px rgba(44, 62, 80, 0.2);
     }
 
     .btn-primary:hover {

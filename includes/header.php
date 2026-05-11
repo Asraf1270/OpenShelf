@@ -105,7 +105,7 @@ if (!file_exists($fullAvatarPath) || $userAvatar === 'default-avatar.jpg') {
     <meta name="apple-mobile-web-app-title" content="OpenShelf">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="theme-color" id="themeColorMeta" content="#ffffff">
-    <meta name="msapplication-TileColor" content="#6366f1">
+    <meta name="msapplication-TileColor" content="#2C3E50">
     <meta name="msapplication-TileImage" content="/assets/images/pwa/icon-144x144.png">
     
     <!-- Font Awesome -->
@@ -135,33 +135,33 @@ if (!file_exists($fullAvatarPath) || $userAvatar === 'default-avatar.jpg') {
             --header-bg: #ffffff;
             --header-blur: none;
             --header-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-            --header-border: #f1f5f9;
-            --nav-link-color: #334155;
-            --nav-link-hover: #6366f1;
-            --nav-link-active: #6366f1;
-            --text-primary: #0f172a;
-            --text-secondary: #334155;
-            --text-tertiary: #64748b;
-            --border: #e2e8f0;
-            --surface-hover: #f8fafc;
-            --primary: #6366f1;
-            --primary-soft: rgba(99, 102, 241, 0.08);
+            --header-border: #E2E8F0;
+            --nav-link-color: #5A6C7D;
+            --nav-link-hover: #2C3E50;
+            --nav-link-active: #2C3E50;
+            --text-primary: #0F172A;
+            --text-secondary: #5A6C7D;
+            --text-tertiary: #94a3b8;
+            --border: #E2E8F0;
+            --surface-hover: #F1F5F9;
+            --primary: #2C3E50;
+            --primary-soft: rgba(44, 62, 80, 0.08);
         }
 
         :root[data-theme="dark"] {
-            --header-bg: #0f172a;
+            --header-bg: #0F172A;
             --header-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
             --header-border: #1e293b;
             --nav-link-color: #cbd5e1;
-            --nav-link-hover: #818cf8;
-            --nav-link-active: #818cf8;
-            --text-primary: #f8fafc;
+            --nav-link-hover: #4C9F8A;
+            --nav-link-active: #4C9F8A;
+            --text-primary: #F8F9FA;
             --text-secondary: #cbd5e1;
             --text-tertiary: #94a3b8;
             --border: #334155;
             --surface-hover: #1e293b;
-            --primary: #818cf8;
-            --primary-soft: rgba(129, 140, 248, 0.1);
+            --primary: #4C9F8A;
+            --primary-soft: rgba(76, 159, 138, 0.1);
         }
 
         [data-theme="dark"] body {
@@ -208,10 +208,12 @@ if (!file_exists($fullAvatarPath) || $userAvatar === 'default-avatar.jpg') {
             right: 0;
             z-index: 1100;
             background: var(--header-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
             border-bottom: 1px solid var(--header-border);
-            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             width: 100%;
-            height: 56px;
+            height: 72px;
             display: flex;
             align-items: center;
         }
@@ -228,22 +230,59 @@ if (!file_exists($fullAvatarPath) || $userAvatar === 'default-avatar.jpg') {
             justify-content: space-between;
         }
 
-        /* Logo */
-        .logo {
+        /* Logo Wrapper Styling */
+        .logo-wrapper {
             display: flex;
             align-items: center;
-            text-decoration: none;
-            transition: transform 0.2s ease;
+            gap: 0.75rem;
+            transition: all 0.3s ease;
         }
 
-        .logo:hover {
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #2C3E50 0%, #4C9F8A 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.3rem;
+            box-shadow: 0 4px 12px rgba(44, 62, 80, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .logo-text {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.1;
+        }
+
+        .logo-name {
+            font-size: 1.35rem;
+            font-weight: 850;
+            letter-spacing: -0.5px;
+            background: linear-gradient(135deg, #2C3E50 0%, #4C9F8A 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .logo-tagline {
+            font-size: 0.6rem;
+            font-weight: 600;
+            color: var(--text-tertiary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .logo:hover .logo-wrapper {
             transform: scale(1.02);
         }
 
-        .logo img {
-            height: 32px;
-            width: auto;
-            display: block;
+        .logo:hover .logo-icon {
+            transform: rotate(-5deg) scale(1.1);
+            box-shadow: 0 6px 16px rgba(76, 159, 138, 0.3);
         }
 
         /* Desktop Navigation */
@@ -303,7 +342,7 @@ if (!file_exists($fullAvatarPath) || $userAvatar === 'default-avatar.jpg') {
         }
 
         .notification-btn:hover {
-            background: rgba(99, 102, 241, 0.08);
+            background: var(--primary-soft);
             color: var(--nav-link-hover);
         }
 
@@ -341,11 +380,11 @@ if (!file_exists($fullAvatarPath) || $userAvatar === 'default-avatar.jpg') {
             border-radius: 2rem;
             cursor: pointer;
             transition: all 0.2s ease;
-            background: rgba(99, 102, 241, 0.05);
+            background: var(--primary-soft);
         }
 
         .user-btn:hover {
-            background: rgba(99, 102, 241, 0.12);
+            background: rgba(44, 62, 80, 0.12);
         }
 
         .user-avatar {
@@ -353,7 +392,7 @@ if (!file_exists($fullAvatarPath) || $userAvatar === 'default-avatar.jpg') {
             height: 36px;
             border-radius: 50%;
             object-fit: cover;
-            border: 2px solid #6366f1;
+            border: 2px solid var(--primary);
         }
 
         .user-name {
@@ -453,19 +492,19 @@ if (!file_exists($fullAvatarPath) || $userAvatar === 'default-avatar.jpg') {
 
         .btn-register {
             padding: 0.5rem 1.25rem;
-            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            background: linear-gradient(135deg, #2C3E50, #4C9F8A);
             border: none;
             border-radius: 2rem;
             color: white;
             font-weight: 500;
             text-decoration: none;
             transition: all 0.2s ease;
-            box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
+            box-shadow: 0 2px 8px rgba(44, 62, 80, 0.3);
         }
 
         .btn-register:hover {
             transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+            box-shadow: 0 4px 12px rgba(44, 62, 80, 0.4);
         }
 
         /* Mobile Menu Toggle - THE THREE LINES */
@@ -526,7 +565,7 @@ if (!file_exists($fullAvatarPath) || $userAvatar === 'default-avatar.jpg') {
 
         .mobile-header {
             padding: 1.5rem;
-            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            background: linear-gradient(135deg, #2C3E50, #4C9F8A);
             color: white;
         }
 
@@ -584,7 +623,7 @@ if (!file_exists($fullAvatarPath) || $userAvatar === 'default-avatar.jpg') {
         }
 
         .mobile-nav-link.active {
-            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.05));
+            background: var(--primary-soft);
             color: var(--primary);
             font-weight: 500;
             border-left: 3px solid var(--primary);
@@ -713,7 +752,7 @@ if (!file_exists($fullAvatarPath) || $userAvatar === 'default-avatar.jpg') {
     <div class="header-container">
         <!-- Logo -->
         <a href="/" class="logo">
-            <img src="/assets/images/logo-full.svg" alt="OpenShelf">
+            <img src="/assets/images/logo-full.svg" alt="OpenShelf" height="45">
         </a>
 
         <!-- Desktop Navigation -->
@@ -914,6 +953,13 @@ if (!file_exists($fullAvatarPath) || $userAvatar === 'default-avatar.jpg') {
                 </a>
             </li>
             <?php endif; ?>
+            <div class="mobile-divider"></div>
+            <li class="mobile-nav-item" id="pwaInstallItem" style="display: none;">
+                <a href="#" class="mobile-nav-link" id="pwaInstallBtn" style="color: var(--accent-brand); font-weight: 700;">
+                    <i class="fas fa-download"></i> Install App
+                </a>
+            </li>
+
         </ul>
     </nav>
 </div>

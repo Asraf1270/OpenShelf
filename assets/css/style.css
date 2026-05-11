@@ -1,22 +1,22 @@
 /* ===== OpenShelf Mobile-First CSS ===== */
 :root {
     /* Colors */
-    --primary: #667eea;
-    --primary-dark: #5a67d8;
-    --primary-light: #8a9af1;
-    --secondary: #764ba2;
-    --success: #2dce89;
-    --warning: #fb6340;
-    --danger: #f5365c;
-    --dark: #1a1a2e;
-    --gray-100: #f8f9fa;
-    --gray-200: #e9ecef;
+    --primary: #2C3E50;
+    --primary-dark: #1a252f;
+    --primary-light: #3e5871;
+    --secondary: #4C9F8A;
+    --success: #2E8B57;
+    --warning: #D9A441;
+    --danger: #C65D5D;
+    --dark: #0F172A;
+    --gray-100: #F8F9FA;
+    --gray-200: #E2E8F0;
     --gray-300: #dee2e6;
     --gray-400: #ced4da;
     --gray-500: #adb5bd;
-    --gray-600: #8898aa;
-    --gray-700: #525f7f;
-    --gray-800: #32325d;
+    --gray-600: #5A6C7D;
+    --gray-700: #4a5568;
+    --gray-800: #0F172A;
     --white: #ffffff;
     
     /* Spacing */
@@ -28,7 +28,7 @@
     --space-xxl: 3rem;
     
     /* Typography */
-    --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
     --font-size-xs: 0.75rem;
     --font-size-sm: 0.875rem;
     --font-size-md: 1rem;
@@ -39,9 +39,9 @@
     
     /* Shadows */
     --shadow-sm: 0 2px 4px rgba(0,0,0,0.05);
-    --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
-    --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
-    --shadow-xl: 0 20px 25px rgba(0,0,0,0.15);
+    --shadow-md: 0 4px 6px rgba(0,0,0,0.08);
+    --shadow-lg: 0 10px 15px rgba(0,0,0,0.08);
+    --shadow-xl: 0 20px 25px rgba(0,0,0,0.1);
     
     /* Borders */
     --radius-sm: 4px;
@@ -51,7 +51,10 @@
     --radius-full: 9999px;
     
     /* Transitions */
-    --transition: all 0.3s ease;
+    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    
+    /* Logo Colors */
+    --logo-gradient: linear-gradient(135deg, #2C3E50 0%, #4C9F8A 100%);
 }
 
 /* ===== Reset & Base ===== */
@@ -71,7 +74,7 @@ body {
     font-size: var(--font-size-md);
     line-height: 1.6;
     color: var(--gray-800);
-    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    background: var(--gray-100);
     min-height: 100vh;
 }
 
@@ -108,42 +111,79 @@ a:hover {
     padding: 0 var(--space-md);
 }
 
-/* ===== Header/Navigation ===== */
-.header {
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(10px);
-    box-shadow: var(--shadow-md);
+/* ===== Logo Styles ===== */
+.logo-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    transition: var(--transition);
+}
+
+.logo-icon {
+    width: 42px;
+    height: 42px;
+    background: var(--logo-gradient);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.4rem;
+    box-shadow: 0 4px 12px rgba(44, 62, 80, 0.2);
+    transition: var(--transition);
+}
+
+.logo-text {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.1;
+}
+
+.logo-name {
+    font-size: 1.45rem;
+    font-weight: 850;
+    letter-spacing: -1px;
+}
+
+.logo-name .text-primary {
+    color: #2C3E50;
+}
+
+.logo-name .text-secondary {
+    color: #4C9F8A;
+}
+
+.navbar-brand:hover .logo-wrapper {
+    transform: scale(1.02);
+}
+
+.navbar-brand:hover .logo-icon {
+    transform: rotate(-5deg) scale(1.1);
+    box-shadow: 0 6px 16px rgba(76, 159, 138, 0.3);
+}
+
+.navbar {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border-bottom: 1px solid rgba(226, 232, 240, 0.8);
     position: sticky;
     top: 0;
     z-index: 1000;
-    border-bottom: 1px solid var(--gray-200);
+    padding: 0.75rem 0;
+    transition: var(--transition);
 }
 
-.header .container {
+.navbar.scrolled {
+    padding: 0.5rem 0;
+    background: rgba(255, 255, 255, 0.95);
+    box-shadow: var(--shadow-md);
+}
+
+.navbar .container {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: var(--space-sm) var(--space-md);
-}
-
-.logo {
-    font-size: 1.5rem;
-    font-weight: 800;
-    background: linear-gradient(135deg, var(--primary), var(--secondary));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    display: flex;
-    align-items: center;
-    gap: var(--space-xs);
-}
-
-.logo i {
-    background: linear-gradient(135deg, var(--primary), var(--secondary));
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    font-size: 1.8rem;
 }
 
 .nav-toggle {

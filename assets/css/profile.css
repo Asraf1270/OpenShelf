@@ -9,9 +9,9 @@
     --glass-bg: rgba(255, 255, 255, 0.7);
     --glass-border: rgba(255, 255, 255, 0.3);
     --glass-blur: blur(15px);
-    --profile-primary: hsl(235, 75%, 65%);
-    --profile-secondary: hsl(270, 60%, 55%);
-    --profile-accent: hsl(155, 65%, 50%);
+    --profile-primary: #2C3E50;
+    --profile-secondary: #4C9F8A;
+    --profile-accent: #3A7B6B;
 }
 
 .profile-hero {

@@ -1,11 +1,28 @@
 # 📚 OpenShelf — Community Library Management System
 
-[![Version](https://img.shields.io/badge/version-2.8.0-blue.svg)](https://github.com/Asraf1270/OpenShelf/releases/tag/v2.8.0)
+[![Version](https://img.shields.io/badge/version-2.9.1-blue.svg)](https://github.com/Asraf1270/OpenShelf/releases/tag/v2.9.1)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![PHP](https://img.shields.io/badge/PHP-7.4%2B-777bb4.svg)](https://www.php.net/)
 [![MySQL](https://img.shields.io/badge/MySQL-5.7%2B-4479A1.svg)](https://www.mysql.com/)
 
 **OpenShelf** is a modern, open-source library management system designed for communities, universities, and book clubs. It empowers users to share, borrow, and manage books effortlessly through a **premium, glassmorphic interface** that feels alive and responsive.
+
+---
+
+## 🚀 v2.9.0 — The "Admin Renaissance" & Intelligent Discovery
+
+**Release Date:** May 10, 2026
+
+A transformative update that brings the entire **Administrative Suite** into the modern era. This release harmonizes the management interface with our premium brand identity, introduces global dark mode for administrators, and implements intelligent automation for library categorization.
+
+### Highlights
+
+- 🎨 **Admin Suite Renaissance** — Complete visual modernization of the entire administrative suite with our premium brand identity.
+- 🌗 **Global Admin Dark Mode** — Full, native dark mode support for all administrative surfaces and tools.
+- 🧠 **Intelligent Category Sync** — Reimagined Category Management with an automated "Collect" engine for real-time inventory synchronization.
+- 📱 **Responsive Admin Architecture** — Mobile-first refactor of all admin data tables, management grids, and interactive charts.
+
+📄 Full details: [v2.9.0 Release Notes](v2.9.0_release_notes.md)
 
 ---
 

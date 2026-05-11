@@ -1,5 +1,41 @@
 # 📦 OpenShelf — Release History
 
+## 🚀 v2.9.1 — The "Unified Public Experience"
+
+**Release Date:** May 11, 2026
+
+This release completes the platform-wide visual modernization by unifying the design language across all public-facing pages. Every public touchpoint now reflects our modern **Deep Indigo & Muted Teal** identity with full dark mode support and responsive refinement.
+
+### Highlights
+
+- 🎭 **Public Page Renaissance** — Complete modernization of `about.php`, `contact.php`, `faq.php`, `privacy.php`, `terms.php`, `guidelines.php`, and `report.php`.
+- 💳 **Premium Support Portal** — High-fidelity redesign of the `Support Us` page with optimized payment UI and brand-aligned styling.
+- 🔐 **Reimagined Security UI** — Overhauled the `Forget Password` flow with a sleek, multi-step interface and premium aesthetics.
+- 📡 **Resilient Offline Experience** — Redesigned `Offline` fallback page with glassmorphic UI and animated connectivity indicators.
+
+📄 Full details: [v2.9.1 Release Notes](v2.9.1_release_notes.md)
+
+---
+
+
+## 🚀 v2.9.0 — The "Admin Renaissance" & Intelligent Discovery
+
+**Release Date:** May 10, 2026
+
+A transformative update that brings the entire **Administrative Suite** into the modern era. This release harmonizes the management interface with our premium brand identity, introduces global dark mode for administrators, and implements intelligent automation for library categorization.
+
+### Highlights
+
+- 🎨 **Admin Suite Renaissance** — Complete visual modernization of the entire administrative suite with our premium brand identity.
+- 🌗 **Global Admin Dark Mode** — Full, native dark mode support for all administrative surfaces and tools.
+- 🧠 **Intelligent Category Sync** — Reimagined Category Management with an automated "Collect" engine for real-time inventory synchronization.
+- 📱 **Responsive Admin Architecture** — Mobile-first refactor of all admin data tables, management grids, and interactive charts.
+
+📄 Full details: [v2.9.0 Release Notes](v2.9.0_release_notes.md)
+
+---
+
+
 ## 🚀 v2.8.0 — The "Mobile-First" Design Evolution
 
 **Release Date:** May 9, 2026

@@ -22,7 +22,7 @@ if ($currentUserId) {
 <nav class="navbar">
     <div class="container">
         <a href="/" class="navbar-brand">
-            <i class="fas fa-book-open"></i> OpenShelf
+            <img src="/assets/images/logo-full.svg" alt="OpenShelf" height="40">
         </a>
         
         <button class="navbar-toggler" id="navbarToggler">
@@ -137,7 +137,7 @@ if ($currentUserId) {
     position: absolute;
     top: 0;
     right: 0;
-    background: #f5365c;
+    background: #C65D5D;
     color: white;
     font-size: 0.7rem;
     font-weight: 600;
@@ -193,7 +193,7 @@ if ($currentUserId) {
     justify-content: space-between;
     align-items: center;
     padding: 1rem 1.5rem;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #2C3E50 0%, #4C9F8A 100%);
     color: white;
 }
 
@@ -233,7 +233,7 @@ if ($currentUserId) {
 }
 
 .notification-list::-webkit-scrollbar-thumb {
-    background: #667eea;
+    background: #2C3E50;
     border-radius: 5px;
 }
 
@@ -363,7 +363,7 @@ if ($currentUserId) {
 }
 
 .dropdown-badge {
-    background: #f5365c;
+    background: #C65D5D;
     color: white;
     font-size: 0.7rem;
     padding: 0.15rem 0.4rem;

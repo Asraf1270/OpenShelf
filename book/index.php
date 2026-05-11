@@ -522,19 +522,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['ajax_action']) && $_P
         @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
 
         :root {
-            --primary-h: 263;
-            --primary-s: 70%;
-            --primary-l: 50%;
-            --primary: hsl(var(--primary-h), var(--primary-s), var(--primary-l));
-            --primary-light: hsl(var(--primary-h), var(--primary-s), 95%);
-            --primary-dark: hsl(var(--primary-h), var(--primary-s), 40%);
-            --accent: hsl(199, 89%, 48%);
-            --bg: hsl(210, 40%, 98%);
+            --primary: #2C3E50;
+            --primary-light: rgba(44, 62, 80, 0.1);
+            --primary-dark: #1a252f;
+            --accent: #4C9F8A;
+            --bg: #F8F9FA;
             --surface: hsla(0, 0%, 100%, 0.7);
             --surface-solid: #ffffff;
-            --text-main: hsl(222, 47%, 11%);
-            --text-muted: hsl(215, 16%, 47%);
-            --border: hsla(214, 32%, 91%, 0.8);
+            --text-main: #0F172A;
+            --text-muted: #5A6C7D;
+            --border: #E2E8F0;
             --glass-border: hsla(0, 0%, 100%, 0.4);
             --shadow-premium: 0 20px 40px -15px rgba(0, 0, 0, 0.05);
             --radius-lg: 24px;

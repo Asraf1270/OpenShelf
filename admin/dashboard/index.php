@@ -129,21 +129,7 @@ function getRecentActivities($users, $books, $requests, $limit = 10) {
             'user_id' => $user['id'],
             'timestamp' => $user['created_at'] ?? date('Y-m-d H:i:s'),
             'icon' => 'fa-user-plus',
-            'color' => '#10b981'
-        ];
-    }
-    
-    foreach (array_slice($books, 0, 5) as $book) {
-        $activities[] = [
-            'type' => 'book_added',
-            'title' => 'New Book Added',
-            'description' => '"' . $book['title'] . '" by ' . $book['author'] . ' added to library',
-            'book_title' => $book['title'],
-            'book_id' => $book['id'],
-            'user_name' => $book['owner_name'] ?? 'Unknown',
-            'timestamp' => $book['created_at'] ?? date('Y-m-d H:i:s'),
-            'icon' => 'fa-book',
-            'color' => '#6366f1'
+            'color' => '#4C9F8A'
         ];
     }
     
@@ -156,7 +142,7 @@ function getRecentActivities($users, $books, $requests, $limit = 10) {
             'user_name' => $request['borrower_name'],
             'timestamp' => $request['request_date'] ?? date('Y-m-d H:i:s'),
             'icon' => $request['status'] === 'approved' ? 'fa-check-circle' : ($request['status'] === 'pending' ? 'fa-clock' : 'fa-times-circle'),
-            'color' => $request['status'] === 'approved' ? '#10b981' : ($request['status'] === 'pending' ? '#f59e0b' : '#ef4444')
+            'color' => $request['status'] === 'approved' ? '#2E8B57' : ($request['status'] === 'pending' ? '#D97706' : '#C65D5D')
         ];
     }
     
@@ -250,13 +236,40 @@ if ($hour < 12) {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        /* Dashboard Specific Styles */
         :root {
-            --chart-primary: #6366f1;
-            --chart-secondary: #a855f7;
-            --chart-success: #10b981;
+            --primary: #2C3E50;
+            --secondary: #4C9F8A;
+            --accent: #3A7B6B;
+            --bg: #F8F9FA;
+            --surface: #ffffff;
+            --border: #E2E8F0;
+            --text-main: #0F172A;
+            --text-muted: #5A6C7D;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
+            --shadow-md: 0 10px 15px -3px rgba(0,0,0,0.05);
+            --chart-primary: #4C9F8A;
+            --chart-secondary: #2C3E50;
+            --chart-success: #4C9F8A;
             --chart-warning: #f59e0b;
             --chart-danger: #ef4444;
+            --radius-lg: 24px;
+            --radius-md: 16px;
+        }
+
+        [data-theme="dark"] {
+            --bg: #0F172A;
+            --surface: #1E293B;
+            --border: #334155;
+            --text-main: #F8F9FA;
+            --text-muted: #94A3B8;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.2);
+            --shadow-md: 0 10px 15px -3px rgba(0,0,0,0.3);
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text-main);
+            transition: background 0.3s ease;
         }
 
         .dashboard-stats {
@@ -267,23 +280,23 @@ if ($hour < 12) {
         }
 
         .stat-card {
-            background: white;
-            border-radius: 24px;
+            background: var(--surface);
+            border-radius: var(--radius-lg);
             padding: 2rem;
             display: flex;
             align-items: center;
             gap: 1.5rem;
             transition: var(--transition);
-            border: 1px solid #f1f5f9;
+            border: 1px solid var(--border);
             position: relative;
             overflow: hidden;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+            box-shadow: var(--shadow-sm);
         }
 
         .stat-card:hover {
             transform: translateY(-8px);
-            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.05);
-            border-color: rgba(99, 102, 241, 0.2);
+            box-shadow: var(--shadow-md);
+            border-color: var(--secondary);
         }
 
         .stat-icon {
@@ -334,7 +347,7 @@ if ($hour < 12) {
 
         /* Welcome Banner */
         .welcome-banner {
-            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #312e81 100%);
+            background: linear-gradient(135deg, #2C3E50 0%, #34495e 50%, #4C9F8A 100%);
             border-radius: 30px;
             padding: 3.5rem;
             margin-bottom: 2.5rem;
@@ -349,7 +362,7 @@ if ($hour < 12) {
             position: absolute;
             top: -50%; right: -20%;
             width: 500px; height: 500px;
-            background: radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, transparent 70%);
+            background: radial-gradient(circle, rgba(76, 159, 138, 0.15) 0%, transparent 70%);
             border-radius: 50%;
             pointer-events: none;
         }
@@ -383,17 +396,23 @@ if ($hour < 12) {
         /* Charts Row */
         .charts-row {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
+            grid-template-columns: 1fr;
             gap: 2rem;
             margin-bottom: 2.5rem;
         }
 
+        @media (min-width: 992px) {
+            .charts-row {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
         .chart-card {
-            background: white;
-            border-radius: 24px;
+            background: var(--surface);
+            border-radius: var(--radius-lg);
             padding: 2rem;
-            border: 1px solid #f1f5f9;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-sm);
         }
 
         .chart-header {
@@ -435,12 +454,12 @@ if ($hour < 12) {
         }
 
         .action-card {
-            background: white;
-            border-radius: 20px;
+            background: var(--surface);
+            border-radius: var(--radius-md);
             padding: 1.5rem;
             text-align: center;
             transition: var(--transition);
-            border: 1px solid #f1f5f9;
+            border: 1px solid var(--border);
             text-decoration: none;
             color: inherit;
         }
@@ -454,13 +473,13 @@ if ($hour < 12) {
 
         .action-icon {
             width: 56px; height: 56px;
-            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
             border-radius: 16px;
             display: flex; align-items: center; justify-content: center;
             margin: 0 auto 1rem;
             color: white;
             font-size: 1.4rem;
-            box-shadow: 0 8px 16px rgba(99, 102, 241, 0.3);
+            box-shadow: 0 8px 16px rgba(44, 62, 80, 0.2);
         }
 
         .action-title { font-weight: 700; font-size: 1rem; }
@@ -469,15 +488,21 @@ if ($hour < 12) {
         /* Sidebar for activity */
         .activity-grid {
             display: grid;
-            grid-template-columns: 2fr 1fr;
+            grid-template-columns: 1fr;
             gap: 2rem;
         }
 
+        @media (min-width: 1200px) {
+            .activity-grid {
+                grid-template-columns: 2fr 1fr;
+            }
+        }
+
         .activity-feed {
-            background: white;
-            border-radius: 24px;
+            background: var(--surface);
+            border-radius: var(--radius-lg);
             padding: 2rem;
-            border: 1px solid #f1f5f9;
+            border: 1px solid var(--border);
         }
 
         .activity-list {
@@ -491,8 +516,8 @@ if ($hour < 12) {
             align-items: center;
             gap: 1.25rem;
             padding: 1.25rem;
-            background: #f8fafc;
-            border-radius: 16px;
+            background: var(--bg);
+            border-radius: var(--radius-md);
             transition: var(--transition);
             border: 1px solid transparent;
         }
@@ -583,7 +608,7 @@ if ($hour < 12) {
         <!-- Stats Grid -->
         <div class="dashboard-stats">
             <div class="stat-card">
-                <div class="stat-icon" style="background: rgba(99, 102, 241, 0.1); color: #6366f1;">
+                <div class="stat-icon" style="background: rgba(44, 62, 80, 0.1); color: #2C3E50;">
                     <i class="fas fa-users"></i>
                 </div>
                 <div class="stat-info">
@@ -597,7 +622,7 @@ if ($hour < 12) {
             </div>
             
             <div class="stat-card">
-                <div class="stat-icon" style="background: rgba(16, 185, 129, 0.1); color: #10b981;">
+                <div class="stat-icon" style="background: rgba(46, 139, 87, 0.1); color: #2E8B57;">
                     <i class="fas fa-book"></i>
                 </div>
                 <div class="stat-info">
@@ -611,20 +636,20 @@ if ($hour < 12) {
             </div>
             
             <div class="stat-card">
-                <div class="stat-icon" style="background: rgba(139, 92, 246, 0.1); color: #8b5cf6;">
+                <div class="stat-icon" style="background: rgba(76, 159, 138, 0.1); color: #4C9F8A;">
                     <i class="fas fa-check-circle"></i>
                 </div>
                 <div class="stat-info">
                     <div class="stat-value"><?php echo number_format($availableBooks); ?></div>
                     <div class="stat-label">Available Books</div>
-                    <div class="stat-change" style="color: #8b5cf6">
+                    <div class="stat-change" style="color: #4C9F8A">
                         <i class="fas fa-percent"></i> <?php echo $totalBooks > 0 ? round($availableBooks / $totalBooks * 100) : 0; ?>% of total
                     </div>
                 </div>
             </div>
             
             <div class="stat-card">
-                <div class="stat-icon" style="background: rgba(239, 68, 68, 0.1); color: #ef4444;">
+                <div class="stat-icon" style="background: rgba(198, 93, 93, 0.1); color: #C65D5D;">
                     <i class="fas fa-hand-holding-heart"></i>
                 </div>
                 <div class="stat-info">
@@ -640,14 +665,14 @@ if ($hour < 12) {
         <!-- Second Row Stats -->
         <div class="dashboard-stats">
             <div class="stat-card">
-                <div class="stat-icon" style="background: rgba(245, 158, 11, 0.1); color: #f59e0b;">
+                <div class="stat-icon" style="background: rgba(217, 119, 6, 0.1); color: #D97706;">
                     <i class="fas fa-clock"></i>
                 </div>
                 <div class="stat-info">
                     <div class="stat-value"><?php echo number_format($pendingUsers); ?></div>
                     <div class="stat-label">Pending Approvals</div>
                     <div class="stat-change">
-                        <a href="/admin/users/?status=pending" style="color: #f59e0b; text-decoration: none;">
+                        <a href="/admin/users/?status=pending" style="color: #D97706; text-decoration: none;">
                             Review now <i class="fas fa-arrow-right"></i>
                         </a>
                     </div>
@@ -655,7 +680,7 @@ if ($hour < 12) {
             </div>
             
             <div class="stat-card">
-                <div class="stat-icon" style="background: rgba(99, 102, 241, 0.1); color: #6366f1;">
+                <div class="stat-icon" style="background: rgba(44, 62, 80, 0.1); color: #2C3E50;">
                     <i class="fas fa-exchange-alt"></i>
                 </div>
                 <div class="stat-info">
@@ -669,22 +694,22 @@ if ($hour < 12) {
             </div>
             
             <div class="stat-card">
-                <div class="stat-icon" style="background: rgba(245, 158, 11, 0.1); color: #f59e0b;">
+                <div class="stat-icon" style="background: rgba(217, 119, 6, 0.1); color: #D97706;">
                     <i class="fas fa-hourglass-half"></i>
                 </div>
                 <div class="stat-info">
                     <div class="stat-value"><?php echo number_format($pendingRequests); ?></div>
                     <div class="stat-label">Pending Requests</div>
                     <div class="stat-change">
-                        <a href="/admin/requests/?status=pending" style="color: #f59e0b; text-decoration: none;">
-                            Process now <i class="fas fa-arrow-right"></i>
+                        <a href="/admin/requests/?status=pending" style="color: #D97706; text-decoration: none;">
+                            Review now <i class="fas fa-arrow-right"></i>
                         </a>
                     </div>
                 </div>
             </div>
             
             <div class="stat-card">
-                <div class="stat-icon" style="background: rgba(16, 185, 129, 0.1); color: #10b981;">
+                <div class="stat-icon" style="background: rgba(46, 139, 87, 0.1); color: #2E8B57;">
                     <i class="fas fa-undo-alt"></i>
                 </div>
                 <div class="stat-info">

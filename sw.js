@@ -10,7 +10,7 @@
  * - API/Data: Network-Only (never cache dynamic data)
  */
 
-const CACHE_VERSION = 'v1.0.0';
+const CACHE_VERSION = 'v1.0.1';
 const STATIC_CACHE = `openshelf-static-${CACHE_VERSION}`;
 const PAGES_CACHE = `openshelf-pages-${CACHE_VERSION}`;
 const IMAGES_CACHE = `openshelf-images-${CACHE_VERSION}`;
@@ -244,7 +244,7 @@ async function networkFirstWithFallback(request) {
 // ==========================================
 
 function isStaticAsset(url) {
-    const staticExtensions = ['.css', '.js', '.svg', '.woff', '.woff2', '.ttf', '.eot'];
+    const staticExtensions = ['.css', '.js', '.json', '.svg', '.woff', '.woff2', '.ttf', '.eot'];
     return staticExtensions.some(ext => url.pathname.endsWith(ext));
 }
 

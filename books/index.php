@@ -143,20 +143,20 @@ function toggleCategoryUrl($cat) {
         ======================================== */
         
         :root {
-            --primary: #6366f1;
-            --primary-dark: #4f46e5;
-            --secondary: #8b5cf6;
-            --success: #10b981;
-            --danger: #f43f5e;
-            --gray-50: #f8fafc;
-            --gray-100: #f1f5f9;
-            --gray-200: #e2e8f0;
+            --primary: #2C3E50;
+            --primary-dark: #1a252f;
+            --secondary: #4C9F8A;
+            --success: #2E8B57;
+            --danger: #C65D5D;
+            --gray-50: #F8F9FA;
+            --gray-100: #F1F5F9;
+            --gray-200: #E2E8F0;
             --gray-300: #cbd5e1;
             --gray-400: #94a3b8;
-            --gray-500: #64748b;
-            --gray-600: #475569;
+            --gray-500: #5A6C7D;
+            --gray-600: #4a5568;
             --gray-700: #334155;
-            --gray-800: #1e293b;
+            --gray-800: #0F172A;
             --gray-900: #0f172a;
             --glass-bg: rgba(255, 255, 255, 0.7);
             --glass-border: rgba(255, 255, 255, 0.5);
@@ -164,8 +164,8 @@ function toggleCategoryUrl($cat) {
             --radius-lg: 1rem;
             --radius-md: 0.75rem;
             --shadow-sm: 0 4px 6px -1px rgba(0,0,0,0.05);
-            --shadow-md: 0 10px 15px -3px rgba(0,0,0,0.1);
-            --shadow-hover: 0 20px 40px -10px rgba(99,102,241,0.2);
+            --shadow-md: 0 10px 15px -3px rgba(0,0,0,0.08);
+            --shadow-hover: 0 20px 40px -10px rgba(44,62,80,0.2);
             --transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 

@@ -160,20 +160,20 @@ function getNotificationIcon($type) {
  */
 function getNotificationColor($type) {
     $colors = [
-        'borrow_request' => '#6366f1',
-        'request_approved' => '#10b981',
+        'borrow_request' => '#2C3E50',
+        'request_approved' => '#4C9F8A',
         'request_rejected' => '#ef4444',
         'return_reminder' => '#f59e0b',
         'book_due_soon' => '#f59e0b',
         'book_overdue' => '#ef4444',
-        'book_returned' => '#10b981',
+        'book_returned' => '#4C9F8A',
         'new_review' => '#f59e0b',
-        'new_comment' => '#6366f1',
-        'account_approved' => '#10b981',
+        'new_comment' => '#2C3E50',
+        'account_approved' => '#4C9F8A',
         'account_rejected' => '#ef4444',
-        'announcement' => '#6366f1'
+        'announcement' => '#2C3E50'
     ];
-    return $colors[$type] ?? '#64748b';
+    return $colors[$type] ?? '#5A6C7D';
 }
 
 // Load notifications
@@ -236,23 +236,38 @@ $paginatedNotifications = array_slice($notifications, $offset, $perPage);
         ======================================== */
         
         :root {
-            --primary: #6366f1;
-            --success: #10b981;
+            --primary: #2C3E50;
+            --secondary: #4C9F8A;
+            --success: #4C9F8A;
             --warning: #f59e0b;
             --danger: #ef4444;
-            --gray-50: #f8fafc;
-            --gray-100: #f1f5f9;
-            --gray-200: #e2e8f0;
-            --gray-300: #cbd5e1;
-            --gray-600: #475569;
-            --gray-700: #334155;
-            --gray-800: #1e293b;
-            --gray-900: #0f172a;
+            --bg: #F8F9FA;
+            --surface: #ffffff;
+            --border: #E2E8F0;
+            --text-main: #0F172A;
+            --text-muted: #5A6C7D;
             --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
-            --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1);
+            --shadow-md: 0 10px 15px -3px rgba(0,0,0,0.05);
             --radius-lg: 16px;
             --radius-xl: 20px;
-            --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        :root[data-theme="dark"] {
+            --bg: #0F172A;
+            --surface: #1E293B;
+            --border: #334155;
+            --text-main: #F8F9FA;
+            --text-muted: #94A3B8;
+            --primary: #4C9F8A;
+            --shadow-sm: 0 1px 2px rgba(0,0,0,0.2);
+            --shadow-md: 0 10px 15px -3px rgba(0,0,0,0.3);
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text-main);
+            transition: background 0.3s ease;
         }
 
         .notifications-page {
@@ -268,16 +283,18 @@ $paginatedNotifications = array_slice($notifications, $offset, $perPage);
         }
 
         .page-header h1 {
-            font-size: 2rem;
-            font-weight: 700;
-            background: linear-gradient(135deg, var(--gray-900), var(--primary));
+            font-size: 2.5rem;
+            font-weight: 850;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             margin-bottom: 0.5rem;
+            letter-spacing: -1px;
         }
 
         .page-header p {
-            color: var(--gray-600);
+            color: var(--text-muted);
+            font-weight: 500;
         }
 
         /* Stats Bar */
@@ -285,11 +302,11 @@ $paginatedNotifications = array_slice($notifications, $offset, $perPage);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: white;
+            background: var(--surface);
             padding: 1rem 1.5rem;
             border-radius: var(--radius-lg);
             margin-bottom: 1.5rem;
-            border: 1px solid var(--gray-200);
+            border: 1px solid var(--border);
             box-shadow: var(--shadow-sm);
         }
 
@@ -318,7 +335,8 @@ $paginatedNotifications = array_slice($notifications, $offset, $perPage);
         }
 
         .mark-all-btn:hover {
-            background: var(--gray-100);
+            background: var(--primary);
+            color: white;
         }
 
         /* Notification List */
@@ -329,13 +347,13 @@ $paginatedNotifications = array_slice($notifications, $offset, $perPage);
         }
 
         .notification-item {
-            background: white;
+            background: var(--surface);
             border-radius: var(--radius-lg);
-            padding: 1rem 1.25rem;
+            padding: 1.25rem;
             display: flex;
             align-items: flex-start;
-            gap: 1rem;
-            border: 1px solid var(--gray-200);
+            gap: 1.25rem;
+            border: 1px solid var(--border);
             transition: var(--transition);
             cursor: pointer;
             position: relative;
@@ -348,8 +366,8 @@ $paginatedNotifications = array_slice($notifications, $offset, $perPage);
         }
 
         .notification-item.unread {
-            background: linear-gradient(135deg, rgba(99, 102, 241, 0.03), rgba(99, 102, 241, 0.01));
-            border-left: 3px solid var(--primary);
+            background: linear-gradient(135deg, rgba(76, 159, 138, 0.08), rgba(76, 159, 138, 0.02));
+            border-left: 4px solid var(--secondary);
         }
 
         .notification-icon {
@@ -368,16 +386,17 @@ $paginatedNotifications = array_slice($notifications, $offset, $perPage);
         }
 
         .notification-title {
-            font-weight: 600;
-            color: var(--gray-800);
-            margin-bottom: 0.25rem;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 0.35rem;
+            font-size: 1.05rem;
         }
 
         .notification-message {
-            font-size: 0.85rem;
-            color: var(--gray-600);
+            font-size: 0.9rem;
+            color: var(--text-muted);
             margin-bottom: 0.5rem;
-            line-height: 1.4;
+            line-height: 1.5;
         }
 
         .notification-time {
@@ -406,17 +425,17 @@ $paginatedNotifications = array_slice($notifications, $offset, $perPage);
         }
 
         .action-btn:hover {
-            background: var(--gray-100);
-            color: var(--danger);
+            background: var(--danger);
+            color: white;
         }
 
         /* Empty State */
         .empty-state {
             text-align: center;
-            padding: 4rem 2rem;
-            background: white;
+            padding: 5rem 2rem;
+            background: var(--surface);
             border-radius: var(--radius-xl);
-            border: 1px solid var(--gray-200);
+            border: 1px solid var(--border);
         }
 
         .empty-state i {
@@ -444,17 +463,18 @@ $paginatedNotifications = array_slice($notifications, $offset, $perPage);
 
         .page-btn {
             padding: 0.5rem 0.75rem;
-            min-width: 36px;
-            height: 36px;
+            min-width: 38px;
+            height: 38px;
             display: flex;
             align-items: center;
             justify-content: center;
-            background: white;
-            border: 1px solid var(--gray-200);
-            border-radius: 0.5rem;
-            color: var(--gray-600);
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 0.75rem;
+            color: var(--text-muted);
             text-decoration: none;
-            font-size: 0.85rem;
+            font-size: 0.9rem;
+            font-weight: 600;
             transition: var(--transition);
         }
 

@@ -272,19 +272,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #4f46e5;
-            --primary-light: #6366f1;
-            --secondary: #0ea5e9;
-            --bg-dark: #0f172a;
-            --surface: #1e293b;
+            --primary: #2C3E50;
+            --primary-light: #4C9F8A;
+            --secondary: #3A7B6B;
+            --bg-dark: #0F172A;
+            --surface: #1E293B;
             --surface-hover: #334155;
             --border-color: #334155;
-            --text-main: #f8fafc;
+            --text-main: #F8F9FA;
             --text-muted: #94a3b8;
-            --error: #ef4444;
-            --success: #10b981;
-            --warning: #f59e0b;
-            --focus-ring: rgba(99, 102, 241, 0.5);
+            --error: #C65D5D;
+            --success: #2E8B57;
+            --warning: #D97706;
+            --focus-ring: rgba(76, 159, 138, 0.5);
         }
 
         * {
@@ -442,7 +442,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         /* Password Input Extra Padding */
         .input-group input[type="password"],
         .input-group input[name="confirm_password"] {
-            padding-right: 3rem;
+            padding-right: 3.25rem;
+        }
+
+        /* Eye Toggle Button */
+        .toggle-password {
+            position: absolute;
+            right: 1rem;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 1rem;
+            padding: 0.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: color 0.2s ease, transform 0.15s ease;
+            z-index: 2;
+            line-height: 1;
+        }
+
+        .toggle-password:hover {
+            color: var(--primary-light);
+            transform: scale(1.15);
+        }
+
+        .toggle-password:focus {
+            outline: none;
+            color: var(--primary-light);
         }
 
         /* Error Messages */
@@ -778,6 +806,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <div class="input-group">
                             <i class="fas fa-lock"></i>
                             <input type="password" name="password" id="password" placeholder="Secure Password" required>
+                            <button type="button" class="toggle-password" id="togglePassword" aria-label="Toggle password visibility" tabindex="-1">
+                                <i class="fas fa-eye" id="togglePasswordIcon"></i>
+                            </button>
                         </div>
                         <?php if (isset($errors['password'])): ?>
                             <div class="error-message"><i class="fas fa-circle-exclamation"></i> <?php echo $errors['password']; ?></div>
@@ -801,6 +832,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <div class="input-group">
                             <i class="fas fa-shield"></i>
                             <input type="password" name="confirm_password" id="confirm_password" placeholder="Confirm Password" required>
+                            <button type="button" class="toggle-password" id="toggleConfirmPassword" aria-label="Toggle confirm password visibility" tabindex="-1">
+                                <i class="fas fa-eye" id="toggleConfirmPasswordIcon"></i>
+                            </button>
                         </div>
                         <?php if (isset($errors['confirm_password'])): ?>
                             <div class="error-message"><i class="fas fa-circle-exclamation"></i> <?php echo $errors['confirm_password']; ?></div>
@@ -829,6 +863,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
     </div>
     
+    <script>
+        // Password visibility toggles
+        document.getElementById('togglePassword').addEventListener('click', function () {
+            const input = document.getElementById('password');
+            const icon  = document.getElementById('togglePasswordIcon');
+            const isHidden = input.type === 'password';
+            input.type = isHidden ? 'text' : 'password';
+            icon.className = isHidden ? 'fas fa-eye-slash' : 'fas fa-eye';
+        });
+
+        document.getElementById('toggleConfirmPassword').addEventListener('click', function () {
+            const input = document.getElementById('confirm_password');
+            const icon  = document.getElementById('toggleConfirmPasswordIcon');
+            const isHidden = input.type === 'password';
+            input.type = isHidden ? 'text' : 'password';
+            icon.className = isHidden ? 'fas fa-eye-slash' : 'fas fa-eye';
+        });
+    </script>
+
     <script>
         function checkPasswordStrength() {
             const value = password.value;

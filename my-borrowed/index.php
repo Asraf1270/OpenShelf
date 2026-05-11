@@ -422,8 +422,8 @@ $totalActive = count($activeBorrows);
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* FAB */
-        .fab {
+        /* Floating Action Button */
+        .floating-btn {
             position: fixed;
             bottom: 2rem;
             right: 2rem;
@@ -441,7 +441,7 @@ $totalActive = count($activeBorrows);
             font-size: 1.5rem;
         }
 
-        .fab:hover { 
+        .floating-btn:hover { 
             transform: scale(1.1) rotate(10deg);
             box-shadow: 0 15px 30px rgba(99, 102, 241, 0.5);
         }
@@ -573,8 +573,8 @@ $totalActive = count($activeBorrows);
 
     </main>
 
-    <!-- FAB for adding more books -->
-    <a href="/books/" class="fab fade-in" style="animation-delay: 0.8s" title="Borrow another book">
+    <!-- Floating Action Button for adding more books -->
+    <a href="/books/" class="floating-btn fade-in" style="animation-delay: 0.8s" title="Borrow another book">
         <i class="fas fa-search"></i>
     </a>
 

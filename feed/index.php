@@ -239,28 +239,28 @@ $activities = generateFeed($books, $requests);
 
 /* Dark Mode Overrides */
 [data-theme="dark"] .page-header { 
-    background: linear-gradient(135deg, #1e293b, #0f172a) !important; 
+    background: linear-gradient(135deg, #1E293B, #0F172A) !important; 
     border: 1px solid #334155;
 }
 [data-theme="dark"] .activity-card .card,
 [data-theme="dark"] .card { 
-    background: #1e293b; 
+    background: #1E293B; 
     border-color: #334155; 
     color: #cbd5e1;
 }
 [data-theme="dark"] .activity-card h3 strong { 
-    color: #f8fafc; 
+    color: #F8F9FA; 
 }
 [data-theme="dark"] [style*="background: var(--gray-100)"] { 
-    background: #0f172a !important; 
+    background: #0F172A !important; 
 }
 [data-theme="dark"] .btn-outline { 
-    border-color: #475569; 
+    border-color: #334155; 
     color: #cbd5e1; 
 }
 [data-theme="dark"] .btn-outline:hover { 
     border-color: var(--primary); 
-    color: #f8fafc; 
+    color: #F8F9FA; 
 }
 [data-theme="dark"] .btn-outline.active { 
     background: var(--primary); 

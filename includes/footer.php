@@ -14,8 +14,9 @@
                 <!-- Brand Column -->
                 <div class="footer-section">
                     <div class="footer-logo">
-                        <img src="/assets/images/logo-icon.svg" alt="OpenShelf" class="footer-logo-img">
-                        <span>OpenShelf</span>
+                        <a href="/">
+                            <img src="/assets/images/logo-full.svg" alt="OpenShelf" height="40" style="filter: brightness(0) invert(1) sepia(1) saturate(5) hue-rotate(130deg);">
+                        </a>
                     </div>
                     <p class="footer-tagline">
                         Share books, share knowledge. Join our community of book lovers and start sharing today!
@@ -98,9 +99,9 @@
         ======================================== */
         
         .footer {
-            background: #0b0f19;
-            color: #94a3b8;
-            border-top: 1px solid #1e293b;
+            background: #2C3E50;
+            color: #cbd5e1;
+            border-top: 1px solid #1a252f;
             margin-top: 6rem;
             padding: 5rem 0 2rem;
         }
@@ -140,13 +141,13 @@
         }
 
         .footer-logo span {
-            background: linear-gradient(135deg, #ffffff, #a5b4fc);
+            background: linear-gradient(135deg, #ffffff, #4C9F8A);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
 
         .footer-tagline {
-            color: #94a3b8;
+            color: #cbd5e1;
             font-size: 0.875rem;
             line-height: 1.6;
             margin: 0;
@@ -168,7 +169,7 @@
             content: '';
             width: 24px;
             height: 3px;
-            background: #6366f1;
+            background: #4C9F8A;
             border-radius: 10px;
             position: absolute;
             bottom: -8px;
@@ -186,7 +187,7 @@
         }
 
         .footer-links a {
-            color: #94a3b8;
+            color: #cbd5e1;
             text-decoration: none;
             font-size: 0.8125rem;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -202,7 +203,7 @@
         }
 
         .footer-links a:hover {
-            color: #6366f1;
+            color: #4C9F8A;
             transform: translateX(4px);
         }
 
@@ -222,24 +223,24 @@
             gap: 1rem;
             margin-bottom: 1rem;
             font-size: 0.8125rem;
-            color: #94a3b8;
+            color: #cbd5e1;
             font-weight: 500;
         }
 
         .footer-contact li i {
             width: 20px;
-            color: #6366f1;
+            color: #4C9F8A;
             font-size: 1rem;
         }
 
         .footer-contact a {
-            color: #94a3b8;
+            color: #cbd5e1;
             text-decoration: none;
             transition: color 0.2s ease;
         }
 
         .footer-contact a:hover {
-            color: #6366f1;
+            color: #4C9F8A;
         }
 
         .footer-social {
@@ -263,11 +264,11 @@
         }
 
         .social-link:hover {
-            background: linear-gradient(135deg, #6366f1, #a855f7);
+            background: linear-gradient(135deg, #4C9F8A, #2C3E50);
             border-color: transparent;
             color: white;
             transform: translateY(-5px) rotate(8deg);
-            box-shadow: 0 10px 20px rgba(99, 102, 241, 0.3);
+            box-shadow: 0 10px 20px rgba(76, 159, 138, 0.3);
         }
 
         .footer-bottom {
@@ -275,7 +276,7 @@
             border-top: 1px solid rgba(255, 255, 255, 0.05);
             text-align: center;
             font-size: 0.75rem;
-            color: #64748b;
+            color: #94a3b8;
             letter-spacing: 0.5px;
         }
 
@@ -332,7 +333,7 @@
             right: 2rem;
             width: 44px;
             height: 44px;
-            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            background: linear-gradient(135deg, #2C3E50, #4C9F8A);
             color: white;
             border: none;
             border-radius: 50%;
@@ -344,7 +345,7 @@
             opacity: 0;
             visibility: hidden;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+            box-shadow: 0 4px 12px rgba(44, 62, 80, 0.3);
             z-index: 1000;
         }
 
@@ -389,19 +390,68 @@
     <!-- Optional: Add any additional scripts here -->
     <script src="/assets/js/ui.js"></script>
 
-    <!-- PWA Service Worker Registration -->
+    <!-- PWA Service Worker & Install Logic -->
     <script>
+        let deferredPrompt;
+        const installItem = document.getElementById('pwaInstallItem');
+        const installBtn = document.getElementById('pwaInstallBtn');
+
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('/sw.js')
                     .then((registration) => {
-                        console.log('[PWA] Service Worker registered with scope:', registration.scope);
+                        console.log('[PWA] Service Worker registered');
                     })
                     .catch((error) => {
                         console.warn('[PWA] Service Worker registration failed:', error);
                     });
             });
         }
+
+        // Handle PWA Install Prompt
+        window.addEventListener('beforeinstallprompt', (e) => {
+            // Prevent Chrome 67 and earlier from automatically showing the prompt
+            e.preventDefault();
+            // Stash the event so it can be triggered later.
+            deferredPrompt = e;
+            // Show the install button in the menu
+            if (installItem) {
+                installItem.style.display = 'block';
+            }
+            
+            console.log('[PWA] beforeinstallprompt event fired');
+        });
+
+        if (installBtn) {
+            installBtn.addEventListener('click', async (e) => {
+                e.preventDefault();
+                if (!deferredPrompt) return;
+                
+                // Show the prompt
+                deferredPrompt.prompt();
+                
+                // Wait for the user to respond to the prompt
+                const { outcome } = await deferredPrompt.userChoice;
+                console.log(`[PWA] User response to the install prompt: ${outcome}`);
+                
+                // We've used the prompt, and can't use it again, throw it away
+                deferredPrompt = null;
+                
+                // Hide the install button
+                if (installItem) {
+                    installItem.style.display = 'none';
+                }
+            });
+        }
+
+        // Check if app is already installed
+        window.addEventListener('appinstalled', (evt) => {
+            console.log('[PWA] App was installed');
+            if (installItem) {
+                installItem.style.display = 'none';
+            }
+        });
     </script>
+
 </body>
 </html>

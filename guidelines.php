@@ -18,135 +18,169 @@ include 'includes/header.php';
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
 
-        :root {
-            --primary: #6366f1;
-            --primary-light: #818cf8;
-            --bg: #f8fafc;
-            --glass-bg: rgba(255, 255, 255, 0.7);
-            --glass-border: rgba(255, 255, 255, 0.4);
-            --text-main: #0f172a;
-            --text-muted: #64748b;
-            --shadow-premium: 0 20px 40px -15px rgba(0, 0, 0, 0.1);
-            --radius-lg: 24px;
-            --radius-xl: 32px;
-            --transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-        }
+    :root {
+        --primary: #2C3E50;
+        --secondary: #4C9F8A;
+        --accent: #3A7B6B;
+        --bg: #F8F9FA;
+        --surface: #ffffff;
+        --text-main: #0F172A;
+        --text-muted: #5A6C7D;
+        --border: #E2E8F0;
+        --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
+        --shadow-md: 0 10px 30px -5px rgba(44, 62, 80, 0.08);
+        --radius-lg: 24px;
+        --radius-md: 16px;
+        --radius-xl: 32px;
+    }
 
-        body {
-            background-color: var(--bg);
-            font-family: 'Outfit', system-ui, -apple-system, sans-serif;
-            color: var(--text-main);
-            line-height: 1.6;
-        }
+    [data-theme="dark"] {
+        --bg: #0F172A;
+        --surface: #1E293B;
+        --text-main: #F8F9FA;
+        --text-muted: #94A3B8;
+        --border: #334155;
+        --shadow-md: 0 10px 30px -5px rgba(0, 0, 0, 0.3);
+    }
 
-        .guidelines-page {
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 4rem 1.5rem;
-        }
+    body {
+        background-color: var(--bg);
+        color: var(--text-main);
+        font-family: 'Outfit', 'Inter', system-ui, -apple-system, sans-serif;
+        transition: background 0.3s ease;
+    }
 
-        .hero-section {
-            text-align: center;
-            margin-bottom: 4rem;
-        }
+    .guidelines-page {
+        max-width: 900px;
+        margin: 6rem auto;
+        padding: 0 1.5rem;
+    }
 
-        .hero-section h1 {
-            font-size: clamp(2.5rem, 5vw, 3.5rem);
-            font-weight: 800;
-            letter-spacing: -1px;
-            background: linear-gradient(135deg, #0f172a 0%, #6366f1 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 1rem;
-        }
+    .hero-section {
+        text-align: center;
+        margin-bottom: 5rem;
+    }
 
-        .hero-section p {
-            font-size: 1.1rem;
-            color: var(--text-muted);
-        }
+    .hero-section h1 {
+        font-size: clamp(2.5rem, 6vw, 3.5rem);
+        font-weight: 850;
+        letter-spacing: -0.03em;
+        margin-bottom: 1.5rem;
+        background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
 
-        .guidelines-content {
-            background: var(--glass-bg);
-            backdrop-filter: blur(25px);
-            padding: 4rem;
-            border-radius: var(--radius-xl);
-            border: 1px solid var(--glass-border);
-            box-shadow: var(--shadow-premium);
-        }
+    .guidelines-content {
+        background: var(--surface);
+        padding: 4.5rem;
+        border-radius: var(--radius-xl);
+        border: 1px solid var(--border);
+        box-shadow: var(--shadow-md);
+    }
 
-        .guideline-section {
-            margin-bottom: 3rem;
-        }
+    .guideline-section {
+        margin-bottom: 4rem;
+    }
 
-        .guideline-section h2 {
-            font-size: 1.5rem;
-            font-weight: 700;
-            margin-bottom: 1.5rem;
-            color: var(--text-main);
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-        }
+    .guideline-section:last-of-type {
+        margin-bottom: 0;
+    }
 
-        .guideline-section h2::before {
-            content: '';
-            width: 4px;
-            height: 24px;
-            background: var(--primary);
-            border-radius: 4px;
-        }
+    .guideline-section h2 {
+        font-size: 1.6rem;
+        font-weight: 850;
+        margin-bottom: 1.75rem;
+        display: flex;
+        align-items: center;
+        gap: 1.25rem;
+        letter-spacing: -0.5px;
+        color: var(--primary);
+    }
 
-        .guideline-section p {
-            color: #475569;
-            line-height: 1.8;
-            margin-bottom: 1rem;
-            font-size: 1.05rem;
-        }
+    [data-theme="dark"] .guideline-section h2 { color: var(--secondary); }
 
-        .guideline-section ul {
-            margin-left: 1.5rem;
-            margin-bottom: 1.5rem;
-            color: #475569;
-        }
+    .guideline-section h2::before {
+        content: '';
+        width: 6px;
+        height: 28px;
+        background: var(--secondary);
+        border-radius: 4px;
+    }
 
-        .guideline-section li {
-            margin-bottom: 0.75rem;
-        }
+    .guideline-section p {
+        color: var(--text-muted);
+        line-height: 1.85;
+        margin-bottom: 1.5rem;
+        font-size: 1.1rem;
+        font-weight: 500;
+    }
 
-        .dos-donts {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 2rem;
-            margin: 2rem 0;
-        }
+    .guideline-section ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
 
-        .dos {
-            background: rgba(16, 185, 129, 0.05);
-            padding: 2rem;
-            border-radius: var(--radius-lg);
-            border: 1px solid rgba(16, 185, 129, 0.1);
-            border-top: 4px solid #10b981;
-        }
+    .guideline-section li {
+        position: relative;
+        padding-left: 2.5rem;
+        margin-bottom: 1.25rem;
+        color: var(--text-muted);
+        line-height: 1.7;
+        font-size: 1.05rem;
+        font-weight: 500;
+    }
 
-        .donts {
-            background: rgba(239, 68, 68, 0.05);
-            padding: 2rem;
-            border-radius: var(--radius-lg);
-            border: 1px solid rgba(239, 68, 68, 0.1);
-            border-top: 4px solid #ef4444;
-        }
+    .guideline-section li::before {
+        content: '→';
+        position: absolute;
+        left: 0;
+        color: var(--secondary);
+        font-weight: 800;
+        font-size: 1.2rem;
+        line-height: 1.4;
+    }
 
-        .dos strong, .donts strong {
-            display: block;
-            margin-bottom: 1rem;
-            font-size: 1.1rem;
-        }
+    .dos-donts {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2.5rem;
+        margin: 2.5rem 0;
+    }
 
-        @media (max-width: 768px) {
-            .guidelines-page { padding: 2rem 1rem; }
-            .guidelines-content { padding: 2rem; }
-            .dos-donts { grid-template-columns: 1fr; }
-        }
+    .dos {
+        background: rgba(16, 185, 129, 0.03);
+        padding: 2.5rem;
+        border-radius: var(--radius-lg);
+        border: 1px solid rgba(16, 185, 129, 0.1);
+        border-top: 5px solid #10b981;
+    }
+
+    .donts {
+        background: rgba(239, 68, 68, 0.03);
+        padding: 2.5rem;
+        border-radius: var(--radius-lg);
+        border: 1px solid rgba(239, 68, 68, 0.1);
+        border-top: 5px solid #ef4444;
+    }
+
+    .dos strong, .donts strong {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 1.5rem;
+        font-size: 1.2rem;
+        font-weight: 850;
+        letter-spacing: -0.5px;
+    }
+
+    @media (max-width: 768px) {
+        .guidelines-page { margin: 4rem auto; padding: 0 1rem; }
+        .guidelines-content { padding: 2.5rem 1.5rem; border-radius: 24px; }
+        .dos-donts { grid-template-columns: 1fr; gap: 1.5rem; }
+        .guideline-section h2 { font-size: 1.35rem; }
+    }
     </style>
 </head>
 <body>

@@ -465,20 +465,51 @@ $currentThumbPath = !empty($coverImage) ? '/uploads/book_cover/thumb_' . $coverI
 <?php 
 // Add page-specific styles
 ?>
-<style>
-    /* Mobile-first CSS for Edit Book Page */
 
-    .edit-container {
-        max-width: 800px;
-        margin: 0 auto;
-        padding: 1.25rem;
+<style>
+    :root {
+        --primary: #2C3E50;
+        --secondary: #4C9F8A;
+        --accent: #3A7B6B;
+        --bg: #F8F9FA;
+        --surface: #ffffff;
+        --border: #E2E8F0;
+        --text-main: #0F172A;
+        --text-muted: #5A6C7D;
+        --radius: 16px;
+        --shadow: 0 10px 25px rgba(44, 62, 80, 0.05);
+        --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
-    .container {
-        padding: 1rem 0;
-        display: flex;
-        flex-direction: column;
+    [data-theme="dark"] {
+        --bg: #0F172A;
+        --surface: #1E293B;
+        --border: #334155;
+        --text-main: #F8F9FA;
+        --text-muted: #94A3B8;
+        --shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    }
+
+    body {
+        background: var(--bg);
+        color: var(--text-main);
+        transition: background 0.3s ease;
+        font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    }
+
+    .edit-page-container {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 1.5rem;
+        display: grid;
+        grid-template-columns: 1fr;
         gap: 1.5rem;
+    }
+
+    @media (min-width: 992px) {
+        .edit-page-container {
+            grid-template-columns: 1fr 320px;
+        }
     }
 
     /* Sidebar styles */
@@ -487,23 +518,22 @@ $currentThumbPath = !empty($coverImage) ? '/uploads/book_cover/thumb_' . $coverI
     }
 
     .profile-side-card {
-        background: #fff;
-        border-radius: 12px;
+        background: var(--surface);
+        border-radius: var(--radius);
         padding: 1.5rem;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        margin-bottom: 1rem;
+        box-shadow: var(--shadow);
         text-align: center;
-        border: 1px solid #e5e7eb;
+        border: 1px solid var(--border);
     }
 
     .mini-avatar-preview {
         width: 80px;
         height: 80px;
-        border-radius: 50%;
+        border-radius: 20px;
         margin: 0 auto 0.75rem;
-        border: 3px solid #3b82f6;
+        border: 3px solid var(--secondary);
         overflow: hidden;
-        background: #f3f4f6;
+        background: var(--bg);
     }
 
     .mini-avatar-preview img {
@@ -513,13 +543,12 @@ $currentThumbPath = !empty($coverImage) ? '/uploads/book_cover/thumb_' . $coverI
     }
 
     /* Main content */
-    .edit-container {
-        order: 1; /* Main content first on mobile */
-        background: #fff;
-        border-radius: 12px;
+    .edit-form-card {
+        background: var(--surface);
+        border-radius: var(--radius);
         padding: 1.5rem;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        border: 1px solid #e5e7eb;
+        box-shadow: var(--shadow);
+        border: 1px solid var(--border);
     }
 
     /* Page header */
@@ -529,48 +558,57 @@ $currentThumbPath = !empty($coverImage) ? '/uploads/book_cover/thumb_' . $coverI
     }
 
     .page-header h1 {
-        font-size: 1.875rem;
-        font-weight: 700;
-        color: #1f2937;
+        font-size: 2rem;
+        font-weight: 850;
+        color: var(--text-main);
         margin-bottom: 0.5rem;
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: 0.5rem;
+        gap: 0.75rem;
+        letter-spacing: -1px;
     }
 
     .page-header p {
-        color: #6b7280;
-        font-size: 0.875rem;
+        color: var(--text-muted);
+        font-size: 0.95rem;
+        font-weight: 500;
     }
 
     .back-btn {
         display: inline-flex;
         align-items: center;
         gap: 0.5rem;
-        padding: 0.5rem 1rem;
-        background: #f3f4f6;
-        border: 1px solid #d1d5db;
-        border-radius: 8px;
-        color: #374151;
+        padding: 0.6rem 1.2rem;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        color: var(--text-main);
         text-decoration: none;
-        font-size: 0.875rem;
-        margin-bottom: 1rem;
-        transition: all 0.2s;
+        font-size: 0.9rem;
+        font-weight: 600;
+        margin-bottom: 1.5rem;
+        transition: var(--transition);
     }
 
     .back-btn:hover {
-        background: #e5e7eb;
+        background: var(--bg);
+        transform: translateX(-3px);
     }
 
     /* Cover image section */
     .cover-section {
         text-align: center;
         margin-bottom: 2rem;
-        padding: 1.5rem;
-        background: #f9fafb;
-        border-radius: 12px;
-        border: 2px dashed #d1d5db;
+        padding: 2rem;
+        background: var(--bg);
+        border-radius: var(--radius);
+        border: 2px dashed var(--border);
+        transition: var(--transition);
+    }
+
+    .cover-section:hover {
+        border-color: var(--secondary);
     }
 
     .cover-preview {
@@ -635,30 +673,31 @@ $currentThumbPath = !empty($coverImage) ? '/uploads/book_cover/thumb_' . $coverI
 
     .form-label {
         display: block;
-        font-weight: 600;
-        color: #374151;
-        margin-bottom: 0.5rem;
-        font-size: 0.875rem;
+        font-weight: 700;
+        color: var(--text-main);
+        margin-bottom: 0.6rem;
+        font-size: 0.9rem;
     }
 
     .form-input,
     .form-textarea,
     .form-select {
         width: 100%;
-        padding: 0.75rem;
-        border: 1px solid #d1d5db;
-        border-radius: 8px;
+        padding: 0.85rem;
+        border: 1px solid var(--border);
+        border-radius: 12px;
         font-size: 1rem;
-        transition: border-color 0.2s, box-shadow 0.2s;
-        background: #fff;
+        transition: var(--transition);
+        background: var(--surface);
+        color: var(--text-main);
     }
 
     .form-input:focus,
     .form-textarea:focus,
     .form-select:focus {
         outline: none;
-        border-color: #3b82f6;
-        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        border-color: var(--secondary);
+        box-shadow: 0 0 0 4px rgba(76, 159, 138, 0.1);
     }
 
     .form-textarea {
@@ -722,12 +761,14 @@ $currentThumbPath = !empty($coverImage) ? '/uploads/book_cover/thumb_' . $coverI
     }
 
     .btn-primary {
-        background: #3b82f6;
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
         color: #fff;
     }
 
     .btn-primary:hover {
-        background: #2563eb;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(44, 62, 80, 0.2);
+        filter: brightness(1.1);
     }
 
     .btn-outline {
@@ -801,384 +842,179 @@ $currentThumbPath = !empty($coverImage) ? '/uploads/book_cover/thumb_' . $coverI
         flex-shrink: 0;
     }
 
-    /* Tablet and up */
-    @media (min-width: 768px) {
-        .container {
-            display: grid;
-            grid-template-columns: 280px 1fr;
-            gap: 2rem;
-            padding: 2rem 0;
-        }
-
-        aside {
-            order: 0; /* Sidebar back to left on larger screens */
-        }
-
-        .edit-container {
-            padding: 2rem;
-        }
-
-        .form-actions {
-            flex-direction: row;
-        }
-
-        .form-actions .btn:last-child {
-            flex: 0 0 auto;
-        }
-
-        .cover-preview {
-            width: 150px;
-            height: 200px;
-        }
-
-        .cover-placeholder {
-            width: 150px;
-            height: 200px;
-        }
-    }
-
-    /* Mobile adjustments */
-    @media (max-width: 640px) {
-        .form-row {
-            grid-template-columns: 1fr;
-        }
-
-        .edit-container {
-            padding: 1rem;
-        }
-
-        .cover-preview {
-            width: 100px;
-            height: 133px;
-        }
-
-        .cover-placeholder {
-            width: 100px;
-            height: 133px;
-        }
-    }
-
-    /* Utility classes */
-    .text-danger {
-        color: #dc2626;
-    }
-
-    .text-center {
-        text-align: center;
-    }
-
-    /* Hide file inputs */
-    input[type="file"] {
-        display: none;
-    }
-
-    /* Dark Mode Overrides */
-    [data-theme="dark"] .profile-side-card,
-    [data-theme="dark"] .edit-container {
-        background: #1e293b;
-        border-color: #334155;
-    }
-    
-    [data-theme="dark"] .page-header h1,
-    [data-theme="dark"] .form-label,
-    [data-theme="dark"] .profile-side-card h3 {
-        color: #f8fafc;
-    }
-
-    [data-theme="dark"] .page-header p {
-        color: #cbd5e1;
-    }
-
-    [data-theme="dark"] .back-btn {
-        background: #334155;
-        border-color: #475569;
-        color: #e2e8f0;
-    }
-
-    [data-theme="dark"] .back-btn:hover {
-        background: #475569;
-    }
-
-    [data-theme="dark"] .cover-section {
-        background: #0f172a;
-        border-color: #334155;
-    }
-
-    [data-theme="dark"] .cover-placeholder {
-        background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-        border-color: #334155;
-        color: #94a3b8;
-    }
-
-    [data-theme="dark"] .form-input,
-    [data-theme="dark"] .form-textarea,
-    [data-theme="dark"] .form-select {
-        background: #0f172a;
-        border-color: #334155;
-        color: #e2e8f0;
-    }
-
-    [data-theme="dark"] .form-input:focus,
-    [data-theme="dark"] .form-textarea:focus,
-    [data-theme="dark"] .form-select:focus {
-        border-color: #818cf8;
-        box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.2);
-    }
-
-    [data-theme="dark"] .btn-outline {
-        color: #cbd5e1;
-        border-color: #475569;
-    }
-    
-    [data-theme="dark"] .btn-outline:hover {
-        background: #334155;
-        color: #f8fafc;
-    }
-
-    [data-theme="dark"] .quick-tips li {
-        color: #cbd5e1;
-    }
 </style>
 
-    <main>
-        <div class="container">
-            <!-- Left Sidebar for User Profile -->
-            <aside>
-                <div class="profile-side-card">
-                    <h3>Your Profile</h3>
-                    <div class="mini-avatar-preview">
-                        <img src="<?php 
-                            $avatar = $_SESSION['user_avatar'] ?? 'default-avatar.jpg';
-                            echo "/uploads/profile/" . $avatar; 
-                        ?>" alt="Avatar" id="userAvatarPreview" onerror="this.src='/assets/images/avatars/default.jpg'">
+    <main class="edit-page-container">
+        <!-- Main Form Column -->
+        <div class="edit-form-card">
+            <a href="/book/?id=<?php echo $bookId; ?>" class="back-btn">
+                <i class="fas fa-arrow-left"></i> Back to Book
+            </a>
+
+            <!-- Page Header -->
+            <div class="page-header">
+                <h1><i class="fas fa-edit" style="color: var(--secondary);"></i> Edit Book</h1>
+                <p>Update your book's information and keep your shelf fresh.</p>
+            </div>
+                
+            <!-- Error Messages -->
+            <?php if (!empty($errors['general'])): ?>
+                <div class="alert alert-danger">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <?php echo htmlspecialchars($errors['general']); ?>
+                </div>
+            <?php endif; ?>
+            
+            <!-- Edit Form -->
+            <form method="POST" enctype="multipart/form-data" id="editForm">
+                <!-- Cover Image Section -->
+                <div class="cover-section">
+                    <label for="cover_image" style="cursor: pointer;">
+                        <?php if (!empty($coverImage)): ?>
+                            <div class="cover-preview" id="coverPreview">
+                                <img src="<?php echo $currentThumbPath; ?>" alt="Book Cover" id="coverImagePreview">
+                            </div>
+                        <?php else: ?>
+                            <div class="cover-placeholder" id="coverPlaceholder">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                                <span>Upload Cover</span>
+                                <span style="font-size: 0.7rem;">Click to change</span>
+                            </div>
+                        <?php endif; ?>
+                    </label>
+                    <input type="file" name="cover_image" id="cover_image" accept="image/jpeg,image/png,image/gif,image/webp" onchange="previewCover(this)">
+                    <div class="image-hint">
+                        <i class="fas fa-info-circle"></i>
+                        Max size: 10MB. Supported: JPG, PNG, GIF, WebP
                     </div>
-                    <p style="font-weight: 600; margin-bottom: 0.25rem;"><?php echo htmlspecialchars($currentUserName); ?></p>
-                    <p style="font-size: 0.75rem; color: #6b7280; margin-bottom: 1rem;">Book Owner</p>
+                    <?php if (isset($errors['cover_image'])): ?>
+                        <div class="form-error text-center">
+                            <i class="fas fa-exclamation-circle"></i>
+                            <?php echo htmlspecialchars($errors['cover_image']); ?>
+                        </div>
+                    <?php endif; ?>
+                </div>
+                
+                <!-- Book Details -->
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-book"></i>
+                        Book Title <span class="text-danger">*</span>
+                    </label>
+                    <input type="text" name="title" class="form-input" 
+                            value="<?php echo htmlspecialchars($title); ?>" 
+                            maxlength="200" required>
+                    <?php if (isset($errors['title'])): ?>
+                        <div class="form-error"><?php echo $errors['title']; ?></div>
+                    <?php endif; ?>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-user"></i>
+                        Author Name <span class="text-danger">*</span>
+                    </label>
+                    <input type="text" name="author" class="form-input" 
+                            value="<?php echo htmlspecialchars($author); ?>" 
+                            maxlength="100" required>
+                    <?php if (isset($errors['author'])): ?>
+                        <div class="form-error"><?php echo $errors['author']; ?></div>
+                    <?php endif; ?>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-tag"></i>
+                            Category <span class="text-danger">*</span>
+                        </label>
+                        <select name="category" class="form-select" required>
+                            <option value="">Select a category</option>
+                            <?php foreach ($categories as $cat): ?>
+                                <option value="<?php echo htmlspecialchars($cat); ?>" 
+                                    <?php echo $category === $cat ? 'selected' : ''; ?>>
+                                    <?php echo htmlspecialchars($cat); ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
                     
-                    <button type="button" class="btn btn-outline btn-sm btn-block" onclick="document.getElementById('user_profile_pic').click()">
-                        <i class="fas fa-camera"></i> Change Photo
-                    </button>
-                    <input type="file" name="user_profile_pic" id="user_profile_pic" form="editForm" accept="image/*">
-                    
-                    <?php if (isset($errors['user_profile_pic'])): ?>
-                        <p class="text-danger" style="font-size: 0.75rem; margin-top: 0.5rem;"><?php echo $errors['user_profile_pic']; ?></p>
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-star"></i>
+                            Condition <span class="text-danger">*</span>
+                        </label>
+                        <select name="condition" class="form-select" required>
+                            <option value="">Select condition</option>
+                            <?php foreach ($conditions as $key => $desc): ?>
+                                <option value="<?php echo htmlspecialchars($key); ?>" 
+                                    <?php echo $condition === $key ? 'selected' : ''; ?>>
+                                    <?php echo htmlspecialchars($key); ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-align-left"></i>
+                        Description <span class="text-danger">*</span>
+                    </label>
+                    <textarea name="description" class="form-textarea" 
+                                rows="6" maxlength="5000"
+                                oninput="updateCharCount(this)"><?php echo htmlspecialchars($description); ?></textarea>
+                    <div class="char-counter" id="charCount">0/5000 characters</div>
+                    <?php if (isset($errors['description'])): ?>
+                        <div class="form-error"><?php echo $errors['description']; ?></div>
                     <?php endif; ?>
                 </div>
 
-                <div class="profile-side-card quick-tips">
-                    <h4 style="font-size: 0.875rem; margin-bottom: 0.5rem;">Quick Tips</h4>
-                    <ul>
-                        <li>Use a clear front cover image.</li>
-                        <li>Detailed descriptions help buyers.</li>
-                        <li>Honest condition reports build trust.</li>
-                    </ul>
-                </div>
-            </aside>
-
-            <div class="edit-container">
-
-                <!-- Page Header -->
-                <div class="page-header">
-                    <a href="/book/?id=<?php echo $bookId; ?>" class="back-btn">
-                        <i class="fas fa-arrow-left"></i> Back to Book
+                <!-- Form Actions -->
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i>
+                        Save Changes
+                    </button>
+                    <a href="/book/?id=<?php echo $bookId; ?>" class="btn btn-outline">
+                        Cancel
                     </a>
-                    <h1>
-                        <i class="fas fa-edit"></i>
-                        Edit Book
-                    </h1>
-                    <p>Update your book information</p>
                 </div>
-                
-                <!-- Error Messages -->
-                <?php if (!empty($errors['general'])): ?>
-                    <div class="alert alert-danger">
-                        <i class="fas fa-exclamation-circle"></i>
-                        <?php echo htmlspecialchars($errors['general']); ?>
-                    </div>
-                <?php endif; ?>
-                
-                <!-- Edit Form -->
-                <form method="POST" enctype="multipart/form-data" id="editForm">
-                    <!-- Cover Image Section -->
-                    <div class="cover-section">
-                        <label for="cover_image" style="cursor: pointer;">
-                            <?php if (!empty($coverImage)): ?>
-                                <div class="cover-preview" id="coverPreview">
-                                    <img src="<?php echo $currentThumbPath; ?>" alt="Book Cover" id="coverImagePreview">
-                                </div>
-                            <?php else: ?>
-                                <div class="cover-placeholder" id="coverPlaceholder">
-                                    <i class="fas fa-cloud-upload-alt"></i>
-                                    <span>Upload Cover</span>
-                                    <span style="font-size: 0.7rem;">Click to change</span>
-                                </div>
-                            <?php endif; ?>
-                        </label>
-                        <input type="file" name="cover_image" id="cover_image" accept="image/jpeg,image/png,image/gif,image/webp" onchange="previewCover(this)">
-                        <div class="image-hint">
-                            <i class="fas fa-info-circle"></i>
-                            Max size: 10MB. Supported: JPG, PNG, GIF, WebP
-                        </div>
-                        <?php if (isset($errors['cover_image'])): ?>
-                            <div class="form-error text-center">
-                                <i class="fas fa-exclamation-circle"></i>
-                                <?php echo htmlspecialchars($errors['cover_image']); ?>
-                            </div>
-                        <?php endif; ?>
-                    </div>
-                    
-                    <!-- Book Details -->
-                    <div class="form-group">
-                        <label class="form-label">
-                            <i class="fas fa-book"></i>
-                            Book Title <span class="text-danger">*</span>
-                        </label>
-                        <input type="text" name="title" class="form-input" 
-                               value="<?php echo htmlspecialchars($title); ?>" 
-                               maxlength="200" required>
-                        <?php if (isset($errors['title'])): ?>
-                            <div class="form-error"><?php echo $errors['title']; ?></div>
-                        <?php endif; ?>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label class="form-label">
-                            <i class="fas fa-user"></i>
-                            Author Name <span class="text-danger">*</span>
-                        </label>
-                        <input type="text" name="author" class="form-input" 
-                               value="<?php echo htmlspecialchars($author); ?>" 
-                               maxlength="100" required>
-                        <?php if (isset($errors['author'])): ?>
-                            <div class="form-error"><?php echo $errors['author']; ?></div>
-                        <?php endif; ?>
-                    </div>
-                    
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label class="form-label">
-                                <i class="fas fa-tag"></i>
-                                Category <span class="text-danger">*</span>
-                            </label>
-                            <select name="category" class="form-select" required>
-                                <option value="">Select a category</option>
-                                <?php foreach ($categories as $cat): ?>
-                                    <option value="<?php echo htmlspecialchars($cat); ?>" 
-                                        <?php echo $category === $cat ? 'selected' : ''; ?>>
-                                        <?php echo htmlspecialchars($cat); ?>
-                                    </option>
-                                <?php endforeach; ?>
-                            </select>
-                            <?php if (isset($errors['category'])): ?>
-                                <div class="form-error"><?php echo $errors['category']; ?></div>
-                            <?php endif; ?>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label class="form-label">
-                                <i class="fas fa-star"></i>
-                                Condition <span class="text-danger">*</span>
-                            </label>
-                            <select name="condition" class="form-select" required>
-                                <option value="">Select condition</option>
-                                <?php foreach ($conditions as $key => $desc): ?>
-                                    <option value="<?php echo htmlspecialchars($key); ?>" 
-                                        <?php echo $condition === $key ? 'selected' : ''; ?>
-                                        title="<?php echo htmlspecialchars($desc); ?>">
-                                        <?php echo htmlspecialchars($key); ?>
-                                    </option>
-                                <?php endforeach; ?>
-                            </select>
-                            <div class="condition-help" style="font-size: var(--font-size-xs); color: var(--text-tertiary); margin-top: var(--space-1);">
-                                <i class="fas fa-info-circle"></i>
-                                <?php echo $conditions[$condition] ?? 'Select a condition for more info'; ?>
-                            </div>
-                            <?php if (isset($errors['condition'])): ?>
-                                <div class="form-error"><?php echo $errors['condition']; ?></div>
-                            <?php endif; ?>
-                        </div>
-                    </div>
-                    
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label class="form-label">
-                                <i class="fas fa-barcode"></i>
-                                ISBN
-                            </label>
-                            <input type="text" name="isbn" class="form-input" 
-                                   value="<?php echo htmlspecialchars($isbn); ?>">
-                        </div>
-                        
-                        <div class="form-group">
-                            <label class="form-label">
-                                <i class="fas fa-calendar"></i>
-                                Publication Year
-                            </label>
-                            <input type="text" name="publication_year" class="form-input" 
-                                   value="<?php echo htmlspecialchars($publicationYear); ?>" 
-                                   placeholder="e.g., 2024">
-                        </div>
-                    </div>
-                    
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label class="form-label">
-                                <i class="fas fa-building"></i>
-                                Publisher
-                            </label>
-                            <input type="text" name="publisher" class="form-input" 
-                                   value="<?php echo htmlspecialchars($publisher); ?>">
-                        </div>
-                        
-                        <div class="form-group">
-                            <label class="form-label">
-                                <i class="fas fa-file-alt"></i>
-                                Pages
-                            </label>
-                            <input type="number" name="pages" class="form-input" 
-                                   value="<?php echo htmlspecialchars($pages); ?>" 
-                                   min="1">
-                            <?php if (isset($errors['pages'])): ?>
-                                <div class="form-error"><?php echo $errors['pages']; ?></div>
-                            <?php endif; ?>
-                        </div>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label class="form-label">
-                            <i class="fas fa-language"></i>
-                            Language
-                        </label>
-                        <input type="text" name="language" class="form-input" 
-                               value="<?php echo htmlspecialchars($language); ?>">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label class="form-label">
-                            <i class="fas fa-align-left"></i>
-                            Description <span class="text-danger">*</span>
-                        </label>
-                        <textarea name="description" class="form-textarea" 
-                                  rows="6" maxlength="5000"
-                                  oninput="updateCharCount(this)"><?php echo htmlspecialchars($description); ?></textarea>
-                        <div class="char-counter" id="charCount">0/5000 characters</div>
-                        <?php if (isset($errors['description'])): ?>
-                            <div class="form-error"><?php echo $errors['description']; ?></div>
-                        <?php endif; ?>
-                    </div>
-                    <!-- Form Actions -->
-                    <div class="form-actions">
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-save"></i>
-                            Save Changes
-                        </button>
-                        <a href="/book/?id=<?php echo $bookId; ?>" class="btn btn-outline">
-                            Cancel
-                        </a>
-                    </div>
-                </form>
-            </div>
+            </form>
         </div>
+
+        <!-- Sidebar Column -->
+        <aside class="edit-sidebar">
+            <div class="profile-side-card">
+                <h3 style="font-size: 1.1rem; font-weight: 800; margin-bottom: 1rem;">Owner Identity</h3>
+                <div class="mini-avatar-preview">
+                    <img src="<?php 
+                        $avatar = $_SESSION['user_avatar'] ?? 'default-avatar.jpg';
+                        echo "/uploads/profile/" . $avatar; 
+                    ?>" alt="Avatar" id="userAvatarPreview" onerror="this.src='/assets/images/default-avatar.jpg'">
+                </div>
+                <p style="font-weight: 700; margin-bottom: 0.25rem;"><?php echo htmlspecialchars($currentUserName); ?></p>
+                <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1.25rem;">OpenShelf Member</p>
+                
+                <button type="button" class="btn btn-outline btn-sm btn-block" onclick="document.getElementById('user_profile_pic').click()">
+                    <i class="fas fa-camera"></i> Change Photo
+                </button>
+                <input type="file" name="user_profile_pic" id="user_profile_pic" form="editForm" accept="image/*" onchange="previewUserAvatar(this)">
+                
+                <?php if (isset($errors['user_profile_pic'])): ?>
+                    <p class="text-danger" style="font-size: 0.75rem; margin-top: 0.5rem;"><?php echo $errors['user_profile_pic']; ?></p>
+                <?php endif; ?>
+            </div>
+
+            <div class="profile-side-card" style="text-align: left;">
+                <h4 style="font-size: 0.9rem; font-weight: 800; margin-bottom: 0.75rem;">Quality Guidelines</h4>
+                <ul style="list-style: none; padding: 0; margin: 0; font-size: 0.85rem; color: var(--text-muted); line-height: 1.6;">
+                    <li style="margin-bottom: 0.5rem;"><i class="fas fa-check" style="color: var(--secondary); margin-right: 8px;"></i> High quality covers attract 3x more borrowers.</li>
+                    <li style="margin-bottom: 0.5rem;"><i class="fas fa-check" style="color: var(--secondary); margin-right: 8px;"></i> Honest condition reports build lasting trust.</li>
+                    <li><i class="fas fa-check" style="color: var(--secondary); margin-right: 8px;"></i> Accurate ISBNs help people find your book.</li>
+                </ul>
+            </div>
+        </aside>
     </main>
     
     <script>

@@ -132,99 +132,180 @@ $reportType = $_GET['type'] ?? 'overview';
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        .reports-page {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 2rem 1rem;
-        }
+    :root {
+        --primary: #2C3E50;
+        --secondary: #4C9F8A;
+        --accent: #3A7B6B;
+        --bg: #F8F9FA;
+        --surface: #ffffff;
+        --border: #E2E8F0;
+        --text-main: #0F172A;
+        --text-muted: #5A6C7D;
+        --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
+        --shadow-md: 0 10px 15px -3px rgba(0,0,0,0.05);
+        --radius-lg: 24px;
+        --radius-md: 16px;
+    }
+
+    [data-theme="dark"] {
+        --bg: #0F172A;
+        --surface: #1E293B;
+        --border: #334155;
+        --text-main: #F8F9FA;
+        --text-muted: #94A3B8;
+        --shadow-sm: 0 1px 3px rgba(0,0,0,0.2);
+        --shadow-md: 0 10px 15px -3px rgba(0,0,0,0.3);
+    }
+
+    body {
+        background: var(--bg);
+        color: var(--text-main);
+        transition: background 0.3s ease;
+    }
+
+    .reports-page {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem 1rem;
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2.5rem;
+    }
+
+    .stat-card {
+        background: var(--surface);
+        padding: 1.75rem;
+        border-radius: var(--radius-md);
+        text-align: center;
+        box-shadow: var(--shadow-sm);
+        border: 1px solid var(--border);
+        transition: transform 0.3s ease;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .stat-value {
+        font-size: 2.5rem;
+        font-weight: 850;
+        letter-spacing: -1.5px;
+        margin-bottom: 0.25rem;
+    }
+
+    .stat-label {
+        color: var(--text-muted);
+        font-weight: 700;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .chart-container {
+        background: var(--surface);
+        padding: 2rem;
+        border-radius: var(--radius-lg);
+        margin-bottom: 2rem;
+        box-shadow: var(--shadow-sm);
+        border: 1px solid var(--border);
+    }
+
+    .chart-header {
+        margin-bottom: 1.5rem;
+        font-weight: 800;
+        font-size: 1.25rem;
+        letter-spacing: -0.5px;
+    }
+
+    .top-books {
+        background: var(--surface);
+        padding: 2rem;
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-sm);
+        border: 1px solid var(--border);
+    }
+
+    .book-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem 0;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .book-item:last-child {
+        border-bottom: none;
+    }
+
+    .book-title {
+        font-weight: 700;
+        color: var(--text-main);
+    }
+
+    .book-count {
+        background: var(--primary);
+        color: white;
+        padding: 0.35rem 0.85rem;
+        border-radius: 2rem;
+        font-size: 0.75rem;
+        font-weight: 700;
+    }
+
+    .tabs {
+        display: flex;
+        gap: 0.75rem;
+        margin-bottom: 2rem;
+        flex-wrap: wrap;
+    }
+
+    .tab-btn {
+        padding: 0.75rem 1.5rem;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 2rem;
+        cursor: pointer;
+        text-decoration: none;
+        color: var(--text-muted);
+        font-weight: 700;
+        transition: all 0.3s ease;
+    }
+
+    .tab-btn.active {
+        background: var(--primary);
+        color: white;
+        border-color: var(--primary);
+        box-shadow: 0 8px 16px rgba(44, 62, 80, 0.2);
+    }
+
+    .export-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.75rem 1.5rem;
+        background: var(--secondary);
+        color: white;
+        border-radius: 2rem;
+        text-decoration: none;
+        font-weight: 700;
+        box-shadow: 0 8px 16px rgba(76, 159, 138, 0.2);
+        transition: all 0.3s ease;
+    }
+
+    .export-btn:hover {
+        transform: translateY(-2px);
+        filter: brightness(1.1);
+    }
+
+    @media (max-width: 768px) {
         .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
-            margin-bottom: 2rem;
+            grid-template-columns: repeat(2, 1fr);
         }
-        .stat-card {
-            background: white;
-            padding: 1.25rem;
-            border-radius: 1rem;
-            text-align: center;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        }
-        .stat-value {
-            font-size: 2rem;
-            font-weight: 700;
-        }
-        .chart-container {
-            background: white;
-            padding: 1.5rem;
-            border-radius: 1rem;
-            margin-bottom: 1.5rem;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        }
-        .chart-container canvas {
-            max-height: 300px;
-        }
-        .top-books {
-            background: white;
-            padding: 1.5rem;
-            border-radius: 1rem;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        }
-        .book-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 0.75rem 0;
-            border-bottom: 1px solid #e2e8f0;
-        }
-        .book-item:last-child {
-            border-bottom: none;
-        }
-        .book-title {
-            font-weight: 500;
-        }
-        .book-count {
-            background: #6366f1;
-            color: white;
-            padding: 0.2rem 0.6rem;
-            border-radius: 2rem;
-            font-size: 0.8rem;
-        }
-        .tabs {
-            display: flex;
-            gap: 0.5rem;
-            margin-bottom: 1.5rem;
-            flex-wrap: wrap;
-        }
-        .tab-btn {
-            padding: 0.6rem 1.2rem;
-            background: white;
-            border: 1px solid #e2e8f0;
-            border-radius: 2rem;
-            cursor: pointer;
-            text-decoration: none;
-            color: #0f172a;
-        }
-        .tab-btn.active {
-            background: #6366f1;
-            color: white;
-            border-color: #6366f1;
-        }
-        .export-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.6rem 1.2rem;
-            background: #10b981;
-            color: white;
-            border-radius: 2rem;
-            text-decoration: none;
-            margin-bottom: 1rem;
-        }
-        @media (max-width: 768px) {
-            .stats-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
+        .stat-value { font-size: 1.75rem; }
+    }
     </style>
 </head>
 <body>
@@ -249,28 +330,28 @@ $reportType = $_GET['type'] ?? 'overview';
             <!-- Stats Cards -->
             <div class="stats-grid">
                 <div class="stat-card">
-                    <div class="stat-value" style="color: #6366f1;"><?php echo $totalUsers; ?></div>
-                    <div>Total Users</div>
+                    <div class="stat-value" style="color: var(--primary);"><?php echo $totalUsers; ?></div>
+                    <div class="stat-label">Total Users</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-value" style="color: #10b981;"><?php echo $totalBooks; ?></div>
-                    <div>Total Books</div>
+                    <div class="stat-value" style="color: var(--secondary);"><?php echo $totalBooks; ?></div>
+                    <div class="stat-label">Total Books</div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-value" style="color: #f59e0b;"><?php echo $totalRequests; ?></div>
-                    <div>Total Requests</div>
+                    <div class="stat-label">Total Requests</div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-value" style="color: #ef4444;"><?php echo $pendingUsers; ?></div>
-                    <div>Pending Users</div>
+                    <div class="stat-label">Pending Users</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-value" style="color: #8b5cf6;"><?php echo $pendingRequests; ?></div>
-                    <div>Pending Requests</div>
+                    <div class="stat-value" style="color: var(--accent);"><?php echo $pendingRequests; ?></div>
+                    <div class="stat-label">Pending Requests</div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-value" style="color: #06b6d4;"><?php echo $userActivity['today']; ?></div>
-                    <div>Active Today</div>
+                    <div class="stat-label">Active Today</div>
                 </div>
             </div>
             
@@ -313,16 +394,22 @@ $reportType = $_GET['type'] ?? 'overview';
                 datasets: [{
                     label: 'New Users',
                     data: userGrowthData,
-                    borderColor: '#6366f1',
-                    backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                    borderColor: '#2C3E50',
+                    backgroundColor: 'rgba(44, 62, 80, 0.05)',
                     fill: true,
-                    tension: 0.4
+                    tension: 0.4,
+                    pointRadius: 4,
+                    pointBackgroundColor: '#2C3E50'
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: true,
-                plugins: { legend: { position: 'top' } }
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { beginAtZero: true, grid: { display: false } },
+                    x: { grid: { display: false } }
+                }
             }
         });
         
@@ -333,14 +420,19 @@ $reportType = $_GET['type'] ?? 'overview';
                 datasets: [{
                     label: 'New Books',
                     data: bookGrowthData,
-                    backgroundColor: '#10b981',
-                    borderRadius: 8
+                    backgroundColor: '#4C9F8A',
+                    borderRadius: 12,
+                    hoverBackgroundColor: '#3A7B6B'
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: true,
-                plugins: { legend: { position: 'top' } }
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { beginAtZero: true, grid: { display: false } },
+                    x: { grid: { display: false } }
+                }
             }
         });
     </script>

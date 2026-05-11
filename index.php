@@ -42,28 +42,28 @@ include 'includes/header.php';
        Mobile-first, Clean, Responsive, Theme-aware
     --------------------------------------------------------- */
     :root {
-        --primary-brand: #6366f1;
-        --primary-soft: rgba(99, 102, 241, 0.1);
-        --accent-brand: #10b981;
-        --surface-1: #ffffff;
-        --surface-2: #f8fafc;
-        --text-primary: #0f172a;
-        --text-secondary: #475569;
-        --border-color: rgba(226, 232, 240, 0.8);
+        --primary-brand: #2C3E50;
+        --primary-soft: rgba(44, 62, 80, 0.1);
+        --accent-brand: #4C9F8A;
+        --surface-1: #F8F9FA;
+        --surface-2: #FFFFFF;
+        --text-primary: #0F172A;
+        --text-secondary: #5A6C7D;
+        --border-color: #E2E8F0;
         --shadow-soft: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
-        --shadow-hover: 0 20px 30px -10px rgba(99, 102, 241, 0.15);
+        --shadow-hover: 0 20px 30px -10px rgba(0, 0, 0, 0.08);
         --radius: 24px;
         --transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
     [data-theme="dark"] {
-        --surface-1: #0f172a;
+        --surface-1: #0F172A;
         --surface-2: #1e293b;
-        --text-primary: #f8fafc;
+        --text-primary: #F8F9FA;
         --text-secondary: #94a3b8;
         --border-color: rgba(51, 65, 85, 0.5);
         --shadow-soft: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
-        --primary-soft: rgba(99, 102, 241, 0.2);
+        --primary-soft: rgba(44, 62, 80, 0.2);
     }
 
     body {

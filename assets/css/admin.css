@@ -6,32 +6,32 @@
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
 
 :root {
-    --primary: #6366f1;
-    --primary-dark: #4f46e5;
-    --primary-light: #818cf8;
-    --secondary: #64748b;
-    --success: #10b981;
-    --warning: #f59e0b;
-    --danger: #ef4444;
-    --info: #06b6d4;
+    --primary: #2C3E50;
+    --primary-dark: #1a252f;
+    --primary-light: #3e5871;
+    --secondary: #4C9F8A;
+    --success: #2E8B57;
+    --warning: #D9A441;
+    --danger: #C65D5D;
+    --info: #4C9F8A;
     
     /* Light Mode Tokens */
-    --bg-body: #f8fafc;
-    --bg-card: #ffffff;
-    --bg-sidebar: #0f172a;
-    --bg-header: rgba(255, 255, 255, 0.82);
-    --text-main: #0f172a;
-    --text-muted: #64748b;
-    --border-color: #f1f5f9;
+    --bg-body: #F8F9FA;
+    --bg-card: #FFFFFF;
+    --bg-sidebar: #2C3E50;
+    --bg-header: rgba(255, 255, 255, 0.85);
+    --text-main: #0F172A;
+    --text-muted: #5A6C7D;
+    --border-color: #E2E8F0;
     --header-blur: 15px;
     --sidebar-text: #94a3b8;
-    --sidebar-active-bg: rgba(99, 102, 241, 0.15);
+    --sidebar-active-bg: rgba(76, 159, 138, 0.15);
     --sidebar-active-text: #ffffff;
     
-    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-    --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -2px rgba(0, 0, 0, 0.08);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.08);
+    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
     
     --radius-sm: 8px;
     --radius-md: 12px;
@@ -52,8 +52,8 @@
     --border-color: #334155;
     --header-blur: 20px;
     --sidebar-text: #64748b;
-    --sidebar-active-bg: rgba(99, 102, 241, 0.2);
-    --sidebar-active-text: #818cf8;
+    --sidebar-active-bg: rgba(76, 159, 138, 0.2);
+    --sidebar-active-text: #4C9F8A;
 }
 
 /* Global Styles */

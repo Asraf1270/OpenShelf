@@ -190,11 +190,11 @@ class Mailer {
         
         // Define theme colors
         $themes = [
-            'info'    => ['bg' => 'linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)', 'btn' => '#4f46e5'],
-            'success' => ['bg' => 'linear-gradient(135deg, #10b981 0%, #059669 100%)', 'btn' => '#10b981'],
-            'warning' => ['bg' => 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)', 'btn' => '#f59e0b'],
-            'danger'  => ['bg' => 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)', 'btn' => '#ef4444'],
-            'neutral' => ['bg' => 'linear-gradient(135deg, #1e293b 0%, #334155 100%)', 'btn' => '#1e293b']
+            'info'    => ['bg' => 'linear-gradient(135deg, #2C3E50 0%, #4C9F8A 100%)', 'btn' => '#4C9F8A'],
+            'success' => ['bg' => 'linear-gradient(135deg, #2E8B57 0%, #267347 100%)', 'btn' => '#2E8B57'],
+            'warning' => ['bg' => 'linear-gradient(135deg, #D97706 0%, #B45309 100%)', 'btn' => '#D97706'],
+            'danger'  => ['bg' => 'linear-gradient(135deg, #C65D5D 0%, #A84F4F 100%)', 'btn' => '#C65D5D'],
+            'neutral' => ['bg' => 'linear-gradient(135deg, #1E293B 0%, #0F172A 100%)', 'btn' => '#1E293B']
         ];
         
         $theme = $themes[$type] ?? $themes['info'];

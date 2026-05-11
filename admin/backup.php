@@ -147,60 +147,125 @@ $backups = getBackups();
     <link rel="stylesheet" href="/assets/css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
-        .backup-page {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 2rem 1rem;
-        }
-        .create-card {
-            background: white;
-            padding: 1.5rem;
-            border-radius: 1rem;
-            margin-bottom: 2rem;
-            text-align: center;
-        }
-        .backup-list {
-            background: white;
-            border-radius: 1rem;
-            overflow: hidden;
-        }
-        .backup-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1rem 1.5rem;
-            border-bottom: 1px solid #e2e8f0;
-        }
-        .backup-name {
-            font-weight: 500;
-        }
-        .backup-date {
-            font-size: 0.8rem;
-            color: #64748b;
-        }
-        .backup-size {
-            font-size: 0.8rem;
-            color: #10b981;
-        }
-        .btn {
-            padding: 0.75rem 1.5rem;
-            border-radius: 0.5rem;
-            font-weight: 600;
-            cursor: pointer;
-            border: none;
-        }
-        .btn-primary {
-            background: linear-gradient(135deg, #6366f1, #8b5cf6);
-            color: white;
-        }
-        .btn-danger {
-            background: #ef4444;
-            color: white;
-        }
-        .btn-sm {
-            padding: 0.25rem 0.75rem;
-            font-size: 0.8rem;
-        }
+    :root {
+        --primary: #2C3E50;
+        --secondary: #4C9F8A;
+        --bg: #F8F9FA;
+        --surface: #ffffff;
+        --border: #E2E8F0;
+        --text-main: #0F172A;
+        --text-muted: #5A6C7D;
+        --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
+        --radius-lg: 24px;
+        --radius-md: 16px;
+    }
+
+    [data-theme="dark"] {
+        --bg: #0F172A;
+        --surface: #1E293B;
+        --border: #334155;
+        --text-main: #F8F9FA;
+        --text-muted: #94A3B8;
+    }
+
+    body {
+        background: var(--bg);
+        color: var(--text-main);
+        transition: background 0.3s ease;
+    }
+
+    .backup-page {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 2rem 1rem;
+    }
+
+    .create-card {
+        background: var(--surface);
+        padding: 2.5rem;
+        border-radius: var(--radius-md);
+        margin-bottom: 2.5rem;
+        text-align: center;
+        border: 1px solid var(--border);
+        box-shadow: var(--shadow-sm);
+    }
+
+    .backup-list {
+        background: var(--surface);
+        border-radius: var(--radius-md);
+        overflow: hidden;
+        border: 1px solid var(--border);
+        box-shadow: var(--shadow-sm);
+    }
+
+    .backup-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1.25rem 2rem;
+        border-bottom: 1px solid var(--border);
+        transition: background 0.3s ease;
+    }
+
+    .backup-item:last-child {
+        border-bottom: none;
+    }
+
+    .backup-item:hover {
+        background: rgba(76, 159, 138, 0.05);
+    }
+
+    .backup-name {
+        font-weight: 750;
+        color: var(--text-main);
+        font-size: 1.05rem;
+    }
+
+    .backup-date {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        font-weight: 600;
+        margin-top: 0.25rem;
+    }
+
+    .backup-size {
+        font-size: 0.8rem;
+        color: var(--secondary);
+        font-weight: 700;
+        margin-top: 0.2rem;
+    }
+
+    .btn {
+        padding: 0.75rem 1.5rem;
+        border-radius: 12px;
+        font-weight: 750;
+        cursor: pointer;
+        border: none;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .btn-primary {
+        background: var(--primary);
+        color: white;
+    }
+
+    .btn-danger {
+        background: #EF4444;
+        color: white;
+    }
+
+    .btn-sm {
+        padding: 0.45rem 1rem;
+        font-size: 0.8rem;
+    }
+
+    .btn:hover {
+        transform: translateY(-2px);
+        filter: brightness(1.1);
+    }
     </style>
 </head>
 <body>
@@ -223,19 +288,21 @@ $backups = getBackups();
             <?php endif; ?>
             
             <div class="create-card">
-                <i class="fas fa-database" style="font-size: 3rem; color: #6366f1; margin-bottom: 1rem;"></i>
-                <h3>Create a New Backup</h3>
-                <p style="color: #64748b; margin-bottom: 1rem;">Backup all user data, books, and settings</p>
+                <i class="fas fa-database" style="font-size: 3.5rem; color: var(--primary); margin-bottom: 1.5rem; opacity: 0.8;"></i>
+                <h3 style="font-weight: 850; letter-spacing: -1px;">Create a New Backup</h3>
+                <p style="color: var(--text-muted); margin-bottom: 1.5rem; font-weight: 500;">Safely archive all user data, book records, and system settings.</p>
                 <form method="POST">
                     <input type="hidden" name="action" value="create">
-                    <button type="submit" class="btn btn-primary">Create Backup Now</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Create Backup Now
+                    </button>
                 </form>
             </div>
             
             <div class="backup-list">
-                <div class="backup-item" style="background: #f8fafc;">
-                    <strong>Available Backups</strong>
-                    <span>Actions</span>
+                <div class="backup-item" style="background: var(--bg);">
+                    <strong style="text-transform: uppercase; font-size: 0.75rem; letter-spacing: 1.2px; color: var(--text-muted);">Available Backups</strong>
+                    <span style="text-transform: uppercase; font-size: 0.75rem; letter-spacing: 1.2px; color: var(--text-muted);">Actions</span>
                 </div>
                 <?php if (empty($backups)): ?>
                     <div class="backup-item">No backups found. Create your first backup.</div>

@@ -16,6 +16,23 @@ class OpenShelfUI {
         this.initAlerts();
         this.initForms();
         this.initTabs();
+        this.initScrollEffect();
+    }
+    
+    /**
+     * Scroll effect for navbar
+     */
+    initScrollEffect() {
+        const navbar = document.querySelector('.navbar') || document.querySelector('.site-header');
+        if (!navbar) return;
+        
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
     }
     
     /**

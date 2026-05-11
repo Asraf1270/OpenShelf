@@ -1,13 +1,15 @@
 {
+    "id": "/",
     "name": "OpenShelf - Share Books, Share Knowledge",
     "short_name": "OpenShelf",
     "description": "The ultimate community-powered library for university students. Manage your collection, discover new reads, and connect with fellow book lovers.",
     "start_url": "/",
+    "scope": "/",
     "display": "standalone",
     "orientation": "any",
     "theme_color": "#6366f1",
     "background_color": "#f8fafc",
-    "categories": ["books", "education", "social"],
+    "categories": ["books", "education", "social", "lifestyle"],
     "icons": [
         {
             "src": "/assets/images/pwa/icon-72x72.png",
@@ -62,15 +64,24 @@
             "sizes": "512x512",
             "type": "image/png",
             "purpose": "maskable"
-        },
-        {
-            "src": "/assets/images/logo-icon.svg",
-            "sizes": "any",
-            "type": "image/svg+xml",
-            "purpose": "any"
         }
     ],
-    "screenshots": [],
+    "screenshots": [
+        {
+            "src": "/assets/images/pwa/screenshots/mobile-1.png",
+            "sizes": "1080x1920",
+            "type": "image/png",
+            "form_factor": "narrow",
+            "label": "OpenShelf Mobile Feed"
+        },
+        {
+            "src": "/assets/images/pwa/screenshots/desktop-1.png",
+            "sizes": "1920x1080",
+            "type": "image/png",
+            "form_factor": "wide",
+            "label": "OpenShelf Desktop Dashboard"
+        }
+    ],
     "shortcuts": [
         {
             "name": "Browse Books",
@@ -110,3 +121,4 @@
         }
     ]
 }
+
