@@ -34,9 +34,10 @@ function renderBookCardList($books, $options = []) {
 
             .book-card-list {
                 display: flex;
+                align-items: center; /* Center cover and content vertically */
                 background: #ffffff;
                 border-radius: 16px;
-                padding: 10px; /* Reduced card padding */
+                padding: 12px; 
                 position: relative;
                 box-shadow: 0 4px 15px rgba(0,0,0,0.06);
                 transition: transform 0.2s ease, box-shadow 0.2s ease;
