@@ -189,7 +189,8 @@ $profileActive = str_contains($currentPath, '/profile') || str_contains($current
 
 .fab-button {
     position: absolute;
-    top: -18px; /* Sits lower: ~75% inside, 25% protruding */
+    top: 0;
+    transform: translateY(-18px); /* Sits lower: ~75% inside, 25% protruding */
     width: var(--fab-size);
     height: var(--fab-size);
     background: var(--fab-bg);
@@ -199,15 +200,17 @@ $profileActive = str_contains($currentPath, '/profile') || str_contains($current
     align-items: center;
     justify-content: center;
     font-size: 1.5rem;
-    border: 6px solid var(--fab-border); /* Thick background-colored border for solid cut-out */
-    box-shadow: 0 4px 12px rgba(76, 159, 138, 0.3); /* Adjusted shadow for lower position */
-    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    border: none; /* Removing physical border to fix flicker */
+    /* Stacked box-shadow: inner creates the border, outer creates the drop shadow */
+    box-shadow: 0 0 0 6px var(--fab-border), 0 4px 12px rgba(76, 159, 138, 0.3);
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s ease, background 0.3s ease;
     z-index: 1002;
+    will-change: transform, box-shadow; /* Optimize rendering */
 }
 
 .fab-button:hover {
-    transform: scale(1.05) translateY(-4px);
-    box-shadow: 0 8px 16px rgba(76, 159, 138, 0.4);
+    transform: translateY(-22px) scale(1.05);
+    box-shadow: 0 0 0 6px var(--fab-border), 0 8px 16px rgba(76, 159, 138, 0.4);
 }
 
 .fab-button.active {
@@ -231,8 +234,14 @@ $profileActive = str_contains($currentPath, '/profile') || str_contains($current
         box-shadow: 0 10px 0 0 var(--nav-bg);
     }
     .fab-button {
-        top: -15px; /* ~25% protrusion */
-        border-width: 4px;
+        top: 0;
+        transform: translateY(-15px); /* ~25% protrusion */
+        border: none;
+        box-shadow: 0 0 0 4px var(--fab-border), 0 4px 12px rgba(76, 159, 138, 0.3);
+    }
+    .fab-button:hover {
+        transform: translateY(-19px) scale(1.05);
+        box-shadow: 0 0 0 4px var(--fab-border), 0 8px 16px rgba(76, 159, 138, 0.4);
     }
 }
 
