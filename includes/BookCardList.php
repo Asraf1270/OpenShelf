@@ -117,6 +117,7 @@ function renderBookCardList($books, $options = []) {
 
             .book-card-list .stars-mini i.active { color: #f59e0b; }
             .book-card-list .rating-value { font-size: 0.75rem; font-weight: 700; color: #444; }
+            .book-card-list .rating-count { font-size: 0.7rem; color: #888; font-weight: 500; }
 
             /* Minimalist Status Sign (Top Right) */
             .book-card-list .status-sign {
@@ -161,6 +162,7 @@ function renderBookCardList($books, $options = []) {
             [data-theme="dark"] .card-author { color: #94a3b8; }
             [data-theme="dark"] .category-label { color: #64748b; }
             [data-theme="dark"] .rating-value { color: #cbd5e1; }
+            [data-theme="dark"] .rating-count { color: #64748b; }
             [data-theme="dark"] .owner-name { color: #f8fafc; }
             [data-theme="dark"] .owner-hall { color: #64748b; }
             [data-theme="dark"] .card-owner { border-top-color: #334155; }
@@ -224,16 +226,29 @@ function renderBookCardList($books, $options = []) {
                 <p class="category-label"><?php echo htmlspecialchars($category); ?></p>
                 
                 <!-- Visual Rating -->
-                <div class="rating-row">
-                    <div class="stars-mini">
-                        <?php for ($i = 1; $i <= 5; $i++): ?>
-                            <i class="fas fa-star <?php echo ($i <= round($rating)) ? 'active' : ''; ?>"></i>
-                        <?php endfor; ?>
-                    </div>
-                    <?php if ($rating > 0): ?>
+                <?php 
+                $ratingCount = $book['rating_count'] ?? 0;
+                if ($ratingCount > 0): 
+                    $fullStars = floor($rating);
+                    $hasHalfStar = ($rating - $fullStars) >= 0.5;
+                    $emptyStars = 5 - $fullStars - ($hasHalfStar ? 1 : 0);
+                ?>
+                    <div class="rating-row">
+                        <div class="stars-mini">
+                            <?php for ($i = 0; $i < $fullStars; $i++): ?>
+                                <i class="fas fa-star active"></i>
+                            <?php endfor; ?>
+                            <?php if ($hasHalfStar): ?>
+                                <i class="fas fa-star-half-alt active"></i>
+                            <?php endif; ?>
+                            <?php for ($i = 0; $i < $emptyStars; $i++): ?>
+                                <i class="far fa-star"></i>
+                            <?php endfor; ?>
+                        </div>
                         <span class="rating-value"><?php echo number_format($rating, 1); ?></span>
-                    <?php endif; ?>
-                </div>
+                        <span class="rating-count">(<?php echo $ratingCount; ?>)</span>
+                    </div>
+                <?php endif; ?>
                 
                 <!-- Owner Info -->
                 <div class="card-owner">

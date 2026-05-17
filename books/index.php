@@ -765,10 +765,31 @@ function createBookCardList(book) {
     const halls = {'1': 'Amar Ekushey Hall', '2': 'Dr. Muhammad Shahidullah Hall', '3': 'Fazlul Huq Muslim Hall'};
     const displayHall = halls[book.owner_hall || book.hall] || book.owner_hall || book.hall || 'N/A Hall';
     
-    let starsHtml = '';
-    const roundedRating = Math.round(rating);
-    for (let i = 1; i <= 5; i++) {
-        starsHtml += `<i class="fas fa-star ${i <= roundedRating ? 'active' : ''}"></i>`;
+    const ratingCount = parseInt(book.rating_count) || 0;
+    let ratingRowHtml = '';
+    if (ratingCount > 0) {
+        const fullStars = Math.floor(rating);
+        const hasHalfStar = (rating - fullStars) >= 0.5;
+        const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
+        
+        let starsHtml = '';
+        for (let i = 0; i < fullStars; i++) {
+            starsHtml += '<i class="fas fa-star active"></i>';
+        }
+        if (hasHalfStar) {
+            starsHtml += '<i class="fas fa-star-half-alt active"></i>';
+        }
+        for (let i = 0; i < emptyStars; i++) {
+            starsHtml += '<i class="far fa-star"></i>';
+        }
+        
+        ratingRowHtml = `
+            <div class="rating-row">
+                <div class="stars-mini">${starsHtml}</div>
+                <span class="rating-value">${rating.toFixed(1)}</span>
+                <span class="rating-count" style="color: #888; font-size: 0.7rem; font-weight: 500;">(${ratingCount})</span>
+            </div>
+        `;
     }
 
     div.innerHTML = `
@@ -782,10 +803,7 @@ function createBookCardList(book) {
             </h3>
             <p class="card-author">${book.author || 'Unknown'}</p>
             <p class="category-label">${book.category || 'General'}</p>
-            <div class="rating-row">
-                <div class="stars-mini">${starsHtml}</div>
-                ${rating > 0 ? `<span class="rating-value">${rating.toFixed(1)}</span>` : ''}
-            </div>
+            ${ratingRowHtml}
             <div class="card-owner">
                 <img src="${book.owner_avatar}" alt="${book.owner_name}" class="owner-avatar" onerror="this.src='/assets/images/avatars/default.jpg';">
                 <div class="owner-details">
@@ -854,4 +872,7 @@ function sortBooks(criteria) {
 }
 </script>
 
-<?php include dirname(__DIR__) . '/includes/footer.php'; ?>
+<?php
+$hideFooter = true;
+include dirname(__DIR__) . '/includes/footer.php';
+?>
