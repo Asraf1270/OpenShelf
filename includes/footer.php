@@ -18,24 +18,7 @@
                 <div class="footer-section">
                     <div class="footer-logo">
                         <a href="/">
-                            <img src="/assets/images/logo-full.svg" alt="OpenShelf" height="40" style="filter: brightness(0) invert(1) sepia(1) saturate(5) hue-rotate(130deg);">
-                        </a>
-                    </div>
-                    <p class="footer-tagline">
-                        Share books, share knowledge. Join our community of book lovers and start sharing today!
-                    </p>
-                    <div class="footer-social">
-                        <a href="#" class="social-link" aria-label="Facebook">
-                            <i class="fab fa-facebook-f"></i>
-                        </a>
-                        <a href="#" class="social-link" aria-label="Twitter">
-                            <i class="fab fa-twitter"></i>
-                        </a>
-                        <a href="#" class="social-link" aria-label="Instagram">
-                            <i class="fab fa-instagram"></i>
-                        </a>
-                        <a href="#" class="social-link" aria-label="LinkedIn">
-                            <i class="fab fa-linkedin-in"></i>
+                            <img src="/assets/images/logo-wordmark.svg" alt="OpenShelf" height="28" style="filter: brightness(0) invert(1) sepia(1) saturate(5) hue-rotate(130deg);">
                         </a>
                     </div>
                 </div>
@@ -100,6 +83,24 @@
                             </li>
                         </ul>
                     </div>
+                    
+                    <!-- Standalone Social icons section (completely outside and below the Contact Us accordion box) -->
+                    <div class="footer-social-box">
+                        <div class="footer-social">
+                            <a href="#" class="social-link" aria-label="Facebook">
+                                <i class="fab fa-facebook-f"></i>
+                            </a>
+                            <a href="#" class="social-link" aria-label="Twitter">
+                                <i class="fab fa-twitter"></i>
+                            </a>
+                            <a href="#" class="social-link" aria-label="Instagram">
+                                <i class="fab fa-instagram"></i>
+                            </a>
+                            <a href="#" class="social-link" aria-label="LinkedIn">
+                                <i class="fab fa-linkedin-in"></i>
+                            </a>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -117,17 +118,17 @@
         ======================================== */
         
         .footer {
-            background: #2C3E50;
+            background: #0B0F19;
             color: #cbd5e1;
-            border-top: 1px solid #1a252f;
-            margin-top: 6rem;
-            padding: 5rem 0 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            margin-top: 1.5rem;
+            padding: 2rem 0 1rem;
             transition: background-color 0.3s ease, border-color 0.3s ease;
         }
 
         [data-theme="dark"] .footer {
-            background: #090d16;
-            border-top: 1px solid #1e293b;
+            background: #0B0F19;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
         }
 
         .footer-container {
@@ -138,15 +139,25 @@
 
         .footer-top {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 4rem;
-            margin-bottom: 4rem;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
         }
 
         .footer-section {
             display: flex;
             flex-direction: column;
-            gap: 1rem;
+            gap: 0.5rem;
+        }
+
+        .footer-section[data-accordion] {
+            padding-right: 1.5rem;
+            border-right: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .footer-section[data-accordion="contact"] {
+            border-right: none;
+            padding-right: 0;
         }
 
         .footer-logo {
@@ -178,10 +189,10 @@
         }
 
         .footer-title {
-            color: #ffffff;
-            font-size: 1.15rem;
+            color: #f8fafc !important;
+            font-size: 1.05rem;
             font-weight: 800;
-            margin-bottom: 1.5rem;
+            margin-bottom: 0.75rem;
             letter-spacing: 0.5px;
             position: relative;
             display: flex;
@@ -197,7 +208,7 @@
             background: #4C9F8A;
             border-radius: 10px;
             position: absolute;
-            bottom: -8px;
+            bottom: -4px;
             left: 0;
         }
 
@@ -208,7 +219,7 @@
         }
 
         .footer-links li {
-            margin-bottom: 0.6rem;
+            margin-bottom: 0.4rem;
         }
 
         .footer-links a {
@@ -245,8 +256,8 @@
         .footer-contact li {
             display: flex;
             align-items: center;
-            gap: 1rem;
-            margin-bottom: 1rem;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
             font-size: 0.8125rem;
             color: #cbd5e1;
             font-weight: 500;
@@ -266,6 +277,10 @@
 
         .footer-contact a:hover {
             color: #4C9F8A;
+        }
+
+        .footer-social-box {
+            margin-top: 1rem;
         }
 
         .footer-social {
@@ -297,7 +312,7 @@
         }
 
         .footer-bottom {
-            padding-top: 2rem;
+            padding-top: 1.25rem;
             border-top: 1px solid rgba(255, 255, 255, 0.05);
             text-align: center;
             font-size: 0.75rem;
@@ -328,13 +343,25 @@
         /* Responsive styling */
         @media (max-width: 768px) {
             .footer {
-                padding: 3rem 0 1.5rem;
+                padding: 2rem 0 1rem;
             }
             
             .footer-top {
                 grid-template-columns: 1fr;
-                gap: 1.5rem;
+                gap: 1rem;
                 text-align: center;
+            }
+
+            .footer-section {
+                border-right: none !important;
+                padding-right: 0 !important;
+            }
+
+            .footer-social-box {
+                margin-top: 1.25rem;
+                padding-top: 1rem;
+                border-top: 1px solid rgba(255, 255, 255, 0.05);
+                width: 100%;
             }
             
             .footer-logo {
@@ -348,8 +375,8 @@
             /* Accordion Styling on Mobile */
             .footer-section[data-accordion] {
                 border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-                padding-bottom: 0.75rem;
-                margin-bottom: 0.5rem;
+                padding-bottom: 0.5rem;
+                margin-bottom: 0.35rem;
                 display: block; /* Override flex */
             }
             

@@ -422,29 +422,7 @@ $totalActive = count($activeBorrows);
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Floating Action Button */
-        .floating-btn {
-            position: fixed;
-            bottom: 2rem;
-            right: 2rem;
-            width: 60px;
-            height: 60px;
-            border-radius: 20px;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 10px 25px rgba(99, 102, 241, 0.4);
-            z-index: 100;
-            transition: var(--transition);
-            font-size: 1.5rem;
-        }
 
-        .floating-btn:hover { 
-            transform: scale(1.1) rotate(10deg);
-            box-shadow: 0 15px 30px rgba(99, 102, 241, 0.5);
-        }
 
     </style>
 </head>
@@ -572,11 +550,6 @@ $totalActive = count($activeBorrows);
         <?php endif; ?>
 
     </main>
-
-    <!-- Floating Action Button for adding more books -->
-    <a href="/books/" class="floating-btn fade-in" style="animation-delay: 0.8s" title="Borrow another book">
-        <i class="fas fa-search"></i>
-    </a>
 
     <?php include dirname(__DIR__) . '/includes/footer.php'; ?>
 </body>

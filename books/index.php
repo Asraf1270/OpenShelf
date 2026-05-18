@@ -794,23 +794,23 @@ function createBookCardList(book) {
 
     div.innerHTML = `
         <div class="status-sign status-${status}" title="${status.charAt(0).toUpperCase() + status.slice(1)}"></div>
-        <div class="card-cover-section">
+        <a href="/book/?id=${book.id}" class="cover-link">
             <img src="${book.cover_image}" alt="${book.title}" class="book-cover-image" onerror="this.src='/assets/images/default-book-cover.jpg';">
-        </div>
+        </a>
         <div class="card-info-section">
-            <h3 class="card-title">
-                <a href="/book/?id=${book.id}" style="text-decoration: none; color: inherit;">${book.title}</a>
-            </h3>
-            <p class="card-author">${book.author || 'Unknown'}</p>
-            <p class="category-label">${book.category || 'General'}</p>
-            ${ratingRowHtml}
-            <div class="card-owner">
+            <a href="/book/?id=${book.id}" class="book-info-link">
+                <h3 class="card-title">${book.title}</h3>
+                <p class="card-author">${book.author || 'Unknown'}</p>
+                <p class="category-label">${book.category || 'General'}</p>
+                ${ratingRowHtml}
+            </a>
+            <a href="/profile/?id=${book.owner_id}" class="owner-link-area">
                 <img src="${book.owner_avatar}" alt="${book.owner_name}" class="owner-avatar" onerror="this.src='/assets/images/avatars/default.jpg';">
                 <div class="owner-details">
-                    <a href="/profile/?id=${book.owner_id}" class="owner-name">${book.owner_name}</a>
+                    <span class="owner-name">${book.owner_name}</span>
                     <span class="owner-hall">${displayHall}</span>
                 </div>
-            </div>
+            </a>
         </div>
     `;
     return div;
