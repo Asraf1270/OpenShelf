@@ -8,7 +8,7 @@ session_start();
 include dirname(__DIR__) . '/includes/header.php';
 include dirname(__DIR__) . '/includes/BookCardGrid.php';
 include dirname(__DIR__) . '/includes/BookCardList.php';
-echo '<link rel="stylesheet" href="/assets/css/profile.css">';
+echo '<link rel="stylesheet" href="/assets/css/profile.css?v=' . filemtime(dirname(__DIR__) . '/assets/css/profile.css') . '">';
 
 // Configuration
 define('DATA_PATH', dirname(__DIR__) . '/data/');
@@ -35,10 +35,17 @@ function loadUserData($userId) {
     $user = $stmt->fetch();
     
     if ($user) {
+        $bio = '';
+        $userFile = USERS_PATH . $userId . '.json';
+        if (file_exists($userFile)) {
+            $userData = json_decode(file_get_contents($userFile), true);
+            $bio = $userData['personal_info']['bio'] ?? '';
+        }
+        
         return [
             'personal_info' => [
                 'name' => $user['name'] ?? 'Unknown User',
-                'bio' => $user['bio'] ?? '',
+                'bio' => $bio,
                 'department' => $user['department'] ?? 'N/A',
                 'session' => $user['session'] ?? 'N/A',
                 'hall' => $user['hall'] ?? '',
@@ -62,7 +69,7 @@ function loadUserData($userId) {
 function loadUserBooks($userId) {
     if (empty($userId)) return [];
     $db = getDB();
-    $stmt = $db->prepare("SELECT b.*, u.hall as owner_hall FROM books b LEFT JOIN users u ON b.owner_id = u.id WHERE b.owner_id = ?");
+    $stmt = $db->prepare("SELECT b.id, b.title, b.author, b.category, b.status, b.created_at, b.cover_image, b.rating, b.rating_count, u.hall as owner_hall, u.profile_pic as owner_avatar FROM books b LEFT JOIN users u ON b.owner_id = u.id WHERE b.owner_id = ?");
     $stmt->execute([$userId]);
     return $stmt->fetchAll();
 }
@@ -168,12 +175,19 @@ $showSensitiveInfo = $isOwnProfile; // Only owner can see sensitive info like ro
 <div class="profile-hero"></div>
 
 <div class="profile-container">
-    <div class="glass-card reveal active">
-        <!-- Action Buttons (Top Right) -->
-        <button class="share-btn" onclick="copyProfileLink()" title="Share Profile">
+    <!-- Top Navigation Bar from sketch -->
+    <div class="profile-header-nav">
+        <a href="javascript:history.back()" class="profile-nav-btn back-btn" title="Go Back">
+            <i class="fas fa-arrow-left"></i>
+        </a>
+        <span class="profile-nav-title">Profile</span>
+        <button class="profile-nav-btn share-btn-top" onclick="copyProfileLink()" title="Share Profile">
             <i class="fas fa-share-alt"></i>
         </button>
+    </div>
 
+    <div class="glass-card reveal active">
+        <!-- Profile Avatar wrapper overlapping banner -->
         <div class="profile-avatar-wrapper">
             <img src="<?php echo $profileImagePath; ?>" 
                  alt="<?php echo htmlspecialchars($user['personal_info']['name']); ?>"
@@ -182,108 +196,126 @@ $showSensitiveInfo = $isOwnProfile; // Only owner can see sensitive info like ro
 
         <h1 class="profile-name"><?php echo htmlspecialchars($user['personal_info']['name']); ?></h1>
         
+        <!-- Subtitle and Meta Info -->
+        <div class="profile-subtitle">
+            <i class="fas fa-graduation-cap"></i> <?php echo htmlspecialchars($user['personal_info']['department'] ?? 'N/A'); ?>
+        </div>
+        
+        <div class="profile-meta">
+            <span class="meta-item"><i class="far fa-calendar-alt"></i> Joined <?php echo $memberSince; ?></span>
+        </div>
+        
+        <!-- Bio Section -->
         <div class="profile-bio">
             <?php if (!empty($user['personal_info']['bio'])): ?>
                 <p><?php echo nl2br(htmlspecialchars($user['personal_info']['bio'])); ?></p>
             <?php else: ?>
-                <p>No bio available.</p>
+                <p class="no-bio"><i class="fas fa-info-circle"></i> No bio available yet.</p>
             <?php endif; ?>
         </div>
 
-        <!-- Details Grid -->
-        <div class="grid grid-2" style="max-width: 600px; margin: 0 auto 2rem; border-top: 1px solid var(--gray-200); padding-top: 1.5rem; position: relative;">
-            <div style="display: flex; gap: 0.75rem; align-items: center;">
-                <div style="background: var(--gray-100); padding: 0.5rem; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; color: var(--profile-primary);">
+        <!-- Info Grid: 2 Columns (Department, Session, Hall, Room) -->
+        <div class="info-grid">
+            <div class="info-card">
+                <div class="info-icon dept-icon">
                     <i class="fas fa-university"></i>
                 </div>
-                <div>
-                    <div style="font-size: 0.75rem; color: var(--gray-500);">Department</div>
-                    <div style="font-weight: 600;"><?php echo htmlspecialchars($user['personal_info']['department'] ?? 'N/A'); ?></div>
-                </div>
-            </div>
-            <div style="display: flex; gap: 0.75rem; align-items: center;">
-                <div style="background: var(--gray-100); padding: 0.5rem; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; color: var(--profile-secondary);">
-                    <i class="fas fa-graduation-cap"></i>
-                </div>
-                <div>
-                    <div style="font-size: 0.75rem; color: var(--gray-500);">Session</div>
-                    <div style="font-weight: 600;"><?php echo htmlspecialchars($user['personal_info']['session'] ?? 'N/A'); ?></div>
+                <div class="info-content">
+                    <span class="info-label">Department</span>
+                    <span class="info-value"><?php echo htmlspecialchars($user['personal_info']['department'] ?? 'N/A'); ?></span>
                 </div>
             </div>
             
-            <?php if (!$showSensitiveInfo): ?>
-                <div style="position: absolute; top: -10px; left: 50%; transform: translateX(-50%); background: var(--gray-100); padding: 2px 12px; border-radius: var(--radius-full); font-size: 0.65rem; color: var(--gray-500); display: flex; align-items: center; gap: 4px; border: 1px solid var(--gray-200);">
-                    <i class="fas fa-lock" style="font-size: 0.6rem;"></i> Limited Profile
+            <div class="info-card">
+                <div class="info-icon session-icon">
+                    <i class="far fa-calendar-check"></i>
                 </div>
-            <?php endif; ?>
-            <?php if ($showSensitiveInfo): ?>
-                <div style="display: flex; gap: 0.75rem; align-items: center;">
-                    <div style="background: var(--gray-100); padding: 0.5rem; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; color: var(--profile-accent);">
-                        <i class="fas fa-hotel"></i>
-                    </div>
-                    <div>
-                        <div style="font-size: 0.75rem; color: var(--gray-500);">Hall</div>
-                        <div style="font-weight: 600;">
-                            <?php 
-                            require_once dirname(__DIR__) . '/includes/helpers.php';
-                            echo htmlspecialchars(getHallName($user['personal_info']['hall'] ?? '')); 
-                            ?>
-                        </div>
-                    </div>
+                <div class="info-content">
+                    <span class="info-label">Session</span>
+                    <span class="info-value"><?php echo htmlspecialchars($user['personal_info']['session'] ?? 'N/A'); ?></span>
                 </div>
+            </div>
 
-                <div style="display: flex; gap: 0.75rem; align-items: center;">
-                    <div style="background: var(--gray-100); padding: 0.5rem; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; color: var(--success);">
-                        <i class="fas fa-door-open"></i>
-                    </div>
-                    <div>
-                        <div style="font-size: 0.75rem; color: var(--gray-500);">Room</div>
-                        <div style="font-weight: 600;"><?php echo htmlspecialchars($user['personal_info']['room_number'] ?? 'N/A'); ?></div>
-                    </div>
+            <div class="info-card">
+                <div class="info-icon hall-icon">
+                    <i class="fas fa-hotel"></i>
                 </div>
-            <?php endif; ?>
+                <div class="info-content">
+                    <span class="info-label">Hall</span>
+                    <span class="info-value">
+                        <?php 
+                        require_once dirname(__DIR__) . '/includes/helpers.php';
+                        $hallName = getHallName($user['personal_info']['hall'] ?? '');
+                        echo htmlspecialchars($hallName ?: 'N/A');
+                        ?>
+                    </span>
+                </div>
+            </div>
 
-            <div style="display: flex; gap: 0.75rem; align-items: center;">
-                <div style="background: var(--gray-100); padding: 0.5rem; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; color: var(--warning);">
-                    <i class="fas fa-calendar-alt"></i>
+            <div class="info-card">
+                <div class="info-icon room-icon">
+                    <i class="fas fa-door-open"></i>
                 </div>
-                <div>
-                    <div style="font-size: 0.75rem; color: var(--gray-500);">Member Since</div>
-                    <div style="font-weight: 600;"><?php echo $memberSince; ?></div>
+                <div class="info-content">
+                    <span class="info-label">Room</span>
+                    <span class="info-value">
+                        <?php if ($showSensitiveInfo): ?>
+                            <?php echo htmlspecialchars($user['personal_info']['room_number'] ?? 'N/A'); ?>
+                        <?php else: ?>
+                            <span class="locked-text"><i class="fas fa-lock"></i> Private</span>
+                        <?php endif; ?>
+                    </span>
                 </div>
             </div>
         </div>
 
-        <div class="stats-grid">
-            <div class="stat-item">
-                <span class="stat-value"><?php echo $stats['owned']; ?></span>
-                <span class="stat-label">Owned</span>
+        <!-- Stats Row: 1 Row for Owned, Borrowed, Lent -->
+        <div class="stats-row">
+            <div class="stat-card">
+                <span class="stat-count"><?php echo $stats['owned']; ?></span>
+                <span class="stat-text">Owned</span>
             </div>
-            <?php if ($showSensitiveInfo): ?>
-                <div class="stat-item">
-                    <span class="stat-value"><?php echo $stats['borrowed']; ?></span>
-                    <span class="stat-label">Borrowed</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-value"><?php echo $stats['lent']; ?></span>
-                    <span class="stat-label">Lent</span>
-                </div>
-            <?php endif; ?>
+            <div class="stat-card">
+                <span class="stat-count"><?php echo $stats['borrowed']; ?></span>
+                <span class="stat-text">Borrowed</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-count"><?php echo $stats['lent']; ?></span>
+                <span class="stat-text">Lent</span>
+            </div>
         </div>
 
-        <div style="display: flex; justify-content: center; gap: var(--space-md); margin-top: 2rem;">
+        <!-- Consolidated Actions Wrapper from sketch -->
+        <div class="profile-actions-wrapper">
             <?php if ($isOwnProfile): ?>
-                <a href="/edit-profile/" class="btn btn-primary" style="border-radius: var(--radius-full); padding: 0.75rem 2rem;">
-                    <i class="fas fa-edit"></i> Edit Profile
+                <!-- Settings gear icon centered below grid -->
+                <a href="/edit-profile/" class="settings-gear-btn" title="Edit Settings">
+                    <i class="fas fa-cog"></i>
                 </a>
-                <a href="/add-book/" class="btn btn-outline" style="border-radius: var(--radius-full); padding: 0.75rem 2rem;">
-                    <i class="fas fa-plus-circle"></i> Add Book
-                </a>
+                
+                <!-- Side by side action buttons -->
+                <div class="action-buttons-row">
+                    <a href="/edit-profile/" class="btn btn-profile-action edit-btn">
+                        <i class="fas fa-edit"></i> Edit Profile
+                    </a>
+                    <a href="/add-book/" class="btn btn-profile-action add-btn">
+                        <i class="fas fa-plus-circle"></i> Add Book
+                    </a>
+                </div>
             <?php elseif (isset($_SESSION['user_id'])): ?>
-                <a href="https://wa.me/88<?php echo preg_replace('/[^0-9]/', '', $user['personal_info']['phone'] ?? ''); ?>" 
-                   target="_blank" class="btn btn-success" style="border-radius: var(--radius-full); padding: 0.75rem 2rem;">
-                    <i class="fab fa-whatsapp"></i> Contact Me
-                </a>
+                <!-- Contact row for logged in users viewing other profiles -->
+                <div class="action-buttons-row single-action">
+                    <?php if (!empty($user['personal_info']['phone'])): ?>
+                        <a href="https://wa.me/88<?php echo preg_replace('/[^0-9]/', '', $user['personal_info']['phone']); ?>" 
+                           target="_blank" class="btn btn-profile-action contact-btn">
+                            <i class="fab fa-whatsapp"></i> Contact Me
+                        </a>
+                    <?php else: ?>
+                        <span class="btn btn-profile-action contact-btn disabled">
+                            <i class="fas fa-phone-slash"></i> No Phone Provided
+                        </span>
+                    <?php endif; ?>
+                </div>
             <?php endif; ?>
         </div>
     </div>
