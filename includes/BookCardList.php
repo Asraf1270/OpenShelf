@@ -34,16 +34,57 @@ function renderBookCardList($books, $options = []) {
 
             .book-card-list {
                 display: flex;
-                align-items: center; /* Center cover and content vertically */
+                flex-direction: row;
+                align-items: center;
                 background: #ffffff;
                 border-radius: 16px;
-                padding: 12px; 
+                padding: 12px;
                 position: relative;
                 box-shadow: 0 4px 15px rgba(0,0,0,0.06);
                 transition: transform 0.2s ease, box-shadow 0.2s ease;
                 border: 1px solid #f0f0f0;
+                color: inherit;
+            }
+
+            /* Cover clickable link */
+            .book-card-list .cover-link {
+                flex: 0 0 80px;
+                height: 110px;
+                margin-right: 12px;
+                display: block;
+                text-decoration: none;
+                flex-shrink: 0;
+            }
+
+            /* Book info clickable link (title, author, category, rating) */
+            .book-card-list .book-info-link {
+                display: flex;
+                flex-direction: column;
                 text-decoration: none;
                 color: inherit;
+                flex: 1;
+                min-width: 0;
+            }
+
+            .book-card-list .book-info-link:hover .card-title { color: var(--primary, #2C3E50); }
+
+            /* Owner clickable area */
+            .book-card-list .owner-link-area {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                margin-top: 8px;
+                padding: 6px 4px;
+                padding-top: 6px;
+                border-top: 1px solid #f5f5f5;
+                text-decoration: none;
+                color: inherit;
+                border-radius: 8px;
+                transition: background 0.15s ease;
+            }
+
+            .book-card-list .owner-link-area:hover {
+                background: rgba(0,0,0,0.03);
             }
 
             .book-card-list:hover {
@@ -52,18 +93,13 @@ function renderBookCardList($books, $options = []) {
             }
 
             /* LEFT: Book Cover */
-            .book-card-list .card-cover-section {
-                flex: 0 0 80px; /* Slightly smaller cover */
-                height: 110px;
-                margin-right: 12px;
-            }
-
             .book-card-list .book-cover-image {
-                width: 100%;
-                height: 100%;
+                width: 80px;
+                height: 110px;
                 object-fit: cover;
                 border-radius: 8px;
                 box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+                display: block;
             }
 
             /* RIGHT: Content */
@@ -71,7 +107,7 @@ function renderBookCardList($books, $options = []) {
                 flex: 1;
                 display: flex;
                 flex-direction: column;
-                min-width: 0; 
+                min-width: 0;
             }
 
             .book-card-list .card-title {
@@ -117,6 +153,7 @@ function renderBookCardList($books, $options = []) {
 
             .book-card-list .stars-mini i.active { color: #f59e0b; }
             .book-card-list .rating-value { font-size: 0.75rem; font-weight: 700; color: #444; }
+            .book-card-list .rating-count { font-size: 0.7rem; color: #888; font-weight: 500; }
 
             /* Minimalist Status Sign (Top Right) */
             .book-card-list .status-sign {
@@ -134,36 +171,30 @@ function renderBookCardList($books, $options = []) {
             .book-card-list .status-reserved { background: #60a5fa; }
 
             /* BOTTOM: Owner Section */
-            .book-card-list .card-owner {
-                display: flex;
-                align-items: center;
-                gap: 8px;
-                margin-top: 8px;
-                padding-top: 6px;
-                border-top: 1px solid #f5f5f5;
-            }
-
             .book-card-list .owner-avatar {
                 width: 28px;
                 height: 28px;
                 border-radius: 50%;
                 object-fit: cover;
                 background: #eee;
+                flex-shrink: 0;
             }
 
             .book-card-list .owner-details { display: flex; flex-direction: column; line-height: 1.1; }
-            .book-card-list .owner-name { font-size: 0.8rem; font-weight: 700; color: #333; text-decoration: none; }
+            .book-card-list .owner-name { font-size: 0.8rem; font-weight: 700; color: #333; }
             .book-card-list .owner-hall { font-size: 0.7rem; color: #888; font-weight: 500; }
 
             /* Dark Mode */
             [data-theme="dark"] .book-card-list { background: #1e293b; border-color: #334155; }
-            [data-theme="dark"] .card-title { color: #f8fafc; }
-            [data-theme="dark"] .card-author { color: #94a3b8; }
-            [data-theme="dark"] .category-label { color: #64748b; }
+            [data-theme="dark"] .book-info-link .card-title { color: #f8fafc; }
+            [data-theme="dark"] .book-info-link .card-author { color: #94a3b8; }
+            [data-theme="dark"] .book-info-link .category-label { color: #64748b; }
             [data-theme="dark"] .rating-value { color: #cbd5e1; }
+            [data-theme="dark"] .rating-count { color: #64748b; }
             [data-theme="dark"] .owner-name { color: #f8fafc; }
             [data-theme="dark"] .owner-hall { color: #64748b; }
-            [data-theme="dark"] .card-owner { border-top-color: #334155; }
+            [data-theme="dark"] .owner-link-area { border-top-color: #334155; }
+            [data-theme="dark"] .owner-link-area:hover { background: rgba(255,255,255,0.05); }
             [data-theme="dark"] .status-sign { box-shadow: 0 0 0 3px #1e293b; }
         </style>
         <?php
@@ -205,55 +236,65 @@ function renderBookCardList($books, $options = []) {
             <!-- Minimalist Status Sign -->
             <div class="status-sign status-<?php echo $status; ?>" title="<?php echo ucfirst($status); ?>"></div>
 
-            <!-- LEFT: Cover -->
-            <div class="card-cover-section">
+            <!-- LEFT: Cover (clickable → book page) -->
+            <a href="/book/?id=<?php echo htmlspecialchars($bookId); ?>" class="cover-link">
                 <img src="<?php echo htmlspecialchars($coverImage); ?>" 
                      alt="<?php echo htmlspecialchars($title); ?>"
                      class="book-cover-image"
                      onerror="this.src='/assets/images/default-book-cover.jpg';">
-            </div>
+            </a>
 
             <!-- RIGHT: Content -->
             <div class="card-info-section">
-                <h3 class="card-title">
-                    <a href="/book/?id=<?php echo htmlspecialchars($bookId); ?>" style="text-decoration: none; color: inherit;">
-                        <?php echo htmlspecialchars($title); ?>
-                    </a>
-                </h3>
-                <p class="card-author"><?php echo htmlspecialchars($author); ?></p>
-                <p class="category-label"><?php echo htmlspecialchars($category); ?></p>
-                
-                <!-- Visual Rating -->
-                <div class="rating-row">
-                    <div class="stars-mini">
-                        <?php for ($i = 1; $i <= 5; $i++): ?>
-                            <i class="fas fa-star <?php echo ($i <= round($rating)) ? 'active' : ''; ?>"></i>
-                        <?php endfor; ?>
-                    </div>
-                    <?php if ($rating > 0): ?>
-                        <span class="rating-value"><?php echo number_format($rating, 1); ?></span>
+                <!-- Book info (clickable → book page) -->
+                <a href="/book/?id=<?php echo htmlspecialchars($bookId); ?>" class="book-info-link">
+                    <h3 class="card-title"><?php echo htmlspecialchars($title); ?></h3>
+                    <p class="card-author"><?php echo htmlspecialchars($author); ?></p>
+                    <p class="category-label"><?php echo htmlspecialchars($category); ?></p>
+
+                    <!-- Visual Rating -->
+                    <?php 
+                    $ratingCount = $book['rating_count'] ?? 0;
+                    if ($ratingCount > 0): 
+                        $fullStars = floor($rating);
+                        $hasHalfStar = ($rating - $fullStars) >= 0.5;
+                        $emptyStars = 5 - $fullStars - ($hasHalfStar ? 1 : 0);
+                    ?>
+                        <div class="rating-row">
+                            <div class="stars-mini">
+                                <?php for ($i = 0; $i < $fullStars; $i++): ?>
+                                    <i class="fas fa-star active"></i>
+                                <?php endfor; ?>
+                                <?php if ($hasHalfStar): ?>
+                                    <i class="fas fa-star-half-alt active"></i>
+                                <?php endif; ?>
+                                <?php for ($i = 0; $i < $emptyStars; $i++): ?>
+                                    <i class="far fa-star"></i>
+                                <?php endfor; ?>
+                            </div>
+                            <span class="rating-value"><?php echo number_format($rating, 1); ?></span>
+                            <span class="rating-count">(<?php echo $ratingCount; ?>)</span>
+                        </div>
                     <?php endif; ?>
-                </div>
-                
-                <!-- Owner Info -->
-                <div class="card-owner">
+
+                    <?php if ($extraInfoKey && !empty($book[$extraInfoKey])): ?>
+                        <div class="extra-info-row" style="margin-top: 8px; font-size: 0.8rem; color: #2C3E50; font-weight: 600; padding: 4px 8px; background: #f8fafc; border-radius: 6px; width: fit-content; border: 1px solid #e2e8f0;">
+                            <?php echo htmlspecialchars($extraInfoLabel); ?>: <?php echo htmlspecialchars($book[$extraInfoKey]); ?>
+                        </div>
+                    <?php endif; ?>
+                </a>
+
+                <!-- Owner info (clickable → owner profile) -->
+                <a href="/profile/?id=<?php echo htmlspecialchars($ownerId); ?>" class="owner-link-area">
                     <img src="<?php echo htmlspecialchars($ownerAvatar); ?>" 
                          alt="<?php echo htmlspecialchars($ownerName); ?>"
                          class="owner-avatar"
                          onerror="this.src='/assets/images/avatars/default.jpg';">
                     <div class="owner-details">
-                        <a href="/profile/?id=<?php echo htmlspecialchars($ownerId); ?>" class="owner-name">
-                            <?php echo htmlspecialchars($ownerName); ?>
-                        </a>
+                        <span class="owner-name"><?php echo htmlspecialchars($ownerName); ?></span>
                         <span class="owner-hall"><?php echo htmlspecialchars($displayHall); ?></span>
                     </div>
-                </div>
-
-                <?php if ($extraInfoKey && !empty($book[$extraInfoKey])): ?>
-                    <div class="extra-info-row" style="margin-top: 8px; font-size: 0.8rem; color: #2C3E50; font-weight: 600; padding: 4px 8px; background: #f8fafc; border-radius: 6px; width: fit-content; border: 1px solid #e2e8f0;">
-                        <?php echo htmlspecialchars($extraInfoLabel); ?>: <?php echo htmlspecialchars($book[$extraInfoKey]); ?>
-                    </div>
-                <?php endif; ?>
+                </a>
             </div>
         </div>
         <?php
