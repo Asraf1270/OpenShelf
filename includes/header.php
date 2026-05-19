@@ -893,6 +893,28 @@ if (!file_exists($fullAvatarPath) || $userAvatar === 'default-avatar.jpg') {
 
 <!-- Mobile Menu -->
 <div class="mobile-menu" id="mobileMenu">
+    <div class="mobile-header">
+        <?php if ($isLoggedIn): ?>
+        <div class="mobile-user-info">
+            <img src="<?php echo $avatarPath; ?>" 
+                 alt="<?php echo htmlspecialchars($userName); ?>" 
+                 class="mobile-avatar" 
+                 onerror="this.src='/assets/images/avatars/default.jpg'">
+            <div>
+                <div class="mobile-user-name"><?php echo htmlspecialchars($userName); ?></div>
+                <div class="mobile-user-email"><?php echo htmlspecialchars($userEmail); ?></div>
+            </div>
+        </div>
+        <?php else: ?>
+        <div style="text-align: center;">
+            <div class="mobile-user-name">Welcome to OpenShelf</div>
+            <div style="margin-top: 1rem; display: flex; gap: 0.75rem; justify-content: center;">
+                <a href="/login/" style="background: rgba(255,255,255,0.2); padding: 0.5rem 1rem; border-radius: 2rem; color: white; text-decoration: none;">Login</a>
+                <a href="/register/" style="background: white; padding: 0.5rem 1rem; border-radius: 2rem; color: #1a252f; text-decoration: none;">Register</a>
+            </div>
+        </div>
+        <?php endif; ?>
+    </div>
     
     <nav class="mobile-nav">
         <ul style="list-style: none;">
@@ -949,18 +971,6 @@ if (!file_exists($fullAvatarPath) || $userAvatar === 'default-avatar.jpg') {
             <li class="mobile-nav-item">
                 <a href="/logout.php" class="mobile-nav-link mobile-logout-link">
                     <i class="fas fa-sign-out-alt"></i> Logout
-                </a>
-            </li>
-            <?php else: ?>
-            <div class="mobile-divider"></div>
-            <li class="mobile-nav-item">
-                <a href="/login/" class="mobile-nav-link" style="color: var(--primary); font-weight: 600;">
-                    <i class="fas fa-sign-in-alt"></i> Login
-                </a>
-            </li>
-            <li class="mobile-nav-item">
-                <a href="/register/" class="mobile-nav-link" style="color: var(--primary); font-weight: 600;">
-                    <i class="fas fa-user-plus"></i> Register
                 </a>
             </li>
             <?php endif; ?>
