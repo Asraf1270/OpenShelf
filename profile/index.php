@@ -288,17 +288,9 @@ $showSensitiveInfo = $isOwnProfile; // Only owner can see sensitive info like ro
         <!-- Consolidated Actions Wrapper from sketch -->
         <div class="profile-actions-wrapper">
             <?php if ($isOwnProfile): ?>
-                <!-- Settings gear icon centered below grid -->
-                <a href="/edit-profile/" class="settings-gear-btn" title="Edit Settings">
-                    <i class="fas fa-cog"></i>
-                </a>
-                
-                <!-- Side by side action buttons -->
-                <div class="action-buttons-row">
-                    <a href="/edit-profile/" class="btn btn-profile-action edit-btn">
-                        <i class="fas fa-edit"></i> Edit Profile
-                    </a>
-                    <a href="/add-book/" class="btn btn-profile-action add-btn">
+                <!-- Side by side action buttons replaced by full-width Add Book CTA -->
+                <div class="action-buttons-row" style="grid-template-columns: 1fr;">
+                    <a href="/add-book/" class="btn btn-profile-action edit-btn" style="justify-content: center;">
                         <i class="fas fa-plus-circle"></i> Add Book
                     </a>
                 </div>

@@ -14,7 +14,7 @@ $homeActive = $currentPath === '/' || basename($currentPath) === 'index.php' || 
 $requestsActive = str_contains($currentPath, '/requests');
 $addBookActive = str_contains($currentPath, '/add-book');
 $borrowedActive = str_contains($currentPath, '/my-borrowed');
-$profileActive = str_contains($currentPath, '/profile') || str_contains($currentPath, '/edit-profile') || (!$isLoggedIn && str_contains($currentPath, '/login'));
+$profileActive = str_contains($currentPath, '/profile') || str_contains($currentPath, '/settings') || (!$isLoggedIn && str_contains($currentPath, '/login'));
 ?>
 
 <div class="bottom-nav-container" id="bottomNavbar">

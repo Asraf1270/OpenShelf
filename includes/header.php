@@ -948,7 +948,7 @@ if (!file_exists($fullAvatarPath) || $userAvatar === 'default-avatar.jpg') {
                 </a>
             </li>
             <li class="mobile-nav-item">
-                <a href="/edit-profile/" class="mobile-nav-link <?php echo strpos($currentPath, '/edit-profile/') !== false ? 'active' : ''; ?>">
+                <a href="/settings/" class="mobile-nav-link <?php echo strpos($currentPath, '/settings/') !== false ? 'active' : ''; ?>">
                     <i class="fas fa-cog"></i> Settings
                 </a>
             </li>
