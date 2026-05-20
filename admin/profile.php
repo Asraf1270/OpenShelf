@@ -127,7 +127,7 @@ $adminRole = $admin['role'];
             border: 1px solid rgba(0,0,0,0.05);
         }
         .profile-header {
-            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
             padding: 2.5rem 2rem;
             text-align: center;
             color: white;
@@ -160,7 +160,7 @@ $adminRole = $admin['role'];
             gap: 0.75rem;
             color: var(--text-main);
         }
-        .section-title i { color: #6366f1; }
+        .section-title i { color: var(--primary); }
         
         .form-group { margin-bottom: 1.5rem; }
         .form-label {
@@ -183,9 +183,9 @@ $adminRole = $admin['role'];
         }
         .form-control:focus {
             outline: none;
-            border-color: #6366f1;
+            border-color: var(--primary);
             background: white;
-            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+            box-shadow: 0 0 0 4px rgba(44, 62, 80, 0.1);
         }
         .form-control:disabled {
             background: #f1f5f9;
@@ -200,9 +200,9 @@ $adminRole = $admin['role'];
             font-weight: 700;
             cursor: pointer;
             border: none;
-            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
             color: white;
-            box-shadow: 0 10px 15px -3px rgba(99, 102, 241, 0.3);
+            box-shadow: 0 10px 15px -3px rgba(44, 62, 80, 0.3);
             transition: all 0.2s;
             display: flex;
             align-items: center;
@@ -211,7 +211,7 @@ $adminRole = $admin['role'];
         }
         .btn-save:hover {
             transform: translateY(-2px);
-            box-shadow: 0 20px 25px -5px rgba(99, 102, 241, 0.4);
+            box-shadow: 0 20px 25px -5px rgba(44, 62, 80, 0.4);
         }
         
         .alert {

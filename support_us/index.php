@@ -88,7 +88,7 @@ include '../includes/header.php';
         <!-- Subtle background elements -->
         <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full pointer-events-none -z-10">
             <div class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-teal-100/40 rounded-full blur-[120px]"></div>
-            <div class="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-indigo-100/30 rounded-full blur-[120px]"></div>
+            <div class="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-primary/10 rounded-full blur-[120px]"></div>
         </div>
     </div>
 
@@ -269,15 +269,15 @@ include '../includes/header.php';
     document.querySelectorAll('input').forEach(input => {
         input.addEventListener('input', function() {
             const val = this.value;
-            const container = this.closest('.space-y-3');
+            const container = this.closest('.space-y-4');
             const icon = container.querySelector('.fa-receipt');
             
             // Just some subtle visual feedback
             if (val.length > 0) {
                 icon.classList.remove('text-slate-300');
-                icon.classList.add('text-indigo-400');
+                icon.classList.add('text-secondary');
             } else {
-                icon.classList.remove('text-indigo-400');
+                icon.classList.remove('text-secondary');
                 icon.classList.add('text-slate-300');
             }
         });

@@ -732,8 +732,8 @@ $rejectedUsersCount = (int)$db->query("SELECT COUNT(*) FROM users WHERE status =
                                 </td>
                                 <td>
                                     <div style="font-size: 0.85rem;">
-                                        <div><i class="fas fa-phone" style="width: 20px; color: #6366f1;"></i> <?php echo htmlspecialchars($user['phone'] ?? 'N/A'); ?></div>
-                                        <div style="margin-top: 0.25rem;"><i class="fas fa-door-open" style="width: 20px; color: #6366f1;"></i> <?php echo htmlspecialchars($user['room_number'] ?? 'N/A'); ?></div>
+                                        <div><i class="fas fa-phone" style="width: 20px; color: var(--secondary);"></i> <?php echo htmlspecialchars($user['phone'] ?? 'N/A'); ?></div>
+                                        <div style="margin-top: 0.25rem;"><i class="fas fa-door-open" style="width: 20px; color: var(--secondary);"></i> <?php echo htmlspecialchars($user['room_number'] ?? 'N/A'); ?></div>
                                     </div>
                                 </td>
                                 <td>

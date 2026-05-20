@@ -579,7 +579,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <main>
         <div class="requests-page">
             <div class="page-header">
-                <h1><i class="fas fa-exchange-alt" style="color: #6366f1;"></i> My Requests</h1>
+                <h1><i class="fas fa-exchange-alt" style="color: var(--secondary);"></i> My Requests</h1>
                 <p>Manage your book borrowing requests</p>
             </div>
             
@@ -598,7 +598,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <div class="stat-card"><div class="stat-value" style="color: #f59e0b;"><?php echo $pendingCount; ?></div><div class="stat-label">Pending</div></div>
                 <div class="stat-card"><div class="stat-value" style="color: #10b981;"><?php echo $approvedCount; ?></div><div class="stat-label">Approved</div></div>
                 <div class="stat-card"><div class="stat-value" style="color: #ef4444;"><?php echo $rejectedCount; ?></div><div class="stat-label">Rejected</div></div>
-                <div class="stat-card"><div class="stat-value" style="color: #6366f1;"><?php echo $returnedCount; ?></div><div class="stat-label">Returned</div></div>
+                <div class="stat-card"><div class="stat-value" style="color: var(--primary);"><?php echo $returnedCount; ?></div><div class="stat-label">Returned</div></div>
             </div>
             
             <div class="tabs">

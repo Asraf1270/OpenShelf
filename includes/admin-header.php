@@ -82,7 +82,7 @@ $adminRole = $_SESSION['admin_role'] ?? 'admin';
         }
 
         [data-theme="dark"] .admin-notification:hover {
-            border-color: #818cf8;
+            border-color: var(--primary);
         }
         
         [data-theme="dark"] .admin-user:hover {
@@ -354,7 +354,7 @@ $adminRole = $_SESSION['admin_role'] ?? 'admin';
             display: flex; align-items: center; justify-content: center;
             color: white; font-weight: 700;
             font-size: 1.1rem;
-            box-shadow: 0 4px 10px rgba(99, 102, 241, 0.3);
+            box-shadow: 0 4px 10px rgba(44, 62, 80, 0.3);
         }
 
         .user-name {
@@ -409,13 +409,13 @@ $adminRole = $_SESSION['admin_role'] ?? 'admin';
         .btn-admin-primary {
             background: var(--primary);
             color: white;
-            box-shadow: 0 10px 15px -3px rgba(99, 102, 241, 0.3);
+            box-shadow: 0 10px 15px -3px rgba(44, 62, 80, 0.3);
         }
 
         .btn-admin-primary:hover {
             background: var(--primary-dark);
             transform: translateY(-2px);
-            box-shadow: 0 20px 25px -5px rgba(99, 102, 241, 0.4);
+            box-shadow: 0 20px 25px -5px rgba(44, 62, 80, 0.4);
         }
 
         /* Responsive */

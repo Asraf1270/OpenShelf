@@ -857,7 +857,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             background: var(--primary);
             border-color: var(--primary);
             color: white;
-            box-shadow: 0 8px 16px rgba(99, 102, 241, 0.2);
+            box-shadow: 0 8px 16px rgba(44, 62, 80, 0.2);
         }
 
         .modal {
@@ -1095,7 +1095,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <!-- Extend Modal -->
     <div id="extendModal" class="modal">
         <div class="modal-content">
-            <div class="modal-header"><h3><i class="fas fa-calendar-plus" style="color:#6366f1;"></i> Extend Return Date</h3><button onclick="closeModal('extendModal')" style="background:none;border:none;font-size:1.5rem;cursor:pointer;">&times;</button></div>
+            <div class="modal-header"><h3><i class="fas fa-calendar-plus" style="color:var(--primary);"></i> Extend Return Date</h3><button onclick="closeModal('extendModal')" style="background:none;border:none;font-size:1.5rem;cursor:pointer;">&times;</button></div>
             <form method="POST">
                 <div class="modal-body">
                     <input type="hidden" name="action" value="extend">
@@ -1103,7 +1103,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <div class="form-group"><label style="display:block;margin-bottom:0.5rem;font-weight:500;">Additional Days</label><input type="number" name="extend_days" class="form-control-admin" min="1" max="90" value="7" required></div>
                     <div class="form-group"><label style="display:block;margin-bottom:0.5rem;font-weight:500;">Reason (Optional)</label><textarea name="extend_reason" class="form-control-admin" rows="3" placeholder="Why is the extension needed?"></textarea></div>
                 </div>
-                <div class="modal-footer"><button type="submit" class="btn-admin" style="background:#6366f1;color:white;">Extend Return Date</button><button type="button" class="btn-admin btn-outline" onclick="closeModal('extendModal')">Cancel</button></div>
+                <div class="modal-footer"><button type="submit" class="btn-admin" style="background:var(--primary);color:white;">Extend Return Date</button><button type="button" class="btn-admin btn-outline" onclick="closeModal('extendModal')">Cancel</button></div>
             </form>
         </div>
     </div>

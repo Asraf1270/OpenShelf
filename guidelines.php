@@ -293,7 +293,7 @@ include 'includes/header.php';
 
                 <div class="guideline-section">
                     <h2>Questions or Concerns?</h2>
-                    <p>If you're unsure about something or need help, reach out to us at <a href="mailto:support@openshelf.com" style="color: #6366f1;">support@openshelf.com</a>. We're here to help make your experience positive and rewarding.</p>
+                    <p>If you're unsure about something or need help, reach out to us at <a href="mailto:support@openshelf.com" style="color: var(--secondary);">support@openshelf.com</a>. We're here to help make your experience positive and rewarding.</p>
                 </div>
 
                 <div class="last-updated" style="margin-top: 2rem; padding-top: 1rem; border-top: 1px solid var(--border); text-align: center; color: var(--text-tertiary); font-size: 0.8rem;">

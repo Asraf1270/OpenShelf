@@ -847,16 +847,16 @@ if ($hour < 12) {
                 datasets: [{
                     label: 'New Users',
                     data: <?php echo json_encode(array_values($userGrowth)); ?>,
-                    borderColor: '#6366f1',
-                    backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                    borderColor: '#4C9F8A',
+                    backgroundColor: 'rgba(76, 159, 138, 0.1)',
                     fill: true,
                     tension: 0.4,
                     pointRadius: 4,
                     pointBackgroundColor: '#ffffff',
-                    pointBorderColor: '#6366f1',
+                    pointBorderColor: '#4C9F8A',
                     pointBorderWidth: 2,
                     pointHoverRadius: 6,
-                    pointHoverBackgroundColor: '#6366f1'
+                    pointHoverBackgroundColor: '#4C9F8A'
                 }]
             },
             options: {

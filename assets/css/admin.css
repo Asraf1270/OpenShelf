@@ -137,7 +137,7 @@ h1, h2, h3, h4, h5, h6 {
     align-items: center;
     justify-content: center;
     font-size: 1.5rem;
-    box-shadow: 0 0 20px rgba(99, 102, 241, 0.3);
+    box-shadow: 0 0 20px rgba(44, 62, 80, 0.3);
 }
 
 .brand-name {
@@ -197,7 +197,7 @@ h1, h2, h3, h4, h5, h6 {
 .nav-link.active {
     background: var(--primary);
     color: white;
-    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+    box-shadow: 0 4px 12px rgba(44, 62, 80, 0.3);
 }
 
 .nav-link.active i {
@@ -399,7 +399,7 @@ h1, h2, h3, h4, h5, h6 {
 .btn-primary:hover {
     background: var(--primary-dark);
     transform: translateY(-1px);
-    box-shadow: 0 8px 20px -5px rgba(99, 102, 241, 0.4);
+    box-shadow: 0 8px 20px -5px rgba(44, 62, 80, 0.4);
 }
 
 .btn-outline {
@@ -452,7 +452,7 @@ h1, h2, h3, h4, h5, h6 {
     outline: none;
     border-color: var(--primary);
     background: var(--bg-card);
-    box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+    box-shadow: 0 0 0 4px rgba(44, 62, 80, 0.1);
 }
 
 /* Tables */
@@ -492,7 +492,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .table tr:hover td {
-    background: rgba(99, 102, 241, 0.02);
+    background: rgba(44, 62, 80, 0.02);
 }
 
 /* Badges */
@@ -511,7 +511,7 @@ h1, h2, h3, h4, h5, h6 {
 .badge-warning { background: rgba(245, 158, 11, 0.1); color: var(--warning); }
 .badge-danger { background: rgba(239, 68, 68, 0.1); color: var(--danger); }
 .badge-info { background: rgba(6, 182, 212, 0.1); color: var(--info); }
-.badge-primary { background: rgba(99, 102, 241, 0.1); color: var(--primary); }
+.badge-primary { background: rgba(44, 62, 80, 0.1); color: var(--primary); }
 
 /* Grid System */
 .grid {
