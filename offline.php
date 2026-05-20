@@ -6,7 +6,7 @@
     <title>Offline - OpenShelf</title>
     <link rel="icon" type="image/svg+xml" href="/assets/images/logo-icon.svg">
     <link rel="manifest" href="/manifest.json">
-    <meta name="theme-color" content="#6366f1">
+    <meta name="theme-color" content="#2C3E50">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
 

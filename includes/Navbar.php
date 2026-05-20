@@ -98,9 +98,12 @@ $profileActive = str_contains($currentPath, '/profile') || str_contains($current
 }
 
 :root[data-theme="dark"] {
-    --nav-bg: #1e293b;
-    --nav-inactive-color: #64748b;
-    --fab-border: #0f172a; /* Matches dark body background */
+    --nav-bg: #1e293b;                          /* Dark slate surface — matches card/header bg */
+    --nav-active-bg: rgba(76, 159, 138, 0.15);  /* Soft teal tint for active item */
+    --nav-active-color: #4C9F8A;                /* Brand teal — secondary accent */
+    --nav-inactive-color: #64748b;              /* Muted slate for inactive icons */
+    --fab-bg: #4C9F8A;                          /* FAB uses brand teal */
+    --fab-border: #0f172a;                      /* Matches dark body background */
 }
 
 .bottom-nav-container {

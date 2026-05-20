@@ -420,7 +420,7 @@ $scheduledAnnouncements = count(array_filter($announcements, fn($a) => !empty($a
         }
 
         .form-label i {
-            color: #6366f1;
+            color: var(--primary);
             margin-right: 0.5rem;
         }
 
@@ -435,8 +435,8 @@ $scheduledAnnouncements = count(array_filter($announcements, fn($a) => !empty($a
 
         .form-control:focus {
             outline: none;
-            border-color: #6366f1;
-            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(44, 62, 80, 0.1);
         }
 
         textarea.form-control {
@@ -480,13 +480,13 @@ $scheduledAnnouncements = count(array_filter($announcements, fn($a) => !empty($a
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
             color: white;
         }
 
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 15px -3px rgba(99,102,241,0.3);
+            box-shadow: 0 10px 15px -3px rgba(44,62,80,0.3);
         }
 
         .btn-outline {
@@ -496,8 +496,8 @@ $scheduledAnnouncements = count(array_filter($announcements, fn($a) => !empty($a
         }
 
         .btn-outline:hover {
-            border-color: #6366f1;
-            color: #6366f1;
+            border-color: var(--primary);
+            color: var(--primary);
         }
 
         .announcement-list {
@@ -586,7 +586,7 @@ $scheduledAnnouncements = count(array_filter($announcements, fn($a) => !empty($a
 
         .action-btn:hover {
             background: #f1f5f9;
-            color: #6366f1;
+            color: var(--primary);
         }
 
         .action-btn.delete:hover {
@@ -641,7 +641,7 @@ $scheduledAnnouncements = count(array_filter($announcements, fn($a) => !empty($a
 
         <!-- Stats Cards -->
         <div class="stats-cards">
-            <div class="stat-card"><div class="stat-number" style="color: #6366f1;"><?php echo $totalAnnouncements; ?></div><div class="stat-label">Total Announcements</div></div>
+            <div class="stat-card"><div class="stat-number" style="color: var(--primary);"><?php echo $totalAnnouncements; ?></div><div class="stat-label">Total Announcements</div></div>
             <div class="stat-card"><div class="stat-number" style="color: #10b981;"><?php echo $activeAnnouncements; ?></div><div class="stat-label">Active</div></div>
             <div class="stat-card"><div class="stat-number" style="color: #f59e0b;"><?php echo $scheduledAnnouncements; ?></div><div class="stat-label">Scheduled</div></div>
             <div class="stat-card"><div class="stat-number" style="color: #ef4444;"><?php echo count(array_filter($announcements, fn($a) => strtotime($a['expires_at']) < time())); ?></div><div class="stat-label">Expired</div></div>

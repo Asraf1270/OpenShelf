@@ -216,7 +216,7 @@ include 'includes/header.php';
     <section style="text-align: center;">
         <h2 style="font-size: 2rem; font-weight: 800; margin-bottom: 1.5rem;">Join the Movement</h2>
         <p class="hero-p" style="margin-bottom: 3rem;">Ready to list your first book? Join thousands of students already on OpenShelf.</p>
-        <a href="/register/" style="display: inline-block; padding: 1rem 2.5rem; background: var(--primary); color: white; text-decoration: none; border-radius: 50px; font-weight: 700; box-shadow: 0 10px 20px rgba(99, 102, 241, 0.2);">Start Sharing Today</a>
+        <a href="/register/" style="display: inline-block; padding: 1rem 2.5rem; background: var(--primary); color: white; text-decoration: none; border-radius: 50px; font-weight: 700; box-shadow: 0 10px 20px rgba(44, 62, 80, 0.2);">Start Sharing Today</a>
     </section>
 </main>
 

@@ -19,9 +19,9 @@
     --profile-secondary-hover: #0891B2;
     --profile-secondary-light: #CFFAFE;
     
-    --profile-accent: #6366F1;
-    --profile-accent-hover: #4F46E5;
-    --profile-accent-light: #E0E7FF;
+    --profile-accent: #2C3E50;
+    --profile-accent-hover: #1a252f;
+    --profile-accent-light: #e6edf5;
     
     --profile-card-bg: rgba(255, 255, 255, 0.85);
     --profile-item-bg: rgba(248, 250, 252, 0.8);
@@ -38,12 +38,12 @@
     --profile-item-border: rgba(255, 255, 255, 0.05);
     --profile-primary-light: rgba(16, 185, 129, 0.15);
     --profile-secondary-light: rgba(6, 182, 212, 0.15);
-    --profile-accent-light: rgba(99, 102, 241, 0.15);
+    --profile-accent-light: rgba(92, 133, 176, 0.15);
 }
 
 .profile-hero {
     height: 320px;
-    background: linear-gradient(135deg, #10B981, #06B6D4, #6366F1);
+    background: linear-gradient(135deg, #10B981, #06B6D4, #2C3E50);
     background-size: 200% 200%;
     animation: gradientMove 12s ease infinite;
     position: relative;

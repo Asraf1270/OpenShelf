@@ -76,15 +76,15 @@ if (isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #6366f1;
-            --primary-hover: #4f46e5;
+            --primary: #2C3E50;
+            --primary-hover: #4C9F8A;
             --bg: #f8fafc;
             --text: #1e293b;
             --text-muted: #64748b;
         }
         body { 
             font-family: 'Inter', sans-serif; 
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+            background: linear-gradient(135deg, #2C3E50 0%, #4C9F8A 100%); 
             height: 100vh; 
             display: flex; 
             justify-content: center; 
@@ -137,7 +137,7 @@ if (isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true
         input:focus { 
             outline: none; 
             border-color: var(--primary); 
-            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+            box-shadow: 0 0 0 3px rgba(44, 62, 80, 0.2);
         }
         button { 
             width: 100%; 

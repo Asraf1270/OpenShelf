@@ -93,7 +93,7 @@ include 'includes/header.php';
         letter-spacing: -0.04em;
         line-height: 1.1;
         margin-bottom: 1.5rem;
-        background: linear-gradient(135deg, var(--primary-brand), #8b5cf6);
+        background: linear-gradient(135deg, var(--primary-brand), var(--accent-brand));
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
     }
@@ -127,12 +127,12 @@ include 'includes/header.php';
     .btn-primary {
         background: var(--primary-brand);
         color: white;
-        box-shadow: 0 10px 20px rgba(99, 102, 241, 0.2);
+        box-shadow: 0 10px 20px rgba(44, 62, 80, 0.2);
     }
 
     .btn-primary:hover {
         transform: translateY(-3px);
-        box-shadow: 0 15px 30px rgba(99, 102, 241, 0.3);
+        box-shadow: 0 15px 30px rgba(44, 62, 80, 0.3);
     }
 
     .btn-outline {

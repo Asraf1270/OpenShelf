@@ -295,8 +295,8 @@ $coverImage = !empty($book['cover_image']) ? '/uploads/book_cover/thumb_' . $boo
         .form-group { margin-bottom: 1rem; }
         .form-label { display: block; margin-bottom: 0.5rem; font-weight: 500; }
         .form-control, .form-select { width: 100%; padding: 0.75rem; border: 1px solid #e2e8f0; border-radius: 0.5rem; font-size: 0.9rem; }
-        .btn-primary { width: 100%; padding: 0.75rem; background: linear-gradient(135deg, #6366f1, #8b5cf6); color: white; border: none; border-radius: 0.5rem; font-weight: 600; cursor: pointer; transition: all 0.2s; }
-        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(99,102,241,0.3); }
+        .btn-primary { width: 100%; padding: 0.75rem; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; border: none; border-radius: 0.5rem; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(44,62,80,0.3); }
         .btn-secondary { display: block; text-align: center; margin-top: 1rem; color: #64748b; text-decoration: none; }
         .info-box { background: #e3f2fd; border-radius: 0.5rem; padding: 0.75rem; margin-bottom: 1rem; font-size: 0.85rem; display: flex; align-items: center; gap: 0.5rem; }
         @media (max-width: 640px) { .borrow-card { padding: 1.5rem; } .book-summary { flex-direction: column; align-items: center; text-align: center; } }
@@ -316,7 +316,7 @@ $coverImage = !empty($book['cover_image']) ? '/uploads/book_cover/thumb_' . $boo
             <?php endif; ?>
             
             <div class="info-box">
-                <i class="fas fa-envelope" style="color: #6366f1;"></i>
+                <i class="fas fa-envelope" style="color: var(--primary);"></i>
                 <span>The owner will be notified via email about your request.</span>
             </div>
             

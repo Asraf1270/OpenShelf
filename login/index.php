@@ -320,12 +320,12 @@ if (isset($_GET['redirect'])) {
     <link rel="icon" type="image/svg+xml" href="/assets/images/logo-icon.svg">
     <link rel="apple-touch-icon" href="/assets/images/pwa/icon-192x192.png">
     <link rel="manifest" href="/manifest.json">
-    <meta name="theme-color" content="#6366f1">
+    <meta name="theme-color" content="#2C3E50">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="OpenShelf">
     <meta name="mobile-web-app-capable" content="yes">
-    <meta name="msapplication-TileColor" content="#6366f1">
+    <meta name="msapplication-TileColor" content="#2C3E50">
     <meta name="msapplication-TileImage" content="/assets/images/pwa/icon-144x144.png">
     <link rel="stylesheet" href="/assets/css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -370,9 +370,9 @@ if (isset($_GET['redirect'])) {
             z-index: -1;
             overflow: hidden;
             background: 
-                radial-gradient(circle at 10% 20%, rgba(79, 70, 229, 0.15) 0%, transparent 40%),
-                radial-gradient(circle at 90% 80%, rgba(14, 165, 233, 0.12) 0%, transparent 40%),
-                radial-gradient(circle at 50% 50%, rgba(124, 58, 237, 0.05) 0%, transparent 60%),
+                radial-gradient(circle at 10% 20%, rgba(44, 62, 80, 0.25) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(76, 159, 138, 0.2) 0%, transparent 40%),
+                radial-gradient(circle at 50% 50%, rgba(44, 62, 80, 0.1) 0%, transparent 60%),
                 #0f172a;
         }
 
@@ -427,7 +427,7 @@ if (isset($_GET['redirect'])) {
             border-radius: 16px;
             margin-bottom: 1rem;
             display: inline-block;
-            box-shadow: 0 4px 20px rgba(99, 102, 241, 0.3);
+            box-shadow: 0 4px 20px rgba(44, 62, 80, 0.3);
         }
 
         .login-header h1 {

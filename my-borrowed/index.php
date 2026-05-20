@@ -73,10 +73,9 @@ $totalActive = count($activeBorrows);
     <link rel="stylesheet" href="/assets/css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
-        /* Modern Mobile-First UI for My Borrowed */
         :root {
             --card-grad: linear-gradient(135deg, #ffffff 0%, #f9fafb 100%);
-            --accent-glow: 0 8px 32px rgba(99, 102, 241, 0.15);
+            --accent-glow: 0 8px 32px rgba(76, 159, 138, 0.15);
         }
 
         [data-theme="dark"] {
@@ -249,7 +248,7 @@ $totalActive = count($activeBorrows);
         }
 
         .tag-due { background: rgba(245, 54, 92, 0.1); color: var(--danger); border: 1px solid rgba(245, 54, 92, 0.2); }
-        .tag-owner { background: rgba(99, 102, 241, 0.1); color: var(--primary); border: 1px solid rgba(99, 102, 241, 0.2); }
+        .tag-owner { background: rgba(76, 159, 138, 0.1); color: var(--primary); border: 1px solid rgba(76, 159, 138, 0.2); }
         .tag-days { background: rgba(45, 206, 137, 0.1); color: var(--success); border: 1px solid rgba(45, 206, 137, 0.2); }
 
         .due-progress {
@@ -288,12 +287,12 @@ $totalActive = count($activeBorrows);
             justify-content: center;
             gap: 8px;
             transition: var(--transition);
-            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+            box-shadow: 0 4px 12px rgba(76, 159, 138, 0.2);
         }
 
         .btn-return:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 16px rgba(99, 102, 241, 0.3);
+            box-shadow: 0 6px 16px rgba(76, 159, 138, 0.3);
             filter: brightness(1.1);
         }
 
@@ -353,7 +352,7 @@ $totalActive = count($activeBorrows);
         .section-title i { 
             width: 38px;
             height: 38px;
-            background: rgba(99, 102, 241, 0.1);
+            background: rgba(76, 159, 138, 0.1);
             color: var(--primary);
             display: flex;
             align-items: center;
@@ -406,10 +405,10 @@ $totalActive = count($activeBorrows);
         [data-theme="dark"] .borrow-card { background: #1e293b; border-color: #334155; }
         [data-theme="dark"] .due-progress { background: #0f172a; }
         [data-theme="dark"] .empty-state { border-color: #334155; background: #0f172a; }
-        [data-theme="dark"] .tag-owner { background: rgba(99, 102, 241, 0.2); }
+        [data-theme="dark"] .tag-owner { background: rgba(76, 159, 138, 0.2); }
         [data-theme="dark"] .btn-info { background: #334155; border-color: #475569; color: #cbd5e1; }
         [data-theme="dark"] .recent-card { background: #1e293b; border-color: #334155; }
-        [data-theme="dark"] .section-title i { background: rgba(99, 102, 241, 0.2); }
+        [data-theme="dark"] .section-title i { background: rgba(76, 159, 138, 0.2); }
 
         /* Animation */
         .fade-in {

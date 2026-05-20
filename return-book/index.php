@@ -399,119 +399,535 @@ $coverImage = !empty($book['cover_image']) ? '/uploads/book_cover/thumb_' . $boo
     <link rel="stylesheet" href="/assets/css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
+        /* ═══════════════════════════════════════
+           Return Book — Brand Colors & Premium UI
+           ═══════════════════════════════════════ */
+
+        /* Animation */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
         .return-container {
-            max-width: 600px;
+            max-width: 900px;
             margin: 0 auto;
-            padding: var(--space-5);
+            padding: var(--space-lg);
+            animation: fadeIn 0.4s ease-out;
         }
-        
-        .book-preview {
+
+        /* Top gradient accent line */
+        .return-page-band {
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            border-radius: var(--radius-full);
+            margin-bottom: var(--space-md);
+        }
+
+        .return-page-header {
+            margin-bottom: var(--space-lg);
+        }
+
+        .return-page-header h1 {
+            font-size: var(--font-size-xxl);
+            color: var(--text-primary);
             display: flex;
-            gap: var(--space-4);
-            background: var(--surface-hover);
-            padding: var(--space-4);
-            border-radius: var(--radius-lg);
-            margin-bottom: var(--space-5);
+            align-items: center;
+            gap: var(--space-sm);
+            margin-bottom: var(--space-xs);
         }
-        
-        .book-preview-cover {
-            width: 80px;
-            height: 100px;
+
+        .return-header-icon {
+            width: 44px;
+            height: 44px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: var(--radius-md);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+            flex-shrink: 0;
+            box-shadow: 0 4px 10px rgba(76, 159, 138, 0.2);
+        }
+
+        .return-page-header p {
+            color: var(--text-secondary);
+            margin-left: 0;
+            font-size: var(--font-size-sm);
+        }
+
+        /* Timeline Tracker */
+        .return-timeline {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--surface-hover);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: var(--space-sm) var(--space-md);
+            margin-bottom: var(--space-lg);
+        }
+
+        .timeline-step {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+            font-size: var(--font-size-xs);
+            color: var(--text-tertiary);
+            font-weight: 500;
+        }
+
+        .timeline-step.completed {
+            color: var(--secondary);
+        }
+
+        .timeline-step.active {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .timeline-step-num {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--border);
+            color: var(--text-secondary);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+        }
+
+        .timeline-step.completed .timeline-step-num {
+            background: var(--secondary);
+            color: white;
+        }
+
+        .timeline-step.active .timeline-step-num {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 0 8px var(--primary-light);
+        }
+
+        .timeline-line {
+            flex-grow: 1;
+            height: 2px;
+            background: var(--border);
+            margin: 0 var(--space-sm);
+        }
+
+        .timeline-line.active {
+            background: var(--secondary);
+        }
+
+        /* Two-Column Grid */
+        .return-content-layout {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: var(--space-lg);
+            align-items: start;
+        }
+
+        @media (min-width: 768px) {
+            .return-content-layout {
+                grid-template-columns: 1.1fr 1.9fr;
+            }
+        }
+
+        .return-sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-md);
+        }
+
+        /* Sidebar Cards styling */
+        .return-card {
+            background: var(--header-bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: var(--space-md);
+            box-shadow: var(--shadow-sm);
+            transition: all 0.3s ease;
+        }
+
+        .return-card:hover {
+            box-shadow: var(--shadow-md);
+        }
+
+        /* Book Preview Detail Card */
+        .book-preview-card {
+            text-align: center;
+        }
+
+        .book-cover-container {
+            position: relative;
+            width: 120px;
+            height: 170px;
+            margin: 0 auto var(--space-sm);
             border-radius: var(--radius-md);
             overflow: hidden;
-            flex-shrink: 0;
+            box-shadow: var(--shadow-md);
+            transition: transform 0.3s ease;
         }
-        
-        .book-preview-cover img {
+
+        .book-preview-card:hover .book-cover-container {
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .book-cover-container img {
             width: 100%;
             height: 100%;
             object-fit: cover;
         }
-        
-        .book-preview-info h3 {
-            margin-bottom: var(--space-1);
-            font-size: var(--font-size-base);
+
+        .book-details h3 {
+            font-size: var(--font-size-md);
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+            line-height: 1.3;
         }
-        
-        .book-preview-info p {
-            color: var(--text-tertiary);
+
+        .book-author {
             font-size: var(--font-size-sm);
-            margin-bottom: var(--space-1);
-        }
-        
-        .info-box {
-            background: rgba(37, 99, 235, 0.1);
-            border: 1px solid rgba(37, 99, 235, 0.2);
-            border-radius: var(--radius-lg);
-            padding: var(--space-4);
-            margin-bottom: var(--space-5);
-            display: flex;
-            gap: var(--space-3);
-        }
-        
-        .info-box i {
-            color: var(--primary);
-            font-size: 1.5rem;
-        }
-        
-        .info-box p {
-            margin-bottom: 0;
             color: var(--text-secondary);
+            margin-bottom: var(--space-sm);
         }
-        
-        .radio-group {
-            display: flex;
-            gap: var(--space-4);
-            margin-top: var(--space-2);
+
+        .book-badge-category {
+            display: inline-block;
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 0.25rem 0.6rem;
+            border-radius: var(--radius-full);
+            background: var(--primary-soft);
+            color: var(--primary);
+            margin-bottom: var(--space-md);
         }
-        
-        .radio-option {
+
+        /* Metadata table/list */
+        .meta-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            border-top: 1px solid var(--border);
+            padding-top: var(--space-sm);
+            text-align: left;
+        }
+
+        .meta-item {
             display: flex;
             align-items: center;
-            gap: var(--space-2);
-            cursor: pointer;
+            gap: var(--space-sm);
+            font-size: var(--font-size-sm);
+            color: var(--text-secondary);
+            padding: var(--space-xs) 0;
         }
-        
-        .radio-option input {
-            cursor: pointer;
+
+        .meta-item i {
+            color: var(--secondary);
+            width: 16px;
         }
-        
-        .damage-field {
-            margin-top: var(--space-3);
-            margin-left: var(--space-5);
+
+        .meta-label {
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        /* Overdue styling */
+        .meta-item.overdue {
+            color: var(--danger);
+        }
+
+        .meta-item.overdue i {
+            color: var(--danger);
+        }
+
+        .badge-overdue {
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 0.15rem 0.4rem;
+            border-radius: var(--radius-sm);
+            margin-left: auto;
+        }
+
+        /* Info Checklist card */
+        .guide-title {
+            font-size: var(--font-size-sm);
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: var(--space-sm);
+            display: flex;
+            align-items: center;
+            gap: var(--space-xs);
+        }
+
+        .guide-title i {
+            color: var(--primary);
+        }
+
+        .guide-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .guide-item {
+            display: flex;
+            align-items: flex-start;
+            gap: var(--space-xs);
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            padding: var(--space-xs) 0;
+            line-height: 1.4;
+        }
+
+        .guide-item i {
+            color: var(--secondary);
+            margin-top: 3px;
+        }
+
+        /* Main Form Area */
+        .form-card {
+            background: var(--header-bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: var(--space-md);
+            box-shadow: var(--shadow-sm);
+        }
+
+        @media (min-width: 768px) {
+            .form-card {
+                padding: var(--space-lg);
+            }
+        }
+
+        .form-section-title {
+            font-size: var(--font-size-sm);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-tertiary);
+            font-weight: 700;
+            margin-bottom: var(--space-md);
+            border-bottom: 1px solid var(--border);
+            padding-bottom: var(--space-xs);
+        }
+
+        /* Interactive Radio Options */
+        .condition-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: var(--space-sm);
+            margin-bottom: var(--space-md);
+        }
+
+        @media (min-width: 480px) {
+            .condition-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .condition-card {
+            border: 2px solid var(--border);
+            background: var(--header-bg);
+            border-radius: var(--radius-md);
+            padding: var(--space-md);
+            cursor: pointer;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-xs);
+            transition: all 0.2s ease;
+            user-select: none;
+        }
+
+        .condition-card input[type="radio"] {
             display: none;
         }
-        
-        .damage-field.show {
+
+        .condition-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-weight: 600;
+            font-size: var(--font-size-sm);
+            color: var(--text-primary);
+        }
+
+        .condition-header i {
+            font-size: 1.1rem;
+            transition: transform 0.2s ease;
+        }
+
+        .condition-card p {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            margin-bottom: 0;
+            line-height: 1.35;
+        }
+
+        /* Active styling - Same / Intact */
+        .condition-card.same-active:has(input:checked) {
+            border-color: var(--secondary);
+            background: rgba(76, 159, 138, 0.08);
+            box-shadow: 0 4px 12px rgba(76, 159, 138, 0.05);
+        }
+
+        .condition-card.same-active:has(input:checked) .condition-header i {
+            color: var(--secondary);
+            transform: scale(1.15);
+        }
+
+        /* Active styling - Damaged */
+        .condition-card.damaged-active:has(input:checked) {
+            border-color: var(--danger);
+            background: rgba(239, 68, 68, 0.05);
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.05);
+        }
+
+        .condition-card.damaged-active:has(input:checked) .condition-header i {
+            color: var(--danger);
+            transform: scale(1.15);
+        }
+
+        /* Damage details section */
+        .damage-details {
+            display: none;
+            animation: slideDown 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background: rgba(239, 68, 68, 0.02);
+            border: 1px dashed var(--danger);
+            border-radius: var(--radius-md);
+            padding: var(--space-md);
+            margin-bottom: var(--space-md);
+        }
+
+        .damage-details.show {
             display: block;
         }
-        
-        .rating-stars {
+
+        .damage-details label {
+            color: var(--danger);
+            font-weight: 600;
+        }
+
+        .damage-details textarea {
+            border-color: rgba(239, 68, 68, 0.3);
+        }
+
+        .damage-details textarea:focus {
+            border-color: var(--danger);
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+        }
+
+        /* Premium Rating Stars */
+        .rating-wrapper {
             display: flex;
-            gap: var(--space-1);
-            font-size: 1.5rem;
-            color: gold;
+            align-items: center;
+            gap: var(--space-md);
+            background: var(--surface-hover);
+            border-radius: var(--radius-md);
+            padding: var(--space-sm) var(--space-md);
+            margin-bottom: var(--space-md);
+            border: 1px solid var(--border);
+        }
+
+        .stars-container {
+            display: flex;
+            gap: var(--space-xs);
+            font-size: 1.8rem;
             cursor: pointer;
         }
-        
-        .rating-stars i {
-            transition: all var(--transition-fast);
+
+        .stars-container i {
+            color: var(--text-tertiary);
+            transition: color 0.15s ease, transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.25);
         }
-        
-        .rating-stars i:hover,
-        .rating-stars i.active {
-            color: gold;
+
+        .stars-container i:hover,
+        .stars-container i.active {
+            color: #f59e0b;
+            transform: scale(1.2);
         }
-        
-        @media (max-width: 640px) {
-            .return-container {
-                padding: var(--space-4);
-            }
-            
-            .radio-group {
-                flex-direction: column;
-                gap: var(--space-2);
-            }
+
+        .stars-container i.active {
+            text-shadow: 0 0 10px rgba(245, 158, 11, 0.4);
+        }
+
+        .rating-label-feedback {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            transition: color 0.2s ease;
+        }
+
+        /* Additional Notes Counter styling */
+        .textarea-container {
+            position: relative;
+        }
+
+        .char-counter {
+            font-size: 0.75rem;
+            color: var(--text-tertiary);
+            text-align: right;
+            margin-top: 4px;
+        }
+
+        /* Buttons & Actions */
+        .form-actions {
+            display: flex;
+            gap: var(--space-sm);
+            margin-top: var(--space-lg);
+        }
+
+        .form-actions button[type="submit"] {
+            flex: 2;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border: none;
+            color: white;
+            box-shadow: 0 4px 14px rgba(76, 159, 138, 0.3);
+        }
+
+        .form-actions button[type="submit"]:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(76, 159, 138, 0.4);
+        }
+
+        .form-actions a.btn-cancel {
+            flex: 1;
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+        }
+
+        .form-actions a.btn-cancel:hover {
+            background: var(--surface-hover);
+            color: var(--text-primary);
+        }
+
+        /* Dark mode overrides for high premium visual look */
+        [data-theme="dark"] .return-timeline {
+            background: rgba(30, 41, 59, 0.6);
+        }
+
+        [data-theme="dark"] .rating-wrapper {
+            background: rgba(30, 41, 59, 0.4);
+        }
+
+        [data-theme="dark"] .condition-card {
+            background: #1e293b;
+        }
+
+        [data-theme="dark"] .condition-card.same-active:has(input:checked) {
+            background: rgba(16, 185, 129, 0.08);
+            border-color: var(--success);
+        }
+
+        [data-theme="dark"] .condition-card.damaged-active:has(input:checked) {
+            background: rgba(239, 68, 68, 0.08);
+            border-color: var(--danger);
         }
     </style>
 </head>
@@ -522,187 +938,302 @@ $coverImage = !empty($book['cover_image']) ? '/uploads/book_cover/thumb_' . $boo
         <div class="container">
             <div class="return-container">
                 <!-- Page Header -->
-                <div style="margin-bottom: var(--space-6);">
-                    <div style="display: flex; align-items: center; gap: var(--space-3); margin-bottom: var(--space-2);">
+                <div class="return-page-header">
+                    <div style="margin-bottom: var(--space-sm);">
                         <a href="/requests/" class="btn btn-outline btn-sm">
                             <i class="fas fa-arrow-left"></i> Back to Requests
                         </a>
                     </div>
-                    <h1 style="font-size: var(--font-size-xl); margin-bottom: var(--space-2);">
-                        <i class="fas fa-undo-alt" style="color: var(--success);"></i>
-                        Return Book
+                    <div class="return-page-band"></div>
+                    <h1>
+                        <span class="return-header-icon"><i class="fas fa-undo-alt"></i></span>
+                        Return Confirmation
                     </h1>
-                    <p style="color: var(--text-tertiary);">Confirm the return of this book</p>
+                    <p>Provide final details to complete the lending transaction</p>
                 </div>
                 
-                <!-- Error Message -->
+                <!-- Error Alert -->
                 <?php if ($error): ?>
                     <div class="alert alert-danger">
                         <i class="fas fa-exclamation-circle"></i>
                         <?php echo htmlspecialchars($error); ?>
                     </div>
                 <?php endif; ?>
-                
-                <!-- Book Preview -->
-                <div class="book-preview">
-                    <div class="book-preview-cover">
-                        <img src="<?php echo $coverImage; ?>" alt="<?php echo htmlspecialchars($request['book_title']); ?>">
+
+                <!-- Progress Flow Timeline Tracker -->
+                <div class="return-timeline">
+                    <div class="timeline-step completed">
+                        <span class="timeline-step-num"><i class="fas fa-check"></i></span> Borrowed
                     </div>
-                    <div class="book-preview-info">
-                        <h3><?php echo htmlspecialchars($request['book_title']); ?></h3>
-                        <p>by <?php echo htmlspecialchars($request['book_author']); ?></p>
-                        <p><i class="fas fa-user"></i> Borrowed by: <?php echo htmlspecialchars($request['borrower_name']); ?></p>
-                        <?php if (!empty($request['expected_return_date'])): ?>
-                            <p><i class="far fa-calendar"></i> Due date: <?php echo date('M j, Y', strtotime($request['expected_return_date'])); ?></p>
-                        <?php endif; ?>
+                    <div class="timeline-line active"></div>
+                    <div class="timeline-step active">
+                        <span class="timeline-step-num">2</span> Return Details
                     </div>
-                </div>
-                
-                <!-- Info Box -->
-                <div class="info-box">
-                    <i class="fas fa-info-circle"></i>
-                    <div>
-                        <p>Please confirm the book condition. If the book is damaged, please describe the damage.</p>
-                        <p class="text-muted" style="font-size: var(--font-size-sm); margin-top: var(--space-2);">
-                            <i class="fas fa-shield-alt"></i>
-                            This helps maintain trust in the community.
-                        </p>
+                    <div class="timeline-line"></div>
+                    <div class="timeline-step">
+                        <span class="timeline-step-num">3</span> Complete
                     </div>
                 </div>
-                
-                <!-- Return Form -->
-                <form method="POST" id="returnForm">
-                    <!-- Book Condition -->
-                    <div class="form-group">
-                        <label class="form-label">
-                            <i class="fas fa-star"></i>
-                            Book Condition <span class="text-danger">*</span>
-                        </label>
-                        <div class="radio-group">
-                            <label class="radio-option">
-                                <input type="radio" name="condition" value="same" checked onchange="toggleDamageField()">
-                                <span>Same as borrowed</span>
-                            </label>
-                            <label class="radio-option">
-                                <input type="radio" name="condition" value="damaged" onchange="toggleDamageField()">
-                                <span>Damaged</span>
-                            </label>
+
+                <div class="return-content-layout">
+                    <!-- Left Sidebar details -->
+                    <div class="return-sidebar">
+                        
+                        <!-- Book Details Card -->
+                        <div class="return-card book-preview-card">
+                            <div class="book-cover-container">
+                                <img src="<?php echo $coverImage; ?>" alt="<?php echo htmlspecialchars($request['book_title']); ?>">
+                            </div>
+                            <div class="book-details">
+                                <h3><?php echo htmlspecialchars($request['book_title']); ?></h3>
+                                <p class="book-author">by <?php echo htmlspecialchars($request['book_author']); ?></p>
+                                <span class="book-badge-category">
+                                    <i class="fas fa-bookmark"></i> <?php echo htmlspecialchars($book['category'] ?? 'Category'); ?>
+                                </span>
+                            </div>
+                            
+                            <?php
+                            $isPastDue = false;
+                            $overdueDays = 0;
+                            if (!empty($request['expected_return_date'])) {
+                                $dueDate = strtotime($request['expected_return_date']);
+                                $today = strtotime(date('Y-m-d'));
+                                if ($dueDate < $today) {
+                                    $isPastDue = true;
+                                    $overdueDays = round(($today - $dueDate) / (60 * 60 * 24));
+                                }
+                            }
+                            ?>
+                            
+                            <ul class="meta-list">
+                                <li class="meta-item">
+                                    <i class="fas fa-user-circle"></i>
+                                    <span class="meta-label">Borrower:</span> 
+                                    <span style="margin-left:auto;"><?php echo htmlspecialchars($request['borrower_name']); ?></span>
+                                </li>
+                                <li class="meta-item">
+                                    <i class="fas fa-user-tie"></i>
+                                    <span class="meta-label">Owner:</span> 
+                                    <span style="margin-left:auto;"><?php echo htmlspecialchars($request['owner_name']); ?></span>
+                                </li>
+                                <?php if (!empty($request['expected_return_date'])): ?>
+                                    <li class="meta-item <?php echo $isPastDue ? 'overdue' : ''; ?>">
+                                        <i class="far fa-calendar-alt"></i>
+                                        <span class="meta-label">Due Date:</span>
+                                        <span style="margin-left:auto;"><?php echo date('M j, Y', strtotime($request['expected_return_date'])); ?></span>
+                                        <?php if ($isPastDue): ?>
+                                            <span class="badge-overdue"><?php echo $overdueDays; ?>d Overdue</span>
+                                        <?php endif; ?>
+                                    </li>
+                                <?php endif; ?>
+                            </ul>
                         </div>
                         
-                        <div id="damageField" class="damage-field">
-                            <label class="form-label" style="font-size: var(--font-size-sm);">
-                                <i class="fas fa-exclamation-triangle"></i>
-                                Describe the damage
-                            </label>
-                            <textarea name="damage_description" class="form-input" rows="3" 
-                                      placeholder="Please describe any damage to the book..."></textarea>
+                        <!-- Guidelines Instruction Card -->
+                        <div class="return-card">
+                            <div class="guide-title">
+                                <i class="fas fa-shield-alt"></i>
+                                Return Guidelines
+                            </div>
+                            <ul class="guide-list">
+                                <li class="guide-item">
+                                    <i class="fas fa-circle-check"></i>
+                                    <span>Check all book pages for personal belongings or notes.</span>
+                                </li>
+                                <li class="guide-item">
+                                    <i class="fas fa-circle-check"></i>
+                                    <span>Assess condition honestly to support the book sharing community.</span>
+                                </li>
+                                <li class="guide-item">
+                                    <i class="fas fa-circle-check"></i>
+                                    <span>Leave a rating of your experience reading this book.</span>
+                                </li>
+                            </ul>
                         </div>
                     </div>
-                    
-                    <!-- Rating (optional) -->
-                    <div class="form-group">
-                        <label class="form-label">
-                            <i class="fas fa-star"></i>
-                            Rate this book (Optional)
-                        </label>
-                        <div class="rating-stars" id="ratingStars">
-                            <i class="far fa-star" data-rating="1"></i>
-                            <i class="far fa-star" data-rating="2"></i>
-                            <i class="far fa-star" data-rating="3"></i>
-                            <i class="far fa-star" data-rating="4"></i>
-                            <i class="far fa-star" data-rating="5"></i>
-                        </div>
-                        <input type="hidden" name="rating" id="ratingValue" value="0">
+
+                    <!-- Right Main Form Card -->
+                    <div class="form-card">
+                        <form method="POST" id="returnForm">
+                            
+                            <!-- Book Condition Section -->
+                            <div class="form-group">
+                                <div class="form-section-title">
+                                    <i class="fas fa-check-double"></i> Book Condition
+                                </div>
+                                
+                                <div class="condition-grid">
+                                    <!-- Same condition card -->
+                                    <label class="condition-card same-active">
+                                        <input type="radio" name="condition" value="same" checked onchange="toggleConditionState()">
+                                        <div class="condition-header">
+                                            <span>Good / Intact</span>
+                                            <i class="fas fa-circle-check"></i>
+                                        </div>
+                                        <p>Same condition as borrowed, no new structural damage or marks.</p>
+                                    </label>
+                                    
+                                    <!-- Damaged condition card -->
+                                    <label class="condition-card damaged-active">
+                                        <input type="radio" name="condition" value="damaged" onchange="toggleConditionState()">
+                                        <div class="condition-header">
+                                            <span>Has Damage</span>
+                                            <i class="fas fa-exclamation-triangle"></i>
+                                        </div>
+                                        <p>New wears, tears, marks, torn pages, or water damage.</p>
+                                    </label>
+                                </div>
+
+                                <!-- Slide-down Damage Description -->
+                                <div id="damageField" class="damage-details">
+                                    <label class="form-label" style="font-size: var(--font-size-sm);">
+                                        Describe the damage <span class="text-danger">*</span>
+                                    </label>
+                                    <textarea name="damage_description" class="form-input" rows="3"
+                                              placeholder="Please details the location and severity of the damage..."></textarea>
+                                </div>
+                            </div>
+                            
+                            <!-- Premium Rating Stars Section -->
+                            <div class="form-group">
+                                <div class="form-section-title">
+                                    <i class="fas fa-star-half-alt"></i> Rate this book
+                                </div>
+                                <div class="rating-wrapper">
+                                    <div class="stars-container" id="ratingStars">
+                                        <i class="far fa-star" data-rating="1"></i>
+                                        <i class="far fa-star" data-rating="2"></i>
+                                        <i class="far fa-star" data-rating="3"></i>
+                                        <i class="far fa-star" data-rating="4"></i>
+                                        <i class="far fa-star" data-rating="5"></i>
+                                    </div>
+                                    <div class="rating-label-feedback" id="ratingFeedbackText">
+                                        Select rating
+                                    </div>
+                                </div>
+                                <input type="hidden" name="rating" id="ratingValue" value="0">
+                            </div>
+                            
+                            <!-- Additional Notes Section -->
+                            <div class="form-group">
+                                <div class="form-section-title">
+                                    <i class="fas fa-comment-alt"></i> Notes & Feedback
+                                </div>
+                                <div class="textarea-container">
+                                    <textarea name="notes" class="form-input" rows="3" maxlength="300"
+                                              placeholder="Write additional comments about the lending experience or return process..."
+                                              oninput="updateCharCount(this)"></textarea>
+                                    <div class="char-counter" id="notesCounter">0 / 300 characters</div>
+                                </div>
+                            </div>
+                            
+                            <!-- Form Buttons -->
+                            <div class="form-actions">
+                                <button type="submit" class="btn">
+                                    <i class="fas fa-check-circle"></i> Confirm Book Return
+                                </button>
+                                <a href="/requests/" class="btn btn-cancel">
+                                    Cancel
+                                </a>
+                            </div>
+                        </form>
                     </div>
-                    
-                    <!-- Additional Notes -->
-                    <div class="form-group">
-                        <label class="form-label">
-                            <i class="fas fa-comment"></i>
-                            Additional Notes (Optional)
-                        </label>
-                        <textarea name="notes" class="form-input" rows="3" 
-                                  placeholder="Any additional comments about the return..."></textarea>
-                    </div>
-                    
-                    <!-- Form Actions -->
-                    <div style="display: flex; gap: var(--space-3); margin-top: var(--space-6);">
-                        <button type="submit" class="btn btn-success" style="flex: 2;">
-                            <i class="fas fa-check-circle"></i>
-                            Confirm Return
-                        </button>
-                        <a href="/requests/" class="btn btn-outline" style="flex: 1;">
-                            Cancel
-                        </a>
-                    </div>
-                </form>
+                </div>
             </div>
         </div>
     </main>
     
     <script>
-        // Toggle damage field visibility
-        function toggleDamageField() {
-            const damageRadio = document.querySelector('input[name="condition"][value="damaged"]');
+        // Toggle damage field visibility and card design updates
+        function toggleConditionState() {
+            const damagedRadio = document.querySelector('input[name="condition"][value="damaged"]');
             const damageField = document.getElementById('damageField');
+            const damageInput = document.querySelector('textarea[name="damage_description"]');
             
-            if (damageRadio && damageRadio.checked) {
+            if (damagedRadio && damagedRadio.checked) {
                 damageField.classList.add('show');
-                document.querySelector('textarea[name="damage_description"]').required = true;
+                if (damageInput) damageInput.required = true;
             } else {
                 damageField.classList.remove('show');
-                document.querySelector('textarea[name="damage_description"]').required = false;
+                if (damageInput) {
+                    damageInput.required = false;
+                    damageInput.value = '';
+                }
             }
         }
         
-        // Rating stars functionality
-        const stars = document.querySelectorAll('#ratingStars i');
-        const ratingInput = document.getElementById('ratingValue');
+        // Character counter for notes input
+        function updateCharCount(el) {
+            const count = el.value.length;
+            const max = el.getAttribute('maxlength') || 300;
+            const counter = document.getElementById('notesCounter');
+            if (counter) {
+                counter.textContent = `${count} / ${max} characters`;
+            }
+        }
         
-        stars.forEach(star => {
-            star.addEventListener('click', function() {
-                const rating = parseInt(this.dataset.rating);
-                ratingInput.value = rating;
+        // Rating stars premium click & hover feedback
+        (function() {
+            const stars = document.querySelectorAll('#ratingStars i');
+            const ratingInput = document.getElementById('ratingValue');
+            const feedbackText = document.getElementById('ratingFeedbackText');
+            
+            const ratingLabels = {
+                0: 'Select rating',
+                1: 'Poor - Did not like it',
+                2: 'Fair - Could be better',
+                3: 'Good - Enjoyable read',
+                4: 'Very Good - Recommended',
+                5: 'Excellent - Absolutely loved it!'
+            };
+            
+            function renderStars(rating) {
+                stars.forEach((star, index) => {
+                    if (index < rating) {
+                        star.className = 'fas fa-star active';
+                    } else {
+                        star.className = 'far fa-star';
+                    }
+                });
+                if (feedbackText) {
+                    feedbackText.textContent = ratingLabels[rating] || ratingLabels[0];
+                    if (rating > 0) {
+                        feedbackText.style.color = '#f59e0b';
+                    } else {
+                        feedbackText.style.color = '';
+                    }
+                }
+            }
+            
+            stars.forEach(star => {
+                star.addEventListener('click', function() {
+                    const rating = parseInt(this.dataset.rating);
+                    ratingInput.value = rating;
+                    renderStars(rating);
+                });
                 
-                stars.forEach((s, index) => {
-                    if (index < rating) {
-                        s.className = 'fas fa-star';
-                    } else {
-                        s.className = 'far fa-star';
-                    }
+                star.addEventListener('mouseenter', function() {
+                    const rating = parseInt(this.dataset.rating);
+                    renderStars(rating);
+                });
+                
+                star.addEventListener('mouseleave', function() {
+                    const currentRating = parseInt(ratingInput.value || 0);
+                    renderStars(currentRating);
                 });
             });
             
-            star.addEventListener('mouseenter', function() {
-                const rating = parseInt(this.dataset.rating);
-                stars.forEach((s, index) => {
-                    if (index < rating) {
-                        s.className = 'fas fa-star';
-                    } else {
-                        s.className = 'far fa-star';
-                    }
-                });
-            });
-            
-            star.addEventListener('mouseleave', function() {
-                const currentRating = parseInt(ratingInput.value);
-                stars.forEach((s, index) => {
-                    if (index < currentRating) {
-                        s.className = 'fas fa-star';
-                    } else {
-                        s.className = 'far fa-star';
-                    }
-                });
-            });
-        });
+            // Trigger initial state
+            renderStars(0);
+        })();
         
-        // Form validation
+        // Validation shaker on submit
         document.getElementById('returnForm').addEventListener('submit', function(e) {
             const condition = document.querySelector('input[name="condition"]:checked');
             
             if (!condition) {
                 e.preventDefault();
-                alert('Please select the book condition');
+                alert('Please select the book condition status.');
                 return false;
             }
             
@@ -710,16 +1241,15 @@ $coverImage = !empty($book['cover_image']) ? '/uploads/book_cover/thumb_' . $boo
                 const damageDesc = document.querySelector('textarea[name="damage_description"]').value.trim();
                 if (!damageDesc) {
                     e.preventDefault();
-                    alert('Please describe the damage to the book');
+                    alert('Please provide a brief description of the damage.');
                     return false;
                 }
             }
-            
             return true;
         });
         
-        // Initialize
-        toggleDamageField();
+        // Initial call
+        toggleConditionState();
     </script>
     
     <?php include dirname(__DIR__) . '/includes/footer.php'; ?>

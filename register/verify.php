@@ -107,8 +107,8 @@ if (isset($_GET['resend'])) {
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #4f46e5;
-            --primary-light: #6366f1;
+            --primary: #2C3E50;
+            --primary-light: #4C9F8A;
             --bg-dark: #0f172a;
             --surface: #1e293b;
             --border-color: #334155;
@@ -133,8 +133,8 @@ if (isset($_GET['resend'])) {
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
             z-index: -1;
-            background: radial-gradient(circle at 15% 50%, rgba(79, 70, 229, 0.1) 0%, transparent 40%),
-                        radial-gradient(circle at 85% 30%, rgba(14, 165, 233, 0.08) 0%, transparent 40%);
+            background: radial-gradient(circle at 15% 50%, rgba(44, 62, 80, 0.1) 0%, transparent 40%),
+                        radial-gradient(circle at 85% 30%, rgba(76, 159, 138, 0.08) 0%, transparent 40%);
         }
 
         .verify-card {
@@ -157,7 +157,7 @@ if (isset($_GET['resend'])) {
         .icon-box {
             width: 80px;
             height: 80px;
-            background: rgba(99, 102, 241, 0.1);
+            background: rgba(76, 159, 138, 0.1);
             color: var(--primary-light);
             border-radius: 20px;
             display: flex;
@@ -165,7 +165,7 @@ if (isset($_GET['resend'])) {
             justify-content: center;
             font-size: 2.5rem;
             margin: 0 auto 2rem;
-            box-shadow: 0 10px 20px rgba(99, 102, 241, 0.1);
+            box-shadow: 0 10px 20px rgba(76, 159, 138, 0.1);
         }
 
         h1 { font-size: 2rem; font-weight: 700; margin-bottom: 1rem; }
@@ -195,7 +195,7 @@ if (isset($_GET['resend'])) {
             outline: none;
             border-color: var(--primary-light);
             background: var(--bg-dark);
-            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.2);
+            box-shadow: 0 0 0 4px rgba(76, 159, 138, 0.2);
             transform: translateY(-2px);
         }
 
@@ -216,7 +216,7 @@ if (isset($_GET['resend'])) {
         .btn-verify:hover {
             background: var(--primary-light);
             transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(79, 70, 229, 0.3);
+            box-shadow: 0 10px 20px rgba(44, 62, 80, 0.3);
         }
 
         .resend-link {

@@ -850,10 +850,10 @@ a:hover {
 
 /* ===== Dark Mode ===== */
 :root[data-theme="dark"] {
-    --primary: #818cf8;
-    --primary-dark: #6366f1;
-    --primary-light: #4f46e5;
-    --secondary: #a855f7;
+    --primary: #5c85b0;
+    --primary-dark: #436b95;
+    --primary-light: #8ab4dd;
+    --secondary: #4C9F8A;
     --success: #34d399;
     --warning: #fb923c;
     --danger: #f87171;
@@ -936,11 +936,11 @@ a:hover {
 
 [data-theme="dark"] .social-links a {
     background: #334155;
-    color: #818cf8;
+    color: var(--primary);
 }
 
 [data-theme="dark"] .social-links a:hover {
-    background: #818cf8;
+    background: var(--primary);
     color: #0f172a;
 }
 
@@ -966,9 +966,9 @@ a:hover {
 
 
 [data-theme="dark"] .alert-info {
-    background: rgba(129, 140, 248, 0.1);
-    border-color: rgba(129, 140, 248, 0.3);
-    color: #818cf8;
+    background: rgba(92, 133, 176, 0.1);
+    border-color: rgba(92, 133, 176, 0.3);
+    color: var(--primary);
 }
 
 [data-theme="dark"] .form-label, 
@@ -985,7 +985,7 @@ a:hover {
 [data-theme="dark"] .nav-link:hover, 
 [data-theme="dark"] .dropdown-item:hover {
     background: #334155;
-    color: #818cf8;
+    color: var(--primary);
 }
 
 [data-theme="dark"] .footer-section a {
@@ -993,7 +993,7 @@ a:hover {
 }
 
 [data-theme="dark"] .footer-section a:hover {
-    color: #818cf8;
+    color: var(--primary);
 }
 
 [data-theme="dark"] .modal-close {
