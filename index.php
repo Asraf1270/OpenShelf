@@ -339,7 +339,7 @@ include 'includes/header.php';
     <!-- Hero Section -->
     <section class="hero animate-in">
         <div style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1.25rem; background: var(--primary-soft); color: var(--primary-brand); border-radius: 50px; font-weight: 700; font-size: 0.85rem; margin-bottom: 2rem;">
-            <i class="fas fa-rocket"></i> v2.4.0 Stable
+            <i class="fas fa-rocket"></i> v3.0.0 <span style="color: #4C9F8A">BETA</span>
         </div>
         <h1 class="hero-h1">Knowledge is better <br>when it's shared.</h1>
         <p class="hero-p">
