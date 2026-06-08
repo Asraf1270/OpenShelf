@@ -239,9 +239,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     elseif (strlen($author) < 2) $errors['author'] = 'Author name must be at least 2 characters';
     elseif (strlen($author) > 100) $errors['author'] = 'Author name must be less than 100 characters';
     
-    if (empty($description)) $errors['description'] = 'Description is required';
-    elseif (strlen($description) < 20) $errors['description'] = 'Description must be at least 20 characters';
-    elseif (strlen($description) > 5000) $errors['description'] = 'Description must be less than 5000 characters';
+    // Description is now optional
+    if (!empty($description) && strlen($description) < 20) {
+        $errors['description'] = 'Description must be at least 20 characters';
+    } elseif (!empty($description) && strlen($description) > 5000) {
+        $errors['description'] = 'Description must be less than 5000 characters';
+    }
     
     if (empty($category)) $errors['category'] = 'Please select a category';
     if (empty($condition)) $errors['condition'] = 'Please select a condition';
@@ -340,6 +343,37 @@ $conditions = getConditions();
         .char-counter { font-size: var(--font-size-xs); color: var(--text-tertiary); text-align: right; margin-top: var(--space-1); }
         .char-counter.danger { color: var(--danger); }
         .char-counter.warning { color: var(--warning); }
+        
+        /* Additional Information Section */
+        .more-info-section { 
+            margin-top: var(--space-6); 
+            padding-top: var(--space-6); 
+            border-top: 1px solid var(--border); 
+        }
+        .more-info-section.hidden { 
+            display: none; 
+        }
+        .toggle-more-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-2);
+            background: none;
+            border: none;
+            color: var(--primary);
+            cursor: pointer;
+            font-size: inherit;
+            padding: var(--space-2) 0;
+            transition: color var(--transition-fast);
+        }
+        .toggle-more-btn:hover {
+            color: var(--primary-dark);
+        }
+        .toggle-more-btn i {
+            transition: transform var(--transition-fast);
+        }
+        .toggle-more-btn.collapsed i {
+            transform: rotate(-90deg);
+        }
     </style>
 </head>
 <body>
@@ -380,29 +414,97 @@ $conditions = getConditions();
                         <?php endif; ?>
                     </div>
                     
-                    <div class="form-group"><label class="form-label">Book Title *</label><input type="text" name="title" class="form-input" value="<?php echo htmlspecialchars($title); ?>" maxlength="200" required><?php if(isset($errors['title'])) echo '<div class="text-danger small">'.$errors['title'].'</div>'; ?></div>
-                    <div class="form-group"><label class="form-label">Author Name *</label><input type="text" name="author" class="form-input" value="<?php echo htmlspecialchars($author); ?>" maxlength="100" required><?php if(isset($errors['author'])) echo '<div class="text-danger small">'.$errors['author'].'</div>'; ?></div>
+                    <!-- Main Information Section -->
+                    <div class="form-group">
+                        <label class="form-label">Book Title *</label>
+                        <input type="text" name="title" class="form-input" value="<?php echo htmlspecialchars($title); ?>" maxlength="200" required>
+                        <?php if(isset($errors['title'])) echo '<div class="text-danger small">'.$errors['title'].'</div>'; ?>
+                    </div>
                     
-                    <div class="form-row">
-                        <div class="form-group"><label class="form-label">Category *</label><select name="category" class="form-select" required><option value="">Select category</option><?php foreach($categories as $cat): ?><option value="<?php echo $cat; ?>" <?php echo $category===$cat?'selected':''; ?>><?php echo $cat; ?></option><?php endforeach; ?></select><?php if(isset($errors['category'])) echo '<div class="text-danger small">'.$errors['category'].'</div>'; ?></div>
-                        <div class="form-group"><label class="form-label">Condition *</label><select name="condition" class="form-select" required><option value="">Select condition</option><?php foreach($conditions as $key=>$desc): ?><option value="<?php echo $key; ?>" <?php echo $condition===$key?'selected':''; ?> title="<?php echo $desc; ?>"><?php echo $key; ?></option><?php endforeach; ?></select><?php if(isset($errors['condition'])) echo '<div class="text-danger small">'.$errors['condition'].'</div>'; ?></div>
+                    <div class="form-group">
+                        <label class="form-label">Author Name *</label>
+                        <input type="text" name="author" class="form-input" value="<?php echo htmlspecialchars($author); ?>" maxlength="100" required>
+                        <?php if(isset($errors['author'])) echo '<div class="text-danger small">'.$errors['author'].'</div>'; ?>
                     </div>
                     
                     <div class="form-row">
-                        <div class="form-group"><label class="form-label">ISBN</label><input type="text" name="isbn" class="form-input" value="<?php echo htmlspecialchars($isbn ?? ''); ?>"></div>
-                        <div class="form-group"><label class="form-label">Publication Year</label><input type="text" name="publication_year" class="form-input" value="<?php echo htmlspecialchars($publicationYear ?? ''); ?>"></div>
+                        <div class="form-group">
+                            <label class="form-label">Category *</label>
+                            <select name="category" class="form-select" required>
+                                <option value="">Select category</option>
+                                <?php foreach($categories as $cat): ?>
+                                    <option value="<?php echo $cat; ?>" <?php echo $category===$cat?'selected':''; ?>><?php echo $cat; ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                            <?php if(isset($errors['category'])) echo '<div class="text-danger small">'.$errors['category'].'</div>'; ?>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Condition *</label>
+                            <select name="condition" class="form-select" required>
+                                <option value="">Select condition</option>
+                                <?php foreach($conditions as $key=>$desc): ?>
+                                    <option value="<?php echo $key; ?>" <?php echo $condition===$key?'selected':''; ?> title="<?php echo $desc; ?>"><?php echo $key; ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                            <?php if(isset($errors['condition'])) echo '<div class="text-danger small">'.$errors['condition'].'</div>'; ?>
+                        </div>
                     </div>
                     
-                    <div class="form-row">
-                        <div class="form-group"><label class="form-label">Publisher</label><input type="text" name="publisher" class="form-input" value="<?php echo htmlspecialchars($publisher ?? ''); ?>"></div>
-                        <div class="form-group"><label class="form-label">Pages</label><input type="number" name="pages" class="form-input" value="<?php echo htmlspecialchars($pages ?? ''); ?>" min="1"></div>
+                    <div class="form-group">
+                        <label class="form-label">Description <span class="text-muted">(Optional)</span></label>
+                        <textarea name="description" class="form-textarea" rows="6" maxlength="5000" oninput="updateCharCount(this)"><?php echo htmlspecialchars($description); ?></textarea>
+                        <div class="char-counter" id="charCount">0/5000 characters</div>
+                        <?php if(isset($errors['description'])) echo '<div class="text-danger small">'.$errors['description'].'</div>'; ?>
                     </div>
                     
-                    <div class="form-group"><label class="form-label">Language</label><input type="text" name="language" class="form-input" value="<?php echo htmlspecialchars($language ?? 'English'); ?>"></div>
+                    <!-- More Information Toggle Button -->
+                    <div class="d-flex justify-content-center mt-4 mb-4">
+                        <button type="button" class="toggle-more-btn collapsed" id="toggleMoreBtn" onclick="toggleMoreInfo(event)">
+                            <i class="fas fa-chevron-down"></i>
+                            <span>Add More Information</span>
+                        </button>
+                    </div>
                     
-                    <div class="form-group"><label class="form-label">Description *</label><textarea name="description" class="form-textarea" rows="6" maxlength="5000" oninput="updateCharCount(this)"><?php echo htmlspecialchars($description); ?></textarea><div class="char-counter" id="charCount">0/5000 characters</div><?php if(isset($errors['description'])) echo '<div class="text-danger small">'.$errors['description'].'</div>'; ?></div>
+                    <!-- Additional Information Section (Hidden by default) -->
+                    <div id="moreInfoSection" class="more-info-section hidden">
+                        <h3 style="font-size: var(--font-size-lg); margin-bottom: var(--space-4);">
+                            <i class="fas fa-info-circle" style="color: var(--primary); margin-right: var(--space-2);"></i>
+                            Additional Information
+                        </h3>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">ISBN</label>
+                                <input type="text" name="isbn" class="form-input" value="<?php echo htmlspecialchars($isbn ?? ''); ?>">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Publication Year</label>
+                                <input type="text" name="publication_year" class="form-input" value="<?php echo htmlspecialchars($publicationYear ?? ''); ?>">
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Publisher</label>
+                                <input type="text" name="publisher" class="form-input" value="<?php echo htmlspecialchars($publisher ?? ''); ?>">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Pages</label>
+                                <input type="number" name="pages" class="form-input" value="<?php echo htmlspecialchars($pages ?? ''); ?>" min="1">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Language</label>
+                            <input type="text" name="language" class="form-input" value="<?php echo htmlspecialchars($language ?? 'English'); ?>">
+                        </div>
+                    </div>
                     
-                    <div class="d-flex gap-3 mt-4"><button type="submit" class="btn btn-primary flex-grow-1">Add Book to Library</button><a href="/profile/" class="btn btn-outline">Cancel</a></div>
+                    <!-- Submit Buttons -->
+                    <div class="d-flex gap-3 mt-6">
+                        <button type="submit" class="btn btn-primary flex-grow-1">Add Book to Library</button>
+                        <a href="/profile/" class="btn btn-outline">Cancel</a>
+                    </div>
                 </form>
             </div>
         </div>
@@ -421,6 +523,7 @@ $conditions = getConditions();
                 reader.readAsDataURL(input.files[0]);
             }
         }
+        
         function updateCharCount(textarea) {
             const count = textarea.value.length;
             const max = 5000;
@@ -430,6 +533,16 @@ $conditions = getConditions();
             else if (count > max * 0.75) counter.classList.add('warning'), counter.classList.remove('danger');
             else counter.classList.remove('warning', 'danger');
         }
+        
+        function toggleMoreInfo(event) {
+            event.preventDefault();
+            const moreInfoSection = document.getElementById('moreInfoSection');
+            const toggleBtn = document.getElementById('toggleMoreBtn');
+            
+            moreInfoSection.classList.toggle('hidden');
+            toggleBtn.classList.toggle('collapsed');
+        }
+        
         const desc = document.querySelector('textarea[name="description"]');
         if (desc) updateCharCount(desc);
     </script>

@@ -42,7 +42,7 @@
 }
 
 .profile-hero {
-    height: 320px;
+    height: 150px;
     background: linear-gradient(135deg, #10B981, #06B6D4, #2C3E50);
     background-size: 200% 200%;
     animation: gradientMove 12s ease infinite;
@@ -72,6 +72,7 @@
     align-items: center;
     margin-bottom: 1.5rem;
     padding: 0.5rem 1rem;
+    transform: translateY(-10px);
     background: rgba(255, 255, 255, 0.15);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
@@ -128,6 +129,7 @@
     box-shadow: 0 20px 40px rgba(0,0,0,0.08);
     padding: var(--space-xl) var(--space-lg);
     transition: var(--transition);
+    transform: translateY(15px);
 }
 
 /* Avatar styling */
