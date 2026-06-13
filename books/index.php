@@ -309,7 +309,7 @@ function toggleCategoryUrl($cat) {
             flex-direction: row;
             align-items: center;
             gap: 0.75rem;
-            margin-top: 3rem;
+            margin-top: 5rem;
             margin-bottom: 1.25rem;
             width: 100%;
         }
