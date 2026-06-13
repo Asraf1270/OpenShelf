@@ -177,7 +177,7 @@
 
         .footer-logo span {
             background: linear-gradient(135deg, #ffffff, #4C9F8A);
-            -webkit-background-clip: text;
+            --webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
 

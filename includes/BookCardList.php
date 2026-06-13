@@ -119,7 +119,7 @@ function renderBookCardList($books, $options = []) {
                 padding-right: 30px; /* Space for the status dot */
                 word-wrap: break-word;
                 display: -webkit-box;
-                -webkit-line-clamp: 2;
+                --webkit-line-clamp: 2;
                 -webkit-box-orient: vertical;
                 overflow: hidden;
             }

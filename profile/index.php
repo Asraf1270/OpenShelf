@@ -175,16 +175,6 @@ $showSensitiveInfo = $isOwnProfile; // Only owner can see sensitive info like ro
 <div class="profile-hero"></div>
 
 <div class="profile-container">
-    <!-- Top Navigation Bar from sketch -->
-    <div class="profile-header-nav">
-        <a href="javascript:history.back()" class="profile-nav-btn back-btn" title="Go Back">
-            <i class="fas fa-arrow-left"></i>
-        </a>
-        <span class="profile-nav-title">Profile</span>
-        <button class="profile-nav-btn share-btn-top" onclick="copyProfileLink()" title="Share Profile">
-            <i class="fas fa-share-alt"></i>
-        </button>
-    </div>
 
     <div class="glass-card reveal active">
         <!-- Profile Avatar wrapper overlapping banner -->
