@@ -13,7 +13,7 @@ define('USERS_PATH', dirname(__DIR__, 2) . '/users/');
 // Include database connection
 require_once dirname(__DIR__, 2) . '/includes/db.php';
 require_once dirname(__DIR__, 2) . '/includes/search_helper.php';
-define('BASE_URL', 'https://openshelf.free.nf');
+define('BASE_URL', 'https://duopenshelf.top');
 
 // Load mailer
 require_once dirname(__DIR__, 2) . '/vendor/autoload.php';
@@ -223,7 +223,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             'subject'           => 'Account Status Update - OpenShelf',
                             'user_name'         => $user['name'],
                             'rejection_reason'  => $reason,
-                            'support_email'     => 'support@openshelf.org',
+                            'support_email'     => 'support@duopenshelf.top',
                             'base_url'          => BASE_URL
                         ]
                     );
@@ -285,7 +285,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 'subject'           => 'Account Status Update - OpenShelf',
                                 'user_name'         => $user['name'],
                                 'rejection_reason'  => $reason,
-                                'support_email'     => 'support@openshelf.org',
+                                'support_email'     => 'support@duopenshelf.top',
                                 'base_url'          => BASE_URL
                             ]
                         );

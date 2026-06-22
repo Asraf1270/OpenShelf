@@ -16,7 +16,7 @@ if (isset($data) && is_array($data)) {
 }
 
 // Handle URL safety
-$safe_url = $base_url ?? (defined('BASE_URL') ? BASE_URL : 'https://openshelf.free.nf');
+$safe_url = $base_url ?? (defined('BASE_URL') ? BASE_URL : 'https://duopenshelf.top');
 $display_owner = $owner_name ?? 'Owner';
 $display_borrower = $borrower_name ?? 'a community member';
 ?>

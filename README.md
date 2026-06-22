@@ -215,7 +215,7 @@ This project is open-source and released under the **MIT License**.
 
 ## 📞 Support & Community
 
-- **Email:** <support@openshelf.free.nf>
+- **Email:** <support@duopenshelf.top>
 - **Reporting:** Use `/report.php` for bugs or misconduct
 - **Feedback:** Use the built-in `/contact.php` form
 - **FAQ:** Check `/faq.php` for common questions

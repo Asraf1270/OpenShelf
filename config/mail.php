@@ -23,14 +23,14 @@ return [
     // Email settings
     'email' => [
         'from' => [
-            'address' => $env['MAIL_FROM_ADDRESS'] ?? getenv('MAIL_FROM_ADDRESS') ?: 'no-reply@openshelf.org',
+            'address' => $env['MAIL_FROM_ADDRESS'] ?? getenv('MAIL_FROM_ADDRESS') ?: 'no-reply@duopenshelf.top',
             'name' => $env['MAIL_FROM_NAME'] ?? getenv('MAIL_FROM_NAME') ?: 'OpenShelf'
         ],
         'reply_to' => [
-            'address' => $env['MAIL_REPLY_TO'] ?? getenv('MAIL_REPLY_TO') ?: 'support@openshelf.org',
+            'address' => $env['MAIL_REPLY_TO'] ?? getenv('MAIL_REPLY_TO') ?: 'support@duopenshelf.top',
             'name' => $env['MAIL_FROM_NAME'] ?? getenv('MAIL_FROM_NAME') ?: 'OpenShelf Support'
         ],
-        'admin_email' => $env['ADMIN_EMAIL'] ?? getenv('ADMIN_EMAIL') ?: 'admin@openshelf.org',
+        'admin_email' => $env['ADMIN_EMAIL'] ?? getenv('ADMIN_EMAIL') ?: 'admin@duopenshelf.top',
         'charset' => 'UTF-8',
         'encoding' => 'base64',
         'wordwrap' => 50

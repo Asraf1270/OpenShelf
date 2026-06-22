@@ -9,7 +9,7 @@ session_start();
 // Configuration
 define('DATA_PATH', dirname(__DIR__) . '/data/');
 define('USERS_PATH', dirname(__DIR__) . '/users/');
-define('BASE_URL', 'https://openshelf.free.nf');
+define('BASE_URL', 'https://duopenshelf.top');
 
 // Check if user is logged in
 if (!isset($_SESSION['user_id'])) {
