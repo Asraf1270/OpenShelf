@@ -10,7 +10,7 @@ session_start();
 define('DATA_PATH', dirname(__DIR__) . '/data/');
 define('BOOKS_DATA_PATH', dirname(__DIR__) . '/data/book/');
 define('USERS_PATH', dirname(__DIR__) . '/users/');
-define('BASE_URL', 'https://openshelf.free.nf');
+define('BASE_URL', 'https://duopenshelf.top');
 
 require_once dirname(__DIR__) . '/includes/db.php';
 

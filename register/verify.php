@@ -84,7 +84,7 @@ if (isset($_GET['resend'])) {
                     'expiry_minutes' => 15,
                     'user_name'  => $user['name'],
                     'user_email' => $user['email'],
-                    'base_url'   => 'https://openshelf.free.nf',
+                    'base_url'   => 'https://duopenshelf.top',
                     'ip_address' => $_SERVER['REMOTE_ADDR'] ?? 'unknown',
                     'user_agent' => $_SERVER['HTTP_USER_AGENT'] ?? 'unknown'
                 ]

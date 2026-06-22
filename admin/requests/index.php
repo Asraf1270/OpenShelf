@@ -15,7 +15,7 @@ define('USERS_PATH', dirname(__DIR__, 2) . '/users/');
 require_once dirname(__DIR__, 2) . '/includes/db.php';
 require_once dirname(__DIR__, 2) . '/includes/helpers.php';
 require_once dirname(__DIR__, 2) . '/includes/search_helper.php';
-define('BASE_URL', 'https://openshelf.free.nf');
+define('BASE_URL', 'https://duopenshelf.top');
 
 // Load mailer
 require_once dirname(__DIR__, 2) . '/vendor/autoload.php';

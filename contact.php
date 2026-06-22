@@ -240,14 +240,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <div class="info-icon"><i class="fas fa-envelope"></i></div>
                 <div class="info-content">
                     <h3>Email Us</h3>
-                    <p>support@openshelf.com</p>
+                    <p>support@duopenshelf.top</p>
                 </div>
             </div>
             <div class="info-item">
                 <div class="info-icon"><i class="fab fa-whatsapp"></i></div>
                 <div class="info-content">
                     <h3>WhatsApp</h3>
-                    <p>+880 1234 56789</p>
+                    <p>+880 1987 971270</p>
                 </div>
             </div>
             <div class="info-item">

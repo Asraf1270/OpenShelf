@@ -67,15 +67,15 @@
                         <ul class="footer-contact">
                             <li>
                                 <i class="fas fa-envelope"></i>
-                                <a href="mailto:support@openshelf.com">support@openshelf.com</a>
+                                <a href="mailto:support@duopenshelf.top">support@duopenshelf.top</a>
                             </li>
                             <li>
                                 <i class="fas fa-phone"></i>
-                                <a href="tel:+880123456789">+880 1234 56789</a>
+                                <a href="tel:+8801987971270">+880 1987 971270</a>
                             </li>
                             <li>
                                 <i class="fab fa-whatsapp"></i>
-                                <a href="https://wa.me/880123456789" target="_blank">WhatsApp Support</a>
+                                <a href="https://wa.me/8801987971270" target="_blank">WhatsApp Support</a>
                             </li>
                             <li>
                                 <i class="fas fa-map-marker-alt"></i>

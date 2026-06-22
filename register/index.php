@@ -9,7 +9,7 @@ session_start();
 // Configuration
 define('DATA_PATH', dirname(__DIR__) . '/data/');
 define('USERS_PATH', dirname(__DIR__) . '/users/');
-define('BASE_URL', 'https://openshelf.free.nf');
+define('BASE_URL', 'https://duopenshelf.top');
 
 // Load mailer
 require_once dirname(__DIR__) . '/vendor/autoload.php';

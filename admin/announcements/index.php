@@ -9,7 +9,7 @@ session_start();
 // Configuration
 define('DATA_PATH', dirname(__DIR__, 2) . '/data/');
 define('USERS_PATH', dirname(__DIR__, 2) . '/users/');
-define('BASE_URL', 'https://openshelf.free.nf');
+define('BASE_URL', 'https://duopenshelf.top');
 
 // Include database connection
 require_once dirname(__DIR__, 2) . '/includes/db.php';

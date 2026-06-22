@@ -14,7 +14,7 @@ require_once __DIR__ . '/lib/Mailer.php';
 
 // Configuration
 define('OTP_EXPIRY', 600); // 10 minutes
-define('BASE_URL', 'https://openshelf.free.nf'); // Adjust if needed
+define('BASE_URL', 'https://duopenshelf.top'); // Adjust if needed
 
 /**
  * Find user by phone and email

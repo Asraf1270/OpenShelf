@@ -210,7 +210,7 @@ if (isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true
         <form method="POST">
             <div class="form-group">
                 <label>Email Address</label>
-                <input type="email" name="email" placeholder="admin@openshelf.com" required autofocus>
+                <input type="email" name="email" placeholder="admin@duopenshelf.top" required autofocus>
             </div>
             
             <div class="form-group">
