@@ -113,9 +113,9 @@ include '../includes/header.php';
                         <div class="flex items-center justify-between relative z-10">
                             <div class="flex flex-col">
                                 <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Account Number</span>
-                                <span class="font-mono text-xl text-slate-700 font-black tracking-wider" id="bkash-num">01700000000</span>
+                                <span class="font-mono text-xl text-slate-700 font-black tracking-wider" id="bkash-num">01576690638</span>
                             </div>
-                            <button onclick="copyToClipboard('01700000000', 'bkash-btn')" id="bkash-btn" class="flex items-center gap-2 px-5 py-2.5 bg-white text-bkash text-sm font-bold rounded-2xl shadow-sm border border-slate-100 hover:bg-bkash hover:text-white transition-all duration-300">
+                            <button onclick="copyToClipboard('01576690638', 'bkash-btn')" id="bkash-btn" class="flex items-center gap-2 px-5 py-2.5 bg-white text-bkash text-sm font-bold rounded-2xl shadow-sm border border-slate-100 hover:bg-bkash hover:text-white transition-all duration-300">
                                 <i class="far fa-copy"></i> Copy
                             </button>
                         </div>
@@ -152,9 +152,9 @@ include '../includes/header.php';
                         <div class="flex items-center justify-between relative z-10">
                             <div class="flex flex-col">
                                 <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Account Number</span>
-                                <span class="font-mono text-xl text-slate-700 font-black tracking-wider" id="nagad-num">01700000000</span>
+                                <span class="font-mono text-xl text-slate-700 font-black tracking-wider" id="nagad-num">01576690638</span>
                             </div>
-                            <button onclick="copyToClipboard('01700000000', 'nagad-btn')" id="nagad-btn" class="flex items-center gap-2 px-5 py-2.5 bg-white text-nagad text-sm font-bold rounded-2xl shadow-sm border border-slate-100 hover:bg-nagad hover:text-white transition-all duration-300">
+                            <button onclick="copyToClipboard('01576690638', 'nagad-btn')" id="nagad-btn" class="flex items-center gap-2 px-5 py-2.5 bg-white text-nagad text-sm font-bold rounded-2xl shadow-sm border border-slate-100 hover:bg-nagad hover:text-white transition-all duration-300">
                                 <i class="far fa-copy"></i> Copy
                             </button>
                         </div>
@@ -192,9 +192,9 @@ include '../includes/header.php';
                         <div class="flex items-center justify-between relative z-10">
                             <div class="flex flex-col">
                                 <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Account Number</span>
-                                <span class="font-mono text-xl text-slate-700 font-black tracking-wider" id="rocket-num">01700000000-0</span>
+                                <span class="font-mono text-xl text-slate-700 font-black tracking-wider" id="rocket-num">015766906386</span>
                             </div>
-                            <button onclick="copyToClipboard('01700000000-0', 'rocket-btn')" id="rocket-btn" class="flex items-center gap-2 px-5 py-2.5 bg-white text-rocket text-sm font-bold rounded-2xl shadow-sm border border-slate-100 hover:bg-rocket hover:text-white transition-all duration-300">
+                            <button onclick="copyToClipboard('015766906386', 'rocket-btn')" id="rocket-btn" class="flex items-center gap-2 px-5 py-2.5 bg-white text-rocket text-sm font-bold rounded-2xl shadow-sm border border-slate-100 hover:bg-rocket hover:text-white transition-all duration-300">
                                 <i class="far fa-copy"></i> Copy
                             </button>
                         </div>
