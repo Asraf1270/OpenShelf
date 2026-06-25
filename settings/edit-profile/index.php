@@ -504,6 +504,21 @@ if (!file_exists(dirname(dirname(__DIR__)) . $avatarPath) || $avatarName === 'de
                                 <option value="1" <?php echo ($user['hall'] ?? '') === '1' ? 'selected' : ''; ?>>Amar Ekushey Hall</option>
                                 <option value="2" <?php echo ($user['hall'] ?? '') === '2' ? 'selected' : ''; ?>>Dr. Muhammad Shahidullah Hall</option>
                                 <option value="3" <?php echo ($user['hall'] ?? '') === '3' ? 'selected' : ''; ?>>Fazlul Huq Muslim Hall</option>
+                                <option value="4" <?php echo ($user['hall'] ?? '') === '4' ? 'selected' : ''; ?>>Salimullah Muslim Hall</option>
+                                <option value="5" <?php echo ($user['hall'] ?? '') === '5' ? 'selected' : ''; ?>>Shahid Sergeant Zahurul Haq Hall</option>
+                                <option value="6" <?php echo ($user['hall'] ?? '') === '6' ? 'selected' : ''; ?>>Haji Muhammad Mohsin Hall</option>
+                                <option value="7" <?php echo ($user['hall'] ?? '') === '7' ? 'selected' : ''; ?>>Sir A.F. Rahman Hall</option>
+                                <option value="8" <?php echo ($user['hall'] ?? '') === '8' ? 'selected' : ''; ?>>Masterda Surja Sen Hall</option>
+                                <option value="9" <?php echo ($user['hall'] ?? '') === '9' ? 'selected' : ''; ?>>Kobi Jashimuddin Hall</option>
+                                <option value="10" <?php echo ($user['hall'] ?? '') === '10' ? 'selected' : ''; ?>>Muktijoddha Ziaur Rahman Hall</option>
+                                <option value="11" <?php echo ($user['hall'] ?? '') === '11' ? 'selected' : ''; ?>>Shaheed Sharif Osman Hadi Hall</option>
+                                <option value="12" <?php echo ($user['hall'] ?? '') === '12' ? 'selected' : ''; ?>>Bijoy Ekattor Hall</option>
+                                <option value="13" <?php echo ($user['hall'] ?? '') === '13' ? 'selected' : ''; ?>>Jagannath Hall</option>
+                                <option value="14" <?php echo ($user['hall'] ?? '') === '14' ? 'selected' : ''; ?>>Ruqayyah Hall</option>
+                                <option value="15" <?php echo ($user['hall'] ?? '') === '15' ? 'selected' : ''; ?>>Shamsun Nahar Hall</option>
+                                <option value="16" <?php echo ($user['hall'] ?? '') === '16' ? 'selected' : ''; ?>>Bangladesh-Kuwait Maitree Hall</option>
+                                <option value="17" <?php echo ($user['hall'] ?? '') === '17' ? 'selected' : ''; ?>>Begum Fazilatunnesa Mujib Hall</option>
+                                <option value="18" <?php echo ($user['hall'] ?? '') === '18' ? 'selected' : ''; ?>>Kobi Sufiya Kamal Hall</option>
                             </select>
                         </div>
                         <div class="field-error" id="error-hall"></div>

@@ -96,7 +96,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (empty($roomNumber)) $errors['roomNumber'] = 'Room number is required';
 
     if (empty($hall)) $errors['hall'] = 'Hall is required';
-    elseif (!in_array($hall, ['1', '2', '3'])) $errors['hall'] = 'Invalid hall selected';
+    elseif (!in_array($hall, ['1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18'])) $errors['hall'] = 'Invalid hall selected';
     
     if (empty($password)) $errors['password'] = 'Password is required';
     elseif (strlen($password) < 8) $errors['password'] = 'Password must be at least 8 characters';
@@ -782,6 +782,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 <option value="1" <?php echo $hall === '1' ? 'selected' : ''; ?>>Amar Ekushey Hall</option>
                                 <option value="2" <?php echo $hall === '2' ? 'selected' : ''; ?>>Dr. Muhammad Shahidullah Hall</option>
                                 <option value="3" <?php echo $hall === '3' ? 'selected' : ''; ?>>Fazlul Huq Muslim Hall</option>
+                                <option value="4" <?php echo $hall === '4' ? 'selected' : ''; ?>>Salimullah Muslim Hall</option>
+                                <option value="5" <?php echo $hall === '5' ? 'selected' : ''; ?>>Shahid Sergeant Zahurul Haq Hall</option>
+                                <option value="6" <?php echo $hall === '6' ? 'selected' : ''; ?>>Haji Muhammad Mohsin Hall</option>
+                                <option value="7" <?php echo $hall === '7' ? 'selected' : ''; ?>>Sir A.F. Rahman Hall</option>
+                                <option value="8" <?php echo $hall === '8' ? 'selected' : ''; ?>>Masterda Surja Sen Hall</option>
+                                <option value="9" <?php echo $hall === '9' ? 'selected' : ''; ?>>Kobi Jashimuddin Hall</option>
+                                <option value="10" <?php echo $hall === '10' ? 'selected' : ''; ?>>Muktijoddha Ziaur Rahman Hall</option>
+                                <option value="11" <?php echo $hall === '11' ? 'selected' : ''; ?>>Shaheed Sharif Osman Hadi Hall</option>
+                                <option value="12" <?php echo $hall === '12' ? 'selected' : ''; ?>>Bijoy Ekattor Hall</option>
+                                <option value="13" <?php echo $hall === '13' ? 'selected' : ''; ?>>Jagannath Hall</option>
+                                <option value="14" <?php echo $hall === '14' ? 'selected' : ''; ?>>Ruqayyah Hall</option>
+                                <option value="15" <?php echo $hall === '15' ? 'selected' : ''; ?>>Shamsun Nahar Hall</option>
+                                <option value="16" <?php echo $hall === '16' ? 'selected' : ''; ?>>Bangladesh-Kuwait Maitree Hall</option>
+                                <option value="17" <?php echo $hall === '17' ? 'selected' : ''; ?>>Begum Fazilatunnesa Mujib Hall</option>
+                                <option value="18" <?php echo $hall === '18' ? 'selected' : ''; ?>>Kobi Sufiya Kamal Hall</option>
                             </select>
                         </div>
                         <?php if (isset($errors['hall'])): ?>

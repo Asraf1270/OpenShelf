@@ -278,14 +278,19 @@ function updateUserProfilePic($userId, $filename) {
  */
 function getCategories() {
     return [
-        'Fiction', 'Non-Fiction', 'Science Fiction', 'Fantasy', 'Mystery',
-        'Thriller', 'Romance', 'Biography', 'History', 'Science',
-        'Technology', 'Programming', 'Mathematics', 'Physics', 'Chemistry',
-        'Biology', 'Literature', 'Poetry', 'Drama', 'Philosophy',
-        'Psychology', 'Economics', 'Business', 'Self-Help', 'Health',
-        'Sports', 'Travel', 'Art', 'Music', 'Education',
-        'Textbook', 'Reference', 'Children', 'Young Adult', 'Comics',
-        'Graphic Novel', 'Other'
+        'Fiction',
+        'Self Development',
+        'Science',
+        'Religion',
+        'Islamic',
+        'Technology',
+        'Business',
+        'Health',
+        'Arts',
+        'Education',
+        'History',
+        'Biography',
+        'Law'
     ];
 }
 
