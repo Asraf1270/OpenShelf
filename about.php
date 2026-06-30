@@ -173,50 +173,50 @@ include 'includes/header.php';
 
 <main class="about-container">
     <section class="hero-section">
-        <h1>Reimagining Campus Reading</h1>
-        <p class="hero-p">OpenShelf is a decentralized, student-driven library platform designed to make knowledge accessible and sharing effortless.</p>
+        <h1>ক্যাম্পাসে পড়াশোনাকে নতুনভাবে ভাবা</h1>
+        <p class="hero-p">OpenShelf হলো একটি বিকেন্দ্রীভূত, শিক্ষার্থী-কেন্দ্রিক লাইব্রেরি প্ল্যাটফর্ম, যা জ্ঞানকে সহজলভ্য করে তুলতে এবং বই ভাগাভাগি করা সহজ করে তুলতে ডিজাইন করা হয়েছে।</p>
     </section>
 
     <div class="story-grid">
         <div class="story-content">
-            <h2>The OpenShelf Story</h2>
-            <p>Born out of the need for affordable textbooks and a passion for reading, OpenShelf started as a simple idea: what if we could share our personal libraries with the people around us?</p>
-            <p>Today, we're building a community where students can connect, share, and discover books without the barriers of cost or location. Every book on our shelf is a contribution from a fellow student.</p>
+            <h2>OpenShelf-এর গল্প</h2>
+            <p>সাশ্রয়ী পাঠ্যপুস্তকের প্রয়োজন এবং পড়াশোনার ভালোবাসা থেকে OpenShelf-এর ধারণা জন্ম নেয়। শুরুতে এটি ছিল এক সহজ চিন্তা: আমরা কি আমাদের ব্যক্তিগত লাইব্রেরি আশপাশের মানুষদের সাথে ভাগ করতে পারি না?</p>
+            <p>আজ আমরা এমন এক কমিউনিটি গড়ে তোলার চেষ্টা করছি, যেখানে ছাত্র-ছাত্রীরা সহজে যুক্ত হতে পারে, বই ভাগ করতে পারে এবং খরচ বা অবস্থানের বাধা ছাড়াই নতুন বই আবিষ্কার করতে পারে। আমাদের শেলফে থাকা প্রতিটি বইই একজন সহপাঠীর অবদানের ফল।</p>
         </div>
         <div class="stats-card">
             <div style="margin-bottom: 2rem;">
                 <span class="stat-number">100%</span>
-                <span class="stat-label">Student Driven</span>
+                <span class="stat-label">শিক্ষার্থী-কেন্দ্রিক</span>
             </div>
             <div>
-                <span class="stat-number">Infinite</span>
-                <span class="stat-label">Possibilities</span>
+                <span class="stat-number">অসীম</span>
+                <span class="stat-label">সম্ভাবনা</span>
             </div>
         </div>
     </div>
 
     <section class="features-section">
-        <h2 style="text-align: center; margin-bottom: 4rem; font-size: 2rem; font-weight: 800;">Our Core Values</h2>
+        <h2 style="text-align: center; margin-bottom: 4rem; font-size: 2rem; font-weight: 800;">আমাদের মূল মূল্যবোধ</h2>
         <div class="features-grid">
             <div class="feature-item">
-                <h3><i class="fas fa-heart"></i> Accessibility</h3>
-                <p>Knowledge should never be behind a paywall. We believe in free access to literature and study materials.</p>
+                <h3><i class="fas fa-heart"></i> সহজলভ্যতা</h3>
+                <p>জ্ঞান কখনওই কোনো পে-ওয়াল চালুর আড়ালে থাকা উচিত নয়। আমরা সাহিত্যের বই ও পড়াশোনার উপকরণ বিনামূল্যে সহজে পেতে বিশ্বাস করি।</p>
             </div>
             <div class="feature-item">
-                <h3><i class="fas fa-users"></i> Community</h3>
-                <p>Building trust between students is at the heart of everything we do. We're stronger when we share.</p>
+                <h3><i class="fas fa-users"></i> কমিউনিটি</h3>
+                <p>ছাত্রদের মধ্যে বিশ্বাস গড়ে তোলাই আমাদের মূল লক্ষ্য। আমরা একসাথে ভাগ করলে আরও শক্তিশালী হই।</p>
             </div>
             <div class="feature-item">
-                <h3><i class="fas fa-leaf"></i> Sustainability</h3>
-                <p>By sharing books, we reduce waste and give physical copies a longer, more meaningful life.</p>
+                <h3><i class="fas fa-leaf"></i> টেকসই</h3>
+                <p>বই শেয়ার করে আমরা বর্জ্য কমাই এবং শারীরিক কপি যাতে দীর্ঘ ও অর্থপূর্ণ জীবন পায়, সে দিকে কাজ করি।</p>
             </div>
         </div>
     </section>
 
     <section style="text-align: center;">
-        <h2 style="font-size: 2rem; font-weight: 800; margin-bottom: 1.5rem;">Join the Movement</h2>
-        <p class="hero-p" style="margin-bottom: 3rem;">Ready to list your first book? Join thousands of students already on OpenShelf.</p>
-        <a href="/register/" style="display: inline-block; padding: 1rem 2.5rem; background: var(--primary); color: white; text-decoration: none; border-radius: 50px; font-weight: 700; box-shadow: 0 10px 20px rgba(44, 62, 80, 0.2);">Start Sharing Today</a>
+        <h2 style="font-size: 2rem; font-weight: 800; margin-bottom: 1.5rem;">এই আন্দোলনে যোগ দিন</h2>
+        <p class="hero-p" style="margin-bottom: 3rem;">আপনার প্রথম বই তালিকাভুক্ত করতে প্রস্তুত? OpenShelf-এ ইতোমধ্যে হাজার হাজার ছাত্র-ছাত্রী যোগ দিয়েছেন।</p>
+        <a href="/register/" style="display: inline-block; padding: 1rem 2.5rem; background: var(--primary); color: white; text-decoration: none; border-radius: 50px; font-weight: 700; box-shadow: 0 10px 20px rgba(44, 62, 80, 0.2);">আজই ভাগ করা শুরু করুন</a>
     </section>
 </main>
 

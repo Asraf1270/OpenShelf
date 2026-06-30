@@ -152,43 +152,43 @@ include 'includes/header.php';
 
 <main class="faq-container">
     <section class="hero-section">
-        <h1>Questions? Answers.</h1>
-        <p style="color: var(--text-muted); font-size: 1.2rem;">Everything you need to know about OpenShelf.</p>
+        <h1>প্রশ্ন? উত্তর।</h1>
+        <p style="color: var(--text-muted); font-size: 1.2rem;">OpenShelf সম্পর্কে আপনার জানা প্রয়োজন এমন সবকিছু।</p>
     </section>
 
     <div class="faq-category">
-        <h2>General</h2>
+        <h2>সাধারণ</h2>
         <div class="faq-item">
-            <div class="faq-question">What is OpenShelf? <i class="fas fa-chevron-down"></i></div>
-            <div class="faq-answer">OpenShelf is a community-driven library platform where students can share and borrow books for free. We aim to make knowledge more accessible across campuses.</div>
+            <div class="faq-question">OpenShelf কী? <i class="fas fa-chevron-down"></i></div>
+            <div class="faq-answer">OpenShelf হলো একটি কমিউনিটি-চালিত লাইব্রেরি প্ল্যাটফর্ম যেখানে শিক্ষার্থীরা বিনামূল্যে বই শেয়ার এবং ধার করতে পারে। আমরা জ্ঞানকে ক্যাম্পাস জুড়ে আরও সহজলভ্য করতে লক্ষ্য রাখি।</div>
         </div>
         <div class="faq-item">
-            <div class="faq-question">Is it really free? <i class="fas fa-chevron-down"></i></div>
-            <div class="faq-answer">Yes! There are no subscription fees or borrowing costs. The platform is built on a "share-and-borrow" model where students help each other.</div>
-        </div>
-    </div>
-
-    <div class="faq-category">
-        <h2>Borrowing</h2>
-        <div class="faq-item">
-            <div class="faq-question">How do I borrow a book? <i class="fas fa-chevron-down"></i></div>
-            <div class="faq-answer">Simply browse the library, find a book you like, and click "Request Borrow". The owner will be notified and can approve your request.</div>
-        </div>
-        <div class="faq-item">
-            <div class="faq-question">How long can I keep a book? <i class="fas fa-chevron-down"></i></div>
-            <div class="faq-answer">The default borrowing period is 14 days, but you can request an extension if the owner agrees. Always respect the agreed-upon return date.</div>
+            <div class="faq-question">এটি সত্যিই বিনামূল্যে? <i class="fas fa-chevron-down"></i></div>
+            <div class="faq-answer">হ্যাঁ! কোনো সাবস্ক্রিপশন ফি বা ধার নেওয়ার খরচ নেই। প্ল্যাটফর্মটি একটি "ভাগাভাগি-এবং-ধার" মডেলের উপর নির্মিত যেখানে শিক্ষার্থীরা একে অপরকে সাহায্য করে। আমাদের এই প্রকল্পটি পরিচালনা ও আরও উন্নত করতে আর্থিক সহায়তার প্রয়োজন হয়। আপনি চাইলে এই উদ্যোগে অবদান রেখে আমাদের পাশে থাকতে পারেন। আপনার মূল্যবান সহযোগিতা আমাদের সেবাকে আরও সমৃদ্ধ করতে অনুপ্রাণিত করবে। <br> সহায়তা করতে অনুগ্রহ করে আমাদের Support Us পেজটি ভিজিট করুন।</div>
         </div>
     </div>
 
     <div class="faq-category">
-        <h2>Sharing</h2>
+        <h2>ধার নেওয়া</h2>
         <div class="faq-item">
-            <div class="faq-question">How do I list my books? <i class="fas fa-chevron-down"></i></div>
-            <div class="faq-answer">Go to your dashboard, click "Add Book", and fill in the details. It takes less than a minute to make your book available to others.</div>
+            <div class="faq-question">আমি কীভাবে বই ধার নিই? <i class="fas fa-chevron-down"></i></div>
+            <div class="faq-answer">সহজেই লাইব্রেরি ব্রাউজ করুন, আপনার পছন্দের বই খুঁজুন এবং "ধার নেওয়ার অনুরোধ" ক্লিক করুন। মালিককে বিজ্ঞপ্তি দেওয়া হবে এবং তিনি আপনার অনুরোধ অনুমোদন করতে পারবেন।</div>
         </div>
         <div class="faq-item">
-            <div class="faq-question">What is the 2-book rule? <i class="fas fa-chevron-down"></i></div>
-            <div class="faq-answer">To keep the community active, we require every user to list at least 2 books for sharing within 30 days of joining.</div>
+            <div class="faq-question">আমি একটি বই কত দিন রাখতে পারি? <i class="fas fa-chevron-down"></i></div>
+            <div class="faq-answer">ডিফল্ট ধার নেওয়ার সময়কাল ১৪ দিন, তবে মালিক সম্মত হলে আপনি এক্সটেনশন অনুরোধ করতে পারেন। সর্বদা সম্মত রিটার্ন তারিখকে সম্মান করুন।</div>
+        </div>
+    </div>
+
+    <div class="faq-category">
+        <h2>শেয়ার করা</h2>
+        <div class="faq-item">
+            <div class="faq-question">আমি আমার বই কীভাবে তালিকাভুক্ত করি? <i class="fas fa-chevron-down"></i></div>
+            <div class="faq-answer">আপনার ড্যাশবোর্ডে যান, "বই যোগ করুন" ক্লিক করুন এবং বিবরণ পূরণ করুন। আপনার বই অন্যদের জন্য উপলব্ধ করতে মাত্র এক মিনিটের চেয়ে কম সময় লাগে।</div>
+        </div>
+        <div class="faq-item">
+            <div class="faq-question">২-বই নিয়ম কী? <i class="fas fa-chevron-down"></i></div>
+            <div class="faq-answer">কমিউনিটিকে সক্রিয় রাখতে, আমরা প্রতিটি ব্যবহারকারীকে যোগদানের ৩০ দিনের মধ্যে শেয়ারিংয়ের জন্য কমপক্ষে ২টি বই তালিকাভুক্ত করতে প্রয়োজন।</div>
         </div>
     </div>
 </main>

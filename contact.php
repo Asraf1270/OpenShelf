@@ -230,8 +230,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <main class="contact-container">
     <section class="hero-section">
-        <h1>Get in Touch</h1>
-        <p style="color: var(--text-muted); font-size: 1.2rem;">Have questions? We're here to help.</p>
+        <h1>যোগাযোগ করুন</h1>
+        <p style="color: var(--text-muted); font-size: 1.2rem;">আপনার কি কোনো প্রশ্ন আছে? আমরা সাহায্য করতে প্রস্তুত।</p>
     </section>
 
     <div class="contact-grid">
@@ -239,22 +239,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class="info-item">
                 <div class="info-icon"><i class="fas fa-envelope"></i></div>
                 <div class="info-content">
-                    <h3>Email Us</h3>
+                    <h3>ইমেইলে লিখুন</h3>
                     <p>support@duopenshelf.top</p>
                 </div>
             </div>
             <div class="info-item">
                 <div class="info-icon"><i class="fab fa-whatsapp"></i></div>
                 <div class="info-content">
-                    <h3>WhatsApp</h3>
-                    <p>+880 1987 971270</p>
+                    <h3>হোয়াটসঅ্যাপ</h3>
+                    <p>+৮৮০ ১৯৮৭ ৯৭১২৭০</p>
                 </div>
             </div>
             <div class="info-item">
                 <div class="info-icon"><i class="fas fa-map-marker-alt"></i></div>
                 <div class="info-content">
-                    <h3>Location</h3>
-                    <p>Campus Hub, Dhaka</p>
+                    <h3>অবস্থান</h3>
+                    <p>ক্যাম্পাস হাব, ঢাকা বিশ্ববিদ্যালয়</p>
                 </div>
             </div>
         </div>
@@ -269,22 +269,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             <form method="POST">
                 <div class="form-group">
-                    <label>Your Name</label>
+                    <label>আপনার নাম</label>
                     <input type="text" name="name" class="form-control" required>
                 </div>
                 <div class="form-group">
-                    <label>Email Address</label>
+                    <label>ইমেইল ঠিকানা</label>
                     <input type="email" name="email" class="form-control" required>
                 </div>
                 <div class="form-group">
-                    <label>Subject</label>
+                    <label>বিষয়</label>
                     <input type="text" name="subject" class="form-control" required>
                 </div>
                 <div class="form-group">
-                    <label>Message</label>
+                    <label>মেসেজ</label>
                     <textarea name="message" class="form-control" rows="5" required></textarea>
                 </div>
-                <button type="submit" class="btn-submit">Send Message</button>
+                <button type="submit" class="btn-submit">মেসেজ পাঠান</button>
             </form>
         </div>
     </div>

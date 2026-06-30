@@ -12,7 +12,7 @@ include 'includes/header.php';
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Community Guidelines - OpenShelf</title>
+    <title>কমিউনিটি গাইডলাইন - OpenShelf</title>
     <link rel="stylesheet" href="/assets/css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
@@ -188,116 +188,116 @@ include 'includes/header.php';
     <main>
         <div class="guidelines-page">
             <div class="hero-section">
-                <h1>Community Guidelines</h1>
-                <p>Building a respectful and trustworthy community</p>
+                <h1>কমিউনিটি গাইডলাইন</h1>
+                <p>আত্মসম্মান ও আস্থার ভিত্তিতে একটি কমিউনিটি গড়ে তোলা</p>
             </div>
 
             <div class="guidelines-content">
                 <div class="guideline-section">
-                    <h2>Our Shared Values</h2>
-                    <p>OpenShelf is built on trust, respect, and a shared love of reading. By joining our community, you agree to uphold these values and help create a positive environment for everyone.</p>
+                    <h2>আমাদের ভাগ করা মূল্যবোধ</h2>
+                    <p>OpenShelf বিশ্বাস, সম্মান এবং বই পড়ার ভালোবাসার ওপর দাঁড়িয়ে আছে। আমাদের কমিউনিটিতে যোগ দিয়ে, আপনি এই মূল্যবোধকে বজায় রাখতে এবং সবার জন্য একটি ইতিবাচক পরিবেশ তৈরি করতে সম্মত হচ্ছেন।</p>
                 </div>
 
                 <div class="guideline-section">
-                    <h2>Book Sharing Etiquette</h2>
+                    <h2>বই আদান-প্রদানের শিষ্টাচার</h2>
                     <div class="dos-donts">
                         <div class="dos">
-                            <strong><i class="fas fa-check-circle" style="color: #10b981;"></i> DO:</strong>
+                            <strong><i class="fas fa-check-circle" style="color: #10b981;"></i> করবেন:</strong>
                             <ul style="margin-top: 0.5rem;">
-                                <li>Accurately describe book condition</li>
-                                <li>Respond to requests within 48 hours</li>
-                                <li>Communicate clearly about pickup times</li>
-                                <li>Respect return dates</li>
-                                <li>Keep books in good condition</li>
+                                <li>বইয়ের অবস্থা সঠিকভাবে বর্ণনা করুন</li>
+                                <li>৪৮ ঘণ্টার মধ্যে অনুরোধের উত্তর দিন</li>
+                                <li>পিকআপের সময় সম্পর্কে স্পষ্টভাবে যোগাযোগ করুন</li>
+                                <li>ফেরত দেওয়ার তারিখের প্রতি সম্মান দেখান</li>
+                                <li>বই ভালো অবস্থায় রাখুন</li>
                             </ul>
                         </div>
                         <div class="donts">
-                            <strong><i class="fas fa-times-circle" style="color: #ef4444;"></i> DON'T:</strong>
+                            <strong><i class="fas fa-times-circle" style="color: #ef4444;"></i> করবেন না:</strong>
                             <ul style="margin-top: 0.5rem;">
-                                <li>Misrepresent book condition</li>
-                                <li>Ignore requests or messages</li>
-                                <li>Cancel without notice</li>
-                                <li>Damage books intentionally</li>
-                                <li>Resell borrowed books</li>
+                                <li>বইয়ের অবস্থার ভুল বর্ণনা করবেন না</li>
+                                <li>অনুরোধ বা বার্তা উপেক্ষা করবেন না</li>
+                                <li>বিনা নোটিশে বাতিল করবেন না</li>
+                                <li>জানবাজি করে বই নষ্ট করবেন না</li>
+                                <li>ধার নেওয়া বই অন্যের কাছে ফেরত বা বিক্রি করবেন না</li>
                             </ul>
                         </div>
                     </div>
                 </div>
 
                 <div class="guideline-section">
-                    <h2>Communication Guidelines</h2>
+                    <h2>যোগাযোগের নির্দেশিকা</h2>
                     <ul>
-                        <li><strong>Be Respectful:</strong> Treat all members with courtesy and kindness</li>
-                        <li><strong>Be Responsive:</strong> Reply to messages within 24-48 hours</li>
-                        <li><strong>Be Clear:</strong> Specify pickup times, locations, and expectations</li>
-                        <li><strong>Use WhatsApp Wisely:</strong> Use WhatsApp for coordination only, not spam</li>
+                        <li><strong>সম্মান দেখান:</strong> সব সদস্যকে বিনয় ও সদয় আচরণে ব্যবহার করুন</li>
+                        <li><strong>সাড়া দিন:</strong> বার্তার উত্তর ২৪-৪৮ ঘণ্টার মধ্যে দিন</li>
+                        <li><strong>স্পষ্ট থাকুন:</strong> পিকআপের সময়, স্থান ও প্রত্যাশা স্পষ্ট করে বলুন</li>
+                        <li><strong>WhatsApp সচেতনতার সাথে ব্যবহার করুন:</strong> যোগাযোগের জন্য ব্যবহার করুন, স্প্যামের জন্য নয়</li>
                     </ul>
                 </div>
 
                 <div class="guideline-section">
-                    <h2>Book Condition Standards</h2>
+                    <h2>বইয়ের অবস্থা সম্পর্কিত মানদণ্ড</h2>
                     <ul>
-                        <li><strong>New:</strong> Brand new, never read</li>
-                        <li><strong>Like New:</strong> Perfect condition, no visible wear</li>
-                        <li><strong>Very Good:</strong> Minor wear, clean copy</li>
-                        <li><strong>Good:</strong> Normal wear, may have markings</li>
-                        <li><strong>Acceptable:</strong> Well-read, usable condition</li>
-                        <li><strong>Poor:</strong> Damaged but readable - disclose damage details</li>
+                        <li><strong>নতুন:</strong> পুরো নতুন, একদম পড়া হয়নি</li>
+                        <li><strong>প্রায় নতুন:</strong> নিখুঁত অবস্থা, কোনো দৃশ্যমান ক্ষতি নেই</li>
+                        <li><strong>খুব ভালো:</strong> সামান্য ঘর্ষণ, বই পরিষ্কার</li>
+                        <li><strong>ভালো:</strong> স্বাভাবিক পরিধান, কিছু মার্কিং থাকতে পারে</li>
+                        <li><strong>গ্রহণযোগ্য:</strong> বেশি পড়া হয়েছে, ব্যবহারযোগ্য</li>
+                        <li><strong>খারাপ:</strong> ক্ষতিগ্রস্ত কিন্তু পড়া যায়—ক্ষতির বিবরণ অবশ্যই জানান</li>
                     </ul>
                 </div>
 
                 <div class="guideline-section">
-                    <h2>Reporting Issues</h2>
-                    <p>If you encounter any issues with another user, please report it immediately:</p>
+                    <h2>সমস্যা রিপোর্ট করা</h2>
+                    <p>যদি অন্য কোনো ব্যবহারকারীর বিষয়ে কোনো সমস্যা দেখেন, তাহলে তা অবিলম্বে রিপোর্ট করুন:</p>
                     <ul>
-                        <li><strong>Unresponsive Users:</strong> Report if a user doesn't respond to requests</li>
-                        <li><strong>Damaged Books:</strong> Report if a book is returned in worse condition than described</li>
-                        <li><strong>Harassment:</strong> Report any inappropriate behavior</li>
-                        <li><strong>Fake Listings:</strong> Report books that don't exist or aren't available</li>
+                        <li><strong>সাড়া না দেওয়া ব্যবহারকারী:</strong> কোনো ব্যবহারকারী অনুরোধের উত্তর না দিলে রিপোর্ট করুন</li>
+                        <li><strong>ক্ষতিগ্রস্ত বই:</strong> বই ফেরত দেওয়ার সময় বর্ণনা অনুযায়ী ভালো অবস্থায় না থাকলে রিপোর্ট করুন</li>
+                        <li><strong>অপমানজনক আচরণ:</strong> কোনো অনুচিত আচরণ হলে রিপোর্ট করুন</li>
+                        <li><strong>ভু তালিকা:</strong> এমন বই যা নেই বা উপলব্ধ নয়, তার রিপোর্ট করুন</li>
                     </ul>
-                    <p>Use the "Report" button or contact support directly.</p>
+                    <p>“রিপোর্ট” বাটন ব্যবহার করুন বা সরাসরি সহায়তার সাথে যোগাযোগ করুন।</p>
                 </div>
 
                 <div class="guideline-section">
-                    <h2>Consequences of Violations</h2>
-                    <p>Depending on the severity, violations may result in:</p>
+                    <h2>নিয়ম ভঙ্গের পরিণতি</h2>
+                    <p>নিয়ম ভঙ্গের তীব্রতার উপর নির্ভর করে, ভিন্ন ভিন্ন জরিমানা বা পদক্ষেপ নেওয়া হতে পারে:</p>
                     <ul>
-                        <li>Warning notification</li>
-                        <li>Temporary account suspension</li>
-                        <li>Permanent account ban</li>
-                        <li>Reporting to university authorities for serious violations</li>
-                    </ul>
-                </div>
-
-                <div class="guideline-section">
-                    <h2>Tips for a Great Experience</h2>
-                    <ul>
-                        <li>📸 Add clear cover images to attract more interest</li>
-                        <li>💬 Include a friendly message when requesting books</li>
-                        <li>⭐ Leave reviews after borrowing to help the community</li>
-                        <li>📅 Set calendar reminders for return dates</li>
-                        <li>🤝 Be flexible and understanding with others</li>
+                        <li>সতর্কতামূলক নোটিফিকেশন</li>
+                        <li>অস্থায়ী একাউন্ট স্থগিত</li>
+                        <li>স্থায়ী একাউন্ট নিষিদ্ধ</li>
+                        <li>গুরুতর ক্ষেত্রে বিশ্ববিদ্যালয়ের কর্তৃপক্ষের কাছে রিপোর্ট</li>
                     </ul>
                 </div>
 
                 <div class="guideline-section">
-                    <h2>Safety Tips</h2>
+                    <h2>চমৎকার অভিজ্ঞতার জন্য টিপস</h2>
                     <ul>
-                        <li>Meet in public, well-lit areas when exchanging books</li>
-                        <li>Share your location with a friend if meeting someone new</li>
-                        <li>Trust your instincts - if something feels wrong, don't proceed</li>
-                        <li>Never share sensitive personal information beyond what's needed</li>
-                        <li>Use the WhatsApp chat to verify arrangements</li>
+                        <li>📸 আরও আগ্রহ আকর্ষণের জন্য পরিষ্কার কভার ইমেজ যোগ করুন</li>
+                        <li>💬 বই অনুরোধের সময় সৌহার্দ্যপূর্ণ বার্তা লিখুন</li>
+                        <li>⭐ ধার নেওয়ার পর রিভিউ দিন, যাতে কমিউনিটি উপকৃত হয়</li>
+                        <li>📅 ফেরতের তারিখের জন্য ক্যালেন্ডার রিমাইন্ডার সেট করুন</li>
+                        <li>🤝 অন্যের প্রতি নমনীয় ও বোঝাপড়াপূর্ণ থাকুন</li>
                     </ul>
                 </div>
 
                 <div class="guideline-section">
-                    <h2>Questions or Concerns?</h2>
-                    <p>If you're unsure about something or need help, reach out to us at <a href="mailto:support@duopenshelf.top" style="color: var(--secondary);">support@duopenshelf.top</a>. We're here to help make your experience positive and rewarding.</p>
+                    <h2>নিরাপত্তা নির্দেশিকা</h2>
+                    <ul>
+                        <li>বই বিনিময়ের সময় জনবহুল, ভালো আলোযুক্ত স্থানে সাক্ষাৎ করুন</li>
+                        <li>যদি নতুন কাউকে দেখেন, তাহলে বন্ধুর সঙ্গে অবস্থান শেয়ার করুন</li>
+                        <li>আপনার instinct-এ বিশ্বাস করুন—কিছু অস্বস্তিকর মনে হলে এগিয়ে যাবেন না</li>
+                        <li>প্রয়োজনীয় তথ্য ছাড়া কোনো সংবেদনশীল ব্যক্তিগত তথ্য শেয়ার করবেন না</li>
+                        <li>ব্যবস্থাগুলো নিশ্চিত করতে WhatsApp চ্যাট ব্যবহার করুন</li>
+                    </ul>
+                </div>
+
+                <div class="guideline-section">
+                    <h2>প্রশ্ন বা উদ্বেগ আছে?</h2>
+                    <p>আপনার যদি কিছু বুঝতে অসুবিধা হয় বা সাহায্যের প্রয়োজন হয়, তাহলে আমাদের সাথে যোগাযোগ করুন <a href="mailto:support@duopenshelf.top" style="color: var(--secondary);">support@duopenshelf.top</a>। আপনার অভিজ্ঞতাকে ইতিবাচক ও ফলপ্রসু করতে আমরা সাহায্য করতে প্রস্তুত।</p>
                 </div>
 
                 <div class="last-updated" style="margin-top: 2rem; padding-top: 1rem; border-top: 1px solid var(--border); text-align: center; color: var(--text-tertiary); font-size: 0.8rem;">
-                    Last Updated: March 2024
+                    সর্বশেষ আপডেট: জুলাই ২০২৬
                 </div>
             </div>
         </div>

@@ -156,38 +156,38 @@ include 'includes/header.php';
 
 <main class="privacy-container">
     <div class="hero-section">
-        <h1>Privacy Policy</h1>
-        <p style="color: var(--text-muted); font-size: 1.2rem;">How we handle and protect your data</p>
+        <h1>গোপনীয়তা নীতি</h1>
+        <p style="color: var(--text-muted); font-size: 1.2rem;">আমরা আপনার তথ্য কীভাবে পরিচালনা ও সুরক্ষা করি</p>
     </div>
 
     <div class="privacy-card">
         <div class="privacy-section">
-            <h2><i class="fas fa-database"></i> 1. Data Collection</h2>
-            <p>We collect only what is necessary to run the platform:</p>
+            <h2><i class="fas fa-database"></i> ১. তথ্য সংগ্রহ</h2>
+            <p>আমরা প্ল্যাটফর্ম পরিচালনার জন্য কেবল সেই তথ্যগুলোই সংগ্রহ করি যা প্রয়োজন:</p>
             <ul>
-                <li>Your email for verification.</li>
-                <li>Your name and department for your public profile.</li>
-                <li>Your phone number (visible only to people you are actively borrowing from or lending to).</li>
+                <li>যাচাইয়ের জন্য আপনার ইমেইল।</li>
+                <li>আপনার পাবলিক প্রোফাইলে প্রদর্শনের জন্য আপনার নাম ও বিভাগ।</li>
+                <li>আপনার ফোন নম্বর (শুধু সেইসব ব্যক্তি যারা আপনার কাছ থেকে বই ধার নিচ্ছে বা আপনাকে ধার দিচ্ছে, তাদের জন্য দৃশ্যমান)।</li>
             </ul>
         </div>
 
         <div class="privacy-section">
-            <h2><i class="fas fa-shield-alt"></i> 2. Data Usage</h2>
-            <p>Your data is used to facilitate book exchanges, send notifications about requests, and improve the overall user experience. We never sell your data to third parties.</p>
+            <h2><i class="fas fa-shield-alt"></i> ২. তথ্য ব্যবহার</h2>
+            <p>আপনার তথ্য বই বিনিময় সহজ করতে, অনুরোধের বিষয়ে নোটিফিকেশন পাঠাতে এবং সামগ্রিক ব্যবহারকারীর অভিজ্ঞতা উন্নত করতে ব্যবহৃত হয়। আমরা আপনার তথ্য কখনোই তৃতীয় পক্ষকে বিক্রি করি না।</p>
         </div>
 
         <div class="privacy-section">
-            <h2><i class="fas fa-eye-slash"></i> 3. Visibility</h2>
-            <p>Your exact location (room number) and phone number are kept private until a borrow request is approved. At that point, they are shared with the other party to coordinate the handoff.</p>
+            <h2><i class="fas fa-eye-slash"></i> ৩. দৃশ্যমানতা</h2>
+            <p>আপনার সঠিক অবস্থান (রুম নম্বর) ও ফোন নম্বর ধার নেওয়ার পদ্ধতি সহজ করার জন্য, যাতে বই হ্যান্ডঅফ সহজে সম্পন্ন করা যায়।</p>
         </div>
 
         <div class="privacy-section">
-            <h2><i class="fas fa-user-lock"></i> 4. Your Rights</h2>
-            <p>You can edit your profile at any time. If you wish to delete your account and all associated data, you can do so through the settings page or by contacting support.</p>
+            <h2><i class="fas fa-user-lock"></i> ৪. আপনার অধিকার</h2>
+            <p>আপনি আপনার প্রোফাইল যেকোনো সময় এডিট করতে পারেন। আপনি যদি আপনার একাউন্ট ও সংশ্লিষ্ট সব তথ্য মুছে দিতে চান, তাহলে সেটিংস পেজের মাধ্যমে অথবা সাপোর্টের সাথে যোগাযোগ করে তা করতে পারেন।</p>
         </div>
 
         <div class="last-updated">
-            Last Updated: April 2024
+            সর্বশেষ আপডেট: জুলাই ২০২৬
         </div>
     </div>
 </main>

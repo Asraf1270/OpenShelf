@@ -25,7 +25,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $userId = $_SESSION['user_id'] ?? 'guest';
 
     if (empty($subject) || empty($message) || empty($email)) {
-        $error = "Please fill in all required fields.";
+        $error = "দয়া করে সব আবশ্যিক ক্ষেত্র পূরণ করুন।";
     } else {
         // Prepare report data
         $reportData = [
@@ -48,10 +48,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         
         $filePath = $reportsDir . $reportData['id'] . '.json';
         if (file_put_contents($filePath, json_encode($reportData, JSON_PRETTY_PRINT))) {
-            header('Location: report.php?success=Your report has been submitted. Thank you for helping us improve.');
+            header('Location: report.php?success=আপনার রিপোর্ট জমা দেওয়া হয়েছে। উন্নতি করতে সাহায্য করার জন্য ধন্যবাদ।');
             exit;
         } else {
-            $error = "Failed to save the report. Please try again later.";
+            $error = "রিপোর্ট সংরক্ষণ করতে ব্যর্থ হয়েছে। দয়া করে পরে আবার চেষ্টা করুন।";
         }
     }
 }
@@ -199,8 +199,8 @@ include 'includes/header.php';
 
 <main class="report-container">
     <div class="report-header">
-        <h1>Report an Issue</h1>
-        <p style="color: var(--text-muted);">Help us keep OpenShelf safe and functional for everyone.</p>
+        <h1>সমস্যা রিপোর্ট করুন</h1>
+        <p style="color: var(--text-muted);">OpenShelf-কে সবাইকে জন্য নিরাপদ ও কার্যকর রাখতে আমাদের সাহায্য করুন।</p>
     </div>
 
     <?php if ($success): ?>
@@ -218,37 +218,37 @@ include 'includes/header.php';
     <div class="report-card">
         <form action="report.php" method="POST">
             <div class="form-group">
-                <label for="name">Your Name</label>
+                <label for="name">আপনার নাম</label>
                 <input type="text" id="name" name="name" class="form-control" value="<?php echo htmlspecialchars($userName); ?>" required>
             </div>
 
             <div class="form-group">
-                <label for="email">Email Address</label>
+                <label for="email">ইমেইল ঠিকানা</label>
                 <input type="email" id="email" name="email" class="form-control" value="<?php echo htmlspecialchars($userEmail); ?>" required>
             </div>
 
             <div class="form-group">
-                <label for="type">Report Type</label>
+                <label for="type">রিপোর্টের ধরন</label>
                 <select id="type" name="type" class="form-control" required>
-                    <option value="bug">Technical Bug / Error</option>
-                    <option value="user">User Misconduct / Harassment</option>
-                    <option value="book">Inaccurate Book Information</option>
-                    <option value="suggestion">Feature Suggestion</option>
-                    <option value="other">Other Issue</option>
+                    <option value="bug">টেকনিক্যাল বাগ / ত্রুটি</option>
+                    <option value="user">ব্যবহারকারীর অসদাচরণ / হয়রানি</option>
+                    <option value="book">ভুল বইয়ের তথ্য</option>
+                    <option value="suggestion">ফিচার সাজেশন</option>
+                    <option value="other">অন্যান্য সমস্যা</option>
                 </select>
             </div>
 
             <div class="form-group">
-                <label for="subject">Subject</label>
-                <input type="text" id="subject" name="subject" class="form-control" placeholder="Briefly describe the issue" required>
+                <label for="subject">বিষয়</label>
+                <input type="text" id="subject" name="subject" class="form-control" placeholder="সমস্যাটির সংক্ষিপ্ত বর্ণনা দিন" required>
             </div>
 
             <div class="form-group">
-                <label for="message">Detailed Description</label>
-                <textarea id="message" name="message" class="form-control" rows="5" placeholder="Please provide as much detail as possible..." required></textarea>
+                <label for="message">বিস্তারিত বর্ণনা</label>
+                <textarea id="message" name="message" class="form-control" rows="5" placeholder="যতটা সম্ভব বিস্তারিত লিখুন..." required></textarea>
             </div>
 
-            <button type="submit" class="btn-submit">Submit Report</button>
+            <button type="submit" class="btn-submit">রিপোর্ট জমা দিন</button>
         </form>
     </div>
 </main>

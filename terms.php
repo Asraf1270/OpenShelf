@@ -173,58 +173,58 @@ include 'includes/header.php';
 <main class="terms-container">
     <div class="hero-section">
         <h1>Terms of Service</h1>
-        <p style="color: var(--text-muted); font-size: 1.2rem;">Our guidelines for a better community</p>
+        <p style="color: var(--text-muted); font-size: 1.2rem;">একটি ভালো কমিউনিটির জন্য আমাদের নির্দেশিকা</p>
     </div>
 
     <div class="terms-card">
         <div class="terms-section">
-            <h2><i class="fas fa-check-circle"></i> 1. Acceptance</h2>
-            <p>By using OpenShelf, you agree to these terms. We aim to foster a safe, trust-based environment for sharing knowledge.</p>
+            <h2><i class="fas fa-check-circle"></i> ১. গ্রহণযোগ্যতা</h2>
+            <p>OpenShelf ব্যবহার করে, আপনি এই শর্তাবলী মেনে নিতে সম্মত হচ্ছেন। আমরা জ্ঞানের ভাগাভাগি করতে নিরাপদ, বিশ্বাস-ভিত্তিক পরিবেশ গড়ে তোলার লক্ষ্য রাখি।</p>
         </div>
 
         <div class="terms-section">
-            <h2><i class="fas fa-user-graduate"></i> 2. Eligibility</h2>
+            <h2><i class="fas fa-user-graduate"></i> ২. যোগ্যতা</h2>
             <ul>
-                <li>Current university student with a valid .edu email.</li>
-                <li>At least 18 years of age.</li>
-                <li>Provide accurate personal information during registration.</li>
+                <li>বৈধ ও বর্তমান বিশ্ববিদ্যালয়ের ছাত্র/ছাত্রী।</li>
+                <li>কমপক্ষে ১৮ বছরের বয়সী।</li>
+                <li>রেজিস্ট্রেশনের সময় সঠিক ব্যক্তিগত তথ্য প্রদান করতে হবে।</li>
             </ul>
         </div>
 
         <div class="terms-section">
-            <h2><i class="fas fa-book"></i> 3. Contribution Rule</h2>
+            <h2><i class="fas fa-book"></i> ৩. অবদান বিধি</h2>
             <div class="important-note">
-                <p>To maintain a healthy library, every user is required to list at least 2 books for sharing within 30 days of registration.</p>
+                <p>একটি সুস্থ লাইব্রেরি বজায় রাখার জন্য, প্রত্যেক ব্যবহারকারীকে নিবন্ধনের ৩০ দিনের মধ্যে কমপক্ষে ২টি বই আদান-প্রদানের জন্য তালিকাভুক্ত করতে হবে।</p>
             </div>
-            <p>This ensures that our community continues to grow and that everyone contributes to the shared pool of knowledge.</p>
+            <p>এটি নিশ্চিত করে যে আমাদের কমিউনিটি ক্রমাগত বৃদ্ধি পায় এবং প্রত্যেকে জ্ঞানের আদান-প্রদানের কাজের অংশীদার হয়।</p>
         </div>
 
         <div class="terms-section">
-            <h2><i class="fas fa-hand-holding-heart"></i> 4. Sharing Rules</h2>
+            <h2><i class="fas fa-hand-holding-heart"></i> ৪. আদান-প্রদানের নিয়ম</h2>
             <ul>
-                <li>Only list books you actually own.</li>
-                <li>Accurately describe the condition of the book.</li>
-                <li>Respond to borrow requests within 48 hours.</li>
-                <li>Coordinate safe handoffs on campus.</li>
+                <li>শুধুমাত্র সেই বইগুলো তালিকাভুক্ত করুন, যা আপনার প্রকৃতপক্ষে আছে।</li>
+                <li>বইয়ের অবস্থা সঠিকভাবে বর্ণনা করুন।</li>
+                <li>ধার নেওয়ার অনুরোধের উত্তর ৪৮ ঘণ্টার মধ্যে দিন।</li>
+                <li>ক্যাম্পাসে নিরাপদে হ্যান্ডঅফের ব্যবস্থা করুন।</li>
             </ul>
         </div>
 
         <div class="terms-section">
-            <h2><i class="fas fa-undo"></i> 5. Borrowing & Returns</h2>
+            <h2><i class="fas fa-undo"></i> ৫. ধার ও ফেরত</h2>
             <ul>
-                <li>Return books on or before the agreed date.</li>
-                <li>Handle books with care; no writing or highlighting unless permitted by the owner.</li>
-                <li>If a book is lost or damaged, you are responsible for replacement or compensation.</li>
+                <li>বই নির্দিষ্ট তারিখে বা তার আগেই ফেরত দিন।</li>
+                <li>বই যত্ন সহকারে ব্যবহার করুন; মালিকের অনুমতি ছাড়া লেখালেখি বা হাইলাইট করবেন না।</li>
+                <li>যদি বই হারিয়ে যায় বা ক্ষতিগ্রস্ত হয়, তবে তার বদল বা ক্ষতিপূরণের দায় আপনার ওপর থাকবে।</li>
             </ul>
         </div>
 
         <div class="terms-section">
-            <h2><i class="fas fa-shield-alt"></i> 6. User Conduct</h2>
-            <p>Harassment, spamming, or fraudulent activity will result in immediate and permanent account suspension. Respect your fellow students.</p>
+            <h2><i class="fas fa-shield-alt"></i> ৬. ব্যবহারকারীর আচরণ</h2>
+            <p>অপ্রীতিকর আচরণ, স্প্যাম বা প্রতারণামূলক কার্যকলাপের ক্ষেত্রে অবিলম্বে ও স্থায়ীভাবে একাউন্ট স্থগিত করা হতে পারে। আপনার সহপাঠীদের প্রতি সম্মান প্রদর্শন করুন।</p>
         </div>
 
         <div class="last-updated">
-            Last Updated: April 2024
+            সর্বশেষ আপডেট: জুলাই ২০২৬
         </div>
     </div>
 </main>

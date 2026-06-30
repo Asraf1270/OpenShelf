@@ -26,16 +26,16 @@
                 <!-- Quick Links -->
                 <div class="footer-section" data-accordion="quick-links">
                     <h3 class="footer-title" role="button" aria-expanded="false" tabindex="0">
-                        Quick Links
+                        দ্রুত লিঙ্ক
                         <span class="footer-chevron"><i class="fas fa-chevron-down"></i></span>
                     </h3>
                     <div class="footer-accordion-content">
                         <ul class="footer-links">
-                            <li><a href="/"><i class="fas fa-chevron-right"></i> Home</a></li>
-                            <li><a href="/books/"><i class="fas fa-chevron-right"></i> Browse Books</a></li>
-                            <li><a href="/feed/"><i class="fas fa-chevron-right"></i> Activity Feed</a></li>
-                            <li><a href="/about.php"><i class="fas fa-chevron-right"></i> About Us</a></li>
-                            <li><a href="/contact.php"><i class="fas fa-chevron-right"></i> Contact</a></li>
+                            <li><a href="/"><i class="fas fa-chevron-right"></i> হোম</a></li>
+                            <li><a href="/books/"><i class="fas fa-chevron-right"></i> বই ব্রাউজ করুন</a></li>
+                            <li><a href="/feed/"><i class="fas fa-chevron-right"></i> কার্যকলাপ ফিড</a></li>
+                            <li><a href="/about.php"><i class="fas fa-chevron-right"></i> আমাদের সম্পর্কে</a></li>
+                            <li><a href="/contact.php"><i class="fas fa-chevron-right"></i> যোগাযোগ</a></li>
                         </ul>
                     </div>
                 </div>
@@ -43,16 +43,16 @@
                 <!-- Support -->
                 <div class="footer-section" data-accordion="support">
                     <h3 class="footer-title" role="button" aria-expanded="false" tabindex="0">
-                        Support
+                        সহায়তা
                         <span class="footer-chevron"><i class="fas fa-chevron-down"></i></span>
                     </h3>
                     <div class="footer-accordion-content">
                         <ul class="footer-links">
-                            <li><a href="/faq.php"><i class="fas fa-chevron-right"></i> FAQ</a></li>
-                            <li><a href="/guidelines.php"><i class="fas fa-chevron-right"></i> Community Guidelines</a></li>
-                            <li><a href="/terms.php"><i class="fas fa-chevron-right"></i> Terms of Service</a></li>
-                            <li><a href="/privacy.php"><i class="fas fa-chevron-right"></i> Privacy Policy</a></li>
-                            <li><a href="/report.php"><i class="fas fa-chevron-right"></i> Report Issue</a></li>
+                            <li><a href="/faq.php"><i class="fas fa-chevron-right"></i> প্রায়শই জিজ্ঞাসিত প্রশ্ন</a></li>
+                            <li><a href="/guidelines.php"><i class="fas fa-chevron-right"></i> সম্প্রদায়ের নির্দেশিকা</a></li>
+                            <li><a href="/terms.php"><i class="fas fa-chevron-right"></i> সেবার শর্তাবলী</a></li>
+                            <li><a href="/privacy.php"><i class="fas fa-chevron-right"></i> গোপনীয়তা নীতি</a></li>
+                            <li><a href="/report.php"><i class="fas fa-chevron-right"></i> সমস্যা রিপোর্ট করুন</a></li>
                         </ul>
                     </div>
                 </div>
@@ -60,7 +60,7 @@
                 <!-- Contact Info -->
                 <div class="footer-section" data-accordion="contact">
                     <h3 class="footer-title" role="button" aria-expanded="false" tabindex="0">
-                        Contact Us
+                        আমাদের সাথে যোগাযোগ করুন
                         <span class="footer-chevron"><i class="fas fa-chevron-down"></i></span>
                     </h3>
                     <div class="footer-accordion-content">
@@ -75,7 +75,7 @@
                             </li>
                             <li>
                                 <i class="fab fa-whatsapp"></i>
-                                <a href="https://wa.me/8801987971270" target="_blank">WhatsApp Support</a>
+                                <a href="https://wa.me/8801987971270" target="_blank">WhatsApp সহায়তা</a>
                             </li>
                             <li>
                                 <i class="fas fa-map-marker-alt"></i>
@@ -106,8 +106,8 @@
 
             <!-- Footer Bottom -->
             <div class="footer-bottom">
-                <p>&copy; <?php echo date('Y'); ?> OpenShelf. All rights reserved.</p>
-                <p class="footer-heart">Made with <i class="fas fa-heart" style="color: #ef4444;"></i> for book lovers</p>
+                <p>&copy; <?php echo date('Y'); ?> OpenShelf. সর্বাধিকার সংরক্ষিত।</p>
+                <p class="footer-heart">বই প্রেমীদের জন্য <i class="fas fa-heart" style="color: #ef4444;"></i> দিয়ে তৈরি</p>
             </div>
         </div>
     </footer>
@@ -459,7 +459,7 @@
     <?php endif; ?>
 
     <!-- Back to Top Button -->
-    <button class="back-to-top" id="backToTop" aria-label="Back to top">
+    <button class="back-to-top" id="backToTop" aria-label="শীর্ষে ফিরে যান">
         <i class="fas fa-arrow-up"></i>
     </button>
 

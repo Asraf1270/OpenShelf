@@ -174,13 +174,13 @@ include '../includes/header.php';
         <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <div class="inline-flex items-center px-4 py-1.5 rounded-full bg-teal-50 text-secondary text-sm font-bold mb-8 animate-fadeInUp">
                 <span class="flex h-2.5 w-2.5 rounded-full bg-secondary mr-3 animate-pulse"></span>
-                Support Our Mission
+                আমাদের মিশনকে সমর্থন করুন
             </div>
             <h1 class="text-5xl md:text-7xl font-extrabold text-primary tracking-tight mb-8 animate-fadeInUp delay-100 leading-[1.1]">
-                Support <span class="text-secondary">Our Work</span>
+                আমাদের কাজকে <span class="text-secondary">সমর্থন করুন</span>
             </h1>
             <p class="max-w-2xl mx-auto text-lg md:text-xl text-slate-600 leading-relaxed animate-fadeInUp delay-200 font-medium">
-                Help us keep OpenShelf free and accessible for everyone. Your contribution helps us cover server costs, domain fees, and continuous development of new features.
+                OpenShelf কে সকলের জন্য ফ্রি এবং সহজলভ্য রাখার ক্ষেত্রে আমাদের সাহায্য করুন। আপনার অনুদান সার্ভার খরচ, ডোমেইন ফি, এবং নতুন ফিচারগুলোর ধারাবাহিক উন্নয়নে সহায়তা করে।
             </p>
         </div>
         
@@ -196,12 +196,12 @@ include '../includes/header.php';
             <div class="mb-10 max-w-3xl mx-auto">
                 <?php if ($successMessage): ?>
                     <div class="rounded-3xl bg-emerald-50 border border-emerald-200 p-6 text-emerald-800 shadow-sm mb-4">
-                        <strong class="font-semibold">Success:</strong> <?php echo htmlspecialchars($successMessage); ?>
+                        <strong class="font-semibold">সাফল্য:</strong> <?php echo htmlspecialchars($successMessage); ?>
                     </div>
                 <?php endif; ?>
                 <?php if (!empty($errors)): ?>
                     <div class="rounded-3xl bg-rose-50 border border-rose-200 p-6 text-rose-800 shadow-sm">
-                        <strong class="font-semibold">Please correct the following:</strong>
+                        <strong class="font-semibold">অনুগ্রহ করে নিম্নলিখিত ঠিক করুন:</strong>
                         <ul class="mt-3 list-disc list-inside space-y-2">
                             <?php foreach ($errors as $error): ?>
                                 <li><?php echo htmlspecialchars($error); ?></li>
@@ -221,21 +221,21 @@ include '../includes/header.php';
                     <div class="w-18 h-18 rounded-3xl bg-bkash/10 flex items-center justify-center transition-transform duration-500 group-hover:scale-110">
                         <img src="https://www.logo.wine/a/logo/BKash/BKash-Logo.wine.svg" alt="bKash" class="w-14 h-auto">
                     </div>
-                    <span class="text-[11px] font-extrabold text-bkash uppercase tracking-[0.2em] bg-bkash/5 px-5 py-2 rounded-full border border-bkash/10">Personal</span>
+                    <span class="text-[11px] font-extrabold text-bkash uppercase tracking-[0.2em] bg-bkash/5 px-5 py-2 rounded-full border border-bkash/10">ব্যক্তিগত</span>
                 </div>
                 
                 <h3 class="text-3xl font-black text-slate-900 mb-3 tracking-tight">bKash</h3>
-                <p class="text-slate-500 text-base leading-relaxed mb-10 font-medium">Fast and secure mobile payments via bKash. Send money to the number below.</p>
+                <p class="text-slate-500 text-base leading-relaxed mb-10 font-medium">দ্রুত ও নিরাপদ মোবাইল পেমেন্ট bKash এর মাধ্যমে। নিচের নম্বরে টাকা পাঠান।</p>
                 
                 <div class="mt-auto space-y-8">
                     <div class="relative overflow-hidden p-5 bg-slate-50 rounded-[1.5rem] border border-slate-100 group/item">
                         <div class="flex items-center justify-between relative z-10">
                             <div class="flex flex-col">
-                                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Account Number</span>
+                                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">অ্যাকাউন্ট নম্বর</span>
                                 <span class="font-mono text-xl text-slate-700 font-black tracking-wider" id="bkash-num">01576690638</span>
                             </div>
                             <button onclick="copyToClipboard('01576690638', 'bkash-btn')" id="bkash-btn" class="flex items-center gap-2 px-5 py-2.5 bg-white text-bkash text-sm font-bold rounded-2xl shadow-sm border border-slate-100 hover:bg-bkash hover:text-white transition-all duration-300">
-                                <i class="far fa-copy"></i> Copy
+                                <i class="far fa-copy"></i> কপি করুন
                             </button>
                         </div>
                     </div>
@@ -267,7 +267,7 @@ include '../includes/header.php';
                     </div>
                     <button type="submit" class="w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-bkash text-white font-bold py-4 px-5 shadow-lg shadow-bkash/10 border border-bkash transition-all duration-300 hover:bg-[#c81d4c]">
                         <i class="fas fa-heart"></i>
-                        Submit bKash Donation
+                        bKash দিয়ে সাহায্য করুন
                     </button>
                 </div>
             </form>
@@ -279,21 +279,21 @@ include '../includes/header.php';
                     <div class="w-18 h-18 rounded-3xl bg-nagad/10 flex items-center justify-center transition-transform duration-500 group-hover:scale-110">
                         <img src="https://download.logo.wine/logo/Nagad/Nagad-Logo.wine.png" alt="Nagad" class="w-14 h-auto">
                     </div>
-                    <span class="text-[11px] font-extrabold text-nagad uppercase tracking-[0.2em] bg-nagad/5 px-5 py-2 rounded-full border border-nagad/10">Personal</span>
+                    <span class="text-[11px] font-extrabold text-nagad uppercase tracking-[0.2em] bg-nagad/5 px-5 py-2 rounded-full border border-nagad/10">ব্যক্তিগত</span>
                 </div>
                 
                 <h3 class="text-3xl font-black text-slate-900 mb-3 tracking-tight">Nagad</h3>
-                <p class="text-slate-500 text-base leading-relaxed mb-10 font-medium">Easy and convenient donation through Nagad wallet. Available 24/7.</p>
+                <p class="text-slate-500 text-base leading-relaxed mb-10 font-medium">Nagad ওয়ালেটের মাধ্যমে সহজ এবং সুবিধাজনক সাহায্য ২৪/৭ সুবিধা।</p>
                 
                 <div class="mt-auto space-y-8">
                     <div class="relative overflow-hidden p-5 bg-slate-50 rounded-[1.5rem] border border-slate-100 group/item">
                         <div class="flex items-center justify-between relative z-10">
                             <div class="flex flex-col">
-                                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Account Number</span>
+                                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">অ্যাকাউন্ট নম্বর</span>
                                 <span class="font-mono text-xl text-slate-700 font-black tracking-wider" id="nagad-num">01576690638</span>
                             </div>
                             <button onclick="copyToClipboard('01576690638', 'nagad-btn')" id="nagad-btn" class="flex items-center gap-2 px-5 py-2.5 bg-white text-nagad text-sm font-bold rounded-2xl shadow-sm border border-slate-100 hover:bg-nagad hover:text-white transition-all duration-300">
-                                <i class="far fa-copy"></i> Copy
+                                <i class="far fa-copy"></i> কপি করুন
                             </button>
                         </div>
                     </div>
@@ -326,7 +326,7 @@ include '../includes/header.php';
                     </div>
                     <button type="submit" class="w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-nagad text-white font-bold py-4 px-5 shadow-lg shadow-nagad/10 border border-nagad transition-all duration-300 hover:bg-[#d47d11]">
                         <i class="fas fa-heart"></i>
-                        Submit Nagad Donation
+                        Nagad দিয়ে সাহায্য করুন
                     </button>
                 </div>
             </form>
@@ -338,21 +338,21 @@ include '../includes/header.php';
                     <div class="w-18 h-18 rounded-3xl bg-rocket/10 flex items-center justify-center transition-transform duration-500 group-hover:scale-110">
                         <img src="https://searchvectorlogo.com/wp-content/uploads/2020/05/dutch-bangla-rocket-logo-vector.png" alt="Rocket" class="w-14 h-auto">
                     </div>
-                    <span class="text-[11px] font-extrabold text-rocket uppercase tracking-[0.2em] bg-rocket/5 px-5 py-2 rounded-full border border-rocket/10">Personal</span>
+                    <span class="text-[11px] font-extrabold text-rocket uppercase tracking-[0.2em] bg-rocket/5 px-5 py-2 rounded-full border border-rocket/10">ব্যক্তিগত</span>
                 </div>
                 
                 <h3 class="text-3xl font-black text-slate-900 mb-3 tracking-tight">Rocket</h3>
-                <p class="text-slate-500 text-base leading-relaxed mb-10 font-medium">Support us via Rocket (Dutch-Bangla Bank) mobile banking service.</p>
+                <p class="text-slate-500 text-base leading-relaxed mb-10 font-medium">Rocket (Dutch-Bangla ব্যাংক) মোবাইল ব্যাংকিং সার্ভিসের মাধ্যমে আমাদের সমর্থন করুন।</p>
                 
                 <div class="mt-auto space-y-8">
                     <div class="relative overflow-hidden p-5 bg-slate-50 rounded-[1.5rem] border border-slate-100 group/item">
                         <div class="flex items-center justify-between relative z-10">
                             <div class="flex flex-col">
-                                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Account Number</span>
+                                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">অ্যাকাউন্ট নম্বর</span>
                                 <span class="font-mono text-xl text-slate-700 font-black tracking-wider" id="rocket-num">015766906386</span>
                             </div>
                             <button onclick="copyToClipboard('015766906386', 'rocket-btn')" id="rocket-btn" class="flex items-center gap-2 px-5 py-2.5 bg-white text-rocket text-sm font-bold rounded-2xl shadow-sm border border-slate-100 hover:bg-rocket hover:text-white transition-all duration-300">
-                                <i class="far fa-copy"></i> Copy
+                                <i class="far fa-copy"></i> কপি করুন
                             </button>
                         </div>
                     </div>
@@ -384,7 +384,7 @@ include '../includes/header.php';
                     </div>
                     <button type="submit" class="w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-rocket text-white font-bold py-4 px-5 shadow-lg shadow-rocket/10 border border-rocket transition-all duration-300 hover:bg-[#7a2c7d]">
                         <i class="fas fa-heart"></i>
-                        Submit Rocket Donation
+                        Rocket দিয়ে সাহায্য করুন
                     </button>
                 </div>
             </form>
@@ -400,16 +400,16 @@ include '../includes/header.php';
                     </div>
                     <div class="h-[1.5px] w-16 bg-slate-200"></div>
                 </div>
-                <h4 class="text-2xl font-black text-primary mb-4 tracking-tight">Thank you for your generosity!</h4>
+                <h4 class="text-2xl font-black text-primary mb-4 tracking-tight">আপনার উদারতার জন্য ধন্যবাদ!</h4>
                 <p class="text-slate-500 max-w-lg mx-auto leading-relaxed font-medium text-lg">
-                    Every contribution, no matter how small, helps us maintain this platform for students. We deeply appreciate your support in making knowledge more accessible.
+                    প্রতিটি অনুদান, সেটা যতই ছোট হোক না কেন, আমাদেরকে এই প্ল্যাটফর্মটি শিক্ষার্থীদের জন্য বজায় রাখতে সাহায্য করে। জ্ঞানের আরো সহজলভ্যতা তৈরিতে আপনার সমর্থন আমরা আন্তরিকভাবে মূল্যায়ন করি।
                 </p>
                 <div class="mt-12 flex flex-wrap justify-center gap-5">
                     <a href="/books/" class="px-8 py-4 bg-white text-primary font-extrabold rounded-2xl border border-slate-200 hover:bg-slate-50 transition-all duration-400 shadow-sm">
-                        Back to Library
+                        লাইব্রেরিতে ফিরে যান
                     </a>
                     <a href="/contact.php" class="px-8 py-4 bg-secondary text-white font-extrabold rounded-2xl shadow-xl shadow-teal-200 hover:bg-primary hover:-translate-y-1 transition-all duration-400">
-                        Contact Support
+                        সহায়তার সাথে যোগাযোগ করুন
                     </a>
                 </div>
             </div>
@@ -427,7 +427,7 @@ include '../includes/header.php';
             const originalContent = btn.innerHTML;
             
             // Add success state
-            btn.innerHTML = '<i class="fas fa-check"></i> Copied';
+            btn.innerHTML = '<i class="fas fa-check"></i> কপি হয়েছে';
             btn.classList.add('!bg-green-500', '!text-white', '!border-green-500');
             
             // Revert after delay
