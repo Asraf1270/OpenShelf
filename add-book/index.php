@@ -501,7 +501,7 @@ $conditions = getConditions();
                         
                         <div class="form-group">
                             <label class="form-label">Language</label>
-                            <input type="text" name="language" class="form-input" value="<?php echo htmlspecialchars($language ?? 'English'); ?>">
+                            <input type="text" name="language" class="form-input" value="<?php echo htmlspecialchars($language ?? 'Bangla'); ?>">
                         </div>
                     </div>
                     

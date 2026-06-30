@@ -5,6 +5,105 @@
  */
 
 session_start();
+require_once '../includes/db.php';
+
+if (!isset($_SESSION['user_id'])) {
+    $_SESSION['redirect_after_login'] = '/support_us/';
+    header('Location: /login/');
+    exit;
+}
+
+$db = getDB();
+$userId = $_SESSION['user_id'];
+$userName = $_SESSION['user_name'] ?? 'Supporter';
+
+$stmt = $db->prepare("SELECT name, email, phone, department, session, room_number FROM users WHERE id = ?");
+$stmt->execute([$userId]);
+$userData = $stmt->fetch(PDO::FETCH_ASSOC) ?: [];
+
+$userName = $userData['name'] ?? $userName;
+$userEmail = $userData['email'] ?? '';
+$userPhone = $userData['phone'] ?? '';
+$userDepartment = $userData['department'] ?? '';
+$userSession = $userData['session'] ?? '';
+$userRoom = $userData['room_number'] ?? '';
+
+$accountNumbers = [
+    'bkash' => '01576690638',
+    'nagad' => '01576690638',
+    'rocket' => '015766906386'
+];
+
+$successMessage = '';
+$errors = [];
+$supportFormValues = [
+    'bkash' => ['amount' => '', 'transaction_id' => ''],
+    'nagad' => ['amount' => '', 'transaction_id' => ''],
+    'rocket' => ['amount' => '', 'transaction_id' => '']
+];
+
+function generateSupportId() {
+    return strtoupper('SUP' . substr(uniqid('', true), -12));
+}
+
+function getOldValue($provider, $field) {
+    global $supportFormValues;
+    return htmlspecialchars($supportFormValues[$provider][$field] ?? '');
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $provider = $_POST['provider'] ?? '';
+    $transactionId = trim($_POST['transaction_id'] ?? '');
+    $amount = trim($_POST['amount'] ?? '');
+
+    if (!isset($accountNumbers[$provider])) {
+        $errors[] = 'Invalid payment provider selected.';
+    }
+
+    if ($amount === '' || !is_numeric(str_replace(',', '', $amount)) || floatval(str_replace(',', '', $amount)) <= 0) {
+        $errors[] = 'Please enter a valid amount for your donation.';
+    }
+
+    if ($transactionId === '') {
+        $errors[] = 'Transaction ID is required.';
+    }
+
+    if (empty($errors)) {
+        $supportId = generateSupportId();
+        $accountNumber = $accountNumbers[$provider];
+        $insert = $db->prepare("INSERT INTO support_us (id, user_id, user_name, user_email, user_phone, user_department, user_session, user_room, provider, account_number, amount, transaction_id, status, submitted_at, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', ?, NOW(), NOW())");
+        $saved = $insert->execute([
+            $supportId,
+            $userId,
+            $userName,
+            $userEmail,
+            $userPhone,
+            $userDepartment,
+            $userSession,
+            $userRoom,
+            $provider,
+            $accountNumber,
+            number_format((float)str_replace(',', '', $amount), 2, '.', ''),
+            $transactionId,
+            date('Y-m-d H:i:s')
+        ]);
+
+        if ($saved) {
+            $successMessage = 'Your support submission has been received. Our team will verify it shortly.';
+            $supportFormValues[$provider] = ['amount' => '', 'transaction_id' => ''];
+        } else {
+            $errors[] = 'Unable to save your request. Please try again later.';
+        }
+    }
+
+    if (isset($supportFormValues[$provider])) {
+        $supportFormValues[$provider] = [
+            'amount' => htmlspecialchars($amount),
+            'transaction_id' => htmlspecialchars($transactionId)
+        ];
+    }
+}
+
 include '../includes/header.php';
 ?>
 
@@ -92,12 +191,32 @@ include '../includes/header.php';
         </div>
     </div>
 
-    <!-- Payment Methods Section -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-24">
+        <?php if ($successMessage || !empty($errors)): ?>
+            <div class="mb-10 max-w-3xl mx-auto">
+                <?php if ($successMessage): ?>
+                    <div class="rounded-3xl bg-emerald-50 border border-emerald-200 p-6 text-emerald-800 shadow-sm mb-4">
+                        <strong class="font-semibold">Success:</strong> <?php echo htmlspecialchars($successMessage); ?>
+                    </div>
+                <?php endif; ?>
+                <?php if (!empty($errors)): ?>
+                    <div class="rounded-3xl bg-rose-50 border border-rose-200 p-6 text-rose-800 shadow-sm">
+                        <strong class="font-semibold">Please correct the following:</strong>
+                        <ul class="mt-3 list-disc list-inside space-y-2">
+                            <?php foreach ($errors as $error): ?>
+                                <li><?php echo htmlspecialchars($error); ?></li>
+                            <?php endforeach; ?>
+                        </ul>
+                    </div>
+                <?php endif; ?>
+            </div>
+        <?php endif; ?>
+
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-12">
             
             <!-- bKash Card -->
-            <div class="bg-white rounded-[2.5rem] shadow-[0_8px_40px_rgba(0,0,0,0.04)] border border-slate-100 p-10 flex flex-col transition-all duration-500 hover:shadow-[0_25px_60px_rgba(209,32,83,0.12)] hover:-translate-y-3 group animate-fadeInUp delay-100">
+            <form method="post" class="bg-white rounded-[2.5rem] shadow-[0_8px_40px_rgba(0,0,0,0.04)] border border-slate-100 p-10 flex flex-col transition-all duration-500 hover:shadow-[0_25px_60px_rgba(209,32,83,0.12)] hover:-translate-y-3 group animate-fadeInUp delay-100">
+                <input type="hidden" name="provider" value="bkash">
                 <div class="flex items-center justify-between mb-12">
                     <div class="w-18 h-18 rounded-3xl bg-bkash/10 flex items-center justify-center transition-transform duration-500 group-hover:scale-110">
                         <img src="https://www.logo.wine/a/logo/BKash/BKash-Logo.wine.svg" alt="bKash" class="w-14 h-auto">
@@ -122,21 +241,40 @@ include '../includes/header.php';
                     </div>
                     
                     <div class="space-y-4">
+                        <label class="text-[11px] font-black text-slate-500 uppercase tracking-[0.2em] ml-1">Amount</label>
+                        <div class="relative">
+                            <input type="text"
+                                   name="amount"
+                                   value="<?php echo getOldValue('bkash', 'amount'); ?>"
+                                   placeholder="e.g. 250.00"
+                                   class="w-full pl-12 pr-4 py-5 bg-slate-50 border border-slate-100 rounded-2xl focus:bg-white focus:ring-4 focus:ring-bkash/5 focus:border-bkash outline-none transition-all duration-300 text-slate-800 font-bold placeholder:text-slate-300 text-lg"
+                            >
+                            <i class="fas fa-dollar-sign absolute left-5 top-1/2 -translate-y-1/2 text-slate-300 transition-colors duration-300"></i>
+                        </div>
+                    </div>
+                    <div class="space-y-4">
                         <label class="text-[11px] font-black text-slate-500 uppercase tracking-[0.2em] ml-1">Transaction ID</label>
                         <div class="relative">
-                            <input type="text" 
+                            <input type="text"
+                                   name="transaction_id"
+                                   value="<?php echo getOldValue('bkash', 'transaction_id'); ?>"
                                    maxlength="10"
-                                   placeholder="e.g. 9C87654321" 
+                                   placeholder="e.g. 9C87654321"
                                    class="w-full pl-12 pr-4 py-5 bg-slate-50 border border-slate-100 rounded-2xl focus:bg-white focus:ring-4 focus:ring-bkash/5 focus:border-bkash outline-none transition-all duration-300 text-slate-800 font-bold placeholder:text-slate-300 text-lg"
                             >
                             <i class="fas fa-receipt absolute left-5 top-1/2 -translate-y-1/2 text-slate-300 transition-colors duration-300"></i>
                         </div>
                     </div>
+                    <button type="submit" class="w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-bkash text-white font-bold py-4 px-5 shadow-lg shadow-bkash/10 border border-bkash transition-all duration-300 hover:bg-[#c81d4c]">
+                        <i class="fas fa-heart"></i>
+                        Submit bKash Donation
+                    </button>
                 </div>
-            </div>
+            </form>
 
             <!-- Nagad Card -->
-            <div class="bg-white rounded-[2.5rem] shadow-[0_8px_40px_rgba(0,0,0,0.04)] border border-slate-100 p-10 flex flex-col transition-all duration-500 hover:shadow-[0_25px_60px_rgba(247,146,30,0.12)] hover:-translate-y-3 group animate-fadeInUp delay-200">
+            <form method="post" class="bg-white rounded-[2.5rem] shadow-[0_8px_40px_rgba(0,0,0,0.04)] border border-slate-100 p-10 flex flex-col transition-all duration-500 hover:shadow-[0_25px_60px_rgba(247,146,30,0.12)] hover:-translate-y-3 group animate-fadeInUp delay-200">
+                <input type="hidden" name="provider" value="nagad">
                 <div class="flex items-center justify-between mb-12">
                     <div class="w-18 h-18 rounded-3xl bg-nagad/10 flex items-center justify-center transition-transform duration-500 group-hover:scale-110">
                         <img src="https://download.logo.wine/logo/Nagad/Nagad-Logo.wine.png" alt="Nagad" class="w-14 h-auto">
@@ -161,22 +299,41 @@ include '../includes/header.php';
                     </div>
                     
                     <div class="space-y-4">
+                        <label class="text-[11px] font-black text-slate-500 uppercase tracking-[0.2em] ml-1">Amount</label>
+                        <div class="relative">
+                            <input type="text"
+                                   name="amount"
+                                   value="<?php echo getOldValue('nagad', 'amount'); ?>"
+                                   placeholder="e.g. 250.00"
+                                   class="w-full pl-12 pr-4 py-5 bg-slate-50 border border-slate-100 rounded-2xl focus:bg-white focus:ring-4 focus:ring-nagad/5 focus:border-nagad outline-none transition-all duration-300 text-slate-800 font-bold placeholder:text-slate-300 text-lg"
+                            >
+                            <i class="fas fa-dollar-sign absolute left-5 top-1/2 -translate-y-1/2 text-slate-300"></i>
+                        </div>
+                    </div>
+                    <div class="space-y-4">
                         <label class="text-[11px] font-black text-slate-500 uppercase tracking-[0.2em] ml-1">Transaction ID</label>
                         <div class="relative">
-                            <input type="text" 
+                            <input type="text"
+                                   name="transaction_id"
+                                   value="<?php echo getOldValue('nagad', 'transaction_id'); ?>"
                                    minlength="8"
                                    maxlength="12"
-                                   placeholder="e.g. 72N8K9M2" 
+                                   placeholder="e.g. 72N8K9M2"
                                    class="w-full pl-12 pr-4 py-5 bg-slate-50 border border-slate-100 rounded-2xl focus:bg-white focus:ring-4 focus:ring-nagad/5 focus:border-nagad outline-none transition-all duration-300 text-slate-800 font-bold placeholder:text-slate-300 text-lg"
                             >
                             <i class="fas fa-receipt absolute left-5 top-1/2 -translate-y-1/2 text-slate-300"></i>
                         </div>
                     </div>
+                    <button type="submit" class="w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-nagad text-white font-bold py-4 px-5 shadow-lg shadow-nagad/10 border border-nagad transition-all duration-300 hover:bg-[#d47d11]">
+                        <i class="fas fa-heart"></i>
+                        Submit Nagad Donation
+                    </button>
                 </div>
-            </div>
+            </form>
 
             <!-- Rocket Card -->
-            <div class="bg-white rounded-[2.5rem] shadow-[0_8px_40px_rgba(0,0,0,0.04)] border border-slate-100 p-10 flex flex-col transition-all duration-500 hover:shadow-[0_25px_60px_rgba(140,52,148,0.12)] hover:-translate-y-3 group animate-fadeInUp delay-300">
+            <form method="post" class="bg-white rounded-[2.5rem] shadow-[0_8px_40px_rgba(0,0,0,0.04)] border border-slate-100 p-10 flex flex-col transition-all duration-500 hover:shadow-[0_25px_60px_rgba(140,52,148,0.12)] hover:-translate-y-3 group animate-fadeInUp delay-300">
+                <input type="hidden" name="provider" value="rocket">
                 <div class="flex items-center justify-between mb-12">
                     <div class="w-18 h-18 rounded-3xl bg-rocket/10 flex items-center justify-center transition-transform duration-500 group-hover:scale-110">
                         <img src="https://searchvectorlogo.com/wp-content/uploads/2020/05/dutch-bangla-rocket-logo-vector.png" alt="Rocket" class="w-14 h-auto">
@@ -201,18 +358,36 @@ include '../includes/header.php';
                     </div>
                     
                     <div class="space-y-4">
+                        <label class="text-[11px] font-black text-slate-500 uppercase tracking-[0.2em] ml-1">Amount</label>
+                        <div class="relative">
+                            <input type="text"
+                                   name="amount"
+                                   value="<?php echo getOldValue('rocket', 'amount'); ?>"
+                                   placeholder="e.g. 250.00"
+                                   class="w-full pl-12 pr-4 py-5 bg-slate-50 border border-slate-100 rounded-2xl focus:bg-white focus:ring-4 focus:ring-rocket/5 focus:border-rocket outline-none transition-all duration-300 text-slate-800 font-bold placeholder:text-slate-300 text-lg"
+                            >
+                            <i class="fas fa-dollar-sign absolute left-5 top-1/2 -translate-y-1/2 text-slate-300"></i>
+                        </div>
+                    </div>
+                    <div class="space-y-4">
                         <label class="text-[11px] font-black text-slate-500 uppercase tracking-[0.2em] ml-1">Transaction ID</label>
                         <div class="relative">
-                            <input type="text" 
+                            <input type="text"
+                                   name="transaction_id"
+                                   value="<?php echo getOldValue('rocket', 'transaction_id'); ?>"
                                    maxlength="10"
-                                   placeholder="e.g. 1234567890" 
+                                   placeholder="e.g. 1234567890"
                                    class="w-full pl-12 pr-4 py-5 bg-slate-50 border border-slate-100 rounded-2xl focus:bg-white focus:ring-4 focus:ring-rocket/5 focus:border-rocket outline-none transition-all duration-300 text-slate-800 font-bold placeholder:text-slate-300 text-lg"
                             >
                             <i class="fas fa-receipt absolute left-5 top-1/2 -translate-y-1/2 text-slate-300"></i>
                         </div>
                     </div>
+                    <button type="submit" class="w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-rocket text-white font-bold py-4 px-5 shadow-lg shadow-rocket/10 border border-rocket transition-all duration-300 hover:bg-[#7a2c7d]">
+                        <i class="fas fa-heart"></i>
+                        Submit Rocket Donation
+                    </button>
                 </div>
-            </div>
+            </form>
         </div>
 
         <!-- Footer Message -->

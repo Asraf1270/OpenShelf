@@ -1,5 +1,23 @@
 # 📦 OpenShelf — Release History
 
+## 🚀 v3.1.0 — Polish, Performance, and Stability
+
+**Release Date:** June 30, 2026
+
+A polished release focused on faster discovery, improved responsiveness, and stability across both public and admin experiences.
+
+### Highlights
+
+- ✨ **UI Refinements** — Polished book discovery, filter controls, and navigation for a smoother experience.
+- ⚡ **Performance Improvements** — Faster page load and infinite scroll responsiveness throughout the catalog.
+- 🛠️ **Stability Fixes** — Resolved issues across borrow/request workflows, admin reporting, and mobile layouts.
+- 🔒 **PWA & Offline Strengthening** — Improved fallback messaging and reliability for installable usage.
+- 📈 **Quality Enhancements** — Updated visual polish and bug fixes across core user-facing flows.
+
+📄 Full details: [v3.1.0 Release Notes](v3.1.0_release_notes.md)
+
+---
+
 ## 🚀 v3.0.0 — Design Revamp & Enhanced User Experience
 
 **Release Date:** May 21, 2026

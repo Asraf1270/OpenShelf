@@ -1,6 +1,6 @@
 # 📚 OpenShelf — Community Library Management System
 
-[![Version](https://img.shields.io/badge/version-3.0.0-blue.svg)](https://github.com/Asraf1270/OpenShelf/releases/tag/v3.0.0)
+[![Version](https://img.shields.io/badge/version-3.1.0-blue.svg)](https://github.com/Asraf1270/OpenShelf/releases/tag/v3.1.0)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![PHP](https://img.shields.io/badge/PHP-7.4%2B-777bb4.svg)](https://www.php.net/)
 [![MySQL](https://img.shields.io/badge/MySQL-5.7%2B-4479A1.svg)](https://www.mysql.com/)
@@ -9,21 +9,21 @@
 
 ---
 
-## 🚀 v3.0.0 — Design Revamp & Enhanced User Experience
+## 🚀 v3.1.0 — Polish, Performance, and Stability
 
-**Release Date:** May 21, 2026
+**Release Date:** June 30, 2026
 
-A major milestone release introducing completely redesigned core layouts, a unified global color scheme powered by CSS variables, and significant new features including Book Filtering and a dedicated Settings page.
+A polished release focused on faster discovery, improved responsiveness, and stability across both public and admin experiences.
 
 ### Highlights
 
-- 🎨 **Complete Design Revamp** — Reimagined Profile, Footer, Book, and Header layouts.
-- ⚙️ **New Features** — Introduced Book Filtering and a dedicated Settings page.
-- 📱 **Floating Navigation** — Implemented a modern floating bottom navigation bar.
-- 💅 **Unified Color Scheme** — Refactored UI to use centralized CSS variables for consistent theming.
-- 🐛 **UI Polish** — Resolved the "jumping" problem in the plus button and updated global colors.
+- ✨ **UI Refinements** — Polished book discovery, filter controls, and navigation for a smoother experience.
+- ⚡ **Performance Improvements** — Faster page load and infinite scroll responsiveness throughout the catalog.
+- 🛠️ **Stability Fixes** — Resolved issues across borrow/request workflows, admin reporting, and mobile layouts.
+- 🔒 **PWA & Offline Strengthening** — Improved fallback messaging and reliability for installable usage.
+- 📈 **Quality Enhancements** — Updated visual polish and bug fixes across core user-facing flows.
 
-📄 Full details: [v3.0.0 Release Notes](v3.0.0_release_notes.md)
+📄 Full details: [v3.1.0 Release Notes](v3.1.0_release_notes.md)
 
 ---
 
