@@ -55,7 +55,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     body {
         background-color: var(--bg);
         color: var(--text-main);
-        font-family: 'Outfit', 'Inter', system-ui, -apple-system, sans-serif;
+        font-family: 'Hind Siliguri', 'Outfit', 'Inter', system-ui, -apple-system, sans-serif;
         transition: background 0.3s ease;
     }
 

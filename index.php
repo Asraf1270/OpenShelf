@@ -69,7 +69,7 @@ include 'includes/header.php';
     body {
         background-color: var(--surface-1);
         color: var(--text-primary);
-        font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        font-family: 'Hind Siliguri', 'Inter', system-ui, -apple-system, sans-serif;
         line-height: 1.6;
         margin: 0;
         padding: 0;
