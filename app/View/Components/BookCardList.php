@@ -19,7 +19,7 @@ class BookCardList extends Component
     public int $count;
 
     public function __construct(
-        array $books = [],
+        iterable $books = [],
         string $id = '',
         string $listClass = 'book-list',
         bool $showOwner = true,
@@ -28,7 +28,6 @@ class BookCardList extends Component
         bool $skeleton = false,
         int $count = 3,
     ) {
-        $this->books = $this->normalizeBooks($books);
         $this->id = $id;
         $this->listClass = $listClass;
         $this->showOwner = $showOwner;
@@ -36,6 +35,7 @@ class BookCardList extends Component
         $this->extraInfoLabel = $extraInfoLabel;
         $this->skeleton = $skeleton;
         $this->count = $count;
+        $this->books = $this->normalizeBooks($books);
     }
 
     public function render(): View|Closure|string
@@ -43,11 +43,13 @@ class BookCardList extends Component
         return view('components.book-card-list');
     }
 
-    private function normalizeBooks(array $books): array
+    private function normalizeBooks(iterable $books): array
     {
         if ($this->skeleton) {
             return array_fill(0, $this->count, []);
         }
+
+        $books = is_array($books) ? $books : iterator_to_array($books, false);
 
         return array_map(fn ($book) => $this->normalizeBook($book), $books);
     }

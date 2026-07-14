@@ -30,22 +30,22 @@
     @if(isset($book) && is_array($book))
     <script type="application/ld+json">
     {
-        "@context": "https://schema.org/",
-        "@type": "Book",
+        "@@context": "https://schema.org/",
+        "@@type": "Book",
         "name": "{{ $book['title'] ?? 'Unknown' }}",
         "author": {
-            "@type": "Person",
+            "@@type": "Person",
             "name": "{{ $book['author'] ?? 'Unknown Author' }}"
         },
         "publisher": {
-            "@type": "Organization",
+            "@@type": "Organization",
             "name": "OpenShelf"
         },
         "image": "{{ isset($seoImage) ? $seoImage : asset('assets/images/default-book.png') }}",
         "description": "{{ isset($book['description']) ? substr(strip_tags($book['description']), 0, 155) : 'Borrow this book on OpenShelf' }}",
         @if(isset($book['rating']) && $book['rating'] > 0)
         "aggregateRating": {
-            "@type": "AggregateRating",
+            "@@type": "AggregateRating",
             "ratingValue": "{{ number_format($book['rating'] ?? 0, 1) }}",
             "ratingCount": "{{ $book['rating_count'] ?? 0 }}"
         }
@@ -55,8 +55,8 @@
     @else
     <script type="application/ld+json">
     {
-        "@context": "https://schema.org/",
-        "@type": "Organization",
+        "@@context": "https://schema.org/",
+        "@@type": "Organization",
         "name": "OpenShelf",
         "url": "{{ url('/') }}",
         "logo": "{{ asset('assets/images/logo.png') }}",
@@ -68,7 +68,7 @@
     <!-- Favicon & PWA Icons -->
     <link rel="icon" type="image/svg+xml" href="{{ asset('assets/images/favicon.svg') }}">
     <link rel="apple-touch-icon" href="{{ asset('assets/images/pwa/icon-192x192.png') }}">
-    <link rel="manifest" href="{{ asset('manifest.json') }}">
+    <link rel="manifest" href="{{ route('pwa.manifest') }}">
 
     <!-- Stylesheets -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -99,6 +99,22 @@
     <!-- Scripts -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
     @stack('scripts')
+
+    <!-- Service Worker Registration for PWA -->
+    <script>
+        // Register service worker for PWA support
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then((registration) => {
+                        console.log('[PWA] Service Worker registered:', registration);
+                    })
+                    .catch((error) => {
+                        console.warn('[PWA] Service Worker registration failed:', error);
+                    });
+            });
+        }
+    </script>
 
     <!-- Theme Manager -->
     <script>

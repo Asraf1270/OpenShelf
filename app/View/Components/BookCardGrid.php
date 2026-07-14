@@ -19,7 +19,7 @@ class BookCardGrid extends Component
     public int $count;
 
     public function __construct(
-        array $books = [],
+        iterable $books = [],
         string $id = '',
         string $gridClass = 'book-grid',
         bool $showOwner = true,
@@ -28,7 +28,6 @@ class BookCardGrid extends Component
         bool $skeleton = false,
         int $count = 4,
     ) {
-        $this->books = $this->normalizeBooks($books);
         $this->id = $id;
         $this->gridClass = $gridClass;
         $this->showOwner = $showOwner;
@@ -36,6 +35,7 @@ class BookCardGrid extends Component
         $this->extraInfoLabel = $extraInfoLabel;
         $this->skeleton = $skeleton;
         $this->count = $count;
+        $this->books = $this->normalizeBooks($books);
     }
 
     public function render(): View|Closure|string
@@ -43,11 +43,13 @@ class BookCardGrid extends Component
         return view('components.book-card-grid');
     }
 
-    private function normalizeBooks(array $books): array
+    private function normalizeBooks(iterable $books): array
     {
         if ($this->skeleton) {
             return array_fill(0, $this->count, []);
         }
+
+        $books = is_array($books) ? $books : iterator_to_array($books, false);
 
         return array_map(fn ($book) => $this->normalizeBook($book), $books);
     }

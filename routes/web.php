@@ -6,6 +6,7 @@ use App\Http\Controllers\ContactController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\StaticPageController;
+use App\Http\Controllers\PwaController;
 use App\Http\Controllers\Api\BookApiController;
 use App\Http\Controllers\Api\NotificationApiController;
 use App\Http\Controllers\Api\SettingsApiController;
@@ -27,6 +28,15 @@ use App\Http\Controllers\ReturnBookController;
 use App\Http\Controllers\SettingsController;
 use Illuminate\Support\Facades\Route;
 
+// ========================================
+// PWA Routes
+// ========================================
+Route::get('/manifest.json', [PwaController::class, 'manifest'])->name('pwa.manifest');
+Route::get('/offline', [PwaController::class, 'offline'])->name('pwa.offline');
+
+// ========================================
+// Home & Static Pages
+// ========================================
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
 Route::get('/faq', [StaticPageController::class, 'faq'])->name('faq');
