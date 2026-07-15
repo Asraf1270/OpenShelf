@@ -153,6 +153,53 @@
     </div>
 </header>
 
+<!-- Mobile Menu Overlay -->
+<div class="mobile-menu-overlay" id="mobileMenuOverlay"></div>
+
+<!-- Mobile Navigation Panel -->
+<div class="mobile-nav-panel" id="mobileNavPanel">
+    <div class="mobile-nav-header">
+        <img src="{{ asset('assets/images/logo.svg') }}" alt="OpenShelf" style="height: 30px;">
+        <button class="mobile-nav-close" id="mobileNavClose" aria-label="Close menu">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+
+    @if($headerUser)
+        <div class="mobile-nav-user">
+            <img src="{{ $headerUser->profile_image_url }}" alt="{{ $headerUser->name }}" class="mobile-nav-avatar">
+            <div>
+                <div class="mobile-nav-user-name">{{ $headerUser->name }}</div>
+                <div class="mobile-nav-user-email">{{ $headerUser->email }}</div>
+            </div>
+        </div>
+    @endif
+
+    <nav class="mobile-nav-links">
+        <a href="/" class="mobile-nav-link"><i class="fas fa-home"></i> Home</a>
+        <a href="/books" class="mobile-nav-link"><i class="fas fa-book"></i> Browse Books</a>
+        @if($headerUser)
+            <a href="/profile" class="mobile-nav-link"><i class="fas fa-user"></i> My Profile</a>
+            <a href="/my-borrowed" class="mobile-nav-link"><i class="fas fa-bookmark"></i> My Books</a>
+            <a href="/settings" class="mobile-nav-link"><i class="fas fa-cog"></i> Settings</a>
+            @if($headerUser->role === 'admin')
+                <a href="/admin" class="mobile-nav-link"><i class="fas fa-shield"></i> Admin Panel</a>
+            @endif
+            <div class="mobile-nav-divider"></div>
+            <form action="/logout" method="POST">
+                @csrf
+                <button type="submit" class="mobile-nav-link mobile-nav-logout">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </button>
+            </form>
+        @else
+            <div class="mobile-nav-divider"></div>
+            <a href="/login" class="mobile-nav-link"><i class="fas fa-sign-in-alt"></i> Login</a>
+            <a href="/register" class="mobile-nav-link mobile-nav-register"><i class="fas fa-user-plus"></i> Sign Up</a>
+        @endif
+    </nav>
+</div>
+
 <style>
     .app-header {
         position: sticky;
@@ -586,6 +633,184 @@
             display: none;
         }
     }
+
+    /* Mobile Menu Overlay */
+    .mobile-menu-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 200;
+        backdrop-filter: blur(2px);
+        -webkit-backdrop-filter: blur(2px);
+    }
+
+    .mobile-menu-overlay.active {
+        display: block;
+    }
+
+    /* Mobile Navigation Panel */
+    .mobile-nav-panel {
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: min(300px, 85vw);
+        background: #ffffff;
+        z-index: 300;
+        transform: translateX(-100%);
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        overflow-y: auto;
+        box-shadow: 4px 0 24px rgba(0, 0, 0, 0.15);
+        display: flex;
+        flex-direction: column;
+    }
+
+    [data-theme="dark"] .mobile-nav-panel {
+        background: #1e293b;
+    }
+
+    .mobile-nav-panel.active {
+        transform: translateX(0);
+    }
+
+    .mobile-nav-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 1rem 1.25rem;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+    }
+
+    [data-theme="dark"] .mobile-nav-header {
+        border-bottom-color: rgba(255, 255, 255, 0.06);
+    }
+
+    .mobile-nav-close {
+        background: none;
+        border: none;
+        font-size: 1.1rem;
+        cursor: pointer;
+        color: #64748b;
+        padding: 0.35rem;
+        border-radius: 6px;
+        transition: color 0.2s, background 0.2s;
+    }
+
+    .mobile-nav-close:hover {
+        color: #ef4444;
+        background: rgba(239, 68, 68, 0.1);
+    }
+
+    [data-theme="dark"] .mobile-nav-close {
+        color: #94a3b8;
+    }
+
+    .mobile-nav-user {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 1rem 1.25rem;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+    }
+
+    [data-theme="dark"] .mobile-nav-user {
+        border-bottom-color: rgba(255, 255, 255, 0.06);
+    }
+
+    .mobile-nav-avatar {
+        width: 42px;
+        height: 42px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid #4C9F8A;
+    }
+
+    .mobile-nav-user-name {
+        font-size: 0.9rem;
+        font-weight: 700;
+        color: #1e293b;
+    }
+
+    [data-theme="dark"] .mobile-nav-user-name {
+        color: #f1f5f9;
+    }
+
+    .mobile-nav-user-email {
+        font-size: 0.78rem;
+        color: #64748b;
+    }
+
+    .mobile-nav-links {
+        padding: 0.5rem 0;
+        flex: 1;
+    }
+
+    .mobile-nav-link {
+        display: flex;
+        align-items: center;
+        gap: 0.85rem;
+        padding: 0.875rem 1.25rem;
+        color: #374151;
+        text-decoration: none;
+        font-size: 0.95rem;
+        font-weight: 500;
+        transition: background 0.2s, color 0.2s;
+        border: none;
+        background: none;
+        width: 100%;
+        text-align: left;
+        cursor: pointer;
+        font-family: inherit;
+    }
+
+    [data-theme="dark"] .mobile-nav-link {
+        color: #cbd5e1;
+    }
+
+    .mobile-nav-link:hover {
+        background: rgba(76, 159, 138, 0.08);
+        color: #4C9F8A;
+    }
+
+    .mobile-nav-link i {
+        width: 20px;
+        text-align: center;
+        color: #94a3b8;
+        font-size: 0.9rem;
+    }
+
+    .mobile-nav-link:hover i {
+        color: #4C9F8A;
+    }
+
+    .mobile-nav-logout {
+        color: #ef4444;
+    }
+
+    .mobile-nav-logout:hover {
+        background: rgba(239, 68, 68, 0.08);
+        color: #ef4444;
+    }
+
+    .mobile-nav-logout i {
+        color: #ef4444;
+    }
+
+    .mobile-nav-register {
+        color: #4C9F8A;
+        font-weight: 700;
+    }
+
+    .mobile-nav-divider {
+        height: 1px;
+        background: rgba(0, 0, 0, 0.06);
+        margin: 0.5rem 0;
+    }
+
+    [data-theme="dark"] .mobile-nav-divider {
+        background: rgba(255, 255, 255, 0.06);
+    }
 </style>
 
 <script>
@@ -713,6 +938,36 @@ document.addEventListener('DOMContentLoaded', function() {
             notificationDropdown?.classList.remove('active');
         }
     });
+
+    // Mobile menu toggle
+    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+    const mobileNavPanel = document.getElementById('mobileNavPanel');
+    const mobileMenuOverlay = document.getElementById('mobileMenuOverlay');
+    const mobileNavClose = document.getElementById('mobileNavClose');
+
+    function openMobileMenu() {
+        mobileNavPanel?.classList.add('active');
+        mobileMenuOverlay?.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeMobileMenu() {
+        mobileNavPanel?.classList.remove('active');
+        mobileMenuOverlay?.classList.remove('active');
+        document.body.style.overflow = '';
+    }
+
+    if (mobileMenuBtn) {
+        mobileMenuBtn.addEventListener('click', openMobileMenu);
+    }
+
+    if (mobileNavClose) {
+        mobileNavClose.addEventListener('click', closeMobileMenu);
+    }
+
+    if (mobileMenuOverlay) {
+        mobileMenuOverlay.addEventListener('click', closeMobileMenu);
+    }
 
     // Theme toggle
     if (themeToggle) {

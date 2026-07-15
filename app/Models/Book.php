@@ -73,8 +73,8 @@ class Book extends Model
         }
 
         $filename = basename(ltrim($this->cover_image, '/'));
-        $fullRelative = 'uploads/book_cover/' . $filename;
-        $thumbRelative = 'uploads/book_cover/thumb_' . $filename;
+        $fullRelative = 'storage/uploads/book_cover/' . $filename;
+        $thumbRelative = 'storage/uploads/book_cover/thumb_' . $filename;
 
         if ($preferFullImage) {
             if (file_exists(public_path($fullRelative))) {
@@ -94,7 +94,7 @@ class Book extends Model
             }
         }
 
-        $relative = ltrim($this->cover_image, '/');
+        $relative = 'storage/uploads/book_cover/' . ltrim($this->cover_image, '/');
 
         return file_exists(public_path($relative))
             ? asset($relative)
@@ -104,7 +104,7 @@ class Book extends Model
     public function getOwnerAvatarUrlAttribute(): string
     {
         if (! empty($this->owner_avatar) && $this->owner_avatar !== 'default-avatar.jpg') {
-            $relative = 'uploads/profile/' . ltrim($this->owner_avatar, '/');
+            $relative = 'storage/uploads/profile/' . ltrim($this->owner_avatar, '/');
             $publicPath = public_path($relative);
 
             if (file_exists($publicPath)) {

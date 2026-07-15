@@ -21,7 +21,7 @@ class ProfileImageService
 
     public function uploadPath(): string
     {
-        return public_path('uploads/profile');
+        return storage_path('app/public/uploads/profile');
     }
 
     public function process(UploadedFile $file, string $userId): array

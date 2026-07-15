@@ -25,7 +25,7 @@ class BookCoverService
 
     public function uploadPath(): string
     {
-        return public_path('uploads/book_cover');
+        return storage_path('app/public/uploads/book_cover');
     }
 
     public function process(UploadedFile $file, string $bookId): array

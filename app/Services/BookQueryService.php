@@ -248,8 +248,8 @@ class BookQueryService
         }
 
         $filename = basename(ltrim($coverImage, '/'));
-        $fullRelative = 'uploads/book_cover/' . $filename;
-        $thumbRelative = 'uploads/book_cover/thumb_' . $filename;
+        $fullRelative = 'storage/uploads/book_cover/' . $filename;
+        $thumbRelative = 'storage/uploads/book_cover/thumb_' . $filename;
 
         if (file_exists(public_path($fullRelative))) {
             return asset($fullRelative);
@@ -259,7 +259,7 @@ class BookQueryService
             return asset($thumbRelative);
         }
 
-        $relative = ltrim($coverImage, '/');
+        $relative = 'storage/uploads/book_cover/' . ltrim($coverImage, '/');
 
         return file_exists(public_path($relative))
             ? asset($relative)
@@ -269,7 +269,7 @@ class BookQueryService
     public function resolveOwnerAvatarPath(?string $ownerAvatar): string
     {
         if (! empty($ownerAvatar) && $ownerAvatar !== 'default-avatar.jpg') {
-            $relative = 'uploads/profile/' . ltrim($ownerAvatar, '/');
+            $relative = 'storage/uploads/profile/' . ltrim($ownerAvatar, '/');
 
             if (file_exists(public_path($relative))) {
                 return asset($relative);

@@ -88,6 +88,11 @@ class BookCardGrid extends Component
         }
 
         $relative = ltrim($coverImage, '/');
+        if (! str_starts_with($relative, 'storage/') && ! str_starts_with($relative, 'uploads/')) {
+            $relative = 'storage/uploads/book_cover/' . $relative;
+        } elseif (str_starts_with($relative, 'uploads/')) {
+            $relative = 'storage/' . $relative;
+        }
         $publicPath = public_path($relative);
 
         return file_exists($publicPath) ? asset($relative) : asset('images/default-book-cover.jpg');
@@ -96,7 +101,12 @@ class BookCardGrid extends Component
     private function resolveAvatarUrl(string $ownerAvatar): string
     {
         if (! empty($ownerAvatar) && $ownerAvatar !== 'default-avatar.jpg') {
-            $relative = 'uploads/profile/' . ltrim($ownerAvatar, '/');
+            $relative = ltrim($ownerAvatar, '/');
+            if (! str_starts_with($relative, 'storage/') && ! str_starts_with($relative, 'uploads/')) {
+                $relative = 'storage/uploads/profile/' . $relative;
+            } elseif (str_starts_with($relative, 'uploads/')) {
+                $relative = 'storage/' . $relative;
+            }
             $publicPath = public_path($relative);
 
             if (file_exists($publicPath)) {

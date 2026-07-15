@@ -198,7 +198,9 @@
                             <div class="empty-state"><i class="far fa-star"></i><p>No reviews yet. Be the first to share your thoughts!</p></div>
                         @else
                         @foreach ($reviews as $review)
-                            @php($reviewer = $participants->get($review['user_id'] ?? ''))
+                            @php
+                                $reviewer = $participants->get($review['user_id'] ?? '');
+                            @endphp
                             <div class="entry-card">
                                 <img src="{{ $reviewer?->profile_image_url ?? asset('images/avatars/default.jpg') }}" class="entry-avatar">
                                 <div class="entry-content">
@@ -234,8 +236,10 @@
                             <div class="empty-state"><i class="far fa-comments"></i><p>No comments yet. Start the conversation!</p></div>
                         @else
                         @foreach ($comments as $comment)
-                            @php($commenter = $participants->get($comment['user_id'] ?? ''))
-                            @php($userLiked = $isLoggedIn && in_array($currentUserId, $comment['likes'] ?? []))
+                            @php
+                                $commenter = $participants->get($comment['user_id'] ?? '');
+                                $userLiked = $isLoggedIn && in_array($currentUserId, $comment['likes'] ?? []);
+                            @endphp
                             <div class="entry-card">
                                 <img src="{{ $commenter?->profile_image_url ?? asset('images/avatars/default.jpg') }}" class="entry-avatar">
                                 <div class="entry-content">
@@ -260,23 +264,24 @@
                         @else
                         @foreach ($borrowRequests as $borrowRequest)
                             @php
-                                $statusColor = $borrowRequest->status === 'approved'
+                                $status = $borrowRequest?->status ?? 'pending';
+                                $statusColor = $status === 'approved'
                                     ? '#10b981'
-                                    : ($borrowRequest->status === 'pending' ? '#f59e0b' : '#ef4444');
-                                $statusGlow = $borrowRequest->status === 'approved'
+                                    : ($status === 'pending' ? '#f59e0b' : '#ef4444');
+                                $statusGlow = $status === 'approved'
                                     ? 'rgba(16,185,129,0.4)'
-                                    : ($borrowRequest->status === 'pending' ? 'rgba(245,158,11,0.4)' : 'rgba(239,68,68,0.4)');
+                                    : ($status === 'pending' ? 'rgba(245,158,11,0.4)' : 'rgba(239,68,68,0.4)');
                             @endphp
                             <div class="entry-card">
-                                <div style="width:10px;height:10px;border-radius:50%;margin-top:0.6rem;background:{{ $statusColor }};box-shadow: 0 0 10px {{ $statusGlow }}"></div>
+                                <div style="width:10px;height:10px;border-radius:50%;margin-top:0.6rem;background:{{ $statusColor ?? '#ef4444' }};box-shadow: 0 0 10px {{ $statusGlow ?? 'rgba(239,68,68,0.4)' }}"></div>
                                 <div class="entry-content">
                                     <div class="entry-header">
-                                        <span class="entry-name">{{ $borrowRequest->borrower_name }}</span>
-                                        <span class="entry-date">{{ $borrowRequest->request_date?->format('M j, Y') }}</span>
+                                        <span class="entry-name">{{ $borrowRequest?->borrower_name ?? 'Unknown' }}</span>
+                                        <span class="entry-date">{{ $borrowRequest?->request_date?->format('M j, Y') ?? 'N/A' }}</span>
                                     </div>
                                     <div style="display:flex;align-items:center;gap:0.75rem">
-                                        <span class="status-badge {{ $borrowRequest->status }}" style="position:static;font-size:0.65rem;padding:0.4rem 0.8rem;border-radius:8px">
-                                            {{ strtoupper($borrowRequest->status) }}
+                                        <span class="status-badge {{ $status }}" style="position:static;font-size:0.65rem;padding:0.4rem 0.8rem;border-radius:8px">
+                                            {{ strtoupper($status) }}
                                         </span>
                                     </div>
                                 </div>
