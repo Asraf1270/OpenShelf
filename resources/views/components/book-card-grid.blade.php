@@ -11,7 +11,8 @@
 
 <style>
     .book-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; width: 100%; max-width: 1100px; margin: 0 auto; padding: 0.5rem; }
-    .book-card { background: #fff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.06); border: 1px solid #f0f0f0; display: flex; flex-direction: column; }
+    .book-card { background: #fff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.06); border: 1px solid #f0f0f0; display: flex; flex-direction: column; transition: transform 0.2s ease, box-shadow 0.2s ease; }
+    .book-card:hover { transform: translateY(-4px); box-shadow: 0 12px 30px rgba(0,0,0,0.12); }
     .book-cover-container { position: relative; aspect-ratio: 2 / 3; overflow: hidden; background: #f8fafc; }
     .book-cover-container img { width: 100%; height: 100%; object-fit: cover; display: block; }
     .book-badge { position: absolute; top: 0.75rem; left: 0.75rem; padding: 0.35rem 0.6rem; border-radius: 999px; color: #fff; font-size: 0.75rem; font-weight: 700; text-transform: capitalize; }
@@ -22,6 +23,7 @@
     .book-category-tag { font-size: 0.75rem; color: #2C3E50; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; }
     .book-title { font-size: 1rem; font-weight: 700; margin: 0; }
     .book-title a { color: #111827; text-decoration: none; }
+    .book-title a:hover { color: #4C9F8A; }
     .book-author { color: #6b7280; font-size: 0.9rem; }
     .book-rating { display: flex; align-items: center; gap: 0.2rem; margin-top: 0.25rem; font-size: 0.8rem; color: #f59e0b; }
     .book-footer { margin-top: auto; padding-top: 0.75rem; }
@@ -29,10 +31,21 @@
     .owner-avatar { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; }
     .owner-name { font-size: 0.85rem; font-weight: 600; color: #374151; }
     .book-extra-info { font-size: 0.8rem; color: #4b5563; }
+    /* Skeleton */
     .skeleton-card { border: 1px solid #e2e8f0; box-shadow: none; pointer-events: none; }
     .skeleton { background: #e2e8f0; }
+    .skeleton-cover { aspect-ratio: 2 / 3; width: 100%; }
     .pulse { animation: pulse 1.5s infinite ease-in-out; }
     @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+    /* Dark mode */
+    [data-theme="dark"] .book-card { background: #1e293b; border-color: #334155; }
+    [data-theme="dark"] .book-title a { color: #f8fafc; }
+    [data-theme="dark"] .book-author { color: #94a3b8; }
+    [data-theme="dark"] .book-category-tag { color: #4C9F8A; }
+    [data-theme="dark"] .owner-name { color: #cbd5e1; }
+    [data-theme="dark"] .skeleton { background: #334155; }
+    [data-theme="dark"] .skeleton-card { border-color: #334155; }
+    [data-theme="dark"] .book-cover-container { background: #0f172a; }
 </style>
 
 <div class="{{ $gridClass }}" @if($id) id="{{ $id }}" @endif>
@@ -54,6 +67,7 @@
             </div>
         @endfor
     @else
+        @php($fallbackCover = asset('images/default-book-cover.jpg'))
         @foreach ($books as $book)
             @php($bookId = $book['id'] ?? ($book['book_id'] ?? ''))
             @php($title = $book['title'] ?? 'Untitled')
@@ -68,7 +82,7 @@
             @php($emptyStars = 5 - $fullStars - ($hasHalfStar ? 1 : 0))
             <div class="book-card" data-title="{{ strtolower($title) }}" data-author="{{ strtolower($author) }}" data-date="{{ $createdAt }}">
                 <div class="book-cover-container">
-                    <img src="{{ $book['cover_url'] ?? asset('images/default-book-cover.jpg') }}" alt="{{ $title }}" loading="lazy">
+                    <img src="{{ $book['cover_url'] ?? $fallbackCover }}" alt="{{ $title }}" loading="lazy" onerror="this.src='{{ $fallbackCover }}'">
                     <span class="book-badge badge-{{ $status }}">{{ ucfirst($status) }}</span>
                 </div>
                 <div class="book-info">
