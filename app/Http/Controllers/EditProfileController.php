@@ -148,7 +148,7 @@ class EditProfileController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Profile updated successfully!',
-            'profile_pic_url' => asset('uploads/profile/' . $user->profile_pic),
+            'profile_pic_url' => asset('storage/uploads/profile/' . $user->profile_pic),
         ]);
     }
 

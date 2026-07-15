@@ -38,7 +38,7 @@ class User extends Authenticatable
             return asset('images/avatars/default.jpg');
         }
 
-        $relative = 'uploads/profile/' . ltrim($name, '/');
+        $relative = 'storage/uploads/profile/' . ltrim($name, '/');
 
         return file_exists(public_path($relative))
             ? asset($relative)
