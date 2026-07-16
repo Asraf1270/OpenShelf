@@ -1,6 +1,10 @@
 <?php
 
 use App\Http\Controllers\AddBookController;
+use App\Http\Controllers\Admin\AdminAuthController;
+use App\Http\Controllers\Admin\AdminBooksController;
+use App\Http\Controllers\Admin\AdminDashboardController;
+use App\Http\Controllers\Admin\AdminUsersController;
 use App\Http\Controllers\AnnouncementsController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\HomeController;
@@ -60,6 +64,18 @@ Route::get('/logout', [LoginController::class, 'logout']);
 
 Route::get('/forgot-password', [ForgotPasswordController::class, 'show'])->name('password.forgot');
 Route::post('/forgot-password', [ForgotPasswordController::class, 'handle'])->name('password.forgot.handle');
+
+Route::prefix('admin')->group(function () {
+    Route::get('/', fn () => redirect()->route('admin.dashboard'));
+
+    Route::get('/login', [AdminAuthController::class, 'show'])->name('admin.login');
+    Route::post('/login', [AdminAuthController::class, 'login'])->name('admin.login.submit');
+    Route::post('/logout', [AdminAuthController::class, 'logout'])->name('admin.logout');
+
+    Route::match(['get', 'post'], '/dashboard', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
+    Route::match(['get', 'post'], '/books', [AdminBooksController::class, 'index'])->name('admin.books.index');
+    Route::match(['get', 'post'], '/users', [AdminUsersController::class, 'index'])->name('admin.users.index');
+});
 
 Route::get('/profile', [ProfileController::class, 'index'])->name('profile');
 
