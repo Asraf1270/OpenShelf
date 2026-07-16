@@ -10,6 +10,9 @@ class BorrowRequest extends Model
 
     public $incrementing = false;
 
+    /** Table has updated_at only (no created_at); request_date is the creation time. */
+    public const CREATED_AT = null;
+
     protected $guarded = [];
 
     protected $casts = [
