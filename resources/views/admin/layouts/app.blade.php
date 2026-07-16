@@ -300,6 +300,9 @@
                 <a href="{{ route('admin.books.index') }}" class="menu-item {{ request()->routeIs('admin.books.*') ? 'active' : '' }}">
                     <i class="fas fa-book"></i> Book Management
                 </a>
+                <a href="{{ route('admin.requests.index') }}" class="menu-item {{ request()->routeIs('admin.requests.*') ? 'active' : '' }}">
+                    <i class="fas fa-exchange-alt"></i> Request Management
+                </a>
             </div>
 
             <div class="menu-section">
@@ -313,10 +316,22 @@
                 <a href="{{ route('admin.contact-messages.index') }}" class="menu-item {{ request()->routeIs('admin.contact-messages.*') ? 'active' : '' }}">
                     <i class="fas fa-envelope-open-text"></i> Contact Messages
                 </a>
+                <a href="{{ route('admin.reports-management.index') }}" class="menu-item {{ request()->routeIs('admin.reports-management.*') ? 'active' : '' }}">
+                    <i class="fas fa-flag"></i> Reports Management
+                </a>
             </div>
 
             <div class="menu-section">
                 <div class="menu-title">System</div>
+                <a href="{{ route('admin.reports.index') }}" class="menu-item {{ request()->routeIs('admin.reports.*') ? 'active' : '' }}">
+                    <i class="fas fa-chart-bar"></i> Reports & Analytics
+                </a>
+                <a href="{{ route('admin.backup.index') }}" class="menu-item {{ request()->routeIs('admin.backup.*') ? 'active' : '' }}">
+                    <i class="fas fa-database"></i> Backup
+                </a>
+                <a href="{{ route('admin.logs.index') }}" class="menu-item {{ request()->routeIs('admin.logs.*') ? 'active' : '' }}">
+                    <i class="fas fa-clipboard-list"></i> System Logs
+                </a>
                 <a href="{{ route('admin.profile') }}" class="menu-item {{ request()->routeIs('admin.profile') ? 'active' : '' }}">
                     <i class="fas fa-user-circle"></i> My Profile
                 </a>

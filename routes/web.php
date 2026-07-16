@@ -3,11 +3,16 @@
 use App\Http\Controllers\AddBookController;
 use App\Http\Controllers\Admin\AdminAnnouncementsController;
 use App\Http\Controllers\Admin\AdminAuthController;
+use App\Http\Controllers\Admin\AdminBackupController;
 use App\Http\Controllers\Admin\AdminBooksController;
 use App\Http\Controllers\Admin\AdminCategoriesController;
 use App\Http\Controllers\Admin\AdminContactMessagesController;
 use App\Http\Controllers\Admin\AdminDashboardController;
+use App\Http\Controllers\Admin\AdminLogsController;
 use App\Http\Controllers\Admin\AdminProfileController;
+use App\Http\Controllers\Admin\AdminReportsController;
+use App\Http\Controllers\Admin\AdminReportsManagementController;
+use App\Http\Controllers\Admin\AdminRequestsController;
 use App\Http\Controllers\Admin\AdminUsersController;
 use App\Http\Controllers\AnnouncementsController;
 use App\Http\Controllers\ContactController;
@@ -83,6 +88,15 @@ Route::prefix('admin')->group(function () {
     Route::match(['get', 'post'], '/profile', [AdminProfileController::class, 'index'])->name('admin.profile');
     Route::match(['get', 'post'], '/contact-messages', [AdminContactMessagesController::class, 'index'])->name('admin.contact-messages.index');
     Route::match(['get', 'post'], '/categories', [AdminCategoriesController::class, 'index'])->name('admin.categories.index');
+    Route::match(['get', 'post'], '/requests', [AdminRequestsController::class, 'index'])->name('admin.requests.index');
+    Route::match(['get', 'post'], '/backup', [AdminBackupController::class, 'index'])->name('admin.backup.index');
+    Route::get('/backup/restore', [AdminBackupController::class, 'restore'])->name('admin.backup.restore');
+    Route::get('/logs', [AdminLogsController::class, 'index'])->name('admin.logs.index');
+    Route::get('/logs/clear', [AdminLogsController::class, 'clear'])->name('admin.logs.clear');
+    Route::get('/logs/download', [AdminLogsController::class, 'download'])->name('admin.logs.download');
+    Route::get('/reports', [AdminReportsController::class, 'index'])->name('admin.reports.index');
+    Route::get('/reports/export', [AdminReportsController::class, 'export'])->name('admin.reports.export');
+    Route::match(['get', 'post'], '/reports-management', [AdminReportsManagementController::class, 'index'])->name('admin.reports-management.index');
 });
 
 Route::get('/profile', [ProfileController::class, 'index'])->name('profile');
