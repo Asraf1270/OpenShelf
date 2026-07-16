@@ -322,6 +322,16 @@
             </div>
 
             <div class="menu-section">
+                <div class="menu-title">Finance</div>
+                <a href="{{ route('admin.support-us.index') }}" class="menu-item {{ request()->routeIs('admin.support-us.*') ? 'active' : '' }}">
+                    <i class="fas fa-hand-holding-dollar"></i> Support Requests
+                </a>
+                <a href="{{ route('admin.transactions.index') }}" class="menu-item {{ request()->routeIs('admin.transactions.*') ? 'active' : '' }}">
+                    <i class="fas fa-receipt"></i> Transactions
+                </a>
+            </div>
+
+            <div class="menu-section">
                 <div class="menu-title">System</div>
                 <a href="{{ route('admin.reports.index') }}" class="menu-item {{ request()->routeIs('admin.reports.*') ? 'active' : '' }}">
                     <i class="fas fa-chart-bar"></i> Reports & Analytics

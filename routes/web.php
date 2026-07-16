@@ -39,6 +39,9 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RequestsController;
 use App\Http\Controllers\ReturnBookController;
 use App\Http\Controllers\SettingsController;
+use App\Http\Controllers\SupportUsController;
+use App\Http\Controllers\Admin\AdminSupportUsController;
+use App\Http\Controllers\Admin\AdminTransactionsController;
 use Illuminate\Support\Facades\Route;
 
 // ========================================
@@ -97,6 +100,8 @@ Route::prefix('admin')->group(function () {
     Route::get('/reports', [AdminReportsController::class, 'index'])->name('admin.reports.index');
     Route::get('/reports/export', [AdminReportsController::class, 'export'])->name('admin.reports.export');
     Route::match(['get', 'post'], '/reports-management', [AdminReportsManagementController::class, 'index'])->name('admin.reports-management.index');
+    Route::match(['get', 'post'], '/support-us', [AdminSupportUsController::class, 'index'])->name('admin.support-us.index');
+    Route::match(['get', 'post'], '/transactions', [AdminTransactionsController::class, 'index'])->name('admin.transactions.index');
 });
 
 Route::get('/profile', [ProfileController::class, 'index'])->name('profile');
@@ -129,6 +134,9 @@ Route::match(['get', 'post'], '/notifications', [NotificationsController::class,
 Route::match(['get', 'post'], '/api/notifications', [NotificationApiController::class, 'index']);
 
 Route::get('/announcements', [AnnouncementsController::class, 'index'])->name('announcements.index');
+
+Route::get('/support-us', [SupportUsController::class, 'show'])->name('support-us');
+Route::post('/support-us', [SupportUsController::class, 'store'])->name('support-us.store');
 
 Route::get('/book-cards-demo', function () {
     $books = [
