@@ -1,9 +1,13 @@
 <?php
 
 use App\Http\Controllers\AddBookController;
+use App\Http\Controllers\Admin\AdminAnnouncementsController;
 use App\Http\Controllers\Admin\AdminAuthController;
 use App\Http\Controllers\Admin\AdminBooksController;
+use App\Http\Controllers\Admin\AdminCategoriesController;
+use App\Http\Controllers\Admin\AdminContactMessagesController;
 use App\Http\Controllers\Admin\AdminDashboardController;
+use App\Http\Controllers\Admin\AdminProfileController;
 use App\Http\Controllers\Admin\AdminUsersController;
 use App\Http\Controllers\AnnouncementsController;
 use App\Http\Controllers\ContactController;
@@ -75,6 +79,10 @@ Route::prefix('admin')->group(function () {
     Route::match(['get', 'post'], '/dashboard', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
     Route::match(['get', 'post'], '/books', [AdminBooksController::class, 'index'])->name('admin.books.index');
     Route::match(['get', 'post'], '/users', [AdminUsersController::class, 'index'])->name('admin.users.index');
+    Route::match(['get', 'post'], '/announcements', [AdminAnnouncementsController::class, 'index'])->name('admin.announcements.index');
+    Route::match(['get', 'post'], '/profile', [AdminProfileController::class, 'index'])->name('admin.profile');
+    Route::match(['get', 'post'], '/contact-messages', [AdminContactMessagesController::class, 'index'])->name('admin.contact-messages.index');
+    Route::match(['get', 'post'], '/categories', [AdminCategoriesController::class, 'index'])->name('admin.categories.index');
 });
 
 Route::get('/profile', [ProfileController::class, 'index'])->name('profile');

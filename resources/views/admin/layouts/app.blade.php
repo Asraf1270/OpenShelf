@@ -301,6 +301,26 @@
                     <i class="fas fa-book"></i> Book Management
                 </a>
             </div>
+
+            <div class="menu-section">
+                <div class="menu-title">Content</div>
+                <a href="{{ route('admin.announcements.index') }}" class="menu-item {{ request()->routeIs('admin.announcements.*') ? 'active' : '' }}">
+                    <i class="fas fa-bullhorn"></i> Announcements
+                </a>
+                <a href="{{ route('admin.categories.index') }}" class="menu-item {{ request()->routeIs('admin.categories.*') ? 'active' : '' }}">
+                    <i class="fas fa-tags"></i> Categories
+                </a>
+                <a href="{{ route('admin.contact-messages.index') }}" class="menu-item {{ request()->routeIs('admin.contact-messages.*') ? 'active' : '' }}">
+                    <i class="fas fa-envelope-open-text"></i> Contact Messages
+                </a>
+            </div>
+
+            <div class="menu-section">
+                <div class="menu-title">System</div>
+                <a href="{{ route('admin.profile') }}" class="menu-item {{ request()->routeIs('admin.profile') ? 'active' : '' }}">
+                    <i class="fas fa-user-circle"></i> My Profile
+                </a>
+            </div>
         </aside>
 
         <main class="admin-main">
