@@ -11,4 +11,10 @@ class Report extends Model
     public $incrementing = false;
 
     protected $guarded = [];
+
+    protected $casts = [
+        'resolved_at' => 'datetime',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+    ];
 }

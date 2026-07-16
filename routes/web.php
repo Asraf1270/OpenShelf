@@ -1,6 +1,19 @@
 <?php
 
 use App\Http\Controllers\AddBookController;
+use App\Http\Controllers\Admin\AdminAnnouncementsController;
+use App\Http\Controllers\Admin\AdminAuthController;
+use App\Http\Controllers\Admin\AdminBackupController;
+use App\Http\Controllers\Admin\AdminBooksController;
+use App\Http\Controllers\Admin\AdminCategoriesController;
+use App\Http\Controllers\Admin\AdminContactMessagesController;
+use App\Http\Controllers\Admin\AdminDashboardController;
+use App\Http\Controllers\Admin\AdminLogsController;
+use App\Http\Controllers\Admin\AdminProfileController;
+use App\Http\Controllers\Admin\AdminReportsController;
+use App\Http\Controllers\Admin\AdminReportsManagementController;
+use App\Http\Controllers\Admin\AdminRequestsController;
+use App\Http\Controllers\Admin\AdminUsersController;
 use App\Http\Controllers\AnnouncementsController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\HomeController;
@@ -26,6 +39,9 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RequestsController;
 use App\Http\Controllers\ReturnBookController;
 use App\Http\Controllers\SettingsController;
+use App\Http\Controllers\SupportUsController;
+use App\Http\Controllers\Admin\AdminSupportUsController;
+use App\Http\Controllers\Admin\AdminTransactionsController;
 use Illuminate\Support\Facades\Route;
 
 // ========================================
@@ -61,6 +77,33 @@ Route::get('/logout', [LoginController::class, 'logout']);
 Route::get('/forgot-password', [ForgotPasswordController::class, 'show'])->name('password.forgot');
 Route::post('/forgot-password', [ForgotPasswordController::class, 'handle'])->name('password.forgot.handle');
 
+Route::prefix('admin')->group(function () {
+    Route::get('/', fn () => redirect()->route('admin.dashboard'));
+
+    Route::get('/login', [AdminAuthController::class, 'show'])->name('admin.login');
+    Route::post('/login', [AdminAuthController::class, 'login'])->name('admin.login.submit');
+    Route::post('/logout', [AdminAuthController::class, 'logout'])->name('admin.logout');
+
+    Route::match(['get', 'post'], '/dashboard', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
+    Route::match(['get', 'post'], '/books', [AdminBooksController::class, 'index'])->name('admin.books.index');
+    Route::match(['get', 'post'], '/users', [AdminUsersController::class, 'index'])->name('admin.users.index');
+    Route::match(['get', 'post'], '/announcements', [AdminAnnouncementsController::class, 'index'])->name('admin.announcements.index');
+    Route::match(['get', 'post'], '/profile', [AdminProfileController::class, 'index'])->name('admin.profile');
+    Route::match(['get', 'post'], '/contact-messages', [AdminContactMessagesController::class, 'index'])->name('admin.contact-messages.index');
+    Route::match(['get', 'post'], '/categories', [AdminCategoriesController::class, 'index'])->name('admin.categories.index');
+    Route::match(['get', 'post'], '/requests', [AdminRequestsController::class, 'index'])->name('admin.requests.index');
+    Route::match(['get', 'post'], '/backup', [AdminBackupController::class, 'index'])->name('admin.backup.index');
+    Route::get('/backup/restore', [AdminBackupController::class, 'restore'])->name('admin.backup.restore');
+    Route::get('/logs', [AdminLogsController::class, 'index'])->name('admin.logs.index');
+    Route::get('/logs/clear', [AdminLogsController::class, 'clear'])->name('admin.logs.clear');
+    Route::get('/logs/download', [AdminLogsController::class, 'download'])->name('admin.logs.download');
+    Route::get('/reports', [AdminReportsController::class, 'index'])->name('admin.reports.index');
+    Route::get('/reports/export', [AdminReportsController::class, 'export'])->name('admin.reports.export');
+    Route::match(['get', 'post'], '/reports-management', [AdminReportsManagementController::class, 'index'])->name('admin.reports-management.index');
+    Route::match(['get', 'post'], '/support-us', [AdminSupportUsController::class, 'index'])->name('admin.support-us.index');
+    Route::match(['get', 'post'], '/transactions', [AdminTransactionsController::class, 'index'])->name('admin.transactions.index');
+});
+
 Route::get('/profile', [ProfileController::class, 'index'])->name('profile');
 
 Route::get('/settings', [SettingsController::class, 'index'])->name('settings');
@@ -91,6 +134,9 @@ Route::match(['get', 'post'], '/notifications', [NotificationsController::class,
 Route::match(['get', 'post'], '/api/notifications', [NotificationApiController::class, 'index']);
 
 Route::get('/announcements', [AnnouncementsController::class, 'index'])->name('announcements.index');
+
+Route::get('/support-us', [SupportUsController::class, 'show'])->name('support-us');
+Route::post('/support-us', [SupportUsController::class, 'store'])->name('support-us.store');
 
 Route::get('/book-cards-demo', function () {
     $books = [
