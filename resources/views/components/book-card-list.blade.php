@@ -26,7 +26,7 @@
     .book-card-list .stars-mini i.active { color: #f59e0b; }
     .book-card-list .rating-value { font-size: 0.75rem; font-weight: 700; color: #444; }
     .book-card-list .rating-count { font-size: 0.7rem; color: #888; font-weight: 500; }
-    .book-card-list .owner-link-area { display: flex; align-items: center; gap: 8px; margin-top: 8px; padding: 6px 4px; border-top: 1px solid #f5f5f5; text-decoration: none; color: inherit; border-radius: 8px; transition: background 0.15s ease; }
+    .book-card-list .owner-link-area { display: flex; align-items: center; gap: 8px; margin-top: 4px; padding: 4px 4px; border-top: 1px solid #f5f5f5; text-decoration: none; color: inherit; border-radius: 8px; transition: background 0.15s ease; }
     .book-card-list .owner-link-area:hover { background: rgba(0,0,0,0.03); }
     .book-card-list .owner-avatar { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; background: #eee; flex-shrink: 0; }
     .book-card-list .owner-details { display: flex; flex-direction: column; line-height: 1.1; }

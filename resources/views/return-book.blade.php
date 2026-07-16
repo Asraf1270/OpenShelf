@@ -1,5 +1,164 @@
 @extends('layouts.app')
 
+@push('styles')
+<style>
+    .return-container {
+        max-width: 1220px;
+        margin: 0 auto;
+        padding: 1rem 0 2rem;
+    }
+
+    .return-page-header {
+        background: linear-gradient(135deg, #4c9f8a 0%, #2d5d7a 100%);
+        border-radius: 24px;
+        padding: 1.5rem 1.6rem;
+        color: #fff;
+        box-shadow: 0 22px 45px rgba(45, 93, 122, 0.16);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .return-page-header::after {
+        content: "";
+        position: absolute;
+        inset: auto -40px -60px auto;
+        width: 220px;
+        height: 220px;
+        background: rgba(255,255,255,0.12);
+        border-radius: 50%;
+        pointer-events: none;
+    }
+
+    .return-page-header h1 {
+        margin: 0.2rem 0 0.35rem;
+        font-size: clamp(1.35rem, 2vw, 1.8rem);
+        display: flex;
+        align-items: center;
+        gap: 0.65rem;
+    }
+
+    .return-page-header p {
+        margin: 0;
+        color: rgba(255,255,255,0.9);
+        max-width: 700px;
+    }
+
+    .return-timeline {
+        display: grid;
+        grid-template-columns: repeat(7, minmax(0, 1fr));
+        gap: 0.6rem;
+        margin: 1.2rem 0 1.4rem;
+        align-items: center;
+    }
+
+    .timeline-step {
+        background: var(--surface, #fff);
+        border: 1px solid var(--border, #e5e7eb);
+        border-radius: 999px;
+        padding: 0.7rem 0.85rem;
+        text-align: center;
+        font-weight: 700;
+        color: var(--text-secondary, #64748b);
+        box-shadow: 0 8px 20px rgba(15, 23, 42, 0.05);
+    }
+
+    .timeline-step.active {
+        background: rgba(76, 159, 138, 0.1);
+        color: #2d5d7a;
+        border-color: rgba(76, 159, 138, 0.25);
+    }
+
+    .timeline-step.completed {
+        background: rgba(16, 185, 129, 0.12);
+        color: #047857;
+        border-color: rgba(16, 185, 129, 0.2);
+    }
+
+    .timeline-line {
+        height: 2px;
+        background: linear-gradient(90deg, rgba(76, 159, 138, 0.2), rgba(76, 159, 138, 0.6));
+    }
+
+    .timeline-line.active {
+        background: linear-gradient(90deg, rgba(76, 159, 138, 0.8), rgba(76, 159, 138, 0.2));
+    }
+
+    .return-content-layout {
+        display: grid;
+        grid-template-columns: 340px 1fr;
+        gap: 1.15rem;
+    }
+
+    .return-sidebar,
+    .form-card {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .return-card,
+    .form-card {
+        background: var(--surface, #fff);
+        border: 1px solid var(--border, #e5e7eb);
+        border-radius: 22px;
+        padding: 1.15rem;
+        box-shadow: 0 12px 28px rgba(15, 23, 42, 0.05);
+    }
+
+    .book-preview-card .book-cover-container img {
+        border-radius: 16px;
+        box-shadow: 0 6px 20px rgba(15, 23, 42, 0.12);
+    }
+
+    .condition-card {
+        border: 1px solid var(--border, #e5e7eb);
+        border-radius: 16px;
+        padding: 0.95rem 1rem;
+        background: linear-gradient(180deg, #fff, #f8fafc);
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .condition-card.active {
+        border-color: rgba(76, 159, 138, 0.4);
+        background: rgba(76, 159, 138, 0.08);
+        transform: translateY(-2px);
+    }
+
+    .condition-card input {
+        display: none;
+    }
+
+    .form-input {
+        border: 1px solid var(--border, #e5e7eb);
+        border-radius: 14px;
+        padding: 0.85rem 0.95rem;
+        background: #fff;
+        box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.04);
+    }
+
+    .btn,
+    .btn-cancel {
+        border-radius: 999px;
+        padding: 0.8rem 1.1rem;
+    }
+
+    @media (max-width: 900px) {
+        .return-content-layout {
+            grid-template-columns: 1fr;
+        }
+
+        .return-timeline {
+            grid-template-columns: 1fr;
+        }
+
+        .timeline-line {
+            display: none;
+        }
+    }
+</style>
+@endpush
+
 @section('content')
 <main>
         <div class="container">
@@ -222,6 +381,14 @@
             const damagedRadio = document.querySelector('input[name="condition"][value="damaged"]');
             const damageField = document.getElementById('damageField');
             const damageInput = document.querySelector('textarea[name="damage_description"]');
+            const cards = document.querySelectorAll('.condition-card');
+
+            cards.forEach(card => card.classList.remove('active'));
+
+            const activeCard = document.querySelector('input[name="condition"]:checked')?.closest('.condition-card');
+            if (activeCard) {
+                activeCard.classList.add('active');
+            }
             
             if (damagedRadio && damagedRadio.checked) {
                 damageField.classList.add('show');
