@@ -1,17 +1,15 @@
 <footer class="footer">
     <div class="footer-container">
-        <!-- Footer Top -->
         <div class="footer-top">
-            <!-- Brand Column -->
             <div class="footer-section">
                 <div class="footer-logo">
-                    <a href="/">
+                    <a href="{{ route('home') }}">
                         <img src="{{ asset('assets/images/logo-wordmark.svg') }}" alt="OpenShelf" height="28" style="filter: brightness(0) invert(1) sepia(1) saturate(5) hue-rotate(130deg);">
                     </a>
                 </div>
+                <p class="footer-tagline">Share books. Share knowledge. Built for campus communities.</p>
             </div>
 
-            <!-- Quick Links -->
             <div class="footer-section" data-accordion="quick-links">
                 <h3 class="footer-title" role="button" aria-expanded="false" tabindex="0">
                     দ্রুত লিঙ্ক
@@ -19,16 +17,16 @@
                 </h3>
                 <div class="footer-accordion-content">
                     <ul class="footer-links">
-                        <li><a href="/"><i class="fas fa-chevron-right"></i> হোম</a></li>
-                        <li><a href="/books"><i class="fas fa-chevron-right"></i> বই ব্রাউজ করুন</a></li>
-                        <li><a href="/feed"><i class="fas fa-chevron-right"></i> কার্যকলাপ ফিড</a></li>
-                        <li><a href="/about"><i class="fas fa-chevron-right"></i> আমাদের সম্পর্কে</a></li>
-                        <li><a href="/contact"><i class="fas fa-chevron-right"></i> যোগাযোগ</a></li>
+                        <li><a href="{{ route('home') }}"><i class="fas fa-chevron-right"></i> হোম</a></li>
+                        <li><a href="{{ route('books') }}"><i class="fas fa-chevron-right"></i> বই ব্রাউজ করুন</a></li>
+                        <li><a href="{{ route('announcements.index') }}"><i class="fas fa-chevron-right"></i> ঘোষণা</a></li>
+                        <li><a href="{{ route('about') }}"><i class="fas fa-chevron-right"></i> আমাদের সম্পর্কে</a></li>
+                        <li><a href="{{ route('contact') }}"><i class="fas fa-chevron-right"></i> যোগাযোগ</a></li>
+                        <li><a href="{{ route('support-us') }}" class="footer-support-link"><i class="fas fa-heart"></i> Support Us</a></li>
                     </ul>
                 </div>
             </div>
 
-            <!-- Support -->
             <div class="footer-section" data-accordion="support">
                 <h3 class="footer-title" role="button" aria-expanded="false" tabindex="0">
                     সহায়তা
@@ -36,16 +34,15 @@
                 </h3>
                 <div class="footer-accordion-content">
                     <ul class="footer-links">
-                        <li><a href="/faq"><i class="fas fa-chevron-right"></i> প্রায়শই জিজ্ঞাসিত প্রশ্ন</a></li>
-                        <li><a href="/guidelines"><i class="fas fa-chevron-right"></i> সম্প্রদায়ের নির্দেশিকা</a></li>
-                        <li><a href="/terms"><i class="fas fa-chevron-right"></i> সেবার শর্তাবলী</a></li>
-                        <li><a href="/privacy"><i class="fas fa-chevron-right"></i> গোপনীয়তা নীতি</a></li>
-                        <li><a href="/report"><i class="fas fa-chevron-right"></i> সমস্যা রিপোর্ট করুন</a></li>
+                        <li><a href="{{ route('faq') }}"><i class="fas fa-chevron-right"></i> প্রায়শই জিজ্ঞাসিত প্রশ্ন</a></li>
+                        <li><a href="{{ route('guidelines') }}"><i class="fas fa-chevron-right"></i> সম্প্রদায়ের নির্দেশিকা</a></li>
+                        <li><a href="{{ route('terms') }}"><i class="fas fa-chevron-right"></i> সেবার শর্তাবলী</a></li>
+                        <li><a href="{{ route('privacy') }}"><i class="fas fa-chevron-right"></i> গোপনীয়তা নীতি</a></li>
+                        <li><a href="{{ route('report') }}"><i class="fas fa-chevron-right"></i> সমস্যা রিপোর্ট করুন</a></li>
                     </ul>
                 </div>
             </div>
 
-            <!-- Contact Info -->
             <div class="footer-section" data-accordion="contact">
                 <h3 class="footer-title" role="button" aria-expanded="false" tabindex="0">
                     আমাদের সাথে যোগাযোগ করুন
@@ -63,7 +60,7 @@
                         </li>
                         <li>
                             <i class="fab fa-whatsapp"></i>
-                            <a href="https://wa.me/8801987971270" target="_blank">WhatsApp সহায়তা</a>
+                            <a href="https://wa.me/8801987971270" target="_blank" rel="noopener noreferrer">WhatsApp সহায়তা</a>
                         </li>
                         <li>
                             <i class="fas fa-map-marker-alt"></i>
@@ -71,28 +68,18 @@
                         </li>
                     </ul>
                 </div>
-                
-                <!-- Social icons section -->
+
                 <div class="footer-social-box">
                     <div class="footer-social">
-                        <a href="#" class="social-link" aria-label="Facebook">
-                            <i class="fab fa-facebook-f"></i>
-                        </a>
-                        <a href="#" class="social-link" aria-label="Twitter">
-                            <i class="fab fa-twitter"></i>
-                        </a>
-                        <a href="#" class="social-link" aria-label="Instagram">
-                            <i class="fab fa-instagram"></i>
-                        </a>
-                        <a href="#" class="social-link" aria-label="LinkedIn">
-                            <i class="fab fa-linkedin-in"></i>
-                        </a>
+                        <a href="#" class="social-link" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="social-link" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="social-link" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="social-link" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Footer Bottom -->
         <div class="footer-bottom">
             <p>&copy; {{ date('Y') }} OpenShelf. সর্বাধিকার সংরক্ষিত।</p>
             <p class="footer-heart">বই প্রেমীদের জন্য <i class="fas fa-heart" style="color: #ef4444;"></i> দিয়ে তৈরি</p>
@@ -154,10 +141,11 @@
     }
 
     .footer-tagline {
-        color: #cbd5e1;
+        color: #94a3b8;
         font-size: 0.875rem;
         line-height: 1.6;
-        margin: 0;
+        margin: 0.5rem 0 0;
+        max-width: 220px;
     }
 
     .footer-title {
@@ -169,6 +157,7 @@
         position: relative;
         display: flex;
         align-items: center;
+        justify-content: space-between;
         gap: 0.5rem;
         transition: color 0.3s ease;
         cursor: pointer;
@@ -191,9 +180,7 @@
         margin: 0;
     }
 
-    .footer-links li {
-        margin-bottom: 0.4rem;
-    }
+    .footer-links li { margin-bottom: 0.4rem; }
 
     .footer-links a {
         color: #cbd5e1;
@@ -216,9 +203,14 @@
         transform: translateX(4px);
     }
 
-    .footer-links a:hover i {
-        transform: translateX(4px);
+    .footer-links a:hover i { transform: translateX(4px); }
+
+    .footer-support-link {
+        color: #f59e0b !important;
+        font-weight: 700 !important;
     }
+
+    .footer-support-link:hover { color: #fbbf24 !important; }
 
     .footer-contact {
         list-style: none;
@@ -248,13 +240,9 @@
         transition: color 0.2s ease;
     }
 
-    .footer-contact a:hover {
-        color: #4C9F8A;
-    }
+    .footer-contact a:hover { color: #4C9F8A; }
 
-    .footer-social-box {
-        margin-top: 1rem;
-    }
+    .footer-social-box { margin-top: 1rem; }
 
     .footer-social {
         display: flex;
@@ -293,9 +281,7 @@
         letter-spacing: 0.5px;
     }
 
-    .footer-bottom p {
-        margin: 0.25rem 0;
-    }
+    .footer-bottom p { margin: 0.25rem 0; }
 
     .footer-heart {
         display: flex;
@@ -304,24 +290,13 @@
         gap: 0.25rem;
     }
 
-    /* Accordion styles */
-    .footer-accordion-content {
-        display: block;
-    }
+    .footer-accordion-content { display: block; }
+    .footer-chevron { display: none; }
 
-    .footer-chevron {
-        display: none;
-    }
+    @media (max-width: 900px) {
+        .footer { padding: 2rem 0 7rem; }
 
-    /* Responsive */
-    @media (max-width: 768px) {
-        .footer {
-            padding: 2rem 0 1rem;
-        }
-        
-        .footer-top {
-            grid-template-columns: 1fr;
-        }
+        .footer-top { grid-template-columns: 1fr; }
 
         .footer-section[data-accordion] {
             padding-right: 0;
@@ -330,44 +305,37 @@
             padding-bottom: 1rem;
         }
 
-        .footer-section[data-accordion]:last-of-type {
-            border-bottom: none;
-        }
+        .footer-section[data-accordion]:last-of-type { border-bottom: none; }
 
-        .footer-title {
-            cursor: pointer;
-        }
-
-        .footer-chevron {
-            display: block;
-        }
+        .footer-chevron { display: block; }
 
         .footer-accordion-content {
             display: none;
             margin-top: 0.75rem;
         }
 
-        .footer-section[data-accordion].active .footer-accordion-content {
-            display: block;
-        }
-
-        .footer-section[data-accordion].active .footer-chevron i {
-            transform: rotate(180deg);
-        }
+        .footer-section[data-accordion].active .footer-accordion-content { display: block; }
+        .footer-section[data-accordion].active .footer-chevron i { transform: rotate(180deg); }
+        .footer-chevron i { transition: transform 0.2s ease; }
     }
 </style>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Accordion functionality for mobile
-    const accordions = document.querySelectorAll('[data-accordion]');
-    
-    accordions.forEach(accordion => {
+    document.querySelectorAll('[data-accordion]').forEach(accordion => {
         const title = accordion.querySelector('.footer-title');
         if (!title) return;
 
         title.addEventListener('click', () => {
-            accordion.classList.toggle('active');
+            const isActive = accordion.classList.toggle('active');
+            title.setAttribute('aria-expanded', isActive ? 'true' : 'false');
+        });
+
+        title.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                title.click();
+            }
         });
     });
 });

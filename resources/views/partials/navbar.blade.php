@@ -1,41 +1,43 @@
-<div class="bottom-nav-container" id="bottomNavbar">
+<div class="bottom-nav-container" id="bottomNavbar" aria-label="Mobile navigation">
     <div class="bottom-nav-bar">
-        <!-- Left Side Icons -->
         <div class="nav-section nav-left">
-            <a href="/" class="nav-item @if(Route::currentRouteName() === 'home' || Route::currentRouteName() === 'books.index') active @endif" aria-label="Home">
+            <a href="{{ route('home') }}" class="nav-item {{ request()->routeIs('home') ? 'active' : '' }}" aria-label="Home">
                 <i class="fas fa-house"></i>
+                <span class="nav-item-label">Home</span>
             </a>
-            <a href="/requests" class="nav-item @if(Route::currentRouteName() === 'requests.index') active @endif" aria-label="Requests">
+            <a href="{{ route('requests.index') }}" class="nav-item {{ request()->routeIs('requests.*') ? 'active' : '' }}" aria-label="Requests">
                 <i class="fas fa-paper-plane"></i>
+                <span class="nav-item-label">Requests</span>
             </a>
         </div>
 
-        <!-- Central FAB Notch Area -->
         <div class="nav-center">
             <div class="fab-notch"></div>
-            @if(session('user_id'))
-                <a href="/add-book" class="fab-button @if(Route::currentRouteName() === 'books.create') active @endif" aria-label="Add Book">
+            @if (session('user_id'))
+                <a href="{{ route('books.create') }}" class="fab-button {{ request()->routeIs('books.create') ? 'active' : '' }}" aria-label="Add Book">
                     <i class="fas fa-plus"></i>
                 </a>
             @else
-                <a href="/login" class="fab-button" aria-label="Login to add books">
+                <a href="{{ route('login') }}" class="fab-button" aria-label="Login to add books">
                     <i class="fas fa-plus"></i>
                 </a>
             @endif
         </div>
 
-        <!-- Right Side Icons -->
         <div class="nav-section nav-right">
-            <a href="/my-borrowed" class="nav-item @if(Route::currentRouteName() === 'borrowed.index') active @endif" aria-label="My Borrowed">
+            <a href="{{ route('my-borrowed') }}" class="nav-item {{ request()->routeIs('my-borrowed') ? 'active' : '' }}" aria-label="My Borrowed">
                 <i class="fas fa-book-reader"></i>
+                <span class="nav-item-label">Borrowed</span>
             </a>
-            @if(session('user_id'))
-                <a href="/profile" class="nav-item @if(Route::currentRouteName() === 'profile.show') active @endif" aria-label="Profile">
+            @if (session('user_id'))
+                <a href="{{ route('profile') }}" class="nav-item {{ request()->routeIs('profile') ? 'active' : '' }}" aria-label="Profile">
                     <i class="fas fa-user"></i>
+                    <span class="nav-item-label">Profile</span>
                 </a>
             @else
-                <a href="/login" class="nav-item" aria-label="Login">
+                <a href="{{ route('login') }}" class="nav-item" aria-label="Login">
                     <i class="fas fa-user"></i>
+                    <span class="nav-item-label">Login</span>
                 </a>
             @endif
         </div>
@@ -63,7 +65,9 @@
     --fab-border: #0f172a;
 }
 
+/* Hidden on desktop / tablet — links live in header hamburger instead */
 .bottom-nav-container {
+    display: none;
     position: fixed;
     bottom: 20px;
     left: 15px;
@@ -97,7 +101,6 @@
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
 }
 
-/* The Notch Effect */
 .bottom-nav-bar::before {
     content: '';
     position: absolute;
@@ -126,14 +129,21 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    width: 48px;
-    height: 48px;
+    width: 52px;
+    height: 52px;
     color: var(--nav-inactive-color);
     text-decoration: none;
-    font-size: 1.25rem;
+    font-size: 1.2rem;
     border-radius: 12px;
     transition: all 0.25s ease;
     gap: 2px;
+}
+
+.nav-item-label {
+    font-size: 0.6rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    line-height: 1;
 }
 
 .nav-item.active {
@@ -142,9 +152,7 @@
     transform: translateY(-2px);
 }
 
-.nav-item:hover {
-    color: var(--nav-active-color);
-}
+.nav-item:hover { color: var(--nav-active-color); }
 
 .nav-center {
     position: relative;
@@ -180,9 +188,7 @@
     box-shadow: 0 8px 24px rgba(76, 159, 138, 0.4);
 }
 
-.fab-button:active {
-    transform: translateY(-18px) scale(0.95);
-}
+.fab-button:active { transform: translateY(-18px) scale(0.95); }
 
 .fab-notch {
     position: absolute;
@@ -196,8 +202,11 @@
     z-index: -1;
 }
 
-/* Scroll hide effect */
-@media (max-width: 768px) {
+@media (max-width: 900px) {
+    .bottom-nav-container {
+        display: block;
+    }
+
     .bottom-nav-bar {
         border-radius: 16px;
     }
@@ -207,7 +216,7 @@
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const navbar = document.getElementById('bottomNavbar');
-    if (!navbar) return;
+    if (!navbar || window.matchMedia('(min-width: 901px)').matches) return;
 
     let lastScrollY = window.pageYOffset;
     let ticking = false;

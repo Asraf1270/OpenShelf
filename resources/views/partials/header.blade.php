@@ -1,87 +1,88 @@
-<?php
-/**
- * OpenShelf Header Component for Blade
- * Handles authentication, notifications, and navigation
- */
-?>
+@php
+    $isLoggedIn = (bool) session('user_id');
+    $notifCount = (int) ($notificationCount ?? 0);
+@endphp
+
 <header class="app-header">
     <div class="header-container">
-        <!-- Logo -->
         <div class="header-logo">
-            <a href="/" class="logo-link">
+            <a href="{{ route('home') }}" class="logo-link">
                 <img src="{{ asset('assets/images/logo.svg') }}" alt="OpenShelf" class="logo-image">
             </a>
         </div>
 
-        <!-- Search Bar (Desktop) -->
+        <nav class="header-nav-desktop" aria-label="Primary">
+            <a href="{{ route('home') }}" class="header-nav-link {{ request()->routeIs('home') ? 'active' : '' }}">
+                <i class="fas fa-home"></i> Home
+            </a>
+            <a href="{{ route('books') }}" class="header-nav-link {{ request()->routeIs('books', 'book.show') ? 'active' : '' }}">
+                <i class="fas fa-book"></i> Books
+            </a>
+            <a href="{{ route('announcements.index') }}" class="header-nav-link {{ request()->routeIs('announcements.*') ? 'active' : '' }}">
+                <i class="fas fa-bullhorn"></i> Announcements
+            </a>
+            @if ($isLoggedIn)
+                <a href="{{ route('requests.index') }}" class="header-nav-link {{ request()->routeIs('requests.*') ? 'active' : '' }}">
+                    <i class="fas fa-paper-plane"></i> Requests
+                </a>
+                <a href="{{ route('my-borrowed') }}" class="header-nav-link {{ request()->routeIs('my-borrowed') ? 'active' : '' }}">
+                    <i class="fas fa-book-reader"></i> My Books
+                </a>
+            @endif
+            <a href="{{ route('support-us') }}" class="header-nav-link header-nav-support {{ request()->routeIs('support-us') ? 'active' : '' }}">
+                <i class="fas fa-heart"></i> Support Us
+            </a>
+        </nav>
+
         <div class="header-search-desktop">
-            <form action="/books" method="GET" class="search-form">
+            <form action="{{ route('books') }}" method="GET" class="search-form">
                 <div class="search-input-group">
                     <i class="fas fa-search"></i>
-                    <input 
-                        type="text" 
-                        name="q" 
-                        placeholder="Search books, authors, categories..."
-                        class="search-input"
-                        value="{{ request('q', '') }}"
-                    >
+                    <input type="text" name="q" placeholder="Search books, authors, categories..." class="search-input" value="{{ request('q', '') }}">
                 </div>
             </form>
         </div>
 
-        <!-- Right Side: Auth & Notifications -->
         <div class="header-right">
-            <!-- Notifications -->
-            @if(session('user_id'))
-            <div class="notification-bell">
-                <button class="bell-button" id="notificationBell" aria-label="Notifications">
-                    <i class="fas fa-bell"></i>
-                    @if(($notificationCount ?? 0) > 0)
-                        <span class="notification-badge" id="headerNotificationBadge">{{ min($notificationCount, 99) }}</span>
-                    @else
-                        <span class="notification-badge" id="headerNotificationBadge" style="display: none;"></span>
-                    @endif
-                </button>
-                
-                <!-- Notification Dropdown -->
-                <div class="notification-dropdown" id="notificationDropdown">
-                    <div class="notification-header">
-                        <h3>Notifications</h3>
-                        <button class="close-btn" id="closeNotifications" aria-label="Close">
-                            <i class="fas fa-times"></i>
-                        </button>
-                    </div>
-                    <div class="notification-list" id="notificationList">
-                        <div class="notification-loading" style="padding: 1rem; text-align: center; color: #94a3b8; font-size: 0.85rem;">
-                            Loading...
-                        </div>
-                    </div>
-                    <div class="notification-footer" style="padding: 0.75rem 1rem; border-top: 1px solid rgba(0,0,0,0.05); text-align: center;">
-                        <a href="{{ route('notifications.index') }}" style="font-size: 0.85rem; font-weight: 600; color: #4C9F8A; text-decoration: none;">View all notifications</a>
-                    </div>
-                </div>
-            </div>
-            @endif
-
-            <!-- Auth Menu -->
-            @if($headerUser)
-                <div class="user-menu">
-                    <button class="user-button" id="userMenuBtn" aria-label="User menu">
-                        <img
-                            src="{{ $headerUser->profile_image_url }}"
-                            alt="{{ $headerUser->name }}"
-                            class="user-avatar"
-                        >
+            @if ($isLoggedIn)
+                <div class="notification-bell">
+                    <button class="bell-button" id="notificationBell" type="button" aria-label="Notifications">
+                        <i class="fas fa-bell"></i>
+                        @if ($notifCount > 0)
+                            <span class="notification-badge" id="headerNotificationBadge">{{ min($notifCount, 99) }}</span>
+                        @else
+                            <span class="notification-badge" id="headerNotificationBadge" style="display: none;"></span>
+                        @endif
                     </button>
 
-                    <!-- User Dropdown Menu -->
+                    <div class="notification-dropdown" id="notificationDropdown">
+                        <div class="notification-header">
+                            <h3>Notifications</h3>
+                            <button class="close-btn" id="closeNotifications" type="button" aria-label="Close">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                        <div class="notification-list" id="notificationList">
+                            <div class="notification-loading" style="padding: 1rem; text-align: center; color: #94a3b8; font-size: 0.85rem;">
+                                Loading...
+                            </div>
+                        </div>
+                        <div class="notification-footer" style="padding: 0.75rem 1rem; border-top: 1px solid rgba(0,0,0,0.05); text-align: center;">
+                            <a href="{{ route('notifications.index') }}" style="font-size: 0.85rem; font-weight: 600; color: #4C9F8A; text-decoration: none;">View all notifications</a>
+                        </div>
+                    </div>
+                </div>
+            @endif
+
+            @if ($headerUser)
+                <div class="user-menu">
+                    <button class="user-button" id="userMenuBtn" type="button" aria-label="User menu">
+                        <img src="{{ $headerUser->profile_image_url }}" alt="{{ $headerUser->name }}" class="user-avatar">
+                    </button>
+
                     <div class="user-dropdown" id="userDropdown">
                         <div class="user-info">
-                            <img
-                                src="{{ $headerUser->profile_image_url }}"
-                                alt="{{ $headerUser->name }}"
-                                class="user-avatar-large"
-                            >
+                            <img src="{{ $headerUser->profile_image_url }}" alt="{{ $headerUser->name }}" class="user-avatar-large">
                             <div>
                                 <p class="user-name">{{ $headerUser->name }}</p>
                                 <p class="user-email">{{ $headerUser->email }}</p>
@@ -89,27 +90,19 @@
                         </div>
 
                         <div class="dropdown-divider"></div>
+                        <a href="{{ route('profile') }}" class="dropdown-link"><i class="fas fa-user"></i> My Profile</a>
+                        <a href="{{ route('settings') }}" class="dropdown-link"><i class="fas fa-cog"></i> Settings</a>
+                        <a href="{{ route('my-borrowed') }}" class="dropdown-link"><i class="fas fa-book"></i> My Books</a>
+                        <a href="{{ route('books.create') }}" class="dropdown-link"><i class="fas fa-plus"></i> Add Book</a>
+                        <a href="{{ route('requests.index') }}" class="dropdown-link"><i class="fas fa-paper-plane"></i> Requests</a>
 
-                        <a href="/profile" class="dropdown-link">
-                            <i class="fas fa-user"></i> My Profile
-                        </a>
-                        <a href="/settings" class="dropdown-link">
-                            <i class="fas fa-cog"></i> Settings
-                        </a>
-                        <a href="/my-borrowed" class="dropdown-link">
-                            <i class="fas fa-book"></i> My Books
-                        </a>
-
-                        @if($headerUser->role === 'admin')
+                        @if ($headerUser->role === 'admin')
                             <div class="dropdown-divider"></div>
-                            <a href="/admin" class="dropdown-link">
-                                <i class="fas fa-shield"></i> Admin Panel
-                            </a>
+                            <a href="{{ route('admin.dashboard') }}" class="dropdown-link"><i class="fas fa-shield"></i> Admin Panel</a>
                         @endif
 
                         <div class="dropdown-divider"></div>
-
-                        <form action="/logout" method="POST" class="logout-form">
+                        <form action="{{ route('logout') }}" method="POST" class="logout-form">
                             @csrf
                             <button type="submit" class="dropdown-link logout-link">
                                 <i class="fas fa-sign-out-alt"></i> Logout
@@ -119,53 +112,42 @@
                 </div>
             @else
                 <div class="auth-buttons">
-                    <a href="/login" class="btn btn-ghost">Login</a>
-                    <a href="/register" class="btn btn-primary">Sign Up</a>
+                    <a href="{{ route('login') }}" class="btn btn-ghost">Login</a>
+                    <a href="{{ route('register') }}" class="btn btn-primary">Sign Up</a>
                 </div>
             @endif
 
-            <!-- Theme Toggle -->
-            <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+            <button class="theme-toggle" id="themeToggle" type="button" aria-label="Toggle theme">
                 <i class="fas fa-moon"></i>
             </button>
 
-            <!-- Mobile Menu Button -->
-            <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Menu">
+            <button class="mobile-menu-btn" id="mobileMenuBtn" type="button" aria-label="Menu" aria-expanded="false">
                 <i class="fas fa-bars"></i>
             </button>
         </div>
     </div>
 
-    <!-- Mobile Search Bar -->
     <div class="header-search-mobile">
-        <form action="/books" method="GET" class="search-form">
+        <form action="{{ route('books') }}" method="GET" class="search-form">
             <div class="search-input-group">
                 <i class="fas fa-search"></i>
-                <input 
-                    type="text" 
-                    name="q" 
-                    placeholder="Search books..."
-                    class="search-input"
-                    value="{{ request('q', '') }}"
-                >
+                <input type="text" name="q" placeholder="Search books..." class="search-input" value="{{ request('q', '') }}">
             </div>
         </form>
     </div>
 </header>
 
-<!-- Mobile Menu Overlay -->
 <div class="mobile-menu-overlay" id="mobileMenuOverlay"></div>
 
-<!-- Mobile Navigation Panel -->
-<div class="mobile-nav-panel" id="mobileNavPanel">
+<div class="mobile-nav-panel" id="mobileNavPanel" role="dialog" aria-label="Navigation menu">
     <div class="mobile-nav-header">
         <img src="{{ asset('assets/images/logo.svg') }}" alt="OpenShelf" style="height: 30px;">
-        <button class="mobile-nav-close" id="mobileNavClose" aria-label="Close menu">
+        <button class="mobile-nav-close" id="mobileNavClose" type="button" aria-label="Close menu">
             <i class="fas fa-times"></i>
         </button>
     </div>
 
-    @if($headerUser)
+    @if ($headerUser)
         <div class="mobile-nav-user">
             <img src="{{ $headerUser->profile_image_url }}" alt="{{ $headerUser->name }}" class="mobile-nav-avatar">
             <div>
@@ -173,29 +155,88 @@
                 <div class="mobile-nav-user-email">{{ $headerUser->email }}</div>
             </div>
         </div>
+    @else
+        <div class="mobile-nav-guest">
+            <div class="mobile-nav-user-name">Welcome to OpenShelf</div>
+            <div class="mobile-nav-guest-actions">
+                <a href="{{ route('login') }}" class="mobile-nav-guest-btn">Login</a>
+                <a href="{{ route('register') }}" class="mobile-nav-guest-btn primary">Sign Up</a>
+            </div>
+        </div>
     @endif
 
     <nav class="mobile-nav-links">
-        <a href="/" class="mobile-nav-link"><i class="fas fa-home"></i> Home</a>
-        <a href="/books" class="mobile-nav-link"><i class="fas fa-book"></i> Browse Books</a>
-        @if($headerUser)
-            <a href="/profile" class="mobile-nav-link"><i class="fas fa-user"></i> My Profile</a>
-            <a href="/my-borrowed" class="mobile-nav-link"><i class="fas fa-bookmark"></i> My Books</a>
-            <a href="/settings" class="mobile-nav-link"><i class="fas fa-cog"></i> Settings</a>
-            @if($headerUser->role === 'admin')
-                <a href="/admin" class="mobile-nav-link"><i class="fas fa-shield"></i> Admin Panel</a>
-            @endif
+        <div class="mobile-nav-section-label">General</div>
+        <a href="{{ route('home') }}" class="mobile-nav-link {{ request()->routeIs('home') ? 'active' : '' }}">
+            <i class="fas fa-home"></i> Home
+        </a>
+        <a href="{{ route('books') }}" class="mobile-nav-link {{ request()->routeIs('books', 'book.show') ? 'active' : '' }}">
+            <i class="fas fa-book"></i> Browse Books
+        </a>
+        <a href="{{ route('announcements.index') }}" class="mobile-nav-link {{ request()->routeIs('announcements.*') ? 'active' : '' }}">
+            <i class="fas fa-bullhorn"></i> Announcements
+        </a>
+        <a href="{{ route('about') }}" class="mobile-nav-link {{ request()->routeIs('about') ? 'active' : '' }}">
+            <i class="fas fa-info-circle"></i> About
+        </a>
+
+        @if ($isLoggedIn)
             <div class="mobile-nav-divider"></div>
-            <form action="/logout" method="POST">
+            <div class="mobile-nav-section-label">Management</div>
+            <a href="{{ route('books.create') }}" class="mobile-nav-link {{ request()->routeIs('books.create') ? 'active' : '' }}">
+                <i class="fas fa-plus"></i> Add Book
+            </a>
+            <a href="{{ route('requests.index') }}" class="mobile-nav-link {{ request()->routeIs('requests.*') ? 'active' : '' }}">
+                <i class="fas fa-paper-plane"></i> Requests
+            </a>
+            <a href="{{ route('my-borrowed') }}" class="mobile-nav-link {{ request()->routeIs('my-borrowed') ? 'active' : '' }}">
+                <i class="fas fa-book-reader"></i> My Borrowed
+            </a>
+            <a href="{{ route('notifications.index') }}" class="mobile-nav-link {{ request()->routeIs('notifications.*') ? 'active' : '' }}">
+                <i class="fas fa-bell"></i> Notifications
+                @if ($notifCount > 0)
+                    <span class="mobile-nav-badge">{{ $notifCount > 99 ? '99+' : $notifCount }}</span>
+                @endif
+            </a>
+            <a href="{{ route('profile') }}" class="mobile-nav-link {{ request()->routeIs('profile') ? 'active' : '' }}">
+                <i class="fas fa-user"></i> My Profile
+            </a>
+            <a href="{{ route('settings') }}" class="mobile-nav-link {{ request()->routeIs('settings*') ? 'active' : '' }}">
+                <i class="fas fa-cog"></i> Settings
+            </a>
+            @if ($headerUser && $headerUser->role === 'admin')
+                <a href="{{ route('admin.dashboard') }}" class="mobile-nav-link">
+                    <i class="fas fa-shield"></i> Admin Panel
+                </a>
+            @endif
+        @endif
+
+        <div class="mobile-nav-divider"></div>
+        <div class="mobile-nav-section-label">Support</div>
+        <a href="{{ route('support-us') }}" class="mobile-nav-link mobile-nav-support {{ request()->routeIs('support-us') ? 'active' : '' }}">
+            <i class="fas fa-heart"></i> Support Us
+        </a>
+        <a href="{{ route('faq') }}" class="mobile-nav-link {{ request()->routeIs('faq') ? 'active' : '' }}">
+            <i class="fas fa-question-circle"></i> FAQ
+        </a>
+        <a href="{{ route('guidelines') }}" class="mobile-nav-link {{ request()->routeIs('guidelines') ? 'active' : '' }}">
+            <i class="fas fa-book-open"></i> Guidelines
+        </a>
+        <a href="{{ route('contact') }}" class="mobile-nav-link {{ request()->routeIs('contact') ? 'active' : '' }}">
+            <i class="fas fa-envelope"></i> Contact
+        </a>
+        <a href="{{ route('report') }}" class="mobile-nav-link {{ request()->routeIs('report') ? 'active' : '' }}">
+            <i class="fas fa-flag"></i> Report Issue
+        </a>
+
+        @if ($isLoggedIn)
+            <div class="mobile-nav-divider"></div>
+            <form action="{{ route('logout') }}" method="POST">
                 @csrf
                 <button type="submit" class="mobile-nav-link mobile-nav-logout">
                     <i class="fas fa-sign-out-alt"></i> Logout
                 </button>
             </form>
-        @else
-            <div class="mobile-nav-divider"></div>
-            <a href="/login" class="mobile-nav-link"><i class="fas fa-sign-in-alt"></i> Login</a>
-            <a href="/register" class="mobile-nav-link mobile-nav-register"><i class="fas fa-user-plus"></i> Sign Up</a>
         @endif
     </nav>
 </div>
@@ -226,30 +267,63 @@
         justify-content: space-between;
     }
 
-    .header-logo {
+    .header-logo { flex-shrink: 0; }
+    .logo-link { display: flex; align-items: center; text-decoration: none; }
+    .logo-image { height: 36px; width: auto; }
+
+    .header-nav-desktop {
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
         flex-shrink: 0;
     }
 
-    .logo-link {
-        display: flex;
+    .header-nav-link {
+        display: inline-flex;
         align-items: center;
+        gap: 0.4rem;
+        padding: 0.5rem 0.75rem;
+        border-radius: 10px;
+        color: #5A6C7D;
         text-decoration: none;
+        font-size: 0.875rem;
+        font-weight: 600;
+        white-space: nowrap;
+        transition: color 0.2s ease, background 0.2s ease;
     }
 
-    .logo-image {
-        height: 36px;
-        width: auto;
+    .header-nav-link i { font-size: 0.8rem; opacity: 0.85; }
+
+    .header-nav-link:hover,
+    .header-nav-link.active {
+        color: #2C3E50;
+        background: rgba(76, 159, 138, 0.08);
     }
+
+    .header-nav-link.active { color: #4C9F8A; }
+
+    .header-nav-support {
+        color: #f59e0b !important;
+        font-weight: 700;
+    }
+
+    .header-nav-support:hover,
+    .header-nav-support.active {
+        background: rgba(245, 158, 11, 0.1);
+        color: #d97706 !important;
+    }
+
+    [data-theme="dark"] .header-nav-link { color: #94a3b8; }
+    [data-theme="dark"] .header-nav-link:hover,
+    [data-theme="dark"] .header-nav-link.active { color: #4C9F8A; background: rgba(76, 159, 138, 0.12); }
 
     .header-search-desktop {
         flex: 1;
-        max-width: 500px;
-        margin: 0 1rem;
+        max-width: 360px;
+        margin: 0 0.5rem;
     }
 
-    .search-form {
-        width: 100%;
-    }
+    .search-form { width: 100%; }
 
     .search-input-group {
         position: relative;
@@ -285,27 +359,20 @@
         outline: none;
         font-size: 0.9rem;
         color: #1e293b;
+        min-width: 0;
     }
 
-    [data-theme="dark"] .search-input {
-        color: #f1f5f9;
-    }
-
-    .search-input::placeholder {
-        color: #94a3b8;
-    }
+    [data-theme="dark"] .search-input { color: #f1f5f9; }
+    .search-input::placeholder { color: #94a3b8; }
 
     .header-right {
         display: flex;
         align-items: center;
-        gap: 1rem;
+        gap: 0.65rem;
         flex-shrink: 0;
     }
 
-    /* Notification Bell */
-    .notification-bell {
-        position: relative;
-    }
+    .notification-bell { position: relative; }
 
     .bell-button {
         position: relative;
@@ -318,13 +385,8 @@
         padding: 0.5rem;
     }
 
-    [data-theme="dark"] .bell-button {
-        color: #f1f5f9;
-    }
-
-    .bell-button:hover {
-        color: #4C9F8A;
-    }
+    [data-theme="dark"] .bell-button { color: #f1f5f9; }
+    .bell-button:hover { color: #4C9F8A; }
 
     .notification-badge {
         position: absolute;
@@ -340,10 +402,7 @@
         text-align: center;
     }
 
-    /* User Menu */
-    .user-menu {
-        position: relative;
-    }
+    .user-menu { position: relative; }
 
     .user-button {
         background: none;
@@ -363,15 +422,9 @@
         transition: border-color 0.2s ease;
     }
 
-    [data-theme="dark"] .user-avatar {
-        border-color: #334155;
-    }
+    [data-theme="dark"] .user-avatar { border-color: #334155; }
+    .user-button:hover .user-avatar { border-color: #4C9F8A; }
 
-    .user-button:hover .user-avatar {
-        border-color: #4C9F8A;
-    }
-
-    /* Dropdowns */
     .notification-dropdown,
     .user-dropdown {
         display: none;
@@ -393,14 +446,32 @@
     }
 
     .notification-dropdown.active,
-    .user-dropdown.active {
-        display: block;
-    }
+    .user-dropdown.active { display: block; }
 
     .notification-header,
     .user-info {
         padding: 1rem;
         border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .notification-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .notification-header h3 {
+        margin: 0;
+        font-size: 0.95rem;
+        font-weight: 700;
+    }
+
+    .close-btn {
+        background: none;
+        border: none;
+        cursor: pointer;
+        color: #94a3b8;
+        padding: 0.25rem;
     }
 
     .notification-dropdown .notification-list {
@@ -419,13 +490,8 @@
         transition: background 0.2s ease;
     }
 
-    .notification-dropdown .notification-item:hover {
-        background: rgba(76, 159, 138, 0.06);
-    }
-
-    .notification-dropdown .notification-item.unread {
-        background: rgba(76, 159, 138, 0.08);
-    }
+    .notification-dropdown .notification-item:hover { background: rgba(76, 159, 138, 0.06); }
+    .notification-dropdown .notification-item.unread { background: rgba(76, 159, 138, 0.08); }
 
     .notification-dropdown .notification-item-icon {
         width: 36px;
@@ -438,10 +504,7 @@
         font-size: 0.9rem;
     }
 
-    .notification-dropdown .notification-item-content {
-        flex: 1;
-        min-width: 0;
-    }
+    .notification-dropdown .notification-item-content { flex: 1; min-width: 0; }
 
     .notification-dropdown .notification-item-title {
         font-size: 0.85rem;
@@ -471,48 +534,16 @@
         font-size: 0.85rem;
     }
 
-    [data-theme="dark"] .notification-dropdown .notification-item-title {
-        color: #f1f5f9;
-    }
-
-    [data-theme="dark"] .notification-dropdown .notification-item-message {
-        color: #94a3b8;
-    }
-
+    [data-theme="dark"] .notification-dropdown .notification-item-title { color: #f1f5f9; }
+    [data-theme="dark"] .notification-dropdown .notification-item-message { color: #94a3b8; }
     [data-theme="dark"] .notification-header,
-    [data-theme="dark"] .user-info {
-        border-bottom-color: rgba(255, 255, 255, 0.05);
-    }
+    [data-theme="dark"] .user-info { border-bottom-color: rgba(255, 255, 255, 0.05); }
 
-    .user-info {
-        display: flex;
-        gap: 0.75rem;
-        align-items: center;
-    }
-
-    .user-avatar-large {
-        width: 48px;
-        height: 48px;
-        border-radius: 50%;
-        object-fit: cover;
-    }
-
-    .user-name {
-        font-weight: 600;
-        color: #1e293b;
-        margin: 0;
-        font-size: 0.95rem;
-    }
-
-    [data-theme="dark"] .user-name {
-        color: #f1f5f9;
-    }
-
-    .user-email {
-        color: #94a3b8;
-        font-size: 0.825rem;
-        margin: 0;
-    }
+    .user-info { display: flex; gap: 0.75rem; align-items: center; }
+    .user-avatar-large { width: 48px; height: 48px; border-radius: 50%; object-fit: cover; }
+    .user-name { font-weight: 600; color: #1e293b; margin: 0; font-size: 0.95rem; }
+    [data-theme="dark"] .user-name { color: #f1f5f9; }
+    .user-email { color: #94a3b8; font-size: 0.825rem; margin: 0; }
 
     .dropdown-divider {
         height: 1px;
@@ -520,9 +551,7 @@
         margin: 0.5rem 0;
     }
 
-    [data-theme="dark"] .dropdown-divider {
-        background: rgba(255, 255, 255, 0.05);
-    }
+    [data-theme="dark"] .dropdown-divider { background: rgba(255, 255, 255, 0.05); }
 
     .dropdown-link {
         display: flex;
@@ -534,19 +563,9 @@
         transition: all 0.2s ease;
     }
 
-    [data-theme="dark"] .dropdown-link {
-        color: #cbd5e1;
-    }
-
-    .dropdown-link:hover {
-        background: rgba(76, 159, 138, 0.1);
-        color: #4C9F8A;
-    }
-
-    .dropdown-link i {
-        width: 18px;
-        text-align: center;
-    }
+    [data-theme="dark"] .dropdown-link { color: #cbd5e1; }
+    .dropdown-link:hover { background: rgba(76, 159, 138, 0.1); color: #4C9F8A; }
+    .dropdown-link i { width: 18px; text-align: center; }
 
     .logout-link {
         border: none;
@@ -554,20 +573,14 @@
         width: 100%;
         text-align: left;
         font-family: inherit;
+        background: none;
     }
 
-    .logout-form {
-        width: 100%;
-    }
+    .logout-form { width: 100%; }
+    .auth-buttons { display: flex; gap: 0.5rem; }
 
-    /* Auth Buttons */
-    .auth-buttons {
-        display: flex;
-        gap: 0.5rem;
-    }
-
-    /* Theme Toggle */
-    .theme-toggle {
+    .theme-toggle,
+    .mobile-menu-btn {
         background: none;
         border: none;
         font-size: 1.25rem;
@@ -575,66 +588,25 @@
         color: #1e293b;
         padding: 0.5rem;
         transition: color 0.2s ease;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
     }
 
-    [data-theme="dark"] .theme-toggle {
-        color: #f1f5f9;
-    }
+    [data-theme="dark"] .theme-toggle,
+    [data-theme="dark"] .mobile-menu-btn { color: #f1f5f9; }
 
-    .theme-toggle:hover {
-        color: #4C9F8A;
-    }
+    .theme-toggle:hover,
+    .mobile-menu-btn:hover { color: #4C9F8A; }
 
-    /* Mobile Menu Button */
-    .mobile-menu-btn {
-        display: none;
-        background: none;
-        border: none;
-        font-size: 1.25rem;
-        cursor: pointer;
-        color: #1e293b;
-        padding: 0.5rem;
-    }
-
-    [data-theme="dark"] .mobile-menu-btn {
-        color: #f1f5f9;
-    }
-
-    /* Mobile Search */
     .header-search-mobile {
         display: none;
         padding: 0.5rem 1.5rem 1rem;
         border-top: 1px solid rgba(0, 0, 0, 0.05);
     }
 
-    [data-theme="dark"] .header-search-mobile {
-        border-top-color: rgba(255, 255, 255, 0.05);
-    }
+    [data-theme="dark"] .header-search-mobile { border-top-color: rgba(255, 255, 255, 0.05); }
 
-    /* Responsive */
-    @media (max-width: 768px) {
-        .header-search-desktop {
-            display: none;
-        }
-
-        .header-search-mobile {
-            display: block;
-        }
-
-        .mobile-menu-btn {
-            display: block;
-        }
-
-        .header-container {
-            gap: 0.5rem;
-        }
-
-        .auth-buttons {
-            display: none;
-        }
-    }
-
-    /* Mobile Menu Overlay */
     .mobile-menu-overlay {
         display: none;
         position: fixed;
@@ -645,34 +617,26 @@
         -webkit-backdrop-filter: blur(2px);
     }
 
-    .mobile-menu-overlay.active {
-        display: block;
-    }
+    .mobile-menu-overlay.active { display: block; }
 
-    /* Mobile Navigation Panel */
     .mobile-nav-panel {
         position: fixed;
         top: 0;
-        left: 0;
+        right: 0;
         height: 100%;
-        width: min(300px, 85vw);
+        width: min(320px, 88vw);
         background: #ffffff;
         z-index: 300;
-        transform: translateX(-100%);
+        transform: translateX(100%);
         transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         overflow-y: auto;
-        box-shadow: 4px 0 24px rgba(0, 0, 0, 0.15);
+        box-shadow: -4px 0 24px rgba(0, 0, 0, 0.15);
         display: flex;
         flex-direction: column;
     }
 
-    [data-theme="dark"] .mobile-nav-panel {
-        background: #1e293b;
-    }
-
-    .mobile-nav-panel.active {
-        transform: translateX(0);
-    }
+    [data-theme="dark"] .mobile-nav-panel { background: #1e293b; }
+    .mobile-nav-panel.active { transform: translateX(0); }
 
     .mobile-nav-header {
         display: flex;
@@ -680,11 +644,13 @@
         justify-content: space-between;
         padding: 1rem 1.25rem;
         border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+        position: sticky;
+        top: 0;
+        background: inherit;
+        z-index: 1;
     }
 
-    [data-theme="dark"] .mobile-nav-header {
-        border-bottom-color: rgba(255, 255, 255, 0.06);
-    }
+    [data-theme="dark"] .mobile-nav-header { border-bottom-color: rgba(255, 255, 255, 0.06); }
 
     .mobile-nav-close {
         background: none;
@@ -697,16 +663,11 @@
         transition: color 0.2s, background 0.2s;
     }
 
-    .mobile-nav-close:hover {
-        color: #ef4444;
-        background: rgba(239, 68, 68, 0.1);
-    }
+    .mobile-nav-close:hover { color: #ef4444; background: rgba(239, 68, 68, 0.1); }
+    [data-theme="dark"] .mobile-nav-close { color: #94a3b8; }
 
-    [data-theme="dark"] .mobile-nav-close {
-        color: #94a3b8;
-    }
-
-    .mobile-nav-user {
+    .mobile-nav-user,
+    .mobile-nav-guest {
         display: flex;
         align-items: center;
         gap: 0.75rem;
@@ -714,9 +675,33 @@
         border-bottom: 1px solid rgba(0, 0, 0, 0.06);
     }
 
-    [data-theme="dark"] .mobile-nav-user {
-        border-bottom-color: rgba(255, 255, 255, 0.06);
+    .mobile-nav-guest {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.85rem;
     }
+
+    .mobile-nav-guest-actions { display: flex; gap: 0.6rem; width: 100%; }
+
+    .mobile-nav-guest-btn {
+        flex: 1;
+        text-align: center;
+        padding: 0.6rem 0.75rem;
+        border-radius: 10px;
+        text-decoration: none;
+        font-weight: 700;
+        font-size: 0.85rem;
+        background: rgba(76, 159, 138, 0.1);
+        color: #4C9F8A;
+    }
+
+    .mobile-nav-guest-btn.primary {
+        background: #4C9F8A;
+        color: #fff;
+    }
+
+    [data-theme="dark"] .mobile-nav-user,
+    [data-theme="dark"] .mobile-nav-guest { border-bottom-color: rgba(255, 255, 255, 0.06); }
 
     .mobile-nav-avatar {
         width: 42px;
@@ -732,25 +717,25 @@
         color: #1e293b;
     }
 
-    [data-theme="dark"] .mobile-nav-user-name {
-        color: #f1f5f9;
-    }
+    [data-theme="dark"] .mobile-nav-user-name { color: #f1f5f9; }
+    .mobile-nav-user-email { font-size: 0.78rem; color: #64748b; }
 
-    .mobile-nav-user-email {
-        font-size: 0.78rem;
-        color: #64748b;
-    }
+    .mobile-nav-links { padding: 0.5rem 0 1.5rem; flex: 1; }
 
-    .mobile-nav-links {
-        padding: 0.5rem 0;
-        flex: 1;
+    .mobile-nav-section-label {
+        padding: 0.75rem 1.25rem 0.35rem;
+        font-size: 0.7rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: #94a3b8;
     }
 
     .mobile-nav-link {
         display: flex;
         align-items: center;
         gap: 0.85rem;
-        padding: 0.875rem 1.25rem;
+        padding: 0.8rem 1.25rem;
         color: #374151;
         text-decoration: none;
         font-size: 0.95rem;
@@ -764,11 +749,10 @@
         font-family: inherit;
     }
 
-    [data-theme="dark"] .mobile-nav-link {
-        color: #cbd5e1;
-    }
+    [data-theme="dark"] .mobile-nav-link { color: #cbd5e1; }
 
-    .mobile-nav-link:hover {
+    .mobile-nav-link:hover,
+    .mobile-nav-link.active {
         background: rgba(76, 159, 138, 0.08);
         color: #4C9F8A;
     }
@@ -780,27 +764,27 @@
         font-size: 0.9rem;
     }
 
-    .mobile-nav-link:hover i {
-        color: #4C9F8A;
-    }
+    .mobile-nav-link:hover i,
+    .mobile-nav-link.active i { color: #4C9F8A; }
 
-    .mobile-nav-logout {
-        color: #ef4444;
-    }
-
-    .mobile-nav-logout:hover {
-        background: rgba(239, 68, 68, 0.08);
-        color: #ef4444;
-    }
-
-    .mobile-nav-logout i {
-        color: #ef4444;
-    }
-
-    .mobile-nav-register {
-        color: #4C9F8A;
+    .mobile-nav-badge {
+        margin-left: auto;
+        background: #ef4444;
+        color: #fff;
+        font-size: 0.7rem;
         font-weight: 700;
+        padding: 0.15rem 0.45rem;
+        border-radius: 999px;
+        min-width: 1.25rem;
+        text-align: center;
     }
+
+    .mobile-nav-support { color: #f59e0b !important; font-weight: 700; }
+    .mobile-nav-support i { color: #f59e0b !important; }
+
+    .mobile-nav-logout { color: #ef4444; }
+    .mobile-nav-logout:hover { background: rgba(239, 68, 68, 0.08); color: #ef4444; }
+    .mobile-nav-logout i { color: #ef4444; }
 
     .mobile-nav-divider {
         height: 1px;
@@ -808,21 +792,36 @@
         margin: 0.5rem 0;
     }
 
-    [data-theme="dark"] .mobile-nav-divider {
-        background: rgba(255, 255, 255, 0.06);
+    [data-theme="dark"] .mobile-nav-divider { background: rgba(255, 255, 255, 0.06); }
+
+    @media (max-width: 1100px) {
+        .header-nav-desktop .header-nav-link span,
+        .header-nav-desktop { gap: 0; }
+        .header-nav-link { padding: 0.45rem 0.55rem; font-size: 0.8rem; }
+        .header-search-desktop { max-width: 220px; }
+    }
+
+    @media (max-width: 900px) {
+        .header-nav-desktop { display: none; }
+        .header-search-desktop { display: none; }
+        .header-search-mobile { display: block; }
+        .auth-buttons { display: none; }
+        .header-container { gap: 0.5rem; }
     }
 </style>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // User menu toggle
     const userMenuBtn = document.getElementById('userMenuBtn');
     const userDropdown = document.getElementById('userDropdown');
     const notificationBell = document.getElementById('notificationBell');
     const notificationDropdown = document.getElementById('notificationDropdown');
     const themeToggle = document.getElementById('themeToggle');
+    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+    const mobileNavPanel = document.getElementById('mobileNavPanel');
+    const mobileMenuOverlay = document.getElementById('mobileMenuOverlay');
+    const mobileNavClose = document.getElementById('mobileNavClose');
 
-    // User menu
     if (userMenuBtn) {
         userMenuBtn.addEventListener('click', () => {
             userDropdown?.classList.toggle('active');
@@ -830,22 +829,18 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Notification dropdown
     if (notificationBell) {
         notificationBell.addEventListener('click', () => {
             const isOpening = !notificationDropdown?.classList.contains('active');
             notificationDropdown?.classList.toggle('active');
             userDropdown?.classList.remove('active');
-            if (isOpening) {
-                loadHeaderNotifications();
-            }
+            if (isOpening) loadHeaderNotifications();
         });
     }
 
     function updateHeaderNotificationBadge(count) {
         const badge = document.getElementById('headerNotificationBadge');
         if (!badge) return;
-
         if (count > 0) {
             badge.textContent = count > 99 ? '99+' : count;
             badge.style.display = 'inline-block';
@@ -881,10 +876,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 const id = this.dataset.id;
                 const link = this.getAttribute('href');
                 if (!id || !link || link === '#') return;
-
                 e.preventDefault();
                 const csrf = document.querySelector('meta[name="csrf-token"]')?.content;
-
                 fetch('/api/notifications', {
                     method: 'POST',
                     headers: {
@@ -892,13 +885,8 @@ document.addEventListener('DOMContentLoaded', function() {
                         'Accept': 'application/json',
                         'X-CSRF-TOKEN': csrf,
                     },
-                    body: JSON.stringify({
-                        action: 'mark_read',
-                        notification_id: id,
-                    }),
-                }).finally(() => {
-                    window.location.href = link;
-                });
+                    body: JSON.stringify({ action: 'mark_read', notification_id: id }),
+                }).finally(() => { window.location.href = link; });
             });
         });
     }
@@ -906,12 +894,8 @@ document.addEventListener('DOMContentLoaded', function() {
     function loadHeaderNotifications() {
         const list = document.getElementById('notificationList');
         if (!list) return;
-
         list.innerHTML = '<div class="notification-loading" style="padding: 1rem; text-align: center; color: #94a3b8; font-size: 0.85rem;">Loading...</div>';
-
-        fetch('/api/notifications?action=list&limit=10&include_read=false', {
-            headers: { 'Accept': 'application/json' },
-        })
+        fetch('/api/notifications?action=list&limit=10&include_read=false', { headers: { 'Accept': 'application/json' } })
             .then(res => res.json())
             .then(data => {
                 if (data.success) {
@@ -926,12 +910,10 @@ document.addEventListener('DOMContentLoaded', function() {
             });
     }
 
-    // Close notification dropdown
     document.getElementById('closeNotifications')?.addEventListener('click', () => {
         notificationDropdown?.classList.remove('active');
     });
 
-    // Close dropdowns when clicking outside
     document.addEventListener('click', (e) => {
         if (!e.target.closest('.notification-bell') && !e.target.closest('.user-menu')) {
             userDropdown?.classList.remove('active');
@@ -939,37 +921,24 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Mobile menu toggle
-    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
-    const mobileNavPanel = document.getElementById('mobileNavPanel');
-    const mobileMenuOverlay = document.getElementById('mobileMenuOverlay');
-    const mobileNavClose = document.getElementById('mobileNavClose');
-
     function openMobileMenu() {
         mobileNavPanel?.classList.add('active');
         mobileMenuOverlay?.classList.add('active');
+        mobileMenuBtn?.setAttribute('aria-expanded', 'true');
         document.body.style.overflow = 'hidden';
     }
 
     function closeMobileMenu() {
         mobileNavPanel?.classList.remove('active');
         mobileMenuOverlay?.classList.remove('active');
+        mobileMenuBtn?.setAttribute('aria-expanded', 'false');
         document.body.style.overflow = '';
     }
 
-    if (mobileMenuBtn) {
-        mobileMenuBtn.addEventListener('click', openMobileMenu);
-    }
+    mobileMenuBtn?.addEventListener('click', openMobileMenu);
+    mobileNavClose?.addEventListener('click', closeMobileMenu);
+    mobileMenuOverlay?.addEventListener('click', closeMobileMenu);
 
-    if (mobileNavClose) {
-        mobileNavClose.addEventListener('click', closeMobileMenu);
-    }
-
-    if (mobileMenuOverlay) {
-        mobileMenuOverlay.addEventListener('click', closeMobileMenu);
-    }
-
-    // Theme toggle
     if (themeToggle) {
         themeToggle.addEventListener('click', () => {
             const html = document.documentElement;
@@ -979,21 +948,14 @@ document.addEventListener('DOMContentLoaded', function() {
             localStorage.setItem('theme', newTheme);
             updateThemeIcon(newTheme);
         });
-
-        // Set initial icon
-        const theme = localStorage.getItem('theme') || 'light';
-        updateThemeIcon(theme);
+        updateThemeIcon(localStorage.getItem('theme') || 'light');
     }
 
     function updateThemeIcon(theme) {
-        const icon = themeToggle.querySelector('i');
-        if (theme === 'dark') {
-            icon.classList.remove('fa-moon');
-            icon.classList.add('fa-sun');
-        } else {
-            icon.classList.remove('fa-sun');
-            icon.classList.add('fa-moon');
-        }
+        const icon = themeToggle?.querySelector('i');
+        if (!icon) return;
+        icon.classList.toggle('fa-moon', theme !== 'dark');
+        icon.classList.toggle('fa-sun', theme === 'dark');
     }
 });
 </script>

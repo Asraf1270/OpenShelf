@@ -75,7 +75,7 @@
    ========================================== */
 
 body {
-    padding-bottom: 100px; /* Account for fixed bottom nav */
+    padding-bottom: 0;
     transition: background-color 0.3s ease;
 }
 
@@ -110,7 +110,8 @@ body.no-bottom-nav {
    Responsive Design
    ========================================== */
 
-@media (max-width: 768px) {
+/* Bottom nav is mobile-only — reserve space only there */
+@media (max-width: 900px) {
     body {
         padding-bottom: 120px;
     }
