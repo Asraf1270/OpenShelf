@@ -82,6 +82,7 @@
         @endfor
     @else
         @php($fallbackCover = asset('images/default-book-cover.jpg'))
+        @php($fallbackAvatar = asset('images/avatars/default.jpg'))
         @foreach ($books as $book)
             @php($bookId = $book['id'] ?? ($book['book_id'] ?? ''))
             @php($title = $book['title'] ?? 'Untitled')
@@ -97,7 +98,7 @@
             <div class="book-card" data-title="{{ strtolower($title) }}" data-author="{{ strtolower($author) }}" data-date="{{ $createdAt }}">
                 <a href="/book/?id={{ $bookId }}" class="cover-link">
                     <div class="book-cover-container">
-                        <img src="{{ $book['cover_url'] ?? $fallbackCover }}" alt="{{ $title }}" loading="lazy" onerror="this.src='{{ $fallbackCover }}'">
+                        <img src="{{ $book['cover_url'] ?? $fallbackCover }}" alt="{{ $title }}" loading="lazy" onerror="this.onerror=null; this.src='{{ $fallbackCover }}'">
                         <span class="book-badge badge-{{ $status }}">{{ ucfirst($status) }}</span>
                     </div>
                 </a>
@@ -130,7 +131,7 @@
                     @if ($showOwner)
                         <div class="book-footer">
                             <a href="/profile/?id={{ $book['owner_id'] ?? '' }}" class="owner-link-area">
-                                <img src="{{ $book['owner_avatar_url'] ?? asset('images/avatars/default.jpg') }}" alt="{{ $book['owner_name'] ?? 'Owner' }}" class="owner-avatar">
+                                <img src="{{ $book['owner_avatar_url'] ?? $fallbackAvatar ?? asset('images/avatars/default.jpg') }}" alt="{{ $book['owner_name'] ?? 'Owner' }}" class="owner-avatar" onerror="this.onerror=null; this.src='{{ $fallbackAvatar ?? asset('images/avatars/default.jpg') }}'">
                                 <span class="owner-name">{{ $book['owner_name'] ?? 'Owner' }}</span>
                             </a>
                         </div>

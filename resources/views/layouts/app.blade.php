@@ -17,14 +17,14 @@
     <meta property="og:url" content="{{ url()->current() }}">
     <meta property="og:title" content="{{ isset($seoTitle) ? $seoTitle : 'OpenShelf' }}">
     <meta property="og:description" content="{{ isset($seoDesc) ? $seoDesc : 'Share and borrow books within your campus community' }}">
-    <meta property="og:image" content="{{ isset($seoImage) ? $seoImage : asset('assets/images/pwa/icon-192x192.png') }}">
+    <meta property="og:image" content="{{ isset($seoImage) ? $seoImage : asset('images/pwa/icon-192x192.png') }}">
 
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image">
     <meta property="twitter:url" content="{{ url()->current() }}">
     <meta property="twitter:title" content="{{ isset($seoTitle) ? $seoTitle : 'OpenShelf' }}">
     <meta property="twitter:description" content="{{ isset($seoDesc) ? $seoDesc : 'Share and borrow books within your campus community' }}">
-    <meta property="twitter:image" content="{{ isset($seoImage) ? $seoImage : asset('assets/images/pwa/icon-192x192.png') }}">
+    <meta property="twitter:image" content="{{ isset($seoImage) ? $seoImage : asset('images/pwa/icon-192x192.png') }}">
 
     <!-- Structured Data (Schema.org) -->
     @if(isset($book) && is_array($book))
@@ -41,7 +41,7 @@
             "@@type": "Organization",
             "name": "OpenShelf"
         },
-        "image": "{{ isset($seoImage) ? $seoImage : asset('assets/images/default-book.png') }}",
+        "image": "{{ isset($seoImage) ? $seoImage : asset('images/default-book-cover.jpg') }}",
         "description": "{{ isset($book['description']) ? substr(strip_tags($book['description']), 0, 155) : 'Borrow this book on OpenShelf' }}",
         @if(isset($book['rating']) && $book['rating'] > 0)
         "aggregateRating": {
@@ -59,15 +59,15 @@
         "@@type": "Organization",
         "name": "OpenShelf",
         "url": "{{ url('/') }}",
-        "logo": "{{ asset('assets/images/logo.png') }}",
+        "logo": "{{ asset('images/logo-full.svg') }}",
         "description": "A student-led, peer-to-peer book sharing platform"
     }
     </script>
     @endif
 
     <!-- Favicon & PWA Icons -->
-    <link rel="icon" type="image/svg+xml" href="{{ asset('assets/images/favicon.svg') }}">
-    <link rel="apple-touch-icon" href="{{ asset('assets/images/pwa/icon-192x192.png') }}">
+    <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
+    <link rel="apple-touch-icon" href="{{ asset('images/pwa/icon-192x192.png') }}">
     <link rel="manifest" href="{{ route('pwa.manifest') }}">
 
     <!-- Stylesheets -->
@@ -135,7 +135,7 @@
         // Register service worker for PWA support
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/sw.js')
+                navigator.serviceWorker.register('{{ asset('sw.js') }}')
                     .then((registration) => {
                         console.log('[PWA] Service Worker registered:', registration);
                     })

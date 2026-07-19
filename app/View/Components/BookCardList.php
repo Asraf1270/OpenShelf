@@ -89,12 +89,24 @@ class BookCardList extends Component
             return asset('images/default-book-cover.jpg');
         }
 
-        $relative = ltrim($coverImage, '/');
-        if (! str_starts_with($relative, 'storage/') && ! str_starts_with($relative, 'uploads/')) {
-            $relative = 'storage/uploads/book_cover/' . $relative;
-        } elseif (str_starts_with($relative, 'uploads/')) {
-            $relative = 'storage/' . $relative;
+        $value = trim($coverImage);
+        if ($this->isAbsoluteUrl($value) || str_starts_with($value, 'data:')) {
+            return $value;
         }
+
+        $path = parse_url($value, PHP_URL_PATH) ?: $value;
+        $path = ltrim($path, '/');
+
+        if (str_starts_with($path, 'storage/')) {
+            return asset($path);
+        }
+
+        if (str_starts_with($path, 'uploads/')) {
+            return file_exists(public_path('storage/' . $path)) ? asset('storage/' . $path) : asset('images/default-book-cover.jpg');
+        }
+
+        $filename = basename($path);
+        $relative = 'storage/uploads/book_cover/' . $filename;
         $publicPath = public_path($relative);
 
         return file_exists($publicPath) ? asset($relative) : asset('images/default-book-cover.jpg');
@@ -103,12 +115,23 @@ class BookCardList extends Component
     private function resolveAvatarUrl(string $ownerAvatar): string
     {
         if (! empty($ownerAvatar) && $ownerAvatar !== 'default-avatar.jpg') {
-            $relative = ltrim($ownerAvatar, '/');
-            if (! str_starts_with($relative, 'storage/') && ! str_starts_with($relative, 'uploads/')) {
-                $relative = 'storage/uploads/profile/' . $relative;
-            } elseif (str_starts_with($relative, 'uploads/')) {
-                $relative = 'storage/' . $relative;
+            $value = trim($ownerAvatar);
+            if ($this->isAbsoluteUrl($value) || str_starts_with($value, 'data:')) {
+                return $value;
             }
+
+            $path = parse_url($value, PHP_URL_PATH) ?: $value;
+            $path = ltrim($path, '/');
+
+            if (str_starts_with($path, 'storage/')) {
+                return asset($path);
+            }
+
+            if (str_starts_with($path, 'uploads/')) {
+                return file_exists(public_path('storage/' . $path)) ? asset('storage/' . $path) : asset('images/avatars/default.jpg');
+            }
+
+            $relative = 'storage/uploads/profile/' . basename($path);
             $publicPath = public_path($relative);
 
             if (file_exists($publicPath)) {
@@ -117,6 +140,11 @@ class BookCardList extends Component
         }
 
         return asset('images/avatars/default.jpg');
+    }
+
+    private function isAbsoluteUrl(string $value): bool
+    {
+        return preg_match('#^(https?:)?//#i', $value) === 1;
     }
 
     private function resolveHallName(string $hallId): string

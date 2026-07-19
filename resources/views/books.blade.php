@@ -1,6 +1,15 @@
 @extends('layouts.app')
 
 @section('content')
+<style>
+    .hide-on-mobile { display: block; }
+    .show-on-mobile { display: none; }
+
+    @media (max-width: 900px) {
+        .hide-on-mobile { display: none !important; }
+        .show-on-mobile { display: block !important; }
+    }
+</style>
 <div class="books-main">
     <!-- Sticky Category / Filter Bar -->
     <div class="minimal-top-bar">
@@ -440,19 +449,36 @@ async function loadMoreBooks() {
     }
 }
 
+function resolveUploadUrl(value, fallbackPath, basePath) {
+    if (!value) return fallbackPath;
+
+    const raw = String(value).trim();
+    if (!raw) return fallbackPath;
+    if (/^(https?:)?\/\//i.test(raw) || raw.startsWith('data:')) return raw;
+
+    const normalized = raw.replace(/^\/+/, '');
+    if (normalized.startsWith('storage/')) return `/${normalized}`;
+    if (normalized.startsWith('uploads/')) return `/storage/${normalized}`;
+    if (normalized.startsWith(basePath)) return `/${normalized}`;
+
+    return `/${basePath}${normalized.split('/').pop()}`;
+}
+
 function createBookCardGrid(book) {
     const div = document.createElement('div');
     div.className = 'book-card';
-    div.dataset.title = book.title.toLowerCase();
-    div.dataset.author = book.author.toLowerCase();
+    div.dataset.title = (book.title || '').toLowerCase();
+    div.dataset.author = (book.author || '').toLowerCase();
     div.dataset.date = book.created_at;
 
-    const status = book.status.toLowerCase();
+    const status = (book.status || 'available').toLowerCase();
     const rating = parseFloat(book.rating) || 0;
+    const coverUrl = resolveUploadUrl(book.cover_image, '{{ asset('images/default-book-cover.jpg') }}', 'storage/uploads/book_cover/');
+    const avatarUrl = resolveUploadUrl(book.owner_avatar, '{{ asset('images/avatars/default.jpg') }}', 'storage/uploads/profile/');
     
     div.innerHTML = `
         <div class="book-cover-container">
-            <img src="${book.cover_image}" alt="${book.title}" loading="lazy" onerror="this.src='{{ asset('images/default-book-cover.jpg') }}';">
+            <img src="${coverUrl}" alt="${book.title}" loading="lazy" onerror="this.onerror=null; this.src='{{ asset('images/default-book-cover.jpg') }}';">
             <span class="book-badge badge-${status}">${status.charAt(0).toUpperCase() + status.slice(1)}</span>
         </div>
         <div class="book-info">
@@ -462,7 +488,7 @@ function createBookCardGrid(book) {
             ${getRatingHtml(book)}
             <div class="book-footer">
                 <div class="owner-info">
-                    <img src="${book.owner_avatar}" alt="${book.owner_name}" class="owner-avatar" onerror="this.src='{{ asset('images/avatars/default.jpg') }}';">
+                    <img src="${avatarUrl}" alt="${book.owner_name}" class="owner-avatar" onerror="this.onerror=null; this.src='{{ asset('images/avatars/default.jpg') }}';">
                     <span class="owner-name">${book.owner_name}</span>
                 </div>
             </div>
@@ -474,12 +500,14 @@ function createBookCardGrid(book) {
 function createBookCardList(book) {
     const div = document.createElement('div');
     div.className = 'book-card-list';
-    div.dataset.title = book.title.toLowerCase();
-    div.dataset.author = book.author.toLowerCase();
+    div.dataset.title = (book.title || '').toLowerCase();
+    div.dataset.author = (book.author || '').toLowerCase();
     div.dataset.date = book.created_at;
 
-    const status = book.status.toLowerCase();
+    const status = (book.status || 'available').toLowerCase();
     const rating = parseFloat(book.rating) || 0;
+    const coverUrl = resolveUploadUrl(book.cover_image, '{{ asset('images/default-book-cover.jpg') }}', 'storage/uploads/book_cover/');
+    const avatarUrl = resolveUploadUrl(book.owner_avatar, '{{ asset('images/avatars/default.jpg') }}', 'storage/uploads/profile/');
     
     // Simple hall mapping in JS (matching helpers.php)
     const halls = {'1': 'Amar Ekushey Hall', '2': 'Dr. Muhammad Shahidullah Hall', '3': 'Fazlul Huq Muslim Hall'};
@@ -515,7 +543,7 @@ function createBookCardList(book) {
     div.innerHTML = `
         <div class="status-sign status-${status}" title="${status.charAt(0).toUpperCase() + status.slice(1)}"></div>
         <a href="/book?id=${book.id}" class="cover-link">
-            <img src="${book.cover_image}" alt="${book.title}" class="book-cover-image" onerror="this.src='{{ asset('images/default-book-cover.jpg') }}';">
+            <img src="${coverUrl}" alt="${book.title}" class="book-cover-image" onerror="this.onerror=null; this.src='{{ asset('images/default-book-cover.jpg') }}';">
         </a>
         <div class="card-info-section">
             <a href="/book?id=${book.id}" class="book-info-link">
@@ -525,7 +553,7 @@ function createBookCardList(book) {
                 ${ratingRowHtml}
             </a>
             <a href="/profile?id=${book.owner_id}" class="owner-link-area">
-                <img src="${book.owner_avatar}" alt="${book.owner_name}" class="owner-avatar" onerror="this.src='{{ asset('images/avatars/default.jpg') }}';">
+                <img src="${avatarUrl}" alt="${book.owner_name}" class="owner-avatar" onerror="this.onerror=null; this.src='{{ asset('images/avatars/default.jpg') }}';">
                 <div class="owner-details">
                     <span class="owner-name">${book.owner_name}</span>
                     <span class="owner-hall">${displayHall}</span>

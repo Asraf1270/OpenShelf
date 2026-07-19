@@ -96,7 +96,7 @@
             <div class="book-card-list" data-book-id="{{ $bookId }}">
                 <div class="status-sign status-{{ $status }}" title="{{ ucfirst($status) }}"></div>
                 <a href="/book/?id={{ $bookId }}" class="cover-link">
-                    <img src="{{ $book['cover_url'] ?? $fallbackCover }}" alt="{{ $title }}" class="book-cover-image" onerror="this.src='{{ $fallbackCover }}'">
+                    <img src="{{ $book['cover_url'] ?? $fallbackCover }}" alt="{{ $title }}" class="book-cover-image" onerror="this.onerror=null; this.src='{{ $fallbackCover }}'">
                 </a>
                 <div class="card-info-section">
                     <a href="/book/?id={{ $bookId }}" class="book-info-link">
@@ -128,7 +128,7 @@
                     </a>
                     @if ($showOwner)
                         <a href="/profile/?id={{ $book['owner_id'] ?? '' }}" class="owner-link-area">
-                            <img src="{{ $book['owner_avatar_url'] ?? $fallbackAvatar }}" alt="{{ $book['owner_name'] ?? 'Owner' }}" class="owner-avatar" onerror="this.src='{{ $fallbackAvatar }}'">
+                            <img src="{{ $book['owner_avatar_url'] ?? $fallbackAvatar }}" alt="{{ $book['owner_name'] ?? 'Owner' }}" class="owner-avatar" onerror="this.onerror=null; this.src='{{ $fallbackAvatar }}'">
                             <div class="owner-details">
                                 <span class="owner-name">{{ $book['owner_name'] ?? 'Owner' }}</span>
                                 <span class="owner-hall">{{ $book['display_hall'] ?? 'N/A' }}</span>
