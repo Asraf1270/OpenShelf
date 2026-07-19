@@ -72,7 +72,37 @@
 
     <!-- Stylesheets -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @php
+        $viteManifestPath = public_path('build/manifest.json');
+        $viteManifestExists = file_exists($viteManifestPath);
+        $viteAssetsPath = public_path('build/assets');
+        $fallbackCssAsset = null;
+        $fallbackJsAsset = null;
+
+        if (! $viteManifestExists && is_dir($viteAssetsPath)) {
+            $assetFiles = array_diff(scandir($viteAssetsPath), ['.', '..']);
+
+            foreach ($assetFiles as $assetFile) {
+                if (str_ends_with($assetFile, '.css') && str_contains($assetFile, 'app')) {
+                    $fallbackCssAsset = asset('build/assets/' . $assetFile);
+                } elseif (str_ends_with($assetFile, '.js') && str_contains($assetFile, 'app')) {
+                    $fallbackJsAsset = asset('build/assets/' . $assetFile);
+                }
+            }
+        }
+    @endphp
+
+    @if ($viteManifestExists)
+        @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @else
+        @if ($fallbackCssAsset)
+            <link rel="stylesheet" href="{{ $fallbackCssAsset }}">
+        @endif
+
+        @if ($fallbackJsAsset)
+            <script type="module" src="{{ $fallbackJsAsset }}"></script>
+        @endif
+    @endif
     @stack('styles')
 
     <!-- CSRF Token for AJAX -->
