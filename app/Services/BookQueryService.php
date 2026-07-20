@@ -235,8 +235,14 @@ class BookQueryService
     public function formatBookForApi(Book $book): array
     {
         $data = $book->toArray();
-        $data['owner_avatar'] = $this->resolveOwnerAvatarPath($book->owner_avatar ?? '');
-        $data['cover_image'] = $this->resolveCoverPath($book->cover_image ?? '');
+        $resolvedCover  = $this->resolveCoverPath($book->cover_image ?? '');
+        $resolvedAvatar = $this->resolveOwnerAvatarPath($book->owner_avatar ?? '');
+
+        // Set both key conventions so Blade components and JS both work
+        $data['cover_image']       = $resolvedCover;
+        $data['cover_url']         = $resolvedCover;
+        $data['owner_avatar']      = $resolvedAvatar;
+        $data['owner_avatar_url']  = $resolvedAvatar;
 
         return $data;
     }
@@ -244,7 +250,7 @@ class BookQueryService
     public function resolveCoverPath(?string $coverImage): string
     {
         if (empty($coverImage)) {
-            return asset('images/default-book-cover.jpg');
+            return '/images/default-book-cover.jpg';
         }
 
         $filename = basename(ltrim($coverImage, '/'));
@@ -252,18 +258,18 @@ class BookQueryService
         $thumbRelative = 'storage/uploads/book_cover/thumb_' . $filename;
 
         if (file_exists(public_path($fullRelative))) {
-            return asset($fullRelative);
+            return '/' . $fullRelative;
         }
 
         if (file_exists(public_path($thumbRelative))) {
-            return asset($thumbRelative);
+            return '/' . $thumbRelative;
         }
 
         $relative = 'storage/uploads/book_cover/' . ltrim($coverImage, '/');
 
         return file_exists(public_path($relative))
-            ? asset($relative)
-            : asset('images/default-book-cover.jpg');
+            ? '/' . $relative
+            : '/images/default-book-cover.jpg';
     }
 
     public function resolveOwnerAvatarPath(?string $ownerAvatar): string
@@ -272,11 +278,11 @@ class BookQueryService
             $relative = 'storage/uploads/profile/' . ltrim($ownerAvatar, '/');
 
             if (file_exists(public_path($relative))) {
-                return asset($relative);
+                return '/' . $relative;
             }
         }
 
-        return asset('images/avatars/default.jpg');
+        return '/images/avatars/default.jpg';
     }
 
     private function relatedQuery(array $excludeIds): Builder

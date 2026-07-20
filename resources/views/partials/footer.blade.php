@@ -4,7 +4,7 @@
             <div class="footer-section">
                 <div class="footer-logo">
                     <a href="{{ route('home') }}">
-                        <img src="{{ asset('assets/images/logo-wordmark.svg') }}" alt="OpenShelf" height="28" style="filter: brightness(0) invert(1) sepia(1) saturate(5) hue-rotate(130deg);">
+                        <img src="{{ asset('images/logo-wordmark.svg') }}" alt="OpenShelf" height="28" style="filter: brightness(0) invert(1) sepia(1) saturate(5) hue-rotate(130deg);">
                     </a>
                 </div>
                 <p class="footer-tagline">Share books. Share knowledge. Built for campus communities.</p>

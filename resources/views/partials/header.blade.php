@@ -7,7 +7,7 @@
     <div class="header-container">
         <div class="header-logo">
             <a href="{{ route('home') }}" class="logo-link">
-                <img src="{{ asset('assets/images/logo.svg') }}" alt="OpenShelf" class="logo-image">
+                <img src="{{ asset('images/logo-full.svg') }}" alt="OpenShelf" class="logo-image">
             </a>
         </div>
 
@@ -141,7 +141,7 @@
 
 <div class="mobile-nav-panel" id="mobileNavPanel" role="dialog" aria-label="Navigation menu">
     <div class="mobile-nav-header">
-        <img src="{{ asset('assets/images/logo.svg') }}" alt="OpenShelf" style="height: 30px;">
+        <img src="{{ asset('images/logo-full.svg') }}" alt="OpenShelf" style="height: 30px;">
         <button class="mobile-nav-close" id="mobileNavClose" type="button" aria-label="Close menu">
             <i class="fas fa-times"></i>
         </button>

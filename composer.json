@@ -8,16 +8,23 @@
     "require": {
         "php": "^8.3",
         "laravel/framework": "^13.8",
-        "laravel/tinker": "^3.0"
-    },
-    "require-dev": {
-        "fakerphp/faker": "^1.23",
-        "laravel/pail": "^1.2.5",
-        "laravel/pao": "^1.0.6",
-        "laravel/pint": "^1.27",
-        "mockery/mockery": "^1.6",
-        "nunomaduro/collision": "^8.6",
-        "phpunit/phpunit": "^12.5.12"
+        "laravel/tinker": "^3.0",
+        "symfony/clock": "~8.0.0",
+        "symfony/console": "~8.0.0",
+        "symfony/css-selector": "~8.0.0",
+        "symfony/error-handler": "~8.0.0",
+        "symfony/event-dispatcher": "~8.0.0",
+        "symfony/finder": "~8.0.0",
+        "symfony/http-foundation": "~8.0.0",
+        "symfony/http-kernel": "~8.0.0",
+        "symfony/mailer": "~8.0.0",
+        "symfony/mime": "~8.0.0",
+        "symfony/process": "~8.0.0",
+        "symfony/routing": "~8.0.0",
+        "symfony/string": "~8.0.0",
+        "symfony/translation": "~8.0.0",
+        "symfony/uid": "~8.0.0",
+        "symfony/var-dumper": "~8.0.0"
     },
     "autoload": {
         "psr-4": {
