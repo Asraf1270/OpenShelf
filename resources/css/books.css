@@ -53,8 +53,8 @@
             border-bottom: 1px solid var(--header-border);
             margin: 0;
             position: sticky;
-            top: 72px; /* Default: Header height */
-            z-index: 990;
+            top: 60px; /* Header height on desktop */
+            z-index: 90; /* Under main header (100) and mobile navigation drawer (300) */
             display: flex;
             align-items: center;
             gap: 1rem;
@@ -63,6 +63,12 @@
             scrollbar-width: none;
             -ms-overflow-style: none;
             transition: top 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @media (max-width: 900px) {
+            .minimal-top-bar {
+                top: 116px; /* Header height on mobile (includes search bar) */
+            }
         }
 
         /* When header is hidden, category bar sticks to top */
@@ -176,7 +182,7 @@
             flex-direction: row;
             align-items: center;
             gap: 0.75rem;
-            margin-top: 5rem;
+            margin-top: 1.25rem;
             margin-bottom: 1.25rem;
             width: 100%;
         }

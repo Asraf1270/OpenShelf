@@ -7,6 +7,8 @@ return [
         'name' => env('MAIL_REPLY_TO_NAME', 'OpenShelf Support'),
     ],
 
+    'fallback_to_log' => env('MAIL_FALLBACK_TO_LOG', false),
+
     'admin_email' => env('MAIL_ADMIN_EMAIL', 'admin@duopenshelf.top'),
 
     'rate_limit' => [

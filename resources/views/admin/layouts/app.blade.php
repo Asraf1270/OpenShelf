@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'OpenShelf Admin')</title>
-    <link rel="icon" type="image/svg+xml" href="{{ asset('assets/images/logo-icon.svg') }}">
+    <link rel="icon" type="image/svg+xml" href="{{ asset('images/logo-icon.svg') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <style>
@@ -281,7 +281,7 @@
         <aside class="admin-sidebar" id="adminSidebar">
             <div class="sidebar-header">
                 <a href="{{ route('admin.dashboard') }}" class="sidebar-logo">
-                    <img src="{{ asset('assets/images/logo-icon.svg') }}" alt="OpenShelf">
+                    <img src="{{ asset('images/logo-icon.svg') }}" alt="OpenShelf">
                     <span>OpenShelf</span>
                 </a>
                 <div class="sidebar-badge">

@@ -51,26 +51,8 @@ class MailerService
             return false;
         }
 
-        $replyTo = config('openshelf-mail.reply_to');
-
         try {
-            Mail::html($htmlBody, function ($message) use ($to, $toName, $subject, $replyTo, $attachments, $userId) {
-                $message->to($to, $toName)
-                    ->subject($subject)
-                    ->replyTo($replyTo['address'], $replyTo['name']);
-
-                foreach ($attachments as $attachment) {
-                    if (is_string($attachment) && file_exists($attachment)) {
-                        $message->attach($attachment);
-                    }
-                }
-
-                if ($userId) {
-                    $message->getHeaders()->addTextHeader('X-User-ID', $userId);
-                }
-
-                $message->getHeaders()->addTextHeader('X-Mailer', 'OpenShelf-Mailer/2.0');
-            });
+            $this->sendMessage($to, $toName, $subject, $htmlBody, $attachments, $userId);
 
             $this->logInfo("Email sent to {$to} - Subject: {$subject}");
 
@@ -80,6 +62,23 @@ class MailerService
 
             return true;
         } catch (Throwable $e) {
+            if (config('openshelf-mail.fallback_to_log', false)) {
+                try {
+                    $this->sendMessage($to, $toName, $subject, $htmlBody, $attachments, $userId, 'log');
+                    $this->logInfo("Email sent to {$to} via log fallback - Subject: {$subject}");
+
+                    if ($userId) {
+                        $this->updateRateLimit($userId);
+                    }
+
+                    return true;
+                } catch (Throwable $fallbackException) {
+                    $this->logError("Failed to send email to {$to} via log fallback: " . $fallbackException->getMessage());
+
+                    return false;
+                }
+            }
+
             $this->logError("Failed to send email to {$to}: " . $e->getMessage());
 
             return false;
@@ -99,6 +98,37 @@ class MailerService
         } catch (Throwable $e) {
             return ['success' => false, 'message' => $e->getMessage()];
         }
+    }
+
+    private function sendMessage(
+        string $to,
+        string $toName,
+        string $subject,
+        string $htmlBody,
+        array $attachments = [],
+        ?string $userId = null,
+        ?string $mailer = null,
+    ): void {
+        $replyTo = config('openshelf-mail.reply_to');
+        $transport = $mailer ? Mail::mailer($mailer) : Mail::mailer();
+
+        $transport->html($htmlBody, function ($message) use ($to, $toName, $subject, $replyTo, $attachments, $userId) {
+            $message->to($to, $toName)
+                ->subject($subject)
+                ->replyTo($replyTo['address'], $replyTo['name']);
+
+            foreach ($attachments as $attachment) {
+                if (is_string($attachment) && file_exists($attachment)) {
+                    $message->attach($attachment);
+                }
+            }
+
+            if ($userId) {
+                $message->getHeaders()->addTextHeader('X-User-ID', $userId);
+            }
+
+            $message->getHeaders()->addTextHeader('X-Mailer', 'OpenShelf-Mailer/2.0');
+        });
     }
 
     private function prepareTemplateData(string $template, array $data): array
