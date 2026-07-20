@@ -69,7 +69,7 @@ class Book extends Model
     private function resolveStoredCoverPath(bool $preferFullImage): string
     {
         if (empty($this->cover_image)) {
-            return asset('images/default-book-cover.jpg');
+            return '/images/default-book-cover.jpg';
         }
 
         $filename = basename(ltrim($this->cover_image, '/'));
@@ -78,27 +78,27 @@ class Book extends Model
 
         if ($preferFullImage) {
             if (file_exists(public_path($fullRelative))) {
-                return asset($fullRelative);
+                return '/' . $fullRelative;
             }
 
             if (file_exists(public_path($thumbRelative))) {
-                return asset($thumbRelative);
+                return '/' . $thumbRelative;
             }
         } else {
             if (file_exists(public_path($fullRelative))) {
-                return asset($fullRelative);
+                return '/' . $fullRelative;
             }
 
             if (file_exists(public_path($thumbRelative))) {
-                return asset($thumbRelative);
+                return '/' . $thumbRelative;
             }
         }
 
         $relative = 'storage/uploads/book_cover/' . ltrim($this->cover_image, '/');
 
         return file_exists(public_path($relative))
-            ? asset($relative)
-            : asset('images/default-book-cover.jpg');
+            ? '/' . $relative
+            : '/images/default-book-cover.jpg';
     }
 
     public function getOwnerAvatarUrlAttribute(): string
@@ -108,11 +108,11 @@ class Book extends Model
             $publicPath = public_path($relative);
 
             if (file_exists($publicPath)) {
-                return asset($relative);
+                return '/' . $relative;
             }
         }
 
-        return asset('images/avatars/default.jpg');
+        return '/images/avatars/default.jpg';
     }
 
     public function getHallNameAttribute(): string

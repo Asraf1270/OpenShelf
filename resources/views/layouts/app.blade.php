@@ -131,11 +131,12 @@
     @stack('scripts')
 
     <!-- Service Worker Registration for PWA -->
+    @php $swUrl = asset('sw.js'); @endphp
     <script>
         // Register service worker for PWA support
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('{{ asset('sw.js') }}')
+                navigator.serviceWorker.register('{{ $swUrl }}')
                     .then((registration) => {
                         console.log('[PWA] Service Worker registered:', registration);
                     })

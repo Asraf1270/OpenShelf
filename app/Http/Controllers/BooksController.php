@@ -32,22 +32,29 @@ class BooksController extends Controller
         );
 
         $categories = $this->bookQueryService->getCategories();
-        $lastBook = $filteredBooks->last();
+        $lastBook   = $filteredBooks->last();
+        $hasMore    = $filteredBooks->count() >= $limit; // computed here while type is certain
+
+        // Enrich books with resolved image URLs for Blade-rendered cards
+        $enrichedBooks = $filteredBooks->map(
+            fn ($book) => $this->bookQueryService->formatBookForApi($book)
+        );
 
         return view('books', [
-            'seoTitle' => 'Browse Books - OpenShelf',
-            'seoDesc' => 'Discover and borrow books shared by students on OpenShelf.',
-            'filteredBooks' => $filteredBooks,
-            'categories' => $categories,
-            'search' => $search,
+            'seoTitle'           => 'Browse Books - OpenShelf',
+            'seoDesc'            => 'Discover and borrow books shared by students on OpenShelf.',
+            'filteredBooks'      => $enrichedBooks,
+            'categories'         => $categories,
+            'search'             => $search,
             'selectedCategories' => $selectedCategories,
-            'availability' => $availability,
-            'hallFilter' => $hallFilter,
-            'sortParam' => $sortParam,
-            'limit' => $limit,
-            'initialCursor' => [
+            'availability'       => $availability,
+            'hallFilter'         => $hallFilter,
+            'sortParam'          => $sortParam,
+            'limit'              => $limit,
+            'hasMore'            => $hasMore,
+            'initialCursor'      => [
                 'date' => $lastBook?->created_at,
-                'id' => $lastBook?->id,
+                'id'   => $lastBook?->id,
             ],
             'userHall' => $request->session()->get('user_hall'),
         ]);

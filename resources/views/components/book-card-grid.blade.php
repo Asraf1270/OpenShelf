@@ -81,8 +81,8 @@
             </div>
         @endfor
     @else
-        @php($fallbackCover = asset('images/default-book-cover.jpg'))
-        @php($fallbackAvatar = asset('images/avatars/default.jpg'))
+        @php($fallbackCover = '/images/default-book-cover.jpg')
+        @php($fallbackAvatar = '/images/avatars/default.jpg')
         @foreach ($books as $book)
             @php($bookId = $book['id'] ?? ($book['book_id'] ?? ''))
             @php($title = $book['title'] ?? 'Untitled')
@@ -131,7 +131,7 @@
                     @if ($showOwner)
                         <div class="book-footer">
                             <a href="/profile/?id={{ $book['owner_id'] ?? '' }}" class="owner-link-area">
-                                <img src="{{ $book['owner_avatar_url'] ?? $fallbackAvatar ?? asset('images/avatars/default.jpg') }}" alt="{{ $book['owner_name'] ?? 'Owner' }}" class="owner-avatar" onerror="this.onerror=null; this.src='{{ $fallbackAvatar ?? asset('images/avatars/default.jpg') }}'">
+                                <img src="{{ $book['owner_avatar_url'] ?? $fallbackAvatar }}" alt="{{ $book['owner_name'] ?? 'Owner' }}" class="owner-avatar" onerror="this.onerror=null; this.src='{{ $fallbackAvatar }}'">
                                 <span class="owner-name">{{ $book['owner_name'] ?? 'Owner' }}</span>
                             </a>
                         </div>

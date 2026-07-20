@@ -98,7 +98,7 @@
     </div>
     
     <!-- Books Grid -->
-    @if ($filteredBooks->isEmpty())
+    @if (count($filteredBooks) === 0)
         <div class="empty-glass">
             <div class="empty-icon-box">
                 <i class="fas fa-book-open"></i>
@@ -116,7 +116,7 @@
             <x-book-card-list :books="$filteredBooks" id="booksGridMobile" />
         </div>
 
-        @if ($filteredBooks->count() >= $limit)
+        @if ($hasMore)
         <div id="infiniteScrollTrigger" style="margin-top: 2rem; width: 100%;">
             <div id="skeleton-desktop-wrapper" class="hide-on-mobile" style="display: none;">
                 <x-book-card-grid :skeleton="true" :count="4" />
@@ -134,26 +134,40 @@
 @endsection
 
 @push('scripts')
+{{-- PHP data island: type="application/json" is not linted as JS by the IDE --}}
+<script type="application/json" id="books-page-data">
+{!! json_encode([
+    'cursorDate'  => $initialCursor['date'],
+    'cursorId'    => $initialCursor['id'],
+    'hasMore'     => $hasMore,
+    'search'      => $search,
+    'categories'  => $selectedCategories,
+    'availability'=> $availability,
+    'hall'        => $hallFilter,
+    'sort'        => $sortParam,
+]) !!}
+</script>
 <script>
 
-let cursorDate = @json($initialCursor['date']);
-let cursorId = @json($initialCursor['id']);
-let isLoading = false;
-let hasMore = {{ $filteredBooks->count() >= $limit ? 'true' : 'false' }};
+const __pd = JSON.parse(document.getElementById('books-page-data').textContent);
+let cursorDate = __pd.cursorDate;
+let cursorId   = __pd.cursorId;
+let isLoading  = false;
+let hasMore    = __pd.hasMore;
 const booksGridDesktop = document.getElementById('booksGridDesktop');
-const booksGridMobile = document.getElementById('booksGridMobile');
-const skeletonDesktop = document.getElementById('skeleton-desktop-wrapper');
-const skeletonMobile = document.getElementById('skeleton-mobile-wrapper');
+const booksGridMobile  = document.getElementById('booksGridMobile');
+const skeletonDesktop  = document.getElementById('skeleton-desktop-wrapper');
+const skeletonMobile   = document.getElementById('skeleton-mobile-wrapper');
 
 // Filters from PHP
 const currentFilters = {
-    search: @json($search),
-    categories: @json($selectedCategories),
-    availability: @json($availability),
-    hall: @json($hallFilter)
+    search:       __pd.search,
+    categories:   __pd.categories,
+    availability: __pd.availability,
+    hall:         __pd.hall
 };
 
-let currentSort = @json($sortParam);
+let currentSort = __pd.sort;
 
 document.addEventListener("DOMContentLoaded", () => {
     setupIntersectionObserver();
@@ -454,8 +468,23 @@ function resolveUploadUrl(value, fallbackPath, basePath) {
 
     const raw = String(value).trim();
     if (!raw) return fallbackPath;
-    if (/^(https?:)?\/\//i.test(raw) || raw.startsWith('data:')) return raw;
 
+    // Already a site-relative path (starts with /) — use as-is
+    if (raw.startsWith('/') && !raw.startsWith('//')) return raw;
+
+    // Absolute URL pointing to this site — extract the path
+    if (/^https?:\/\//i.test(raw)) {
+        try {
+            const parsed = new URL(raw);
+            // If same origin or any host (since APP_URL may be wrong), extract path
+            return parsed.pathname + parsed.search;
+        } catch (_) { /* fall through */ }
+    }
+
+    // Data URI — use as-is
+    if (raw.startsWith('data:')) return raw;
+
+    // Legacy relative paths
     const normalized = raw.replace(/^\/+/, '');
     if (normalized.startsWith('storage/')) return `/${normalized}`;
     if (normalized.startsWith('uploads/')) return `/storage/${normalized}`;
@@ -473,12 +502,12 @@ function createBookCardGrid(book) {
 
     const status = (book.status || 'available').toLowerCase();
     const rating = parseFloat(book.rating) || 0;
-    const coverUrl = resolveUploadUrl(book.cover_image, '{{ asset('images/default-book-cover.jpg') }}', 'storage/uploads/book_cover/');
-    const avatarUrl = resolveUploadUrl(book.owner_avatar, '{{ asset('images/avatars/default.jpg') }}', 'storage/uploads/profile/');
+    const coverUrl = resolveUploadUrl(book.cover_image, '/images/default-book-cover.jpg', 'storage/uploads/book_cover/');
+    const avatarUrl = resolveUploadUrl(book.owner_avatar, '/images/avatars/default.jpg', 'storage/uploads/profile/');
     
     div.innerHTML = `
         <div class="book-cover-container">
-            <img src="${coverUrl}" alt="${book.title}" loading="lazy" onerror="this.onerror=null; this.src='{{ asset('images/default-book-cover.jpg') }}';">
+            <img src="${coverUrl}" alt="${book.title}" loading="lazy" onerror="this.onerror=null; this.src='/images/default-book-cover.jpg';">
             <span class="book-badge badge-${status}">${status.charAt(0).toUpperCase() + status.slice(1)}</span>
         </div>
         <div class="book-info">
@@ -488,7 +517,7 @@ function createBookCardGrid(book) {
             ${getRatingHtml(book)}
             <div class="book-footer">
                 <div class="owner-info">
-                    <img src="${avatarUrl}" alt="${book.owner_name}" class="owner-avatar" onerror="this.onerror=null; this.src='{{ asset('images/avatars/default.jpg') }}';">
+                    <img src="${avatarUrl}" alt="${book.owner_name}" class="owner-avatar" onerror="this.onerror=null; this.src='/images/avatars/default.jpg';">
                     <span class="owner-name">${book.owner_name}</span>
                 </div>
             </div>
@@ -506,8 +535,8 @@ function createBookCardList(book) {
 
     const status = (book.status || 'available').toLowerCase();
     const rating = parseFloat(book.rating) || 0;
-    const coverUrl = resolveUploadUrl(book.cover_image, '{{ asset('images/default-book-cover.jpg') }}', 'storage/uploads/book_cover/');
-    const avatarUrl = resolveUploadUrl(book.owner_avatar, '{{ asset('images/avatars/default.jpg') }}', 'storage/uploads/profile/');
+    const coverUrl = resolveUploadUrl(book.cover_image, '/images/default-book-cover.jpg', 'storage/uploads/book_cover/');
+    const avatarUrl = resolveUploadUrl(book.owner_avatar, '/images/avatars/default.jpg', 'storage/uploads/profile/');
     
     // Simple hall mapping in JS (matching helpers.php)
     const halls = {'1': 'Amar Ekushey Hall', '2': 'Dr. Muhammad Shahidullah Hall', '3': 'Fazlul Huq Muslim Hall'};
@@ -543,7 +572,7 @@ function createBookCardList(book) {
     div.innerHTML = `
         <div class="status-sign status-${status}" title="${status.charAt(0).toUpperCase() + status.slice(1)}"></div>
         <a href="/book?id=${book.id}" class="cover-link">
-            <img src="${coverUrl}" alt="${book.title}" class="book-cover-image" onerror="this.onerror=null; this.src='{{ asset('images/default-book-cover.jpg') }}';">
+            <img src="${coverUrl}" alt="${book.title}" class="book-cover-image" onerror="this.onerror=null; this.src='/images/default-book-cover.jpg';">
         </a>
         <div class="card-info-section">
             <a href="/book?id=${book.id}" class="book-info-link">
@@ -553,7 +582,7 @@ function createBookCardList(book) {
                 ${ratingRowHtml}
             </a>
             <a href="/profile?id=${book.owner_id}" class="owner-link-area">
-                <img src="${avatarUrl}" alt="${book.owner_name}" class="owner-avatar" onerror="this.onerror=null; this.src='{{ asset('images/avatars/default.jpg') }}';">
+                <img src="${avatarUrl}" alt="${book.owner_name}" class="owner-avatar" onerror="this.onerror=null; this.src='/images/avatars/default.jpg';">
                 <div class="owner-details">
                     <span class="owner-name">${book.owner_name}</span>
                     <span class="owner-hall">${displayHall}</span>

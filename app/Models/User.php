@@ -35,14 +35,14 @@ class User extends Authenticatable
         $name = $this->profile_pic ?: 'default-avatar.jpg';
 
         if (empty($name) || in_array($name, ['default-avatar.jpg', 'default.jpg'], true)) {
-            return asset('images/avatars/default.jpg');
+            return '/images/avatars/default.jpg';
         }
 
         $relative = 'storage/uploads/profile/' . ltrim($name, '/');
 
         return file_exists(public_path($relative))
-            ? asset($relative)
-            : asset('images/avatars/default.jpg');
+            ? '/' . $relative
+            : '/images/avatars/default.jpg';
     }
 
     public function getHallNameAttribute(): string
