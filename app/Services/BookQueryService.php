@@ -253,36 +253,76 @@ class BookQueryService
             return '/images/default-book-cover.jpg';
         }
 
+        $diskName = config('filesystems.default', 'local');
         $filename = basename(ltrim($coverImage, '/'));
-        $fullRelative = 'storage/uploads/book_cover/' . $filename;
-        $thumbRelative = 'storage/uploads/book_cover/thumb_' . $filename;
+        $fullRelativePath = 'book_cover/' . $filename;
 
-        if (file_exists(public_path($fullRelative))) {
-            return '/' . $fullRelative;
+        if ($diskName === 'local' || $diskName === 'public') {
+            $newPath = 'storage/book_cover/' . $filename;
+            $newThumbPath = 'storage/book_cover/thumb_' . $filename;
+            $oldPath = 'storage/uploads/book_cover/' . $filename;
+            $oldThumbPath = 'storage/uploads/book_cover/thumb_' . $filename;
+
+            if (file_exists(public_path($newPath))) {
+                return '/' . $newPath;
+            }
+
+            if (file_exists(public_path($newThumbPath))) {
+                return '/' . $newThumbPath;
+            }
+
+            if (file_exists(public_path($oldPath))) {
+                return '/' . $oldPath;
+            }
+
+            if (file_exists(public_path($oldThumbPath))) {
+                return '/' . $oldThumbPath;
+            }
+
+            return '/images/default-book-cover.jpg';
         }
 
-        if (file_exists(public_path($thumbRelative))) {
-            return '/' . $thumbRelative;
+        try {
+            /** @var \Illuminate\Filesystem\FilesystemAdapter $disk */
+            $disk = \Illuminate\Support\Facades\Storage::disk($diskName);
+            return $disk->url($fullRelativePath);
+        } catch (\Throwable $e) {
+            return '/images/default-book-cover.jpg';
         }
-
-        $relative = 'storage/uploads/book_cover/' . ltrim($coverImage, '/');
-
-        return file_exists(public_path($relative))
-            ? '/' . $relative
-            : '/images/default-book-cover.jpg';
     }
 
     public function resolveOwnerAvatarPath(?string $ownerAvatar): string
     {
-        if (! empty($ownerAvatar) && $ownerAvatar !== 'default-avatar.jpg') {
-            $relative = 'storage/uploads/profile/' . ltrim($ownerAvatar, '/');
-
-            if (file_exists(public_path($relative))) {
-                return '/' . $relative;
-            }
+        if (empty($ownerAvatar) || $ownerAvatar === 'default-avatar.jpg') {
+            return '/images/avatars/default.jpg';
         }
 
-        return '/images/avatars/default.jpg';
+        $diskName = config('filesystems.default', 'local');
+        $filename = basename(ltrim($ownerAvatar, '/'));
+        $relativePath = 'profile/' . $filename;
+
+        if ($diskName === 'local' || $diskName === 'public') {
+            $newPath = 'storage/profile/' . $filename;
+            $oldPath = 'storage/uploads/profile/' . $filename;
+
+            if (file_exists(public_path($newPath))) {
+                return '/' . $newPath;
+            }
+
+            if (file_exists(public_path($oldPath))) {
+                return '/' . $oldPath;
+            }
+
+            return '/images/avatars/default.jpg';
+        }
+
+        try {
+            /** @var \Illuminate\Filesystem\FilesystemAdapter $disk */
+            $disk = \Illuminate\Support\Facades\Storage::disk($diskName);
+            return $disk->url($relativePath);
+        } catch (\Throwable $e) {
+            return '/images/avatars/default.jpg';
+        }
     }
 
     private function relatedQuery(array $excludeIds): Builder

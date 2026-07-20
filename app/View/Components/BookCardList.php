@@ -94,52 +94,78 @@ class BookCardList extends Component
             return $value;
         }
 
-        $path = parse_url($value, PHP_URL_PATH) ?: $value;
-        $path = ltrim($path, '/');
+        $filename = basename(ltrim(parse_url($value, PHP_URL_PATH) ?: $value, '/'));
+        
+        $diskName = config('filesystems.default', 'local');
+        $fullRelativePath = 'book_cover/' . $filename;
 
-        if (str_starts_with($path, 'storage/')) {
-            return asset($path);
+        if ($diskName === 'local' || $diskName === 'public') {
+            $newPath = 'storage/' . $fullRelativePath;
+            $newThumbPath = 'storage/book_cover/thumb_' . $filename;
+            $oldPath = 'storage/uploads/book_cover/' . $filename;
+            $oldThumbPath = 'storage/uploads/book_cover/thumb_' . $filename;
+
+            if (file_exists(public_path($newPath))) {
+                return asset($newPath);
+            }
+            if (file_exists(public_path($newThumbPath))) {
+                return asset($newThumbPath);
+            }
+            if (file_exists(public_path($oldPath))) {
+                return asset($oldPath);
+            }
+            if (file_exists(public_path($oldThumbPath))) {
+                return asset($oldThumbPath);
+            }
+
+            return asset('images/default-book-cover.jpg');
         }
 
-        if (str_starts_with($path, 'uploads/')) {
-            return file_exists(public_path('storage/' . $path)) ? asset('storage/' . $path) : asset('images/default-book-cover.jpg');
+        try {
+            /** @var \Illuminate\Filesystem\FilesystemAdapter $disk */
+            $disk = \Illuminate\Support\Facades\Storage::disk($diskName);
+            return $disk->url($fullRelativePath);
+        } catch (\Throwable $e) {
+            return asset('images/default-book-cover.jpg');
         }
-
-        $filename = basename($path);
-        $relative = 'storage/uploads/book_cover/' . $filename;
-        $publicPath = public_path($relative);
-
-        return file_exists($publicPath) ? asset($relative) : asset('images/default-book-cover.jpg');
     }
 
     private function resolveAvatarUrl(string $ownerAvatar): string
     {
-        if (! empty($ownerAvatar) && $ownerAvatar !== 'default-avatar.jpg') {
-            $value = trim($ownerAvatar);
-            if ($this->isAbsoluteUrl($value) || str_starts_with($value, 'data:')) {
-                return $value;
-            }
-
-            $path = parse_url($value, PHP_URL_PATH) ?: $value;
-            $path = ltrim($path, '/');
-
-            if (str_starts_with($path, 'storage/')) {
-                return asset($path);
-            }
-
-            if (str_starts_with($path, 'uploads/')) {
-                return file_exists(public_path('storage/' . $path)) ? asset('storage/' . $path) : asset('images/avatars/default.jpg');
-            }
-
-            $relative = 'storage/uploads/profile/' . basename($path);
-            $publicPath = public_path($relative);
-
-            if (file_exists($publicPath)) {
-                return asset($relative);
-            }
+        if (empty($ownerAvatar) || $ownerAvatar === 'default-avatar.jpg') {
+            return asset('images/avatars/default.jpg');
         }
 
-        return asset('images/avatars/default.jpg');
+        $value = trim($ownerAvatar);
+        if ($this->isAbsoluteUrl($value) || str_starts_with($value, 'data:')) {
+            return $value;
+        }
+
+        $filename = basename(ltrim(parse_url($value, PHP_URL_PATH) ?: $value, '/'));
+        
+        $diskName = config('filesystems.default', 'local');
+        $relativePath = 'profile/' . $filename;
+
+        if ($diskName === 'local' || $diskName === 'public') {
+            $newPath = 'storage/' . $relativePath;
+            $oldPath = 'storage/uploads/profile/' . $filename;
+
+            if (file_exists(public_path($newPath))) {
+                return asset($newPath);
+            }
+            if (file_exists(public_path($oldPath))) {
+                return asset($oldPath);
+            }
+            return asset('images/avatars/default.jpg');
+        }
+
+        try {
+            /** @var \Illuminate\Filesystem\FilesystemAdapter $disk */
+            $disk = \Illuminate\Support\Facades\Storage::disk($diskName);
+            return $disk->url($relativePath);
+        } catch (\Throwable $e) {
+            return asset('images/avatars/default.jpg');
+        }
     }
 
     private function isAbsoluteUrl(string $value): bool

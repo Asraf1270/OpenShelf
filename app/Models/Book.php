@@ -72,47 +72,91 @@ class Book extends Model
             return '/images/default-book-cover.jpg';
         }
 
+        $diskName = config('filesystems.default', 'local');
         $filename = basename(ltrim($this->cover_image, '/'));
-        $fullRelative = 'storage/uploads/book_cover/' . $filename;
-        $thumbRelative = 'storage/uploads/book_cover/thumb_' . $filename;
+        $fullRelativePath = 'book_cover/' . $filename;
+        $thumbRelativePath = 'book_cover/thumb_' . $filename;
 
-        if ($preferFullImage) {
-            if (file_exists(public_path($fullRelative))) {
-                return '/' . $fullRelative;
+        if ($diskName === 'local' || $diskName === 'public') {
+            $newPath = 'storage/' . $fullRelativePath;
+            $newThumbPath = 'storage/' . $thumbRelativePath;
+            $oldPath = 'storage/uploads/book_cover/' . $filename;
+            $oldThumbPath = 'storage/uploads/book_cover/thumb_' . $filename;
+
+            if ($preferFullImage) {
+                if (file_exists(public_path($newPath))) {
+                    return '/' . $newPath;
+                }
+                if (file_exists(public_path($newThumbPath))) {
+                    return '/' . $newThumbPath;
+                }
+                if (file_exists(public_path($oldPath))) {
+                    return '/' . $oldPath;
+                }
+                if (file_exists(public_path($oldThumbPath))) {
+                    return '/' . $oldThumbPath;
+                }
+            } else {
+                if (file_exists(public_path($newThumbPath))) {
+                    return '/' . $newThumbPath;
+                }
+                if (file_exists(public_path($newPath))) {
+                    return '/' . $newPath;
+                }
+                if (file_exists(public_path($oldThumbPath))) {
+                    return '/' . $oldThumbPath;
+                }
+                if (file_exists(public_path($oldPath))) {
+                    return '/' . $oldPath;
+                }
             }
 
-            if (file_exists(public_path($thumbRelative))) {
-                return '/' . $thumbRelative;
-            }
-        } else {
-            if (file_exists(public_path($fullRelative))) {
-                return '/' . $fullRelative;
-            }
-
-            if (file_exists(public_path($thumbRelative))) {
-                return '/' . $thumbRelative;
-            }
+            return '/images/default-book-cover.jpg';
         }
 
-        $relative = 'storage/uploads/book_cover/' . ltrim($this->cover_image, '/');
-
-        return file_exists(public_path($relative))
-            ? '/' . $relative
-            : '/images/default-book-cover.jpg';
+        try {
+            /** @var \Illuminate\Filesystem\FilesystemAdapter $disk */
+            $disk = \Illuminate\Support\Facades\Storage::disk($diskName);
+            if ($preferFullImage) {
+                return $disk->url($fullRelativePath);
+            }
+            // Check if thumb exists or return URL directly. R2 uses fast local URL formatting.
+            return $disk->url($thumbRelativePath);
+        } catch (\Throwable $e) {
+            return '/images/default-book-cover.jpg';
+        }
     }
 
     public function getOwnerAvatarUrlAttribute(): string
     {
-        if (! empty($this->owner_avatar) && $this->owner_avatar !== 'default-avatar.jpg') {
-            $relative = 'storage/uploads/profile/' . ltrim($this->owner_avatar, '/');
-            $publicPath = public_path($relative);
-
-            if (file_exists($publicPath)) {
-                return '/' . $relative;
-            }
+        if (empty($this->owner_avatar) || $this->owner_avatar === 'default-avatar.jpg') {
+            return '/images/avatars/default.jpg';
         }
 
-        return '/images/avatars/default.jpg';
+        $diskName = config('filesystems.default', 'local');
+        $filename = basename(ltrim($this->owner_avatar, '/'));
+        $relativePath = 'profile/' . $filename;
+
+        if ($diskName === 'local' || $diskName === 'public') {
+            $newPath = 'storage/' . $relativePath;
+            $oldPath = 'storage/uploads/profile/' . $filename;
+
+            if (file_exists(public_path($newPath))) {
+                return '/' . $newPath;
+            }
+            if (file_exists(public_path($oldPath))) {
+                return '/' . $oldPath;
+            }
+            return '/images/avatars/default.jpg';
+        }
+
+        try {
+            /** @var \Illuminate\Filesystem\FilesystemAdapter $disk */
+            $disk = \Illuminate\Support\Facades\Storage::disk($diskName);
+            return $disk->url($relativePath);
+        } catch (\Throwable $e) {
+            return '/images/avatars/default.jpg';
+        }
     }
 
     public function getHallNameAttribute(): string

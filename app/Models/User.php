@@ -38,11 +38,30 @@ class User extends Authenticatable
             return '/images/avatars/default.jpg';
         }
 
-        $relative = 'storage/uploads/profile/' . ltrim($name, '/');
+        $diskName = config('filesystems.default', 'local');
+        $filename = basename(ltrim($name, '/'));
+        $relativePath = 'profile/' . $filename;
 
-        return file_exists(public_path($relative))
-            ? '/' . $relative
-            : '/images/avatars/default.jpg';
+        if ($diskName === 'local' || $diskName === 'public') {
+            $newPath = 'storage/' . $relativePath;
+            $oldPath = 'storage/uploads/profile/' . $filename;
+
+            if (file_exists(public_path($newPath))) {
+                return '/' . $newPath;
+            }
+            if (file_exists(public_path($oldPath))) {
+                return '/' . $oldPath;
+            }
+            return '/images/avatars/default.jpg';
+        }
+
+        try {
+            /** @var \Illuminate\Filesystem\FilesystemAdapter $disk */
+            $disk = \Illuminate\Support\Facades\Storage::disk($diskName);
+            return $disk->url($relativePath);
+        } catch (\Throwable $e) {
+            return '/images/avatars/default.jpg';
+        }
     }
 
     public function getHallNameAttribute(): string
