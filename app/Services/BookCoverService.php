@@ -111,12 +111,14 @@ class BookCoverService
 
         try {
             $disk = config('filesystems.default', 'local');
+            $driver = config("filesystems.disks.{$disk}.driver", 'local');
+            $options = ($driver === 's3') ? [] : ['visibility' => 'public'];
 
             $resizedStream = fopen($tempResizedPath, 'r+');
             \Illuminate\Support\Facades\Storage::disk($disk)->put(
                 'book_cover/' . $webpFilename,
                 $resizedStream,
-                'public'
+                $options
             );
             if (is_resource($resizedStream)) {
                 fclose($resizedStream);
@@ -126,7 +128,7 @@ class BookCoverService
             \Illuminate\Support\Facades\Storage::disk($disk)->put(
                 'book_cover/thumb_' . $webpFilename,
                 $thumbStream,
-                'public'
+                $options
             );
             if (is_resource($thumbStream)) {
                 fclose($thumbStream);

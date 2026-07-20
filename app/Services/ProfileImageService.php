@@ -87,11 +87,14 @@ class ProfileImageService
 
         try {
             $disk = config('filesystems.default', 'local');
+            $driver = config("filesystems.disks.{$disk}.driver", 'local');
+            $options = ($driver === 's3') ? [] : ['visibility' => 'public'];
+
             $stream = fopen($tempPath, 'r+');
             \Illuminate\Support\Facades\Storage::disk($disk)->put(
                 'profile/' . $webpFilename,
                 $stream,
-                'public'
+                $options
             );
             if (is_resource($stream)) {
                 fclose($stream);
