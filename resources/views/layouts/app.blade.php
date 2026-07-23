@@ -75,33 +75,46 @@
     @php
         $viteManifestPath = public_path('build/manifest.json');
         $viteManifestExists = file_exists($viteManifestPath);
-        $viteAssetsPath = public_path('build/assets');
-        $fallbackCssAsset = null;
-        $fallbackJsAsset = null;
+        $viteManifest = $viteManifestExists ? json_decode(file_get_contents($viteManifestPath), true) : null;
+        $buildCssAsset = null;
+        $buildJsAsset = null;
 
-        if (! $viteManifestExists && is_dir($viteAssetsPath)) {
-            $assetFiles = array_diff(scandir($viteAssetsPath), ['.', '..']);
+        if (is_array($viteManifest)) {
+            $cssEntry = $viteManifest['resources/css/app.css'] ?? null;
+            $jsEntry = $viteManifest['resources/js/app.js'] ?? null;
 
-            foreach ($assetFiles as $assetFile) {
-                if (str_ends_with($assetFile, '.css') && str_contains($assetFile, 'app')) {
-                    $fallbackCssAsset = asset('build/assets/' . $assetFile);
-                } elseif (str_ends_with($assetFile, '.js') && str_contains($assetFile, 'app')) {
-                    $fallbackJsAsset = asset('build/assets/' . $assetFile);
+            if (is_array($cssEntry) && ! empty($cssEntry['file'])) {
+                $buildCssAsset = asset('build/' . ltrim($cssEntry['file'], '/'));
+            }
+
+            if (is_array($jsEntry) && ! empty($jsEntry['file'])) {
+                $buildJsAsset = asset('build/' . ltrim($jsEntry['file'], '/'));
+            }
+        }
+
+        if (! $buildCssAsset || ! $buildJsAsset) {
+            $viteAssetsPath = public_path('build/assets');
+
+            if (is_dir($viteAssetsPath)) {
+                $assetFiles = array_diff(scandir($viteAssetsPath), ['.', '..']);
+
+                foreach ($assetFiles as $assetFile) {
+                    if (str_ends_with($assetFile, '.css') && str_contains($assetFile, 'app')) {
+                        $buildCssAsset = $buildCssAsset ?: asset('build/assets/' . $assetFile);
+                    } elseif (str_ends_with($assetFile, '.js') && str_contains($assetFile, 'app')) {
+                        $buildJsAsset = $buildJsAsset ?: asset('build/assets/' . $assetFile);
+                    }
                 }
             }
         }
     @endphp
 
-    @if ($viteManifestExists)
-        @vite(['resources/css/app.css', 'resources/js/app.js'])
-    @else
-        @if ($fallbackCssAsset)
-            <link rel="stylesheet" href="{{ $fallbackCssAsset }}">
-        @endif
+    @if ($buildCssAsset)
+        <link rel="stylesheet" href="{{ $buildCssAsset }}">
+    @endif
 
-        @if ($fallbackJsAsset)
-            <script type="module" src="{{ $fallbackJsAsset }}"></script>
-        @endif
+    @if ($buildJsAsset)
+        <script type="module" src="{{ $buildJsAsset }}"></script>
     @endif
     @stack('styles')
 
