@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Book;
+use App\Support\ImageUrl;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
@@ -249,80 +250,12 @@ class BookQueryService
 
     public function resolveCoverPath(?string $coverImage): string
     {
-        if (empty($coverImage)) {
-            return '/images/default-book-cover.jpg';
-        }
-
-        $diskName = config('filesystems.default', 'local');
-        $filename = basename(ltrim($coverImage, '/'));
-        $fullRelativePath = 'book_cover/' . $filename;
-
-        if ($diskName === 'local' || $diskName === 'public') {
-            $newPath = 'storage/book_cover/' . $filename;
-            $newThumbPath = 'storage/book_cover/thumb_' . $filename;
-            $oldPath = 'storage/uploads/book_cover/' . $filename;
-            $oldThumbPath = 'storage/uploads/book_cover/thumb_' . $filename;
-
-            if (file_exists(public_path($newPath))) {
-                return '/' . $newPath;
-            }
-
-            if (file_exists(public_path($newThumbPath))) {
-                return '/' . $newThumbPath;
-            }
-
-            if (file_exists(public_path($oldPath))) {
-                return '/' . $oldPath;
-            }
-
-            if (file_exists(public_path($oldThumbPath))) {
-                return '/' . $oldThumbPath;
-            }
-
-            return '/images/default-book-cover.jpg';
-        }
-
-        try {
-            /** @var \Illuminate\Filesystem\FilesystemAdapter $disk */
-            $disk = \Illuminate\Support\Facades\Storage::disk($diskName);
-            return $disk->url($fullRelativePath);
-        } catch (\Throwable $e) {
-            return '/images/default-book-cover.jpg';
-        }
+        return ImageUrl::cover($coverImage);
     }
 
     public function resolveOwnerAvatarPath(?string $ownerAvatar): string
     {
-        if (empty($ownerAvatar) || $ownerAvatar === 'default-avatar.jpg') {
-            return '/images/avatars/default.jpg';
-        }
-
-        $diskName = config('filesystems.default', 'local');
-        $filename = basename(ltrim($ownerAvatar, '/'));
-        $relativePath = 'profile/' . $filename;
-
-        if ($diskName === 'local' || $diskName === 'public') {
-            $newPath = 'storage/profile/' . $filename;
-            $oldPath = 'storage/uploads/profile/' . $filename;
-
-            if (file_exists(public_path($newPath))) {
-                return '/' . $newPath;
-            }
-
-            if (file_exists(public_path($oldPath))) {
-                return '/' . $oldPath;
-            }
-
-            return '/images/avatars/default.jpg';
-        }
-
-        try {
-            /** @var \Illuminate\Filesystem\FilesystemAdapter $disk */
-            $disk = \Illuminate\Support\Facades\Storage::disk($diskName);
-            return $disk->url($relativePath);
-        } catch (\Throwable $e) {
-            return '/images/avatars/default.jpg';
-        }
+        return ImageUrl::avatar($ownerAvatar);
     }
 
     private function relatedQuery(array $excludeIds): Builder

@@ -81,8 +81,8 @@
             </div>
         @endfor
     @else
-        @php($fallbackCover = '/images/default-book-cover.jpg')
-        @php($fallbackAvatar = '/images/avatars/default.jpg')
+        @php($fallbackCover = asset('images/default-book-cover.jpg'))
+        @php($fallbackAvatar = asset('images/avatars/default.jpg'))
         @foreach ($books as $book)
             @php($bookId = $book['id'] ?? ($book['book_id'] ?? ''))
             @php($title = $book['title'] ?? 'Untitled')
@@ -95,10 +95,12 @@
             @php($fullStars = floor($rating))
             @php($hasHalfStar = ($rating - $fullStars) >= 0.5)
             @php($emptyStars = 5 - $fullStars - ($hasHalfStar ? 1 : 0))
+            @php($coverSrc = $book['cover_url'] ?? $fallbackCover)
+            @php($avatarSrc = $book['owner_avatar_url'] ?? $fallbackAvatar)
             <div class="book-card" data-title="{{ strtolower($title) }}" data-author="{{ strtolower($author) }}" data-date="{{ $createdAt }}">
                 <a href="/book/?id={{ $bookId }}" class="cover-link">
                     <div class="book-cover-container">
-                        <img src="{{ $book['cover_url'] ?? $fallbackCover }}" alt="{{ $title }}" loading="lazy" onerror="this.onerror=null; this.src='{{ $fallbackCover }}'">
+                        <img src="{{ $coverSrc }}" alt="{{ $title }}" loading="lazy" onerror="this.onerror=null; this.src='{{ $fallbackCover }}'">
                         <span class="book-badge badge-{{ $status }}">{{ ucfirst($status) }}</span>
                     </div>
                 </a>
@@ -131,7 +133,7 @@
                     @if ($showOwner)
                         <div class="book-footer">
                             <a href="/profile/?id={{ $book['owner_id'] ?? '' }}" class="owner-link-area">
-                                <img src="{{ $book['owner_avatar_url'] ?? $fallbackAvatar }}" alt="{{ $book['owner_name'] ?? 'Owner' }}" class="owner-avatar" onerror="this.onerror=null; this.src='{{ $fallbackAvatar }}'">
+                                <img src="{{ $avatarSrc }}" alt="{{ $book['owner_name'] ?? 'Owner' }}" class="owner-avatar" onerror="this.onerror=null; this.src='{{ $fallbackAvatar }}'">
                                 <span class="owner-name">{{ $book['owner_name'] ?? 'Owner' }}</span>
                             </a>
                         </div>

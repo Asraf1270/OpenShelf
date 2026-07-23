@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Support\ImageUrl;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -32,36 +33,7 @@ class User extends Authenticatable
 
     public function getProfileImageUrlAttribute(): string
     {
-        $name = $this->profile_pic ?: 'default-avatar.jpg';
-
-        if (empty($name) || in_array($name, ['default-avatar.jpg', 'default.jpg'], true)) {
-            return '/images/avatars/default.jpg';
-        }
-
-        $diskName = config('filesystems.default', 'local');
-        $filename = basename(ltrim($name, '/'));
-        $relativePath = 'profile/' . $filename;
-
-        if ($diskName === 'local' || $diskName === 'public') {
-            $newPath = 'storage/' . $relativePath;
-            $oldPath = 'storage/uploads/profile/' . $filename;
-
-            if (file_exists(public_path($newPath))) {
-                return '/' . $newPath;
-            }
-            if (file_exists(public_path($oldPath))) {
-                return '/' . $oldPath;
-            }
-            return '/images/avatars/default.jpg';
-        }
-
-        try {
-            /** @var \Illuminate\Filesystem\FilesystemAdapter $disk */
-            $disk = \Illuminate\Support\Facades\Storage::disk($diskName);
-            return $disk->url($relativePath);
-        } catch (\Throwable $e) {
-            return '/images/avatars/default.jpg';
-        }
+        return ImageUrl::avatar($this->profile_pic);
     }
 
     public function getHallNameAttribute(): string

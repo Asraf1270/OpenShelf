@@ -3,6 +3,7 @@
 namespace App\View\Components;
 
 use App\Models\Book;
+use App\Support\ImageUrl;
 use Closure;
 use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;
@@ -83,87 +84,12 @@ class BookCardGrid extends Component
 
     private function resolveCoverUrl(string $coverImage): string
     {
-        if (empty($coverImage)) {
-            return asset('images/default-book-cover.jpg');
-        }
-
-        $value = trim($coverImage);
-        if ($this->isAbsoluteUrl($value) || str_starts_with($value, 'data:')) {
-            return $value;
-        }
-
-        $filename = basename(ltrim(parse_url($value, PHP_URL_PATH) ?: $value, '/'));
-        
-        $diskName = config('filesystems.default', 'local');
-        $fullRelativePath = 'book_cover/' . $filename;
-
-        if ($diskName === 'local' || $diskName === 'public') {
-            $newPath = 'storage/' . $fullRelativePath;
-            $newThumbPath = 'storage/book_cover/thumb_' . $filename;
-            $oldPath = 'storage/uploads/book_cover/' . $filename;
-            $oldThumbPath = 'storage/uploads/book_cover/thumb_' . $filename;
-
-            if (file_exists(public_path($newPath))) {
-                return asset($newPath);
-            }
-            if (file_exists(public_path($newThumbPath))) {
-                return asset($newThumbPath);
-            }
-            if (file_exists(public_path($oldPath))) {
-                return asset($oldPath);
-            }
-            if (file_exists(public_path($oldThumbPath))) {
-                return asset($oldThumbPath);
-            }
-
-            return asset('images/default-book-cover.jpg');
-        }
-
-        try {
-            /** @var \Illuminate\Filesystem\FilesystemAdapter $disk */
-            $disk = \Illuminate\Support\Facades\Storage::disk($diskName);
-            return $disk->url($fullRelativePath);
-        } catch (\Throwable $e) {
-            return asset('images/default-book-cover.jpg');
-        }
+        return ImageUrl::cover($coverImage);
     }
 
     private function resolveAvatarUrl(string $ownerAvatar): string
     {
-        if (empty($ownerAvatar) || $ownerAvatar === 'default-avatar.jpg') {
-            return asset('images/avatars/default.jpg');
-        }
-
-        $value = trim($ownerAvatar);
-        if ($this->isAbsoluteUrl($value) || str_starts_with($value, 'data:')) {
-            return $value;
-        }
-
-        $filename = basename(ltrim(parse_url($value, PHP_URL_PATH) ?: $value, '/'));
-        
-        $diskName = config('filesystems.default', 'local');
-        $relativePath = 'profile/' . $filename;
-
-        if ($diskName === 'local' || $diskName === 'public') {
-            $newPath = 'storage/' . $relativePath;
-            $oldPath = 'storage/uploads/profile/' . $filename;
-
-            if (file_exists(public_path($newPath))) {
-                return asset($newPath);
-            }
-            if (file_exists(public_path($oldPath))) {
-                return asset($oldPath);
-            }
-            return asset('images/avatars/default.jpg');
-        }
-
-        try {
-            /** @var \Illuminate\Filesystem\FilesystemAdapter $disk */
-            $disk = \Illuminate\Support\Facades\Storage::disk($diskName);
-            return $disk->url($relativePath);
-        } catch (\Throwable $e) {
-            return asset('images/avatars/default.jpg');
-        }
+        return ImageUrl::avatar($ownerAvatar);
     }
 
     private function isAbsoluteUrl(string $value): bool
