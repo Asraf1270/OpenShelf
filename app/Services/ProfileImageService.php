@@ -21,7 +21,7 @@ class ProfileImageService
 
     public function uploadPath(): string
     {
-        return storage_path('app/public/uploads/profile');
+        return storage_path('app/public/profile');
     }
 
     public function process(UploadedFile $file, string $userId): array
@@ -40,14 +40,7 @@ class ProfileImageService
             return ['error' => 'Only JPG, PNG, GIF, and WebP images are allowed'];
         }
 
-        $uploadPath = $this->uploadPath();
-
-        if (! is_dir($uploadPath)) {
-            mkdir($uploadPath, 0755, true);
-        }
-
         $webpFilename = $userId . '_' . time() . '.webp';
-        $webpPath = $uploadPath . DIRECTORY_SEPARATOR . $webpFilename;
         $image = $this->loadImage($file->getPathname(), $mimeType);
 
         if (! $image) {
@@ -81,13 +74,35 @@ class ProfileImageService
             (int) $size
         );
 
-        $success = imagewebp($thumb, $webpPath, self::COMPRESSION_QUALITY);
+        $tempPath = tempnam(sys_get_temp_dir(), 'profile_');
+        $success = imagewebp($thumb, $tempPath, self::COMPRESSION_QUALITY);
 
         imagedestroy($image);
         imagedestroy($thumb);
 
         if (! $success) {
+            @unlink($tempPath);
             return ['error' => 'Failed to save processed image'];
+        }
+
+        try {
+            $disk = config('filesystems.default', 'local');
+            $driver = config("filesystems.disks.{$disk}.driver", 'local');
+            $options = ($driver === 's3') ? [] : ['visibility' => 'public'];
+
+            $stream = fopen($tempPath, 'r+');
+            \Illuminate\Support\Facades\Storage::disk($disk)->put(
+                'profile/' . $webpFilename,
+                $stream,
+                $options
+            );
+            if (is_resource($stream)) {
+                fclose($stream);
+            }
+            @unlink($tempPath);
+        } catch (\Throwable $e) {
+            @unlink($tempPath);
+            return ['error' => 'Failed to upload image: ' . $e->getMessage()];
         }
 
         return ['success' => true, 'filename' => $webpFilename];
@@ -99,10 +114,11 @@ class ProfileImageService
             return;
         }
 
-        $path = $this->uploadPath() . DIRECTORY_SEPARATOR . $filename;
+        $disk = config('filesystems.default', 'local');
+        $path = 'profile/' . $filename;
 
-        if (file_exists($path)) {
-            unlink($path);
+        if (\Illuminate\Support\Facades\Storage::disk($disk)->exists($path)) {
+            \Illuminate\Support\Facades\Storage::disk($disk)->delete($path);
         }
     }
 

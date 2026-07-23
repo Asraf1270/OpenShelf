@@ -13,6 +13,7 @@ use App\Http\Controllers\Admin\AdminProfileController;
 use App\Http\Controllers\Admin\AdminReportsController;
 use App\Http\Controllers\Admin\AdminReportsManagementController;
 use App\Http\Controllers\Admin\AdminRequestsController;
+use App\Http\Controllers\Admin\AdminSystemController;
 use App\Http\Controllers\Admin\AdminUsersController;
 use App\Http\Controllers\AnnouncementsController;
 use App\Http\Controllers\ContactController;
@@ -97,6 +98,8 @@ Route::prefix('admin')->group(function () {
     Route::get('/logs', [AdminLogsController::class, 'index'])->name('admin.logs.index');
     Route::get('/logs/clear', [AdminLogsController::class, 'clear'])->name('admin.logs.clear');
     Route::get('/logs/download', [AdminLogsController::class, 'download'])->name('admin.logs.download');
+    Route::get('/system-control', [AdminSystemController::class, 'index'])->name('admin.system-control');
+    Route::post('/system-control/execute', [AdminSystemController::class, 'executeCommand'])->name('admin.system-control.execute');
     Route::get('/reports', [AdminReportsController::class, 'index'])->name('admin.reports.index');
     Route::get('/reports/export', [AdminReportsController::class, 'export'])->name('admin.reports.export');
     Route::match(['get', 'post'], '/reports-management', [AdminReportsManagementController::class, 'index'])->name('admin.reports-management.index');

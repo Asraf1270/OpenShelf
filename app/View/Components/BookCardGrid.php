@@ -3,6 +3,7 @@
 namespace App\View\Components;
 
 use App\Models\Book;
+use App\Support\ImageUrl;
 use Closure;
 use Illuminate\Contracts\View\View;
 use Illuminate\View\Component;
@@ -83,61 +84,12 @@ class BookCardGrid extends Component
 
     private function resolveCoverUrl(string $coverImage): string
     {
-        if (empty($coverImage)) {
-            return asset('images/default-book-cover.jpg');
-        }
-
-        $value = trim($coverImage);
-        if ($this->isAbsoluteUrl($value) || str_starts_with($value, 'data:')) {
-            return $value;
-        }
-
-        $path = parse_url($value, PHP_URL_PATH) ?: $value;
-        $path = ltrim($path, '/');
-
-        if (str_starts_with($path, 'storage/')) {
-            return asset($path);
-        }
-
-        if (str_starts_with($path, 'uploads/')) {
-            return file_exists(public_path('storage/' . $path)) ? asset('storage/' . $path) : asset('images/default-book-cover.jpg');
-        }
-
-        $filename = basename($path);
-        $relative = 'storage/uploads/book_cover/' . $filename;
-        $publicPath = public_path($relative);
-
-        return file_exists($publicPath) ? asset($relative) : asset('images/default-book-cover.jpg');
+        return ImageUrl::cover($coverImage);
     }
 
     private function resolveAvatarUrl(string $ownerAvatar): string
     {
-        if (! empty($ownerAvatar) && $ownerAvatar !== 'default-avatar.jpg') {
-            $value = trim($ownerAvatar);
-            if ($this->isAbsoluteUrl($value) || str_starts_with($value, 'data:')) {
-                return $value;
-            }
-
-            $path = parse_url($value, PHP_URL_PATH) ?: $value;
-            $path = ltrim($path, '/');
-
-            if (str_starts_with($path, 'storage/')) {
-                return asset($path);
-            }
-
-            if (str_starts_with($path, 'uploads/')) {
-                return file_exists(public_path('storage/' . $path)) ? asset('storage/' . $path) : asset('images/avatars/default.jpg');
-            }
-
-            $relative = 'storage/uploads/profile/' . basename($path);
-            $publicPath = public_path($relative);
-
-            if (file_exists($publicPath)) {
-                return asset($relative);
-            }
-        }
-
-        return asset('images/avatars/default.jpg');
+        return ImageUrl::avatar($ownerAvatar);
     }
 
     private function isAbsoluteUrl(string $value): bool

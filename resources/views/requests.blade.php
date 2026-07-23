@@ -534,7 +534,7 @@
 
         const form = document.createElement('form');
         form.method = 'POST';
-        form.action = @json(route('requests.index'));
+        form.action = "{{ route('requests.index') }}";
 
         const fields = {
             _token: csrfToken,

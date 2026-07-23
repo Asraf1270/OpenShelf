@@ -342,6 +342,9 @@
                 <a href="{{ route('admin.logs.index') }}" class="menu-item {{ request()->routeIs('admin.logs.*') ? 'active' : '' }}">
                     <i class="fas fa-clipboard-list"></i> System Logs
                 </a>
+                <a href="{{ route('admin.system-control') }}" class="menu-item {{ request()->routeIs('admin.system-control') ? 'active' : '' }}">
+                    <i class="fas fa-terminal"></i> System Control
+                </a>
                 <a href="{{ route('admin.profile') }}" class="menu-item {{ request()->routeIs('admin.profile') ? 'active' : '' }}">
                     <i class="fas fa-user-circle"></i> My Profile
                 </a>

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Support\ImageUrl;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -32,17 +33,7 @@ class User extends Authenticatable
 
     public function getProfileImageUrlAttribute(): string
     {
-        $name = $this->profile_pic ?: 'default-avatar.jpg';
-
-        if (empty($name) || in_array($name, ['default-avatar.jpg', 'default.jpg'], true)) {
-            return '/images/avatars/default.jpg';
-        }
-
-        $relative = 'storage/uploads/profile/' . ltrim($name, '/');
-
-        return file_exists(public_path($relative))
-            ? '/' . $relative
-            : '/images/avatars/default.jpg';
+        return ImageUrl::avatar($this->profile_pic);
     }
 
     public function getHallNameAttribute(): string

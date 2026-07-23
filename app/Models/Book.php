@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Support\ImageUrl;
 use Illuminate\Database\Eloquent\Model;
 
 class Book extends Model
@@ -58,61 +59,46 @@ class Book extends Model
 
     public function getCoverUrlAttribute(): string
     {
-        return $this->resolveStoredCoverPath(false);
+        return ImageUrl::cover($this->cover_image);
     }
 
     public function getDetailCoverUrlAttribute(): string
     {
-        return $this->resolveStoredCoverPath(true);
-    }
-
-    private function resolveStoredCoverPath(bool $preferFullImage): string
-    {
+        // Detail page shows the full image, not the thumbnail; resolve the full filename.
         if (empty($this->cover_image)) {
-            return '/images/default-book-cover.jpg';
+            return asset('images/default-book-cover.jpg');
         }
 
         $filename = basename(ltrim($this->cover_image, '/'));
-        $fullRelative = 'storage/uploads/book_cover/' . $filename;
-        $thumbRelative = 'storage/uploads/book_cover/thumb_' . $filename;
+        $diskName = config('filesystems.default', 'local');
 
-        if ($preferFullImage) {
-            if (file_exists(public_path($fullRelative))) {
-                return '/' . $fullRelative;
+        // For R2/S3, we serve the full image (not thumb)
+        if ($diskName === 'r2' || $diskName === 's3') {
+            $baseUrl = config("filesystems.disks.{$diskName}.url");
+            if (!empty($baseUrl)) {
+                return rtrim($baseUrl, '/') . '/book_cover/' . $filename;
             }
+            return ImageUrl::cover($this->cover_image);
+        }
 
-            if (file_exists(public_path($thumbRelative))) {
-                return '/' . $thumbRelative;
-            }
-        } else {
-            if (file_exists(public_path($fullRelative))) {
-                return '/' . $fullRelative;
-            }
-
-            if (file_exists(public_path($thumbRelative))) {
-                return '/' . $thumbRelative;
+        // Local: try full image first, then thumb
+        foreach ([
+            'storage/book_cover/' . $filename,
+            'storage/book_cover/thumb_' . $filename,
+            'storage/uploads/book_cover/' . $filename,
+            'storage/uploads/book_cover/thumb_' . $filename,
+        ] as $path) {
+            if (file_exists(public_path($path))) {
+                return asset($path);
             }
         }
 
-        $relative = 'storage/uploads/book_cover/' . ltrim($this->cover_image, '/');
-
-        return file_exists(public_path($relative))
-            ? '/' . $relative
-            : '/images/default-book-cover.jpg';
+        return asset('images/default-book-cover.jpg');
     }
 
     public function getOwnerAvatarUrlAttribute(): string
     {
-        if (! empty($this->owner_avatar) && $this->owner_avatar !== 'default-avatar.jpg') {
-            $relative = 'storage/uploads/profile/' . ltrim($this->owner_avatar, '/');
-            $publicPath = public_path($relative);
-
-            if (file_exists($publicPath)) {
-                return '/' . $relative;
-            }
-        }
-
-        return '/images/avatars/default.jpg';
+        return ImageUrl::avatar($this->owner_avatar);
     }
 
     public function getHallNameAttribute(): string

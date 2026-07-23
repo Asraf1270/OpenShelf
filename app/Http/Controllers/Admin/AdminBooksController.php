@@ -154,7 +154,16 @@ class AdminBooksController extends AdminController
         }
 
         $filename = basename($book->cover_image);
+
+        try {
+            app(\App\Services\BookCoverService::class)->delete($filename);
+        } catch (\Throwable $e) {
+            // Ignore error and fall back to local file deletion
+        }
+
         $paths = [
+            public_path('storage/book_cover/' . $filename),
+            public_path('storage/book_cover/thumb_' . $filename),
             public_path('storage/uploads/book_cover/' . $filename),
             public_path('storage/uploads/book_cover/thumb_' . $filename),
             public_path('uploads/book_cover/' . $filename),

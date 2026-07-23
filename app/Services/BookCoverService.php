@@ -25,7 +25,7 @@ class BookCoverService
 
     public function uploadPath(): string
     {
-        return storage_path('app/public/uploads/book_cover');
+        return storage_path('app/public/book_cover');
     }
 
     public function process(UploadedFile $file, string $bookId): array
@@ -44,14 +44,7 @@ class BookCoverService
             return ['error' => 'Only JPG, PNG, GIF, and WebP images are allowed'];
         }
 
-        $uploadPath = $this->uploadPath();
-
-        if (! is_dir($uploadPath)) {
-            mkdir($uploadPath, 0755, true);
-        }
-
         $webpFilename = $bookId . '_' . time() . '.webp';
-        $webpPath = $uploadPath . DIRECTORY_SEPARATOR . $webpFilename;
 
         $image = $this->loadImage($file->getPathname(), $mimeType);
 
@@ -100,28 +93,70 @@ class BookCoverService
             (int) $size
         );
 
-        imagewebp($resized, $webpPath, self::COMPRESSION_QUALITY);
-        imagewebp($thumb, $uploadPath . DIRECTORY_SEPARATOR . 'thumb_' . $webpFilename, self::COMPRESSION_QUALITY);
+        $tempResizedPath = tempnam(sys_get_temp_dir(), 'cover_');
+        $tempThumbPath = tempnam(sys_get_temp_dir(), 'cover_thumb_');
+
+        $successResized = imagewebp($resized, $tempResizedPath, self::COMPRESSION_QUALITY);
+        $successThumb = imagewebp($thumb, $tempThumbPath, self::COMPRESSION_QUALITY);
 
         imagedestroy($image);
         imagedestroy($resized);
         imagedestroy($thumb);
+
+        if (! $successResized || ! $successThumb) {
+            @unlink($tempResizedPath);
+            @unlink($tempThumbPath);
+            return ['error' => 'Failed to save processed image'];
+        }
+
+        try {
+            $disk = config('filesystems.default', 'local');
+            $driver = config("filesystems.disks.{$disk}.driver", 'local');
+            $options = ($driver === 's3') ? [] : ['visibility' => 'public'];
+
+            $resizedStream = fopen($tempResizedPath, 'r+');
+            \Illuminate\Support\Facades\Storage::disk($disk)->put(
+                'book_cover/' . $webpFilename,
+                $resizedStream,
+                $options
+            );
+            if (is_resource($resizedStream)) {
+                fclose($resizedStream);
+            }
+
+            $thumbStream = fopen($tempThumbPath, 'r+');
+            \Illuminate\Support\Facades\Storage::disk($disk)->put(
+                'book_cover/thumb_' . $webpFilename,
+                $thumbStream,
+                $options
+            );
+            if (is_resource($thumbStream)) {
+                fclose($thumbStream);
+            }
+
+            @unlink($tempResizedPath);
+            @unlink($tempThumbPath);
+        } catch (\Throwable $e) {
+            @unlink($tempResizedPath);
+            @unlink($tempThumbPath);
+            return ['error' => 'Failed to upload book cover: ' . $e->getMessage()];
+        }
 
         return ['success' => true, 'filename' => $webpFilename];
     }
 
     public function delete(string $filename): void
     {
-        $uploadPath = $this->uploadPath();
-        $fullPath = $uploadPath . DIRECTORY_SEPARATOR . $filename;
-        $thumbPath = $uploadPath . DIRECTORY_SEPARATOR . 'thumb_' . $filename;
+        $disk = config('filesystems.default', 'local');
+        $fullPath = 'book_cover/' . $filename;
+        $thumbPath = 'book_cover/thumb_' . $filename;
 
-        if (file_exists($fullPath)) {
-            unlink($fullPath);
+        if (\Illuminate\Support\Facades\Storage::disk($disk)->exists($fullPath)) {
+            \Illuminate\Support\Facades\Storage::disk($disk)->delete($fullPath);
         }
 
-        if (file_exists($thumbPath)) {
-            unlink($thumbPath);
+        if (\Illuminate\Support\Facades\Storage::disk($disk)->exists($thumbPath)) {
+            \Illuminate\Support\Facades\Storage::disk($disk)->delete($thumbPath);
         }
     }
 

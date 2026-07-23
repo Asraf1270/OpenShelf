@@ -463,35 +463,7 @@ async function loadMoreBooks() {
     }
 }
 
-function resolveUploadUrl(value, fallbackPath, basePath) {
-    if (!value) return fallbackPath;
 
-    const raw = String(value).trim();
-    if (!raw) return fallbackPath;
-
-    // Already a site-relative path (starts with /) — use as-is
-    if (raw.startsWith('/') && !raw.startsWith('//')) return raw;
-
-    // Absolute URL pointing to this site — extract the path
-    if (/^https?:\/\//i.test(raw)) {
-        try {
-            const parsed = new URL(raw);
-            // If same origin or any host (since APP_URL may be wrong), extract path
-            return parsed.pathname + parsed.search;
-        } catch (_) { /* fall through */ }
-    }
-
-    // Data URI — use as-is
-    if (raw.startsWith('data:')) return raw;
-
-    // Legacy relative paths
-    const normalized = raw.replace(/^\/+/, '');
-    if (normalized.startsWith('storage/')) return `/${normalized}`;
-    if (normalized.startsWith('uploads/')) return `/storage/${normalized}`;
-    if (normalized.startsWith(basePath)) return `/${normalized}`;
-
-    return `/${basePath}${normalized.split('/').pop()}`;
-}
 
 function createBookCardGrid(book) {
     const div = document.createElement('div');
@@ -502,8 +474,8 @@ function createBookCardGrid(book) {
 
     const status = (book.status || 'available').toLowerCase();
     const rating = parseFloat(book.rating) || 0;
-    const coverUrl = resolveUploadUrl(book.cover_image, '/images/default-book-cover.jpg', 'storage/uploads/book_cover/');
-    const avatarUrl = resolveUploadUrl(book.owner_avatar, '/images/avatars/default.jpg', 'storage/uploads/profile/');
+    const coverUrl = book.cover_url || book.cover_image || '/images/default-book-cover.jpg';
+    const avatarUrl = book.owner_avatar_url || book.owner_avatar || '/images/avatars/default.jpg';
     
     div.innerHTML = `
         <div class="book-cover-container">
@@ -535,8 +507,8 @@ function createBookCardList(book) {
 
     const status = (book.status || 'available').toLowerCase();
     const rating = parseFloat(book.rating) || 0;
-    const coverUrl = resolveUploadUrl(book.cover_image, '/images/default-book-cover.jpg', 'storage/uploads/book_cover/');
-    const avatarUrl = resolveUploadUrl(book.owner_avatar, '/images/avatars/default.jpg', 'storage/uploads/profile/');
+    const coverUrl = book.cover_url || book.cover_image || '/images/default-book-cover.jpg';
+    const avatarUrl = book.owner_avatar_url || book.owner_avatar || '/images/avatars/default.jpg';
     
     // Simple hall mapping in JS (matching helpers.php)
     const halls = {'1': 'Amar Ekushey Hall', '2': 'Dr. Muhammad Shahidullah Hall', '3': 'Fazlul Huq Muslim Hall'};
