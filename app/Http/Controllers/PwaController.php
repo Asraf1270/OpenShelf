@@ -27,55 +27,55 @@ class PwaController extends Controller
             'categories' => ['books', 'education', 'social', 'lifestyle'],
             'icons' => [
                 [
-                    'src' => '/assets/images/pwa/icon-72x72.png',
+                    'src' => '/images/pwa/icon-72x72.png',
                     'sizes' => '72x72',
                     'type' => 'image/png',
                     'purpose' => 'any',
                 ],
                 [
-                    'src' => '/assets/images/pwa/icon-96x96.png',
+                    'src' => '/images/pwa/icon-96x96.png',
                     'sizes' => '96x96',
                     'type' => 'image/png',
                     'purpose' => 'any',
                 ],
                 [
-                    'src' => '/assets/images/pwa/icon-128x128.png',
+                    'src' => '/images/pwa/icon-128x128.png',
                     'sizes' => '128x128',
                     'type' => 'image/png',
                     'purpose' => 'any',
                 ],
                 [
-                    'src' => '/assets/images/pwa/icon-144x144.png',
+                    'src' => '/images/pwa/icon-144x144.png',
                     'sizes' => '144x144',
                     'type' => 'image/png',
                     'purpose' => 'any',
                 ],
                 [
-                    'src' => '/assets/images/pwa/icon-152x152.png',
+                    'src' => '/images/pwa/icon-152x152.png',
                     'sizes' => '152x152',
                     'type' => 'image/png',
                     'purpose' => 'any',
                 ],
                 [
-                    'src' => '/assets/images/pwa/icon-192x192.png',
+                    'src' => '/images/pwa/icon-192x192.png',
                     'sizes' => '192x192',
                     'type' => 'image/png',
                     'purpose' => 'any',
                 ],
                 [
-                    'src' => '/assets/images/pwa/icon-384x384.png',
+                    'src' => '/images/pwa/icon-384x384.png',
                     'sizes' => '384x384',
                     'type' => 'image/png',
                     'purpose' => 'any',
                 ],
                 [
-                    'src' => '/assets/images/pwa/icon-512x512.png',
+                    'src' => '/images/pwa/icon-512x512.png',
                     'sizes' => '512x512',
                     'type' => 'image/png',
                     'purpose' => 'any',
                 ],
                 [
-                    'src' => '/assets/images/pwa/maskable-icon-512x512.png',
+                    'src' => '/images/pwa/maskable-icon-512x512.png',
                     'sizes' => '512x512',
                     'type' => 'image/png',
                     'purpose' => 'maskable',
@@ -83,14 +83,14 @@ class PwaController extends Controller
             ],
             'screenshots' => [
                 [
-                    'src' => '/assets/images/pwa/screenshots/mobile-1.png',
+                    'src' => '/images/pwa/screenshots/mobile-1.png',
                     'sizes' => '1080x1920',
                     'type' => 'image/png',
                     'form_factor' => 'narrow',
                     'label' => 'OpenShelf Mobile Feed',
                 ],
                 [
-                    'src' => '/assets/images/pwa/screenshots/desktop-1.png',
+                    'src' => '/images/pwa/screenshots/desktop-1.png',
                     'sizes' => '1920x1080',
                     'type' => 'image/png',
                     'form_factor' => 'wide',
@@ -104,7 +104,7 @@ class PwaController extends Controller
                     'url' => '/books/',
                     'icons' => [
                         [
-                            'src' => '/assets/images/pwa/icon-96x96.png',
+                            'src' => '/images/pwa/icon-96x96.png',
                             'sizes' => '96x96',
                             'type' => 'image/png',
                         ],
@@ -116,7 +116,7 @@ class PwaController extends Controller
                     'url' => '/feed/',
                     'icons' => [
                         [
-                            'src' => '/assets/images/pwa/icon-96x96.png',
+                            'src' => '/images/pwa/icon-96x96.png',
                             'sizes' => '96x96',
                             'type' => 'image/png',
                         ],
@@ -128,7 +128,7 @@ class PwaController extends Controller
                     'url' => '/profile/',
                     'icons' => [
                         [
-                            'src' => '/assets/images/pwa/icon-96x96.png',
+                            'src' => '/images/pwa/icon-96x96.png',
                             'sizes' => '96x96',
                             'type' => 'image/png',
                         ],

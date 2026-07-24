@@ -176,6 +176,9 @@
         <a href="{{ route('about') }}" class="mobile-nav-link {{ request()->routeIs('about') ? 'active' : '' }}">
             <i class="fas fa-info-circle"></i> About
         </a>
+        <a href="#" class="mobile-nav-link" id="pwaInstallBtn" style="display: none;">
+            <i class="fas fa-download"></i> Install App
+        </a>
 
         @if ($isLoggedIn)
             <div class="mobile-nav-divider"></div>
@@ -1061,5 +1064,43 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         headerLastScrollY = currentScrollY;
     }, { passive: true });
+
+    // PWA Install Logic
+    let deferredPrompt;
+    const pwaInstallBtn = document.getElementById('pwaInstallBtn');
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+        // Prevent the mini-infobar from appearing on mobile
+        e.preventDefault();
+        // Stash the event so it can be triggered later
+        deferredPrompt = e;
+        // Update UI notify the user they can install the PWA
+        if (pwaInstallBtn) {
+            pwaInstallBtn.style.display = 'flex';
+        }
+    });
+
+    if (pwaInstallBtn) {
+        pwaInstallBtn.addEventListener('click', async (e) => {
+            e.preventDefault();
+            if (deferredPrompt) {
+                // Hide the app provided install promotion
+                pwaInstallBtn.style.display = 'none';
+                // Show the install prompt
+                deferredPrompt.prompt();
+                // Wait for the user to respond to the prompt
+                const { outcome } = await deferredPrompt.userChoice;
+                if (outcome === 'accepted') {
+                    console.log('User accepted the install prompt');
+                } else {
+                    console.log('User dismissed the install prompt');
+                    // Show it again if dismissed
+                    pwaInstallBtn.style.display = 'flex';
+                }
+                // We've used the prompt, and can't use it again, throw it away
+                deferredPrompt = null;
+            }
+        });
+    }
 });
 </script>

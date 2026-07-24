@@ -10,7 +10,7 @@
  * - API/Data: Network-Only (never cache dynamic data)
  */
 
-const CACHE_VERSION = 'v1.0.1';
+const CACHE_VERSION = 'v1.0.2';
 const STATIC_CACHE = `openshelf-static-${CACHE_VERSION}`;
 const PAGES_CACHE = `openshelf-pages-${CACHE_VERSION}`;
 const IMAGES_CACHE = `openshelf-images-${CACHE_VERSION}`;
@@ -19,10 +19,10 @@ const IMAGES_CACHE = `openshelf-images-${CACHE_VERSION}`;
 const PRE_CACHE_ASSETS = [
     '/',
     '/offline',
-    '/assets/css/style.css',
-    '/assets/images/logo-icon.svg',
-    '/assets/images/logo-full.svg',
-    '/assets/images/default-book-cover.jpg',
+    '/css/app.css',
+    '/images/logo-icon.svg',
+    '/images/logo-full.svg',
+    '/images/default-book-cover.jpg',
     '/manifest.json'
 ];
 
