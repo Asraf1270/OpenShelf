@@ -72,51 +72,11 @@
 
     <!-- Stylesheets -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    @php
-        $viteManifestPath = public_path('build/manifest.json');
-        $viteManifestExists = file_exists($viteManifestPath);
-        $viteManifest = $viteManifestExists ? json_decode(file_get_contents($viteManifestPath), true) : null;
-        $buildCssAsset = null;
-        $buildJsAsset = null;
-
-        if (is_array($viteManifest)) {
-            $cssEntry = $viteManifest['resources/css/app.css'] ?? null;
-            $jsEntry = $viteManifest['resources/js/app.js'] ?? null;
-
-            if (is_array($cssEntry) && ! empty($cssEntry['file'])) {
-                $buildCssAsset = asset('build/' . ltrim($cssEntry['file'], '/'));
-            }
-
-            if (is_array($jsEntry) && ! empty($jsEntry['file'])) {
-                $buildJsAsset = asset('build/' . ltrim($jsEntry['file'], '/'));
-            }
-        }
-
-        if (! $buildCssAsset || ! $buildJsAsset) {
-            $viteAssetsPath = public_path('build/assets');
-
-            if (is_dir($viteAssetsPath)) {
-                $assetFiles = array_diff(scandir($viteAssetsPath), ['.', '..']);
-
-                foreach ($assetFiles as $assetFile) {
-                    if (str_ends_with($assetFile, '.css') && str_contains($assetFile, 'app')) {
-                        $buildCssAsset = $buildCssAsset ?: asset('build/assets/' . $assetFile);
-                    } elseif (str_ends_with($assetFile, '.js') && str_contains($assetFile, 'app')) {
-                        $buildJsAsset = $buildJsAsset ?: asset('build/assets/' . $assetFile);
-                    }
-                }
-            }
-        }
-    @endphp
-
-    @if ($buildCssAsset)
-        <link rel="stylesheet" href="{{ $buildCssAsset }}">
-    @endif
-
-    @if ($buildJsAsset)
-        <script type="module" src="{{ $buildJsAsset }}"></script>
-    @endif
+    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
     @stack('styles')
+
+    <!-- App JS -->
+    <script src="{{ asset('js/app.js') }}" defer></script>
 
     <!-- CSRF Token for AJAX -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
@@ -140,7 +100,6 @@
     @include('partials.footer')
 
     <!-- Scripts -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
     @stack('scripts')
 
     <!-- Service Worker Registration for PWA -->
