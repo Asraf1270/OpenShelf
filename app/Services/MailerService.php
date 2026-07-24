@@ -88,7 +88,12 @@ class MailerService
     public function testConnection(): array
     {
         try {
-            $transport = Mail::mailer()->getSymfonyTransport();
+            /** @var \Illuminate\Mail\Mailer $mailer */
+            $mailer = Mail::mailer();
+            
+            /** @var \Symfony\Component\Mailer\Transport\Smtp\SmtpTransport|mixed $transport */
+            $transport = $mailer->getSymfonyTransport();
+            
             if (method_exists($transport, 'start')) {
                 $transport->start();
                 $transport->stop();
@@ -110,6 +115,8 @@ class MailerService
         ?string $mailer = null,
     ): void {
         $replyTo = config('openshelf-mail.reply_to');
+        
+        /** @var \Illuminate\Mail\Mailer $transport */
         $transport = $mailer ? Mail::mailer($mailer) : Mail::mailer();
 
         $transport->html($htmlBody, function ($message) use ($to, $toName, $subject, $replyTo, $attachments, $userId) {
