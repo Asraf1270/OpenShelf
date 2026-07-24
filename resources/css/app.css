@@ -1,0 +1,118 @@
+@import 'tailwindcss';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+
+/* ===== Import OpenShelf Component Stylesheets ===== */
+@import './components.css';
+@import './admin.css';
+@import './profile.css';
+@import './settings.css';
+@import './books.css';
+@import './book.css';
+@import './borrow-request.css';
+@import './my-borrowed.css';
+@import './return-book.css';
+@import './confirm-return.css';
+@import './requests.css';
+
+@theme {
+    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+        'Segoe UI Symbol', 'Noto Color Emoji';
+}
+
+/* ==========================================
+   OpenShelf - Custom Theme Variables
+   ========================================== */
+
+:root {
+    /* Brand Colors */
+    --primary: #2C3E50;
+    --secondary: #4C9F8A;
+    --accent: #7C3AED;
+    --success: #10b981;
+    --warning: #f59e0b;
+    --danger: #ef4444;
+    --info: #3b82f6;
+
+    /* Light Theme */
+    --bg-light: #f8fafc;
+    --bg-light-secondary: #ffffff;
+    --text-light: #1e293b;
+    --text-light-secondary: #64748b;
+    --border-light: #e2e8f0;
+
+    /* Dark Theme */
+    --bg-dark: #0f172a;
+    --bg-dark-secondary: #1e293b;
+    --text-dark: #f1f5f9;
+    --text-dark-secondary: #cbd5e1;
+    --border-dark: #334155;
+}
+
+/* Light Theme (Default) */
+:root {
+    --bg: var(--bg-light);
+    --bg-secondary: var(--bg-light-secondary);
+    --text: var(--text-light);
+    --text-secondary: var(--text-light-secondary);
+    --border: var(--border-light);
+    --header-bg: var(--bg-light-secondary);
+}
+
+/* Dark Theme */
+:root[data-theme="dark"] {
+    --bg: var(--bg-dark);
+    --bg-secondary: var(--bg-dark-secondary);
+    --text: var(--text-dark);
+    --text-secondary: var(--text-dark-secondary);
+    --border: var(--border-dark);
+    --header-bg: var(--bg-dark-secondary);
+}
+
+/* ==========================================
+   Global Base Styles
+   ========================================== */
+
+body {
+    padding-bottom: 0;
+    transition: background-color 0.3s ease;
+}
+
+body.no-bottom-nav {
+    padding-bottom: 0;
+}
+
+/* ==========================================
+   Main Layout Structure
+   ========================================== */
+
+.main-wrapper {
+    min-height: calc(100vh - 80px);
+}
+
+.skip-to-main {
+    position: absolute;
+    top: -40px;
+    left: 0;
+    background: var(--secondary);
+    color: white;
+    padding: 8px;
+    text-decoration: none;
+    z-index: 100;
+}
+
+.skip-to-main:focus {
+    top: 0;
+}
+
+/* ==========================================
+   Responsive Design
+   ========================================== */
+
+/* Bottom nav is mobile-only — reserve space only there */
+@media (max-width: 900px) {
+    body {
+        padding-bottom: 120px;
+    }
+}

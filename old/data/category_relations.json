@@ -1,0 +1,71 @@
+{
+    "Education": [
+        "Science",
+        "Technology",
+        "Business",
+        "Law",
+        "Arts"
+    ],
+    "Technology": [
+        "Education",
+        "Science",
+        "Business"
+    ],
+    "Business": [
+        "Education",
+        "Technology",
+        "Law",
+        "Self-Development"
+    ],
+    "Science": [
+        "Education",
+        "Technology",
+        "Health"
+    ],
+    "Health": [
+        "Science",
+        "Education",
+        "Self-Development"
+    ],
+    "Arts": [
+        "Education",
+        "Fiction",
+        "History"
+    ],
+    "Religion": [
+        "Islamic",
+        "History",
+        "Arts",
+        "Education"
+    ],
+    "Islamic": [
+        "Religion",
+        "History",
+        "Education"
+    ],
+    "History": [
+        "Arts",
+        "Religion",
+        "Islamic",
+        "Biography"
+    ],
+    "Biography": [
+        "History",
+        "Self-Development",
+        "Education"
+    ],
+    "Fiction": [
+        "Arts",
+        "History"
+    ],
+    "Self-Development": [
+        "Business",
+        "Health",
+        "Education"
+    ],
+    "Law": [
+        "Business",
+        "Education",
+        "History"
+    ]
+}

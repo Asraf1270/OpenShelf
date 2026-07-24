@@ -1,0 +1,76 @@
+        @keyframes popIn  { 0%{transform:scale(.8);opacity:0} 70%{transform:scale(1.05)} 100%{transform:scale(1);opacity:1} }
+
+        .cr-wrap {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 1rem;
+            background: var(--surface-hover, #f8fafc);
+        }
+        .cr-card {
+            width: 100%;
+            max-width: 520px;
+            background: var(--header-bg, #fff);
+            border: 1px solid var(--border, #e2e8f0);
+            border-radius: 20px;
+            box-shadow: 0 20px 50px rgba(0,0,0,.08);
+            overflow: hidden;
+            animation: fadeUp .45s ease-out;
+        }
+        .cr-banner {
+            height: 6px;
+            background: linear-gradient(90deg, var(--primary,#2c3e50), var(--secondary,#4c9f8a));
+        }
+        .cr-body  { padding: 2.5rem 2rem; }
+        .cr-icon  {
+            width: 72px; height: 72px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 2rem; margin: 0 auto 1.25rem;
+            animation: popIn .5s ease-out;
+        }
+        .cr-icon.warn    { background:rgba(245,158,11,.12); color:#f59e0b; }
+        .cr-icon.success { background:rgba(16,185,129,.12); color:#10b981; }
+        .cr-icon.danger  { background:rgba(239,68,68,.12);  color:#ef4444; }
+        .cr-icon.info    { background:rgba(59,130,246,.12); color:#3b82f6; }
+
+        .cr-title { font-size:1.4rem; font-weight:800; text-align:center; color:var(--text-primary,#0f172a); margin-bottom:.5rem; }
+        .cr-sub   { text-align:center; color:var(--text-secondary,#5a6c7d); font-size:.9rem; margin-bottom:1.5rem; }
+
+        .cr-book-card {
+            background: linear-gradient(135deg,rgba(44,62,80,.05),rgba(76,159,138,.05));
+            border: 1px solid var(--border,#e2e8f0);
+            border-radius: 14px;
+            padding: 1.2rem;
+            margin-bottom: 1.5rem;
+        }
+        .cr-book-title { font-weight:700; color:var(--text-primary,#0f172a); margin-bottom:.25rem; }
+        .cr-book-meta  { font-size:.82rem; color:var(--text-secondary,#5a6c7d); display:flex; gap:1rem; flex-wrap:wrap; }
+        .cr-book-meta span { display:flex; align-items:center; gap:.3rem; }
+
+        .cr-actions { display:flex; gap:.75rem; }
+        .cr-actions .btn { flex:1; justify-content:center; }
+        .btn-confirm { background:linear-gradient(135deg,#10b981,#059669); border:none; color:#fff; }
+        .btn-confirm:hover { transform:translateY(-2px); box-shadow:0 6px 18px rgba(16,185,129,.35); }
+        .btn-reject  { background:transparent; border:1.5px solid #ef4444; color:#ef4444; }
+        .btn-reject:hover  { background:rgba(239,68,68,.06); }
+
+        .cr-reject-form { margin-top:1.25rem; }
+        .cr-reject-form textarea {
+            width:100%; border-radius:10px; border:1.5px solid var(--border,#e2e8f0);
+            padding:.75rem 1rem; font-size:.9rem; color:var(--text-primary,#0f172a);
+            background:var(--header-bg,#fff); resize:vertical; min-height:90px;
+            font-family:inherit;
+        }
+        .cr-reject-form textarea:focus { outline:none; border-color:#ef4444; box-shadow:0 0 0 3px rgba(239,68,68,.1); }
+
+        .cr-result-icon { font-size:4rem; text-align:center; margin-bottom:1rem; }
+        .cr-result-title { font-size:1.5rem; font-weight:800; text-align:center; margin-bottom:.6rem; }
+        .cr-result-msg   { text-align:center; color:var(--text-secondary,#5a6c7d); font-size:.92rem; margin-bottom:1.75rem; }
+
+        .cr-divider { height:1px; background:var(--border,#e2e8f0); margin:1.25rem 0; }
+        .cr-footer  { text-align:center; font-size:.8rem; color:var(--text-tertiary,#94a3b8); padding:1rem 2rem 1.5rem; }
+
+        [data-theme="dark"] .cr-card { background:#1e293b; }
+        [data-theme="dark"] .cr-book-card { background:rgba(255,255,255,.03); }
+        [data-theme="dark"] .cr-reject-form textarea { background:#0f172a; color:#cbd5e1; }

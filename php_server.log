@@ -1,5 +1,0 @@
-[Fri Jun 12 08:38:40 2026] PHP 8.5.4 Development Server (http://localhost:8082) started
-[Fri Jun 12 08:38:42 2026] 127.0.0.1:35354 Accepted
-[Fri Jun 12 08:38:42 2026] Database Connection Error: could not find driver
-[Fri Jun 12 08:38:42 2026] 127.0.0.1:35354 [200]: GET /requests/index.php
-[Fri Jun 12 08:38:42 2026] 127.0.0.1:35354 Closing
