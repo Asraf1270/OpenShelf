@@ -34,6 +34,7 @@
             </a>
         </nav>
 
+        @if (request()->routeIs('books'))
         <div class="header-search-desktop">
             <form action="{{ route('books') }}" method="GET" class="search-form">
                 <div class="search-input-group">
@@ -42,6 +43,7 @@
                 </div>
             </form>
         </div>
+        @endif
 
         <div class="header-right">
             @if ($isLoggedIn)
@@ -96,11 +98,6 @@
                         <a href="{{ route('books.create') }}" class="dropdown-link"><i class="fas fa-plus"></i> Add Book</a>
                         <a href="{{ route('requests.index') }}" class="dropdown-link"><i class="fas fa-paper-plane"></i> Requests</a>
 
-                        @if ($headerUser->role === 'admin')
-                            <div class="dropdown-divider"></div>
-                            <a href="{{ route('admin.dashboard') }}" class="dropdown-link"><i class="fas fa-shield"></i> Admin Panel</a>
-                        @endif
-
                         <div class="dropdown-divider"></div>
                         <form action="{{ route('logout') }}" method="POST" class="logout-form">
                             @csrf
@@ -127,6 +124,7 @@
         </div>
     </div>
 
+    @if (request()->routeIs('books'))
     <div class="header-search-mobile">
         <form action="{{ route('books') }}" method="GET" class="search-form">
             <div class="search-input-group">
@@ -135,6 +133,7 @@
             </div>
         </form>
     </div>
+    @endif
 </header>
 
 <div class="mobile-menu-overlay" id="mobileMenuOverlay"></div>
@@ -167,7 +166,7 @@
 
     <nav class="mobile-nav-links">
         <div class="mobile-nav-section-label">General</div>
-        <a href="{{ route('home') }}" class="mobile-nav-link {{ request()->routeIs('home') ? 'active' : '' }}">
+        <a href="{{ route('home') }}" class="mobile-nav-link desktop-only-nav-item {{ request()->routeIs('home') ? 'active' : '' }}">
             <i class="fas fa-home"></i> Home
         </a>
         <a href="{{ route('books') }}" class="mobile-nav-link {{ request()->routeIs('books', 'book.show') ? 'active' : '' }}">
@@ -183,13 +182,13 @@
         @if ($isLoggedIn)
             <div class="mobile-nav-divider"></div>
             <div class="mobile-nav-section-label">Management</div>
-            <a href="{{ route('books.create') }}" class="mobile-nav-link {{ request()->routeIs('books.create') ? 'active' : '' }}">
+            <a href="{{ route('books.create') }}" class="mobile-nav-link desktop-only-nav-item {{ request()->routeIs('books.create') ? 'active' : '' }}">
                 <i class="fas fa-plus"></i> Add Book
             </a>
-            <a href="{{ route('requests.index') }}" class="mobile-nav-link {{ request()->routeIs('requests.*') ? 'active' : '' }}">
+            <a href="{{ route('requests.index') }}" class="mobile-nav-link desktop-only-nav-item {{ request()->routeIs('requests.*') ? 'active' : '' }}">
                 <i class="fas fa-paper-plane"></i> Requests
             </a>
-            <a href="{{ route('my-borrowed') }}" class="mobile-nav-link {{ request()->routeIs('my-borrowed') ? 'active' : '' }}">
+            <a href="{{ route('my-borrowed') }}" class="mobile-nav-link desktop-only-nav-item {{ request()->routeIs('my-borrowed') ? 'active' : '' }}">
                 <i class="fas fa-book-reader"></i> My Borrowed
             </a>
             <a href="{{ route('notifications.index') }}" class="mobile-nav-link {{ request()->routeIs('notifications.*') ? 'active' : '' }}">
@@ -198,17 +197,12 @@
                     <span class="mobile-nav-badge">{{ $notifCount > 99 ? '99+' : $notifCount }}</span>
                 @endif
             </a>
-            <a href="{{ route('profile') }}" class="mobile-nav-link {{ request()->routeIs('profile') ? 'active' : '' }}">
+            <a href="{{ route('profile') }}" class="mobile-nav-link desktop-only-nav-item {{ request()->routeIs('profile') ? 'active' : '' }}">
                 <i class="fas fa-user"></i> My Profile
             </a>
             <a href="{{ route('settings') }}" class="mobile-nav-link {{ request()->routeIs('settings*') ? 'active' : '' }}">
                 <i class="fas fa-cog"></i> Settings
             </a>
-            @if ($headerUser && $headerUser->role === 'admin')
-                <a href="{{ route('admin.dashboard') }}" class="mobile-nav-link">
-                    <i class="fas fa-shield"></i> Admin Panel
-                </a>
-            @endif
         @endif
 
         <div class="mobile-nav-divider"></div>
@@ -248,8 +242,12 @@
         z-index: 100;
         background: var(--header-bg, #ffffff);
         border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-        transition: background 0.3s ease;
+        transition: background 0.3s ease, transform 0.3s ease;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+    }
+
+    .app-header.header-hidden {
+        transform: translateY(-100%);
     }
 
     [data-theme="dark"] .app-header {
@@ -807,6 +805,7 @@
         .header-search-mobile { display: block; }
         .auth-buttons { display: none; }
         .header-container { gap: 0.5rem; }
+        .desktop-only-nav-item { display: none !important; }
     }
 </style>
 
@@ -957,5 +956,24 @@ document.addEventListener('DOMContentLoaded', function() {
         icon.classList.toggle('fa-moon', theme !== 'dark');
         icon.classList.toggle('fa-sun', theme === 'dark');
     }
+
+    let headerLastScrollY = window.pageYOffset;
+    const header = document.querySelector('.app-header');
+    
+    window.addEventListener('scroll', () => {
+        const currentScrollY = window.pageYOffset;
+        if (currentScrollY > 100) {
+            if (currentScrollY > headerLastScrollY) {
+                // scrolling down
+                header.classList.add('header-hidden');
+            } else {
+                // scrolling up
+                header.classList.remove('header-hidden');
+            }
+        } else {
+            header.classList.remove('header-hidden');
+        }
+        headerLastScrollY = currentScrollY;
+    }, { passive: true });
 });
 </script>
