@@ -1863,13 +1863,13 @@ body.no-bottom-nav {
 
         @media (max-width: 900px) {
             .minimal-top-bar {
-                top: 116px; /* Header height on mobile (includes search bar) */
+                top: 61px; /* Header height on mobile */
             }
         }
 
         /* When header is hidden, category bar sticks to top */
         body.header-hidden .minimal-top-bar {
-            top: 0;
+            top: 0 !important;
             border-top: 1px solid var(--header-border);
         }
 

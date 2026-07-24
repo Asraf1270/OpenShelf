@@ -4,7 +4,18 @@
 @endphp
 
 <header class="app-header">
-    <div class="header-container">
+    @if (request()->routeIs('books'))
+    <div class="header-search-overlay" id="headerSearchOverlay">
+        <div class="header-container">
+            <form action="{{ route('books') }}" method="GET" class="search-form-overlay">
+                <i class="fas fa-search search-icon-overlay"></i>
+                <input type="text" name="q" placeholder="Search books, authors, categories..." class="search-input-overlay" value="{{ request('q', '') }}" id="headerSearchInput">
+                <button type="button" class="close-search-btn" id="closeSearchBtn"><i class="fas fa-times"></i></button>
+            </form>
+        </div>
+    </div>
+    @endif
+    <div class="header-container" id="mainHeaderContainer">
         <div class="header-logo">
             <a href="{{ route('home') }}" class="logo-link">
                 <img src="{{ asset('images/logo-full.svg') }}" alt="OpenShelf" class="logo-image">
@@ -34,16 +45,15 @@
             </a>
         </nav>
 
-        <div class="header-search-desktop">
-            <form action="{{ route('books') }}" method="GET" class="search-form">
-                <div class="search-input-group">
-                    <i class="fas fa-search"></i>
-                    <input type="text" name="q" placeholder="Search books, authors, categories..." class="search-input" value="{{ request('q', '') }}">
-                </div>
-            </form>
-        </div>
+
 
         <div class="header-right">
+            @if (request()->routeIs('books'))
+                <button class="search-toggle-btn" id="headerSearchToggleBtn" type="button" aria-label="Search">
+                    <i class="fas fa-search"></i>
+                </button>
+            @endif
+
             @if ($isLoggedIn)
                 <div class="notification-bell">
                     <button class="bell-button" id="notificationBell" type="button" aria-label="Notifications">
@@ -96,11 +106,6 @@
                         <a href="{{ route('books.create') }}" class="dropdown-link"><i class="fas fa-plus"></i> Add Book</a>
                         <a href="{{ route('requests.index') }}" class="dropdown-link"><i class="fas fa-paper-plane"></i> Requests</a>
 
-                        @if ($headerUser->role === 'admin')
-                            <div class="dropdown-divider"></div>
-                            <a href="{{ route('admin.dashboard') }}" class="dropdown-link"><i class="fas fa-shield"></i> Admin Panel</a>
-                        @endif
-
                         <div class="dropdown-divider"></div>
                         <form action="{{ route('logout') }}" method="POST" class="logout-form">
                             @csrf
@@ -127,14 +132,6 @@
         </div>
     </div>
 
-    <div class="header-search-mobile">
-        <form action="{{ route('books') }}" method="GET" class="search-form">
-            <div class="search-input-group">
-                <i class="fas fa-search"></i>
-                <input type="text" name="q" placeholder="Search books..." class="search-input" value="{{ request('q', '') }}">
-            </div>
-        </form>
-    </div>
 </header>
 
 <div class="mobile-menu-overlay" id="mobileMenuOverlay"></div>
@@ -167,7 +164,7 @@
 
     <nav class="mobile-nav-links">
         <div class="mobile-nav-section-label">General</div>
-        <a href="{{ route('home') }}" class="mobile-nav-link {{ request()->routeIs('home') ? 'active' : '' }}">
+        <a href="{{ route('home') }}" class="mobile-nav-link desktop-only-nav-item {{ request()->routeIs('home') ? 'active' : '' }}">
             <i class="fas fa-home"></i> Home
         </a>
         <a href="{{ route('books') }}" class="mobile-nav-link {{ request()->routeIs('books', 'book.show') ? 'active' : '' }}">
@@ -183,13 +180,13 @@
         @if ($isLoggedIn)
             <div class="mobile-nav-divider"></div>
             <div class="mobile-nav-section-label">Management</div>
-            <a href="{{ route('books.create') }}" class="mobile-nav-link {{ request()->routeIs('books.create') ? 'active' : '' }}">
+            <a href="{{ route('books.create') }}" class="mobile-nav-link desktop-only-nav-item {{ request()->routeIs('books.create') ? 'active' : '' }}">
                 <i class="fas fa-plus"></i> Add Book
             </a>
-            <a href="{{ route('requests.index') }}" class="mobile-nav-link {{ request()->routeIs('requests.*') ? 'active' : '' }}">
+            <a href="{{ route('requests.index') }}" class="mobile-nav-link desktop-only-nav-item {{ request()->routeIs('requests.*') ? 'active' : '' }}">
                 <i class="fas fa-paper-plane"></i> Requests
             </a>
-            <a href="{{ route('my-borrowed') }}" class="mobile-nav-link {{ request()->routeIs('my-borrowed') ? 'active' : '' }}">
+            <a href="{{ route('my-borrowed') }}" class="mobile-nav-link desktop-only-nav-item {{ request()->routeIs('my-borrowed') ? 'active' : '' }}">
                 <i class="fas fa-book-reader"></i> My Borrowed
             </a>
             <a href="{{ route('notifications.index') }}" class="mobile-nav-link {{ request()->routeIs('notifications.*') ? 'active' : '' }}">
@@ -198,17 +195,12 @@
                     <span class="mobile-nav-badge">{{ $notifCount > 99 ? '99+' : $notifCount }}</span>
                 @endif
             </a>
-            <a href="{{ route('profile') }}" class="mobile-nav-link {{ request()->routeIs('profile') ? 'active' : '' }}">
+            <a href="{{ route('profile') }}" class="mobile-nav-link desktop-only-nav-item {{ request()->routeIs('profile') ? 'active' : '' }}">
                 <i class="fas fa-user"></i> My Profile
             </a>
             <a href="{{ route('settings') }}" class="mobile-nav-link {{ request()->routeIs('settings*') ? 'active' : '' }}">
                 <i class="fas fa-cog"></i> Settings
             </a>
-            @if ($headerUser && $headerUser->role === 'admin')
-                <a href="{{ route('admin.dashboard') }}" class="mobile-nav-link">
-                    <i class="fas fa-shield"></i> Admin Panel
-                </a>
-            @endif
         @endif
 
         <div class="mobile-nav-divider"></div>
@@ -248,8 +240,12 @@
         z-index: 100;
         background: var(--header-bg, #ffffff);
         border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-        transition: background 0.3s ease;
+        transition: background 0.3s ease, transform 0.3s ease;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+    }
+
+    .app-header.header-hidden {
+        transform: translateY(-100%);
     }
 
     [data-theme="dark"] .app-header {
@@ -803,11 +799,78 @@
 
     @media (max-width: 900px) {
         .header-nav-desktop { display: none; }
-        .header-search-desktop { display: none; }
-        .header-search-mobile { display: block; }
         .auth-buttons { display: none; }
         .header-container { gap: 0.5rem; }
+        .desktop-only-nav-item { display: none !important; }
+        .user-menu { display: none !important; }
+        .theme-toggle { display: none !important; }
     }
+
+    .search-toggle-btn {
+        background: none;
+        border: none;
+        font-size: 1.25rem;
+        cursor: pointer;
+        color: #1e293b;
+        padding: 0.5rem;
+        transition: color 0.2s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    [data-theme="dark"] .search-toggle-btn { color: #f1f5f9; }
+    .search-toggle-btn:hover { color: #4C9F8A; }
+
+    .header-search-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: var(--header-bg, #ffffff);
+        z-index: 200;
+        display: none;
+        align-items: center;
+    }
+    .header-search-overlay.active {
+        display: flex;
+    }
+    [data-theme="dark"] .header-search-overlay {
+        background: #1e293b;
+    }
+    .search-form-overlay {
+        display: flex;
+        align-items: center;
+        width: 100%;
+        background: rgba(0, 0, 0, 0.03);
+        border-radius: 20px;
+        padding: 0.5rem 1rem;
+    }
+    [data-theme="dark"] .search-form-overlay {
+        background: rgba(255, 255, 255, 0.05);
+    }
+    .search-icon-overlay {
+        color: #94a3b8;
+        margin-right: 0.75rem;
+    }
+    .search-input-overlay {
+        flex: 1;
+        border: none;
+        background: transparent;
+        outline: none;
+        font-size: 1rem;
+        color: #1e293b;
+    }
+    [data-theme="dark"] .search-input-overlay { color: #f1f5f9; }
+    .close-search-btn {
+        background: none;
+        border: none;
+        color: #94a3b8;
+        font-size: 1.25rem;
+        cursor: pointer;
+        padding: 0 0.5rem;
+    }
+    .close-search-btn:hover { color: #ef4444; }
 </style>
 
 <script>
@@ -957,5 +1020,46 @@ document.addEventListener('DOMContentLoaded', function() {
         icon.classList.toggle('fa-moon', theme !== 'dark');
         icon.classList.toggle('fa-sun', theme === 'dark');
     }
+
+    const searchToggleBtn = document.getElementById('headerSearchToggleBtn');
+    const searchOverlay = document.getElementById('headerSearchOverlay');
+    const closeSearchBtn = document.getElementById('closeSearchBtn');
+    const searchInput = document.getElementById('headerSearchInput');
+    const mainHeaderContainer = document.getElementById('mainHeaderContainer');
+
+    if (searchToggleBtn && searchOverlay) {
+        searchToggleBtn.addEventListener('click', () => {
+            searchOverlay.classList.add('active');
+            if(mainHeaderContainer) mainHeaderContainer.style.opacity = '0';
+            setTimeout(() => searchInput?.focus(), 100);
+        });
+
+        closeSearchBtn?.addEventListener('click', () => {
+            searchOverlay.classList.remove('active');
+            if(mainHeaderContainer) mainHeaderContainer.style.opacity = '1';
+        });
+    }
+
+    let headerLastScrollY = window.pageYOffset;
+    const header = document.querySelector('.app-header');
+    
+    window.addEventListener('scroll', () => {
+        const currentScrollY = window.pageYOffset;
+        if (currentScrollY > 100) {
+            if (currentScrollY > headerLastScrollY) {
+                // scrolling down
+                header.classList.add('header-hidden');
+                document.body.classList.add('header-hidden');
+            } else {
+                // scrolling up
+                header.classList.remove('header-hidden');
+                document.body.classList.remove('header-hidden');
+            }
+        } else {
+            header.classList.remove('header-hidden');
+            document.body.classList.remove('header-hidden');
+        }
+        headerLastScrollY = currentScrollY;
+    }, { passive: true });
 });
 </script>
