@@ -1049,12 +1049,15 @@ document.addEventListener('DOMContentLoaded', function() {
             if (currentScrollY > headerLastScrollY) {
                 // scrolling down
                 header.classList.add('header-hidden');
+                document.body.classList.add('header-hidden');
             } else {
                 // scrolling up
                 header.classList.remove('header-hidden');
+                document.body.classList.remove('header-hidden');
             }
         } else {
             header.classList.remove('header-hidden');
+            document.body.classList.remove('header-hidden');
         }
         headerLastScrollY = currentScrollY;
     }, { passive: true });
