@@ -140,38 +140,3 @@ Route::get('/announcements', [AnnouncementsController::class, 'index'])->name('a
 
 Route::get('/support-us', [SupportUsController::class, 'show'])->name('support-us');
 Route::post('/support-us', [SupportUsController::class, 'store'])->name('support-us.store');
-
-Route::get('/book-cards-demo', function () {
-    $books = [
-        [
-            'id' => 'BK001',
-            'title' => 'The Hobbit',
-            'author' => 'J.R.R. Tolkien',
-            'category' => 'Fantasy',
-            'status' => 'available',
-            'rating' => 4.7,
-            'rating_count' => 18,
-            'owner_id' => 'USR001',
-            'owner_name' => 'Aisha Rahman',
-            'owner_avatar' => 'aisha.jpg',
-            'hall' => '1',
-            'cover_image' => '',
-        ],
-        [
-            'id' => 'BK002',
-            'title' => 'Clean Code',
-            'author' => 'Robert C. Martin',
-            'category' => 'Programming',
-            'status' => 'borrowed',
-            'rating' => 4.4,
-            'rating_count' => 12,
-            'owner_id' => 'USR002',
-            'owner_name' => 'Nabil Hasan',
-            'owner_avatar' => '',
-            'hall' => '3',
-            'cover_image' => '',
-        ],
-    ];
-
-    return view('demo.book-cards', compact('books'));
-});
