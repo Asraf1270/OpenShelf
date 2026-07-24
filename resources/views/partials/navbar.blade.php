@@ -31,7 +31,11 @@
             </a>
             @if (session('user_id'))
                 <a href="{{ route('profile') }}" class="nav-item {{ request()->routeIs('profile') ? 'active' : '' }}" aria-label="Profile">
-                    <i class="fas fa-user"></i>
+                    @if(isset($headerUser) && $headerUser)
+                        <img src="{{ $headerUser->profile_image_url }}" alt="Profile" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover; margin-bottom: 2px; border: 1px solid currentColor;">
+                    @else
+                        <i class="fas fa-user"></i>
+                    @endif
                     <span class="nav-item-label">Profile</span>
                 </a>
             @else
