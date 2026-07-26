@@ -12,3 +12,5 @@ Schedule::command('app:send-overdue-reminders')->dailyAt('08:00');
 Schedule::command('app:notify-wishlist-availability')->everyTenMinutes();
 Schedule::command('app:remove-old-notifications')->daily();
 Schedule::command('app:remove-old-borrow-requests')->daily();
+Schedule::command('sitemap:generate')->dailyAt('02:00');
+

@@ -140,3 +140,12 @@ Route::get('/announcements', [AnnouncementsController::class, 'index'])->name('a
 
 Route::get('/support-us', [SupportUsController::class, 'show'])->name('support-us');
 Route::post('/support-us', [SupportUsController::class, 'store'])->name('support-us.store');
+
+Route::get('/sitemap.xml', function () {
+    $path = public_path('sitemap.xml');
+    if (! file_exists($path)) {
+        \Illuminate\Support\Facades\Artisan::call('sitemap:generate');
+    }
+    return response()->file($path, ['Content-Type' => 'text/xml']);
+});
+

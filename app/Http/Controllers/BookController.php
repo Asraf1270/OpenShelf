@@ -84,8 +84,10 @@ class BookController extends Controller
         }
 
         return view('book', [
-            'seoTitle' => ($book->title ?? 'Book Detail') . ' - OpenShelf',
-            'seoDesc' => 'Borrow ' . ($book->title ?? 'this book') . ' on OpenShelf.',
+            'seoTitle' => ($book->title ?? 'Book Detail') . ' by ' . ($book->author ?? 'Unknown Author') . ' - OpenShelf',
+            'seoDesc' => \Illuminate\Support\Str::limit(strip_tags($book->description ?? 'Borrow ' . ($book->title ?? 'this book') . ' on OpenShelf campus book sharing platform for free.'), 155),
+            'seoImage' => $book->detail_cover_url,
+            'seoOgType' => 'book',
             'book' => $book,
             'owner' => $owner,
             'borrowRequests' => $borrowRequests,
