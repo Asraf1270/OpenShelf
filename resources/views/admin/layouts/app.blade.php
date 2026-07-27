@@ -300,6 +300,17 @@
                 <a href="{{ route('admin.books.index') }}" class="menu-item {{ request()->routeIs('admin.books.*') ? 'active' : '' }}">
                     <i class="fas fa-book"></i> Book Management
                 </a>
+                <a href="{{ route('admin.missing-descriptions.index') }}" class="menu-item {{ request()->routeIs('admin.missing-descriptions.*') ? 'active' : '' }}">
+                    <i class="fas fa-file-signature"></i> Missing Descriptions
+                    @php
+                        $missingCountBadge = \App\Models\Book::query()->where(function ($q) {
+                            $q->whereNull('description')->orWhere('description', '')->orWhereRaw("TRIM(description) = ''");
+                        })->count();
+                    @endphp
+                    @if($missingCountBadge > 0)
+                        <span style="margin-left: auto; background: #ef4444; color: white; border-radius: 999px; padding: 0.15rem 0.55rem; font-size: 0.7rem; font-weight: 700;">{{ $missingCountBadge }}</span>
+                    @endif
+                </a>
                 <a href="{{ route('admin.requests.index') }}" class="menu-item {{ request()->routeIs('admin.requests.*') ? 'active' : '' }}">
                     <i class="fas fa-exchange-alt"></i> Request Management
                 </a>

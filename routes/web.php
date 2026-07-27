@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\AdminCategoriesController;
 use App\Http\Controllers\Admin\AdminContactMessagesController;
 use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Admin\AdminLogsController;
+use App\Http\Controllers\Admin\AdminMissingDescriptionsController;
 use App\Http\Controllers\Admin\AdminProfileController;
 use App\Http\Controllers\Admin\AdminReportsController;
 use App\Http\Controllers\Admin\AdminReportsManagementController;
@@ -87,6 +88,9 @@ Route::prefix('admin')->group(function () {
 
     Route::match(['get', 'post'], '/dashboard', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
     Route::match(['get', 'post'], '/books', [AdminBooksController::class, 'index'])->name('admin.books.index');
+    Route::get('/missing-descriptions', [AdminMissingDescriptionsController::class, 'index'])->name('admin.missing-descriptions.index');
+    Route::post('/missing-descriptions/update', [AdminMissingDescriptionsController::class, 'update'])->name('admin.missing-descriptions.update');
+    Route::post('/missing-descriptions/skip', [AdminMissingDescriptionsController::class, 'skip'])->name('admin.missing-descriptions.skip');
     Route::match(['get', 'post'], '/users', [AdminUsersController::class, 'index'])->name('admin.users.index');
     Route::match(['get', 'post'], '/announcements', [AdminAnnouncementsController::class, 'index'])->name('admin.announcements.index');
     Route::match(['get', 'post'], '/profile', [AdminProfileController::class, 'index'])->name('admin.profile');
