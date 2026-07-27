@@ -1,5 +1,9 @@
 @extends('layouts.app')
 
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('css/book.css') }}">
+@endpush
+
 @section('content')
 <div class="book-detail">
 

@@ -1,5 +1,9 @@
 @extends('layouts.app')
 
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('css/books.css') }}">
+@endpush
+
 @section('content')
 <style>
     .hide-on-mobile { display: block; }
