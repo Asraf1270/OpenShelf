@@ -625,7 +625,7 @@
         height: 100%;
         width: min(320px, 88vw);
         background: #ffffff;
-        z-index: 300;
+        z-index: 1100;
         transform: translateX(100%);
         transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         overflow-y: auto;

@@ -1,2 +1,19 @@
 User-agent: *
-Disallow:
+Allow: /
+
+# Disallow private and administrative endpoints
+Disallow: /admin
+Disallow: /admin/
+Disallow: /api/
+Disallow: /settings
+Disallow: /settings/
+Disallow: /my-borrowed
+Disallow: /requests
+Disallow: /notifications
+Disallow: /borrow-request
+Disallow: /return-book
+Disallow: /confirm-return
+Disallow: /add-book
+Disallow: /edit-book
+
+Sitemap: https://duopenshelf.top/sitemap.xml

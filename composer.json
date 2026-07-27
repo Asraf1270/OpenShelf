@@ -10,6 +10,7 @@
         "laravel/framework": "^13.8",
         "laravel/tinker": "^3.0",
         "league/flysystem-aws-s3-v3": "^3.35",
+        "spatie/laravel-sitemap": "^8.2",
         "symfony/clock": "~8.0.0",
         "symfony/console": "~8.0.0",
         "symfony/css-selector": "~8.0.0",

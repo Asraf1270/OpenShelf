@@ -6,62 +6,113 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
 
     <!-- SEO Meta Tags -->
-    <title>{{ isset($seoTitle) ? $seoTitle : 'OpenShelf - Share Books, Share Knowledge' }}</title>
-    <meta name="description" content="{{ isset($seoDesc) ? $seoDesc : 'OpenShelf is a student-led, peer-to-peer book sharing platform. Share and borrow textbooks, novels, and guides within your campus community for free.' }}">
-    <meta name="keywords" content="{{ isset($seoKeywords) ? $seoKeywords : 'book sharing, university library, campus books, borrow books, free books, peer-to-peer, OpenShelf' }}">
+    <title>{{ $seoTitle ?? 'OpenShelf - Share Books, Share Knowledge' }}</title>
+    <meta name="description" content="{{ $seoDesc ?? 'OpenShelf is a student-led, peer-to-peer book sharing platform. Share and borrow textbooks, novels, and guides within your campus community for free.' }}">
+    <meta name="keywords" content="{{ $seoKeywords ?? 'book sharing, university library, campus books, borrow books, free books, peer-to-peer, OpenShelf' }}">
+    <link rel="canonical" href="{{ $seoCanonical ?? url()->current() }}">
     <meta name="theme-color" content="#4C9F8A">
     <meta name="msapplication-TileColor" content="#4C9F8A">
 
     <!-- Open Graph / Facebook -->
-    <meta property="og:type" content="{{ isset($seoOgType) ? $seoOgType : 'website' }}">
-    <meta property="og:url" content="{{ url()->current() }}">
-    <meta property="og:title" content="{{ isset($seoTitle) ? $seoTitle : 'OpenShelf' }}">
-    <meta property="og:description" content="{{ isset($seoDesc) ? $seoDesc : 'Share and borrow books within your campus community' }}">
-    <meta property="og:image" content="{{ isset($seoImage) ? $seoImage : asset('images/pwa/icon-192x192.png') }}">
+    <meta property="og:site_name" content="OpenShelf">
+    <meta property="og:type" content="{{ $seoOgType ?? 'website' }}">
+    <meta property="og:url" content="{{ $seoCanonical ?? url()->current() }}">
+    <meta property="og:title" content="{{ $seoTitle ?? 'OpenShelf - Share Books, Share Knowledge' }}">
+    <meta property="og:description" content="{{ $seoDesc ?? 'Share and borrow books within your campus community for free.' }}">
+    <meta property="og:image" content="{{ $seoImage ?? asset('images/pwa/icon-512x512.png') }}">
 
     <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:url" content="{{ url()->current() }}">
-    <meta property="twitter:title" content="{{ isset($seoTitle) ? $seoTitle : 'OpenShelf' }}">
-    <meta property="twitter:description" content="{{ isset($seoDesc) ? $seoDesc : 'Share and borrow books within your campus community' }}">
-    <meta property="twitter:image" content="{{ isset($seoImage) ? $seoImage : asset('images/pwa/icon-192x192.png') }}">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="{{ $seoCanonical ?? url()->current() }}">
+    <meta name="twitter:title" content="{{ $seoTitle ?? 'OpenShelf - Share Books, Share Knowledge' }}">
+    <meta name="twitter:description" content="{{ $seoDesc ?? 'Share and borrow books within your campus community for free.' }}">
+    <meta name="twitter:image" content="{{ $seoImage ?? asset('images/pwa/icon-512x512.png') }}">
 
     <!-- Structured Data (Schema.org) -->
-    @if(isset($book) && is_array($book))
-    <script type="application/ld+json">
-    {
-        "@@context": "https://schema.org/",
-        "@@type": "Book",
-        "name": "{{ $book['title'] ?? 'Unknown' }}",
-        "author": {
-            "@@type": "Person",
-            "name": "{{ $book['author'] ?? 'Unknown Author' }}"
-        },
-        "publisher": {
-            "@@type": "Organization",
-            "name": "OpenShelf"
-        },
-        "image": "{{ isset($seoImage) ? $seoImage : asset('images/default-book-cover.jpg') }}",
-        "description": "{{ isset($book['description']) ? substr(strip_tags($book['description']), 0, 155) : 'Borrow this book on OpenShelf' }}",
-        @if(isset($book['rating']) && $book['rating'] > 0)
-        "aggregateRating": {
-            "@@type": "AggregateRating",
-            "ratingValue": "{{ number_format($book['rating'] ?? 0, 1) }}",
-            "ratingCount": "{{ $book['rating_count'] ?? 0 }}"
+    @if(isset($book))
+    @php
+        $bookTitle = is_object($book) ? ($book->title ?? '') : ($book['title'] ?? '');
+        $bookAuthor = is_object($book) ? ($book->author ?? '') : ($book['author'] ?? '');
+        $bookCategory = is_object($book) ? ($book->category ?? '') : ($book['category'] ?? '');
+        $bookDesc = is_object($book) ? ($book->description ?? '') : ($book['description'] ?? '');
+        $bookStatus = is_object($book) ? ($book->status ?? 'available') : ($book['status'] ?? 'available');
+        $bookRating = is_object($book) ? ($book->rating ?? 0) : ($book['rating'] ?? 0);
+        $bookRatingCount = is_object($book) ? ($book->rating_count ?? 0) : ($book['rating_count'] ?? 0);
+        $bookImage = $seoImage ?? (is_object($book) ? ($book->detail_cover_url ?? asset('images/default-book-cover.jpg')) : asset('images/default-book-cover.jpg'));
+
+        $schemaBook = [
+            '@context' => 'https://schema.org',
+            '@type' => 'Book',
+            'name' => $bookTitle,
+            'author' => [
+                '@type' => 'Person',
+                'name' => $bookAuthor ?: 'Unknown Author'
+            ],
+            'publisher' => [
+                '@type' => 'Organization',
+                'name' => 'OpenShelf',
+                'url' => url('/')
+            ],
+            'image' => $bookImage,
+            'description' => \Illuminate\Support\Str::limit(strip_tags($bookDesc ?: 'Borrow ' . $bookTitle . ' on OpenShelf campus book sharing platform for free.'), 200),
+            'offers' => [
+                '@type' => 'Offer',
+                'price' => '0.00',
+                'priceCurrency' => 'BDT',
+                'availability' => $bookStatus === 'available' ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
+                'itemCondition' => 'https://schema.org/UsedCondition',
+                'offeredBy' => [
+                    '@type' => 'Organization',
+                    'name' => 'OpenShelf'
+                ]
+            ]
+        ];
+
+        if (!empty($bookCategory)) {
+            $schemaBook['genre'] = $bookCategory;
         }
-        @endif
-    }
+
+        if ((float)$bookRating > 0 && (int)$bookRatingCount > 0) {
+            $schemaBook['aggregateRating'] = [
+                '@type' => 'AggregateRating',
+                'ratingValue' => number_format((float)$bookRating, 1),
+                'ratingCount' => (int)$bookRatingCount,
+                'bestRating' => '5',
+                'worstRating' => '1'
+            ];
+        }
+    @endphp
+    <script type="application/ld+json">
+    {!! json_encode($schemaBook, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) !!}
     </script>
     @else
+    @php
+        $schemaWebsite = [
+            '@context' => 'https://schema.org',
+            '@type' => 'WebSite',
+            'name' => 'OpenShelf',
+            'url' => url('/'),
+            'description' => 'A student-led, peer-to-peer book sharing platform',
+            'potentialAction' => [
+                '@type' => 'SearchAction',
+                'target' => url('/books') . '?search={search_term_string}',
+                'query-input' => 'required name=search_term_string'
+            ]
+        ];
+        $schemaOrg = [
+            '@context' => 'https://schema.org',
+            '@type' => 'Organization',
+            'name' => 'OpenShelf',
+            'url' => url('/'),
+            'logo' => asset('images/logo-full.svg'),
+            'description' => 'A student-led, peer-to-peer book sharing platform'
+        ];
+    @endphp
     <script type="application/ld+json">
-    {
-        "@@context": "https://schema.org/",
-        "@@type": "Organization",
-        "name": "OpenShelf",
-        "url": "{{ url('/') }}",
-        "logo": "{{ asset('images/logo-full.svg') }}",
-        "description": "A student-led, peer-to-peer book sharing platform"
-    }
+    {!! json_encode($schemaWebsite, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) !!}
+    </script>
+    <script type="application/ld+json">
+    {!! json_encode($schemaOrg, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) !!}
     </script>
     @endif
 
