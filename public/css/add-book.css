@@ -1,0 +1,218 @@
+/* ==============================================
+   OpenShelf - Add Book / Edit Book Form Styles
+   ============================================== */
+
+.add-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: var(--space-xl, 2rem);
+}
+
+/* Cover Upload */
+.cover-preview {
+    width: 150px;
+    height: 200px;
+    margin: 0 auto var(--space-lg, 1.5rem);
+    border-radius: var(--radius-lg, 1rem);
+    overflow: hidden;
+    box-shadow: var(--shadow-md, 0 4px 12px rgba(0,0,0,0.08));
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.cover-preview:hover {
+    transform: scale(1.02);
+}
+
+.cover-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.cover-placeholder {
+    width: 150px;
+    height: 200px;
+    margin: 0 auto var(--space-lg, 1.5rem);
+    background: var(--surface-hover, #f1f5f9);
+    border-radius: var(--radius-lg, 1rem);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-sm, 0.5rem);
+    color: var(--text-tertiary, #94a3b8);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: 2px dashed var(--border-color, #e2e8f0);
+}
+
+.cover-placeholder:hover {
+    background: var(--border, #e2e8f0);
+    transform: scale(1.02);
+    border-color: var(--primary, #2C3E50);
+}
+
+/* Form Layout */
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-lg, 1.5rem);
+}
+
+.form-group {
+    margin-bottom: var(--space-lg, 1.5rem);
+}
+
+.form-label {
+    display: block;
+    font-weight: 600;
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+    color: var(--text-primary, #0f172a);
+}
+
+.form-input,
+.form-select,
+.form-textarea {
+    width: 100%;
+    padding: 0.875rem 1rem;
+    border: 1.5px solid var(--border-color, #e2e8f0);
+    border-radius: var(--radius-md, 0.75rem);
+    background: var(--bg-card, #ffffff);
+    color: var(--text, #1e293b);
+    font-family: inherit;
+    font-size: 1rem;
+    transition: all 0.2s ease;
+}
+
+.form-input:focus,
+.form-select:focus,
+.form-textarea:focus {
+    outline: none;
+    border-color: var(--secondary, #4C9F8A);
+    box-shadow: 0 0 0 3px rgba(76, 159, 138, 0.12);
+    background: var(--bg, #f8fafc);
+}
+
+.form-textarea {
+    resize: vertical;
+    min-height: 120px;
+    line-height: 1.7;
+}
+
+/* Character Counter */
+.char-counter {
+    font-size: var(--font-size-xs, 0.75rem);
+    color: var(--text-tertiary, #94a3b8);
+    text-align: right;
+    margin-top: 0.35rem;
+    transition: color 0.2s;
+}
+
+.char-counter.danger { color: var(--danger, #ef4444); }
+.char-counter.warning { color: var(--warning, #f59e0b); }
+
+/* More Info Section */
+.more-info-section {
+    margin-top: var(--space-xl, 2rem);
+    padding-top: var(--space-xl, 2rem);
+    border-top: 1px solid var(--border-color, #e2e8f0);
+}
+
+.more-info-section.hidden {
+    display: none;
+}
+
+.toggle-more-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-sm, 0.5rem);
+    background: none;
+    border: none;
+    color: var(--primary, #2C3E50);
+    cursor: pointer;
+    font-size: inherit;
+    padding: var(--space-sm, 0.5rem) 0;
+    font-weight: 600;
+    transition: color 0.2s ease;
+}
+
+.toggle-more-btn:hover {
+    color: var(--secondary, #4C9F8A);
+}
+
+.toggle-more-btn i {
+    transition: transform 0.3s ease;
+}
+
+.toggle-more-btn.collapsed i {
+    transform: rotate(-90deg);
+}
+
+/* Alert messages */
+.alert {
+    padding: 1rem 1.25rem;
+    border-radius: var(--radius-md, 0.75rem);
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-weight: 600;
+}
+
+.alert-success {
+    background: rgba(16, 185, 129, 0.1);
+    color: #059669;
+    border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.alert-danger {
+    background: rgba(239, 68, 68, 0.1);
+    color: #dc2626;
+    border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+.text-danger {
+    color: var(--danger, #ef4444);
+    font-size: 0.85rem;
+    margin-top: 0.3rem;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+
+    .add-container {
+        padding: var(--space-md, 1rem);
+    }
+
+    .cover-preview,
+    .cover-placeholder {
+        width: 120px;
+        height: 160px;
+    }
+}
+
+/* Dark Mode */
+[data-theme="dark"] .form-input,
+[data-theme="dark"] .form-select,
+[data-theme="dark"] .form-textarea {
+    background: #1e293b;
+    color: #f1f5f9;
+    border-color: #334155;
+}
+
+[data-theme="dark"] .form-input:focus,
+[data-theme="dark"] .form-select:focus,
+[data-theme="dark"] .form-textarea:focus {
+    background: #0f172a;
+}
+
+[data-theme="dark"] .cover-placeholder {
+    background: #1e293b;
+    border-color: #334155;
+    color: #64748b;
+}

@@ -1,5 +1,9 @@
 @extends('layouts.app')
 
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('css/settings.css') }}">
+@endpush
+
 @section('content')
 <div class="settings-hub-wrapper">
     <div class="settings-hub-container">

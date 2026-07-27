@@ -578,3 +578,12 @@
 .like-btn.active {
     color: #e11d48;
 }
+
+/* ── Mobile / Desktop visibility utilities (Related Books) ── */
+.hide-on-mobile { display: block; }
+.show-on-mobile { display: none; }
+
+@media (max-width: 900px) {
+    .hide-on-mobile { display: none !important; }
+    .show-on-mobile { display: block !important; }
+}
