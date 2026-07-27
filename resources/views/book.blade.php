@@ -296,6 +296,8 @@
                 </div>
             </div>
         </div>
+    </div>{{-- close outer .book-detail --}}
+
     <!-- Borrow Modal -->
     <div id="borrowModal" class="modal">
         <div class="modal-card">
@@ -326,7 +328,7 @@
             </form>
         </div>
     </div>
-    
+
     <!-- Related Books Section -->
     @if ($relatedBooks->isNotEmpty())
     <div class="book-detail">
@@ -335,9 +337,11 @@
                 <i class="fas fa-layer-group"></i>
                 Related Books
             </h2>
+            {{-- Desktop: grid view --}}
             <div class="hide-on-mobile">
                 <x-book-card-grid :books="$relatedBooks" />
             </div>
+            {{-- Mobile: list view only --}}
             <div class="show-on-mobile">
                 <x-book-card-list :books="$relatedBooks" />
             </div>
@@ -345,12 +349,11 @@
     </div>
     @endif
 
-    
 @endsection
 
 @push('scripts')
 <script>
-        const bookActionUrl = @json(route('book.show', ['id' => $book->id]));
+        const bookActionUrl = {{ json_encode(route('book.show', ['id' => $book->id])) }};
         const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
 
         function postBookAction(params) {
