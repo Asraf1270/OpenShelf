@@ -21,11 +21,11 @@
             আপনার বইগুলোকে নতুন জীবন দিন এবং সহপাঠীদের কাছ থেকে নতুন বিশ্বের পরিচয় পান।
         </p>
         <div class="hero-cta">
-            <a href="{{ route('register') }}" class="btn-main btn-primary">
-                কমিউনিটিতে যোগ দিন <i class="fas fa-chevron-right" style="font-size: 0.8rem;"></i>
+            <a href="{{ route('register') }}" class="btn-main btn-primary hero-cta-primary">
+                রেজিষ্ট্রেশন করুন  <i class="fas fa-chevron-right" style="font-size: 0.8rem;"></i>
             </a>
-            <a href="{{ route('books') }}" class="btn-main btn-outline">
-                বই অন্বেষণ করুন
+            <a href="{{ route('books') }}" class="btn-main btn-outline hero-cta-secondary">
+                বই খুঁজুন
             </a>
         </div>
     </section>

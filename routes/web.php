@@ -70,6 +70,7 @@ Route::post('/report', [ReportController::class, 'store'])->name('report.store')
 Route::get('/register', [RegisterController::class, 'show'])->name('register');
 Route::post('/register', [RegisterController::class, 'store']);
 Route::get('/register/verify', [RegisterController::class, 'verify'])->name('register.verify');
+Route::post('/register/verify', [RegisterController::class, 'handleVerify'])->name('register.verify.handle');
 
 Route::get('/login', [LoginController::class, 'show'])->name('login');
 Route::post('/login', [LoginController::class, 'login']);
