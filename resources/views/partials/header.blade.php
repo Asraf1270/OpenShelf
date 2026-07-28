@@ -389,16 +389,23 @@
 
     .notification-badge {
         position: absolute;
-        top: 0;
-        right: 0;
+        top: -2px;
+        right: -2px;
         background: #ef4444;
         color: white;
         font-size: 0.65rem;
         font-weight: 700;
         padding: 0.15rem 0.35rem;
-        border-radius: 20px;
+        border-radius: 999px;
         min-width: 18px;
-        text-align: center;
+        height: 18px;
+        line-height: 1;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border: 2px solid var(--header-bg, #ffffff);
+        box-sizing: border-box;
+        z-index: 2;
     }
 
     .user-menu { position: relative; }
