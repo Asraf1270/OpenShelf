@@ -64,7 +64,7 @@
              and the bar should move to top: 0 so it becomes the top-most element. */
         .minimal-top-bar {
             background: var(--header-bg, #ffffff);
-            padding: 0.25rem 1rem;      /* Reduced vertical padding inside the bar */
+            padding: 0.25rem 0.75rem;      /* Reduced vertical padding inside the bar */
             border-bottom: 1px solid var(--header-border, #e2e8f0);
             margin-top: 0 !important;   /* REMOVES top margin gap completely */
             position: sticky;
@@ -88,9 +88,22 @@
 
         /* When header is hidden, category bar sticks to top */
         body.header-hidden .minimal-top-bar {
+            /* Switch from sticky to fixed so the bar becomes the topmost element */
+            position: fixed !important;
             top: 0 !important;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 1400px;
             border-top: 1px solid var(--header-border);
+            z-index: 1150; /* above header */
+            box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+            background: var(--header-bg, #ffffff);
         }
+
+        /* When the bar is fixed we add a small compact style */
+        body.header-hidden .minimal-top-bar .chip { padding: 0.3rem 0.6rem; }
+        body.header-hidden .minimal-top-bar { padding-top: 0.25rem; padding-bottom: 0.25rem; }
 
         .minimal-top-bar::-webkit-scrollbar {
             display: none;

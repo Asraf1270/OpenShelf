@@ -1045,6 +1045,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     let headerLastScrollY = window.pageYOffset;
     const header = document.querySelector('.app-header');
+    const minimalBar = document.querySelector('.minimal-top-bar');
+    const booksMainEl = document.querySelector('.books-main');
     
     window.addEventListener('scroll', () => {
         const currentScrollY = window.pageYOffset;
@@ -1053,14 +1055,23 @@ document.addEventListener('DOMContentLoaded', function() {
                 // scrolling down
                 header.classList.add('header-hidden');
                 document.body.classList.add('header-hidden');
+
+                // Fix minimal-top-bar to top and add top-padding to books grid
+                if (minimalBar && booksMainEl) {
+                    // ensure padding only set once
+                    booksMainEl.style.paddingTop = `${minimalBar.offsetHeight}px`;
+                }
             } else {
                 // scrolling up
                 header.classList.remove('header-hidden');
                 document.body.classList.remove('header-hidden');
+
+                if (booksMainEl) booksMainEl.style.paddingTop = '';
             }
         } else {
             header.classList.remove('header-hidden');
             document.body.classList.remove('header-hidden');
+            if (booksMainEl) booksMainEl.style.paddingTop = '';
         }
         headerLastScrollY = currentScrollY;
     }, { passive: true });
