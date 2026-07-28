@@ -14,7 +14,7 @@
         .show-on-mobile { display: block !important; }
     }
 </style>
-<div class="books-main">
+<div class="books-container">
     <!-- Sticky Category / Filter Bar -->
     <div class="minimal-top-bar">
         <span class="filter-by-label">Filter by</span>
@@ -36,6 +36,10 @@
         </div>
     </div>
 
+
+</div>
+
+<div class="books-main">
     @php($hasFilters = !empty($search) || !empty($selectedCategories) || !empty($availability) || !empty($hallFilter))
     <div class="books-header">
         <!-- Sort dropdown (left) -->
@@ -100,7 +104,6 @@
             </div>
         </div>
     </div>
-    
     <!-- Books Grid -->
     @if (count($filteredBooks) === 0)
         <div class="empty-glass">
