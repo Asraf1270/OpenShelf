@@ -83,6 +83,47 @@ class RegisterController extends Controller
         ]);
     }
 
+    public function handleVerify(Request $request)
+    {
+        $validated = $request->validate([
+            'otp' => ['required', 'digits:6'],
+        ]);
+
+        $email = $request->session()->get('verify_email');
+
+        if (! $email) {
+            return redirect()->route('register')->with('error', 'Your verification session has expired. Please register again.');
+        }
+
+        $user = User::where('email', $email)->first();
+
+        if (! $user) {
+            return redirect()->route('register')->with('error', 'Unable to verify your account. Please register again.');
+        }
+
+        if ($user->verified) {
+            return redirect()->route('login')->with('success', 'Your account has already been verified. Please log in.');
+        }
+
+        if (! $user->otp_expiry || now()->greaterThan($user->otp_expiry)) {
+            return back()->withInput()->withErrors(['otp' => 'The verification code has expired. Please register again or contact support.']);
+        }
+
+        if ($validated['otp'] !== $user->otp_code) {
+            return back()->withInput()->withErrors(['otp' => 'The verification code is invalid.']);
+        }
+
+        $user->verified = true;
+        $user->status = 'active';
+        $user->otp_code = null;
+        $user->otp_expiry = null;
+        $user->save();
+
+        $request->session()->forget('verify_email');
+
+        return redirect()->route('login')->with('success', 'Your account is verified. You may now sign in.');
+    }
+
     private function generateUserId(): string
     {
         $characters = 'ABCDEFGHJKLMNPQRSTUVWXYZ123456789';
