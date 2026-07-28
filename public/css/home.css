@@ -2,6 +2,20 @@
    OpenShelf Home / Landing Page Styles
    ============================================== */
 
+/* Mobile-first base overrides */
+:root{--mobile-padding:1rem}
+.landing-wrapper{padding:1rem}
+.hero{padding:2.5rem 0 1.5rem;text-align:left}
+.hero-h1{font-size:1.75rem;margin-bottom:0.5rem}
+.hero-p{margin-bottom:1rem}
+.hero-cta{display:flex;flex-direction:column;gap:0.6rem}
+.stats-banner{padding:1.25rem 0;margin:1.25rem 0}
+.stat-number{font-size:2.25rem}
+.about-grid{gap:1rem}
+.about-card{padding:1rem}
+.how-it-works{padding:2rem 1rem;margin:2rem 0}
+
+
 :root {
     --primary-brand: #2C3E50;
     --primary-soft: rgba(44, 62, 80, 0.1);

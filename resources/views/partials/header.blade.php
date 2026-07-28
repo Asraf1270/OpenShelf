@@ -389,16 +389,23 @@
 
     .notification-badge {
         position: absolute;
-        top: 0;
-        right: 0;
+        top: -2px;
+        right: -2px;
         background: #ef4444;
         color: white;
         font-size: 0.65rem;
         font-weight: 700;
         padding: 0.15rem 0.35rem;
-        border-radius: 20px;
+        border-radius: 999px;
         min-width: 18px;
-        text-align: center;
+        height: 18px;
+        line-height: 1;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border: 2px solid var(--header-bg, #ffffff);
+        box-sizing: border-box;
+        z-index: 2;
     }
 
     .user-menu { position: relative; }
@@ -1045,7 +1052,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
     let headerLastScrollY = window.pageYOffset;
     const header = document.querySelector('.app-header');
-    
+    const minimalBar = document.querySelector('.minimal-top-bar');
+    const booksMainEl = document.querySelector('.books-main');
+
     window.addEventListener('scroll', () => {
         const currentScrollY = window.pageYOffset;
         if (currentScrollY > 100) {
@@ -1061,6 +1070,10 @@ document.addEventListener('DOMContentLoaded', function() {
         } else {
             header.classList.remove('header-hidden');
             document.body.classList.remove('header-hidden');
+        }
+
+        if (booksMainEl && minimalBar) {
+            booksMainEl.style.paddingTop = document.body.classList.contains('header-hidden') ? `${minimalBar.offsetHeight}px` : '';
         }
         headerLastScrollY = currentScrollY;
     }, { passive: true });

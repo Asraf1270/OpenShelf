@@ -40,24 +40,39 @@
 
         /* Main Container */
         .books-main {
-            padding: 0 1rem 4rem;
+            padding: 0 1rem 4rem; /* If there's top padding anywhere, clear it */
             width: 100%;
             max-width: 1400px;
             margin: 0 auto;
         }
 
-        /* Sticky Category/Filter Bar */
+        /* Container for header-adjacent controls (category bar + books header)
+           Aligns with `.books-main` so the bars and grid share the same horizontal
+           centering and side padding. */
+        .books-container {
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 1rem;
+            box-sizing: border-box;
+            z-index: 95;
+        }
+
+        /* Sticky Category/Filter Bar
+           - By default the bar sits below the main header (desktop: 60px, mobile: 116px)
+           - When the main header is hidden a `header-hidden` class is added to <body>
+             and the bar should move to top: 0 so it becomes the top-most element. */
         .minimal-top-bar {
-            background: var(--header-bg);
-            padding: 0.4rem 1rem;
-            border-bottom: 1px solid var(--header-border);
-            margin: 0;
+            background: var(--header-bg, #ffffff);
+            padding: 0.15rem 0.6rem;
+            border-bottom: 1px solid var(--header-border, #e2e8f0);
+            margin-top: 0 !important;
             position: sticky;
-            top: 60px; /* Header height on desktop */
-            z-index: 90; /* Under main header (100) and mobile navigation drawer (300) */
+            top: 60px;
+            z-index: 90;
             display: flex;
             align-items: center;
-            gap: 1rem;
+            gap: 0.6rem;
             overflow-x: auto;
             white-space: nowrap;
             scrollbar-width: none;
@@ -73,9 +88,17 @@
 
         /* When header is hidden, category bar sticks to top */
         body.header-hidden .minimal-top-bar {
-            top: 0;
+            position: sticky !important;
+            top: 0 !important;
+            z-index: 1150;
             border-top: 1px solid var(--header-border);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+            background: var(--header-bg, #ffffff);
         }
+
+        /* Keep the compact look while the bar is active */
+        body.header-hidden .minimal-top-bar .chip { padding: 0.3rem 0.6rem; }
+        body.header-hidden .minimal-top-bar { padding-top: 0.25rem; padding-bottom: 0.25rem; }
 
         .minimal-top-bar::-webkit-scrollbar {
             display: none;
@@ -87,9 +110,9 @@
             display: flex;
             flex-wrap: nowrap;
             align-items: center;
-            gap: 0.65rem;
-            padding: 0.25rem 0;
-            min-height: 40px;
+            gap: 0.45rem;
+            padding: 0.1rem 0;
+            min-height: 30px;
         }
 
         .filter-controls {
@@ -148,13 +171,13 @@
         }
 
         .chip {
-            padding: 0.4rem 0.85rem;
+            padding: 0.25rem 0.6rem;
             background: #f2f2f2;
             border: none;
             border-radius: 6px;
             color: #0f172a;
             text-decoration: none;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             font-weight: 600;
             white-space: nowrap;
             transition: background 0.2s;
@@ -181,10 +204,12 @@
             display: flex;
             flex-direction: row;
             align-items: center;
-            gap: 0.75rem;
-            margin-top: 1.25rem;
-            margin-bottom: 1.25rem;
+            gap: 0.6rem;
+            margin-top: 0.6rem;
+            margin-bottom: 0.9rem;
             width: 100%;
+            padding-top: 0.15rem;
+            padding-bottom: 0.15rem;
         }
         .sort-controls {
             flex: 1;
