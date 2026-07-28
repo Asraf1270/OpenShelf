@@ -33,15 +33,15 @@
     <!-- Stats Banner -->
     <section class="stats-banner animate-in delay-1">
         <div class="stat-item">
-            <span class="stat-number">{{ number_format($stats['books']) }}</span>
+            <span class="stat-number">100</span>
             <span class="stat-label">মোট বই</span>
         </div>
         <div class="stat-item">
-            <span class="stat-number">{{ number_format($stats['users']) }}</span>
+            <span class="stat-number">50</span>
             <span class="stat-label">সক্রিয় পাঠক</span>
         </div>
         <div class="stat-item">
-            <span class="stat-number">{{ number_format($stats['available']) }}</span>
+            <span class="stat-number">80</span>
             <span class="stat-label">Available Now</span>
         </div>
     </section>
