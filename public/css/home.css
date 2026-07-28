@@ -58,10 +58,27 @@
 }
 
 .hero-cta {
-    display: flex;
+    display: grid;
+    grid-template-columns: minmax(0, 1.7fr) minmax(150px, 0.8fr);
     gap: 1rem;
     justify-content: center;
-    flex-wrap: wrap;
+    align-items: center;
+    max-width: 620px;
+    margin: 0 auto;
+}
+
+.hero-cta .btn-main {
+    width: 100%;
+    justify-content: center;
+    text-align: center;
+}
+
+.hero-cta-primary {
+    min-width: 0;
+}
+
+.hero-cta-secondary {
+    min-width: 160px;
 }
 
 .btn-main {
@@ -96,6 +113,17 @@
     background: var(--surface-2);
     border-color: var(--primary-brand);
     transform: translateY(-3px);
+}
+
+@media (max-width: 640px) {
+    .hero-cta {
+        grid-template-columns: 1fr;
+        max-width: 320px;
+    }
+
+    .hero-cta-secondary {
+        min-width: 0;
+    }
 }
 
 /* About Cards */
