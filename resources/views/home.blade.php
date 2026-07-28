@@ -20,11 +20,11 @@
             OpenShelf হলো আপনার ক্যাম্পাসের ছাত্র-নেতৃত্বাধীন লাইব্রেরি।
             আপনার বইগুলোকে নতুন জীবন দিন এবং সহপাঠীদের কাছ থেকে নতুন বিশ্বের পরিচয় পান।
         </p>
-        <div class="hero-cta">
-            <a href="{{ route('register') }}" class="btn-main btn-primary hero-cta-primary">
-                রেজিষ্ট্রেশন করুন  <i class="fas fa-chevron-right" style="font-size: 0.8rem;"></i>
+        <div class="hero-cta" style="display: flex; justify-content : center; align-items: center; gap: 12px; flex-wrap: wrap;">
+            <a href="{{ route('register') }}" class="btn-main btn-primary hero-cta-primary" style="width: auto; display: inline-flex; align-items: center;">
+                রেজিষ্ট্রেশন করুন <i class="fas fa-chevron-right" style="font-size: 0.8rem; margin-left: 8px;"></i>
             </a>
-            <a href="{{ route('books') }}" class="btn-main btn-outline hero-cta-secondary">
+            <a href="{{ route('books') }}" class="btn-main btn-outline hero-cta-secondary" style="width: auto; display: inline-flex; align-items: center;">
                 বই খুঁজুন
             </a>
         </div>
