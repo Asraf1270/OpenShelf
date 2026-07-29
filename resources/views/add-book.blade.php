@@ -1,36 +1,7 @@
 @extends('layouts.app')
 
 @push('styles')
-<style>
-    .add-container { max-width: 800px; margin: 0 auto; padding: var(--space-5); }
-    .cover-preview { width: 150px; height: 200px; margin: 0 auto var(--space-4); border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-md); cursor: pointer; transition: transform var(--transition-fast); }
-    .cover-preview:hover { transform: scale(1.02); }
-    .cover-preview img { width: 100%; height: 100%; object-fit: cover; }
-    .cover-placeholder { width: 150px; height: 200px; margin: 0 auto var(--space-4); background: var(--surface-hover); border-radius: var(--radius-lg); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--space-2); color: var(--text-tertiary); cursor: pointer; transition: all var(--transition-fast); }
-    .cover-placeholder:hover { background: var(--border); transform: scale(1.02); }
-    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-4); }
-    @media (max-width: 640px) { .form-row { grid-template-columns: 1fr; } .add-container { padding: var(--space-4); } }
-    .char-counter { font-size: var(--font-size-xs); color: var(--text-tertiary); text-align: right; margin-top: var(--space-1); }
-    .char-counter.danger { color: var(--danger); }
-    .char-counter.warning { color: var(--warning); }
-    .more-info-section { margin-top: var(--space-6); padding-top: var(--space-6); border-top: 1px solid var(--border); }
-    .more-info-section.hidden { display: none; }
-    .toggle-more-btn {
-        display: inline-flex;
-        align-items: center;
-        gap: var(--space-2);
-        background: none;
-        border: none;
-        color: var(--primary);
-        cursor: pointer;
-        font-size: inherit;
-        padding: var(--space-2) 0;
-        transition: color var(--transition-fast);
-    }
-    .toggle-more-btn:hover { color: var(--primary-dark); }
-    .toggle-more-btn i { transition: transform var(--transition-fast); }
-    .toggle-more-btn.collapsed i { transform: rotate(-90deg); }
-</style>
+    <link rel="stylesheet" href="{{ asset('css/add-book.css') }}">
 @endpush
 
 @section('content')

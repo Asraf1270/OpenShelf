@@ -495,7 +495,8 @@
     }
 
     /* Dark Mode Overrides */
-    :root[data-theme="dark"] {
+    :root[data-theme="dark"],
+    [data-theme="dark"] {
         --bg: #0f172a;
         --surface: hsla(215, 28%, 17%, 0.7);
         --surface-solid: #1e293b;
@@ -504,16 +505,42 @@
         --border: #334155;
         --glass-border: hsla(215, 28%, 17%, 0.4);
     }
+    [data-theme="dark"] body { background: #0f172a; color: #f8fafc; }
     [data-theme="dark"] .detail-book-title { color: #f8fafc; }
+    [data-theme="dark"] .detail-book-author { color: #4C9F8A; }
+    [data-theme="dark"] .detail-cover-wrapper { background: #1e293b; border-color: #334155; }
     [data-theme="dark"] .cover-wrapper { background: #0f172a; }
-    [data-theme="dark"] .meta-icon { background: #0f172a; }
+    [data-theme="dark"] .meta-item { background: #1e293b; border-color: #334155; }
+    [data-theme="dark"] .meta-icon { background: #0f172a; color: #4C9F8A; }
+    [data-theme="dark"] .meta-label { color: #94a3b8; }
+    [data-theme="dark"] .meta-value { color: #f8fafc; }
+    [data-theme="dark"] .detail-owner-card { background: #1e293b; border-color: #334155; }
+    [data-theme="dark"] .detail-owner-name { color: #f8fafc; }
+    [data-theme="dark"] .detail-owner-details { color: #94a3b8; }
+    [data-theme="dark"] .borrow-card { background: #1e293b; border-color: #334155; }
+    [data-theme="dark"] .borrow-card-header { border-bottom-color: #334155; }
+    [data-theme="dark"] .card-status-label { color: #cbd5e1; }
     [data-theme="dark"] .btn-outline { background: #1e293b; border-color: #334155; color: #f8fafc; }
     [data-theme="dark"] .btn-outline:hover { background: #334155; }
-    [data-theme="dark"] .tabs { background: #1e293b; border-color: #334155; }
-    [data-theme="dark"] .form-dark { background: #1e293b; }
-    [data-theme="dark"] .form-control { background: #0f172a; border-color: #334155; color: #f8fafc; }
-    [data-theme="dark"] .modal-card { background: #1e293b; }
+    [data-theme="dark"] .btn-wishlist { background: #1e293b; border-color: #334155; color: #cbd5e1; }
+    [data-theme="dark"] .btn-secondary[disabled] { background: #1e293b !important; border-color: #334155 !important; color: #64748b !important; }
+    [data-theme="dark"] .tabs-container { background: #1e293b; border-color: #334155; }
+    [data-theme="dark"] .tabs { background: #0f172a; border-color: #334155; }
+    [data-theme="dark"] .tab { color: #94a3b8; }
+    [data-theme="dark"] .tab.active { color: #4C9F8A; }
+    [data-theme="dark"] .tab-content { color: #f8fafc; }
+    [data-theme="dark"] .detail-item { border-bottom-color: #334155; }
+    [data-theme="dark"] .detail-item label { color: #94a3b8; }
+    [data-theme="dark"] .detail-item span { color: #f8fafc; }
+    [data-theme="dark"] .entry-card { border-bottom-color: #334155; }
+    [data-theme="dark"] .entry-name { color: #f8fafc; }
+    [data-theme="dark"] .entry-date { color: #94a3b8; }
     [data-theme="dark"] .entry-text { color: #cbd5e1; }
+    [data-theme="dark"] .like-btn { background: #0f172a; color: #94a3b8; }
+    [data-theme="dark"] .form-dark { background: #0f172a; border-color: #334155; }
+    [data-theme="dark"] .form-control { background: #1e293b; border-color: #334155; color: #f8fafc; }
+    [data-theme="dark"] .modal-card { background: #1e293b; border-color: #334155; color: #f8fafc; }
+    [data-theme="dark"] .related-title { color: #f8fafc; }
     .borrow-card {
         background: var(--surface-solid, #ffffff);
         border: 1px solid var(--border, #e2e8f0);
@@ -577,4 +604,13 @@
 
 .like-btn.active {
     color: #e11d48;
+}
+
+/* ── Mobile / Desktop visibility utilities (Related Books) ── */
+.hide-on-mobile { display: block; }
+.show-on-mobile { display: none; }
+
+@media (max-width: 900px) {
+    .hide-on-mobile { display: none !important; }
+    .show-on-mobile { display: block !important; }
 }

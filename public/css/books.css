@@ -29,10 +29,29 @@
             --transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
+        :root[data-theme="dark"],
+        [data-theme="dark"] {
+            --gray-50: #020617;
+            --gray-100: #0f172a;
+            --gray-200: #334155;
+            --gray-300: #475569;
+            --gray-400: #64748b;
+            --gray-500: #cbd5e1;
+            --gray-600: #e2e8f0;
+            --gray-700: #f8fafc;
+            --gray-800: #f8fafc;
+            --gray-900: #ffffff;
+            --glass-bg: rgba(15, 23, 42, 0.92);
+            --glass-border: rgba(148, 163, 184, 0.24);
+            --bg: #020617;
+            --text: #f8fafc;
+            --text-secondary: #cbd5e1;
+        }
+
         body {
-            background: var(--gray-50);
+            background: var(--bg-body, var(--bg, var(--gray-50)));
             font-family: 'Inter', system-ui, -apple-system, sans-serif;
-            color: var(--gray-800);
+            color: var(--text, var(--gray-800));
             margin: 0;
             padding: 0;
             overflow-x: hidden;
@@ -40,24 +59,39 @@
 
         /* Main Container */
         .books-main {
-            padding: 0 1rem 4rem;
+            padding: 0 1rem 4rem; /* If there's top padding anywhere, clear it */
             width: 100%;
             max-width: 1400px;
             margin: 0 auto;
         }
 
-        /* Sticky Category/Filter Bar */
+        /* Container for header-adjacent controls (category bar + books header)
+           Aligns with `.books-main` so the bars and grid share the same horizontal
+           centering and side padding. */
+        .books-container {
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 1rem;
+            box-sizing: border-box;
+            z-index: 95;
+        }
+
+        /* Sticky Category/Filter Bar
+           - By default the bar sits below the main header (desktop: 60px, mobile: 116px)
+           - When the main header is hidden a `header-hidden` class is added to <body>
+             and the bar should move to top: 0 so it becomes the top-most element. */
         .minimal-top-bar {
-            background: var(--header-bg);
-            padding: 0.4rem 1rem;
-            border-bottom: 1px solid var(--header-border);
-            margin: 0;
+            background: var(--header-bg, #ffffff);
+            padding: 0.15rem 0.6rem;
+            border-bottom: 1px solid var(--header-border, #e2e8f0);
+            margin-top: 0 !important;
             position: sticky;
-            top: 60px; /* Header height on desktop */
-            z-index: 90; /* Under main header (100) and mobile navigation drawer (300) */
+            top: 60px;
+            z-index: 90;
             display: flex;
             align-items: center;
-            gap: 1rem;
+            gap: 0.6rem;
             overflow-x: auto;
             white-space: nowrap;
             scrollbar-width: none;
@@ -73,9 +107,17 @@
 
         /* When header is hidden, category bar sticks to top */
         body.header-hidden .minimal-top-bar {
-            top: 0;
+            position: sticky !important;
+            top: 0 !important;
+            z-index: 1150;
             border-top: 1px solid var(--header-border);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+            background: var(--header-bg, #ffffff);
         }
+
+        /* Keep the compact look while the bar is active */
+        body.header-hidden .minimal-top-bar .chip { padding: 0.3rem 0.6rem; }
+        body.header-hidden .minimal-top-bar { padding-top: 0.25rem; padding-bottom: 0.25rem; }
 
         .minimal-top-bar::-webkit-scrollbar {
             display: none;
@@ -87,9 +129,9 @@
             display: flex;
             flex-wrap: nowrap;
             align-items: center;
-            gap: 0.65rem;
-            padding: 0.25rem 0;
-            min-height: 40px;
+            gap: 0.45rem;
+            padding: 0.1rem 0;
+            min-height: 30px;
         }
 
         .filter-controls {
@@ -148,13 +190,13 @@
         }
 
         .chip {
-            padding: 0.4rem 0.85rem;
+            padding: 0.25rem 0.6rem;
             background: #f2f2f2;
             border: none;
             border-radius: 6px;
             color: #0f172a;
             text-decoration: none;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             font-weight: 600;
             white-space: nowrap;
             transition: background 0.2s;
@@ -181,10 +223,12 @@
             display: flex;
             flex-direction: row;
             align-items: center;
-            gap: 0.75rem;
-            margin-top: 1.25rem;
-            margin-bottom: 1.25rem;
+            gap: 0.6rem;
+            margin-top: 0.6rem;
+            margin-bottom: 0.9rem;
             width: 100%;
+            padding-top: 0.15rem;
+            padding-bottom: 0.15rem;
         }
         .sort-controls {
             flex: 1;
@@ -329,20 +373,188 @@
         .btn-cancel-filters:hover { background: var(--gray-200); }
 
         /* Dark mode support */
-        [data-theme="dark"] .filter-panel {
-            background: #1e293b;
-            border-color: #334155;
+        :root[data-theme="dark"],
+        [data-theme="dark"] {
+            background-color: #020617;
         }
+
+        :root[data-theme="dark"] body,
+        [data-theme="dark"] body,
+        :root[data-theme="dark"] .main-wrapper,
+        [data-theme="dark"] .main-wrapper,
+        :root[data-theme="dark"] .books-main,
+        [data-theme="dark"] .books-main,
+        :root[data-theme="dark"] .books-container,
+        [data-theme="dark"] .books-container {
+            background-color: #020617 !important;
+            color: #f8fafc;
+        }
+
+        [data-theme="dark"] .minimal-top-bar,
+        [data-theme="dark"] body.header-hidden .minimal-top-bar {
+            background: #0f172a !important;
+            border-color: #334155 !important;
+        }
+
+        [data-theme="dark"] .filter-by-label {
+            color: var(--gray-500);
+        }
+
+        [data-theme="dark"] .chip {
+            background: #1e293b;
+            border: 1px solid #334155;
+            color: #cbd5e1;
+        }
+
+        [data-theme="dark"] .chip:hover {
+            background: #334155;
+            color: #f8fafc;
+        }
+
+        [data-theme="dark"] .chip.active {
+            background: var(--secondary);
+            color: #ffffff;
+            border-color: var(--secondary);
+        }
+
+        [data-theme="dark"] .filter-panel {
+            background: #111827;
+            border-color: #334155;
+            box-shadow: 0 14px 36px rgba(2, 6, 23, 0.4);
+        }
+
+        [data-theme="dark"] .filter-panel-title,
+        [data-theme="dark"] .filter-section-label,
+        [data-theme="dark"] .filter-option,
+        [data-theme="dark"] .btn-cancel-filters {
+            color: var(--gray-700);
+        }
+
         [data-theme="dark"] .styled-select,
         [data-theme="dark"] .filter-btn {
+            background: #1e293b;
+            border-color: #334155;
+            color: #f8fafc;
+        }
+
+        [data-theme="dark"] .styled-select option {
+            background-color: #1e293b;
+            color: #f8fafc;
+        }
+
+        [data-theme="dark"] .filter-btn:hover,
+        [data-theme="dark"] .filter-btn.active {
+            background: #334155;
+            border-color: var(--secondary);
+            color: var(--secondary);
+        }
+
+        [data-theme="dark"] .btn-clear {
             background: #1e293b;
             border-color: #334155;
             color: #cbd5e1;
         }
 
+        [data-theme="dark"] .btn-clear:hover {
+            background: var(--secondary);
+            color: #ffffff;
+        }
 
-[data-theme="dark"] .empty-glass { background: #1e293b; border-color: #334155; }
-[data-theme="dark"] .empty-glass h3 { color: #f8fafc; }
+        [data-theme="dark"] .empty-glass {
+            background: #1e293b !important;
+            border-color: #334155 !important;
+            box-shadow: 0 16px 40px rgba(2, 6, 23, 0.34) !important;
+        }
+
+        [data-theme="dark"] .empty-glass h3,
+        [data-theme="dark"] .empty-glass p {
+            color: #f8fafc !important;
+        }
+
+        [data-theme="dark"] .empty-icon-box {
+            background: #0f172a !important;
+            color: #4C9F8A !important;
+        }
+
+        /* Card components dark mode fallbacks */
+        [data-theme="dark"] .book-card {
+            background: #1e293b;
+            border-color: #334155;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        [data-theme="dark"] .book-card:hover {
+            box-shadow: 0 16px 36px rgba(0,0,0,0.4);
+        }
+        [data-theme="dark"] .book-card .book-title,
+        [data-theme="dark"] .book-card .book-title a {
+            color: #f8fafc !important;
+            text-decoration: none;
+        }
+        [data-theme="dark"] .book-card .book-title a:hover {
+            color: #4C9F8A !important;
+        }
+        [data-theme="dark"] .book-card .book-author {
+            color: #94a3b8;
+        }
+        [data-theme="dark"] .book-card .book-category-tag {
+            color: #4C9F8A;
+        }
+        [data-theme="dark"] .book-card .owner-name {
+            color: #cbd5e1;
+        }
+        [data-theme="dark"] .book-card .owner-hall {
+            color: #64748b;
+        }
+        [data-theme="dark"] .book-card .book-footer {
+            border-color: #334155;
+        }
+        [data-theme="dark"] .book-card .book-cover-container {
+            background: #0f172a;
+        }
+        [data-theme="dark"] .book-card-list {
+            background: #1e293b;
+            border-color: #334155;
+        }
+        [data-theme="dark"] .book-card-list .card-title,
+        [data-theme="dark"] .book-card-list .card-title a {
+            color: #f8fafc !important;
+            text-decoration: none;
+        }
+        [data-theme="dark"] .book-card-list .card-title a:hover {
+            color: #4C9F8A !important;
+        }
+        [data-theme="dark"] .book-card-list .card-author {
+            color: #94a3b8;
+        }
+        [data-theme="dark"] .book-card-list .category-label {
+            color: #64748b;
+        }
+        [data-theme="dark"] .book-card-list .rating-value {
+            color: #cbd5e1;
+        }
+        [data-theme="dark"] .book-card-list .rating-count {
+            color: #64748b;
+        }
+        [data-theme="dark"] .book-card-list .owner-name {
+            color: #f8fafc;
+        }
+        [data-theme="dark"] .book-card-list .owner-hall {
+            color: #64748b;
+        }
+        [data-theme="dark"] .book-card-list .owner-link-area {
+            border-top-color: #334155;
+        }
+        [data-theme="dark"] .book-card-list .owner-link-area:hover {
+            background: rgba(255,255,255,0.05);
+        }
+        [data-theme="dark"] .book-card-list .status-sign {
+            box-shadow: 0 0 0 3px #1e293b;
+        }
+        [data-theme="dark"] .book-card-list .extra-info-row {
+            background: #0f172a !important;
+            color: #cbd5e1 !important;
+            border-color: #334155 !important;
+        }
 
 .empty-glass {
     text-align: center;

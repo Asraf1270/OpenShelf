@@ -18,10 +18,10 @@
     .book-card-list .card-info-section { flex: 1; display: flex; flex-direction: column; min-width: 0; }
     .book-card-list .book-info-link { display: flex; flex-direction: column; text-decoration: none; color: inherit; flex: 1; min-width: 0; }
     .book-card-list .book-info-link:hover .card-title { color: #4C9F8A; }
-    .book-card-list .card-title { font-size: 1.05rem; font-weight: 700; color: #1a1a1a; margin: 0 0 2px 0; line-height: 1.2; word-wrap: break-word; }
-    .book-card-list .card-author { font-size: 0.85rem; color: #666; margin: 0 0 4px 0; }
-    .book-card-list .category-label { font-size: 0.8rem; color: #888; font-weight: 500; margin-bottom: 4px; }
-    .book-card-list .rating-row { display: flex; align-items: center; gap: 6px; margin-bottom: auto; }
+    .book-card-list .card-title { font-size: 1rem; font-weight: 700; color: #1a1a1a; margin: 0 0 1px 0; line-height: 1.1; word-wrap: break-word; }
+    .book-card-list .card-author { font-size: 0.8rem; color: #666; margin: 0 0 2px 0; line-height: 1.15; }
+    .book-card-list .category-label { font-size: 0.75rem; color: #888; font-weight: 500; margin: 0 0 2px 0; line-height: 1.15; }
+    .book-card-list .rating-row { display: flex; align-items: center; gap: 6px; margin: 0; padding: 0; }
     .book-card-list .stars-mini { display: flex; gap: 2px; color: #e2e8f0; font-size: 0.7rem; }
     .book-card-list .stars-mini i.active { color: #f59e0b; }
     .book-card-list .rating-value { font-size: 0.75rem; font-weight: 700; color: #444; }

@@ -1,10 +1,17 @@
 @extends('layouts.app')
 
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('css/my-borrowed.css') }}">
+@endpush
+
 @section('content')
 <main class="page-container">
     <header class="page-header">
-        <h1 class="fade-in">My Borrowed Books</h1>
-        <p class="fade-in" style="animation-delay: 0.1s">Manage your active reads and track return deadlines.</p>
+        <div class="page-header__content">
+            <span class="page-kicker fade-in">Reading dashboard</span>
+            <h1 class="fade-in" style="animation-delay: 0.05s">My Borrowed Books</h1>
+        </div>
+        <p class="fade-in" style="animation-delay: 0.1s">Manage your active reads, track return deadlines, and revisit the books you recently completed.</p>
     </header>
 
     <div class="stats-bar fade-in" style="animation-delay: 0.2s">
@@ -89,22 +96,30 @@
     </section>
 
     @if ($pastBorrows->isNotEmpty())
-        <section style="margin-top: var(--space-xxl); margin-bottom: 4rem;">
-            <h2 class="section-title fade-in" style="animation-delay: 0.6s">
-                <i class="fas fa-history"></i> Just Finished
-            </h2>
-            <div class="recent-list fade-in" style="animation-delay: 0.7s">
+        <section class="recent-section fade-in" style="animation-delay: 0.6s">
+            <div class="recent-section-header">
+                <h2 class="section-title">
+                    <i class="fas fa-history"></i> Just Finished
+                </h2>
+                <span class="recent-count">{{ $pastBorrows->count() }} returned</span>
+            </div>
+            <div class="recent-list">
                 @foreach ($pastBorrows as $past)
-                    <div class="recent-card">
+                    <article class="recent-card">
                         <img src="{{ $thumbCover($past->cover_image) }}" alt="{{ $past->book_title }}" class="recent-thumb">
-                        <div class="card-content">
-                            <h4 style="font-size: 1rem; margin: 0; font-weight: 700;">{{ $past->book_title }}</h4>
-                            <p style="font-size: 0.75rem; color: var(--text-muted); margin: 4px 0 0; font-weight: 500;">
-                                <i class="fas fa-check-circle" style="color: var(--success); font-size: 0.7rem;"></i>
-                                Returned on {{ $past->returned_at?->format('M j, Y') }}
-                            </p>
+                        <div class="recent-card-body">
+                            <div class="recent-card-main">
+                                <h4>{{ $past->book_title }}</h4>
+                                <p>{{ $past->book_author }}</p>
+                            </div>
+                            <div class="recent-meta">
+                                <span class="recent-pill">
+                                    <i class="fas fa-check-circle"></i> Returned
+                                </span>
+                                <span class="recent-date">{{ $past->returned_at?->format('M j, Y') }}</span>
+                            </div>
                         </div>
-                    </div>
+                    </article>
                 @endforeach
             </div>
         </section>

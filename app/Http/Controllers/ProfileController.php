@@ -60,6 +60,9 @@ class ProfileController extends Controller
         $lentBooks = [];
 
         foreach ($requests as $borrowRequest) {
+            $owner = $borrowRequest->owner;
+            $borrower = $borrowRequest->borrower;
+
             if ($borrowRequest->borrower_id === $userId) {
                 $borrowedBooks[] = [
                     'id' => $borrowRequest->book_id,
@@ -67,8 +70,10 @@ class ProfileController extends Controller
                     'author' => $borrowRequest->book_author,
                     'cover_image' => $borrowRequest->book_cover,
                     'status' => $borrowRequest->status,
-                    'owner_name' => $borrowRequest->owner_name,
-                    'owner_hall' => 'N/A',
+                    'owner_id' => $owner?->id ?? '',
+                    'owner_name' => $owner?->name ?? $borrowRequest->owner_name ?? 'Unknown Owner',
+                    'owner_hall' => $owner?->hall ?? '',
+                    'display_hall' => $owner?->hall_name ?? 'N/A',
                 ];
             }
 
@@ -79,8 +84,10 @@ class ProfileController extends Controller
                     'author' => $borrowRequest->book_author,
                     'cover_image' => $borrowRequest->book_cover,
                     'status' => $borrowRequest->status,
-                    'borrower_name' => $borrowRequest->borrower_name,
-                    'owner_hall' => 'My Hall',
+                    'owner_id' => $borrower?->id ?? '',
+                    'owner_name' => $borrower?->name ?? $borrowRequest->borrower_name ?? 'Unknown Borrower',
+                    'owner_hall' => $borrower?->hall ?? '',
+                    'display_hall' => $borrower?->hall_name ?? 'N/A',
                 ];
             }
         }

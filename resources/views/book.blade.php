@@ -1,5 +1,9 @@
 @extends('layouts.app')
 
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('css/book.css') }}?v={{ file_exists(public_path('css/book.css')) ? filemtime(public_path('css/book.css')) : '1' }}">
+@endpush
+
 @section('content')
 <div class="book-detail">
 
@@ -150,12 +154,12 @@
 
                 <!-- 3. The Tab-Container -->
                 <div class="tabs-container">
-                    <div class="tabs">
-                        <button class="tab active" data-tab="description" onclick="switchTab('description')">Description</button>
-                        <button class="tab" data-tab="details" onclick="switchTab('details')">Details</button>
-                        <button class="tab" data-tab="reviews" onclick="switchTab('reviews')">Reviews <span style="font-size:0.85rem;opacity:0.6">({{ $reviews->count() }})</span></button>
-                        <button class="tab" data-tab="comments" onclick="switchTab('comments')">Comments <span style="font-size:0.85rem;opacity:0.6">({{ $comments->count() }})</span></button>
-                        <button class="tab" data-tab="history" onclick="switchTab('history')">History</button>
+                    <div class="tabs" role="tablist" aria-label="Book details tabs">
+                        <button type="button" class="tab active" data-tab="description" aria-selected="true">Description</button>
+                        <button type="button" class="tab" data-tab="details" aria-selected="false">Details</button>
+                        <button type="button" class="tab" data-tab="reviews" aria-selected="false">Reviews <span style="font-size:0.85rem;opacity:0.6">({{ $reviews->count() }})</span></button>
+                        <button type="button" class="tab" data-tab="comments" aria-selected="false">Comments <span style="font-size:0.85rem;opacity:0.6">({{ $comments->count() }})</span></button>
+                        <button type="button" class="tab" data-tab="history" aria-selected="false">History</button>
                     </div>
                     
                     <!-- Description -->
@@ -292,6 +296,8 @@
                 </div>
             </div>
         </div>
+    </div>{{-- close outer .book-detail --}}
+
     <!-- Borrow Modal -->
     <div id="borrowModal" class="modal">
         <div class="modal-card">
@@ -322,7 +328,7 @@
             </form>
         </div>
     </div>
-    
+
     <!-- Related Books Section -->
     @if ($relatedBooks->isNotEmpty())
     <div class="book-detail">
@@ -331,9 +337,11 @@
                 <i class="fas fa-layer-group"></i>
                 Related Books
             </h2>
+            {{-- Desktop: grid view --}}
             <div class="hide-on-mobile">
                 <x-book-card-grid :books="$relatedBooks" />
             </div>
+            {{-- Mobile: list view only --}}
             <div class="show-on-mobile">
                 <x-book-card-list :books="$relatedBooks" />
             </div>
@@ -341,12 +349,11 @@
     </div>
     @endif
 
-    
 @endsection
 
 @push('scripts')
 <script>
-        const bookActionUrl = @json(route('book.show', ['id' => $book->id]));
+        const bookActionUrl = {{ json_encode(route('book.show', ['id' => $book->id])) }};
         const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
 
         function postBookAction(params) {
@@ -363,14 +370,24 @@
             });
         }
 
-        // Tab switching
         function switchTab(tab) {
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            document.querySelector(`.tab[data-tab="${tab}"]`)?.classList.add('active');
-            
-            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-            document.getElementById(tab + '-tab').classList.add('active');
+            const tabButtons = document.querySelectorAll('.tabs-container .tab');
+            const tabContents = document.querySelectorAll('.tabs-container .tab-content');
+
+            tabButtons.forEach(button => {
+                const isActive = button.getAttribute('data-tab') === tab;
+                button.classList.toggle('active', isActive);
+                button.setAttribute('aria-selected', isActive ? 'true' : 'false');
+            });
+
+            tabContents.forEach(content => {
+                const isActive = content.id === `${tab}-tab`;
+                content.classList.toggle('active', isActive);
+                content.hidden = !isActive;
+            });
         }
+
+        window.switchTab = switchTab;
         
         // Modal
         function showBorrowModal() { document.getElementById('borrowModal').classList.add('active'); }
@@ -379,6 +396,13 @@
         // Rating stars
         let currentRating = 0;
         document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.tabs-container .tab').forEach(button => {
+                button.addEventListener('click', () => switchTab(button.getAttribute('data-tab')));
+            });
+
+            const initialTab = document.querySelector('.tabs-container .tab.active')?.getAttribute('data-tab') || 'description';
+            switchTab(initialTab);
+
             const stars = document.querySelectorAll('#ratingStarsInput i');
             stars.forEach(star => {
                 star.addEventListener('click', function () {

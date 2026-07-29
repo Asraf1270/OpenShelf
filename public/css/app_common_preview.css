@@ -1,6 +1,6 @@
 /* ==========================================
-   OpenShelf - Global & Base Common CSS (Hybrid Model)
-   Contains core variables, layout, resets & components
+   OpenShelf - Standalone CSS Bundle
+   Browser-ready, no build tools required
    ========================================== */
 
 /* Google Fonts */
@@ -106,6 +106,7 @@
     --border-color: var(--border-light);
     --header-bg: var(--bg-light-secondary);
     --header-border: var(--border-light);
+    --bg-body: var(--bg-light);
     --bg-sidebar: #1e293b;
     --bg-header: rgba(255, 255, 255, 0.85);
     --header-blur: 20px;
@@ -113,22 +114,12 @@
     --glass-border: rgba(255, 255, 255, 0.5);
 }
 
-/* Dark Theme Overrides */
+/* Dark Theme */
 :root[data-theme="dark"],
 [data-theme="dark"] {
-    --gray-50: #020617;
-    --gray-100: #0f172a;
-    --gray-200: #334155;
-    --gray-300: #475569;
-    --gray-400: #64748b;
-    --gray-500: #cbd5e1;
-    --gray-600: #e2e8f0;
-    --gray-700: #f8fafc;
-    --gray-800: #f8fafc;
-    --gray-900: #ffffff;
     --bg: var(--bg-dark);
     --bg-secondary: var(--bg-dark-secondary);
-    --bg-body: #020617;
+    --bg-body: #0b1120;
     --bg-card: #1e293b;
     --text: var(--text-dark);
     --text-primary: var(--text-dark);
@@ -146,7 +137,7 @@
 }
 
 /* ==========================================
-   Global Base & Reset Styles
+   Global Base Styles
    ========================================== */
 
 *, *::before, *::after {
@@ -171,7 +162,10 @@ body.no-bottom-nav {
     padding-bottom: 0;
 }
 
-/* Main Layout Structure */
+/* ==========================================
+   Main Layout Structure
+   ========================================== */
+
 .main-wrapper {
     min-height: calc(100vh - 80px);
 }
@@ -191,18 +185,27 @@ body.no-bottom-nav {
     top: 0;
 }
 
-/* Responsive bottom navigation space reservation */
+/* ==========================================
+   Responsive Design
+   ========================================== */
+
+/* Bottom nav is mobile-only — reserve space only there */
 @media (max-width: 900px) {
     body {
         padding-bottom: 120px;
     }
 }
 
+/* ==========================================
+   SOURCE: components.css
+   ========================================== */
+
 /* ==============================================
-   OpenShelf Common Components & UI Elements
+   OpenShelf Component Styles
+   Book Cards, Cards, and UI Components
    ============================================== */
 
-/* Book Card Grid (Common Reusable) */
+/* ========== Book Card Grid ========== */
 .book-grid { 
     display: grid; 
     grid-template-columns: repeat(2, 1fr); 
@@ -366,7 +369,7 @@ body.no-bottom-nav {
     color: var(--gray-700); 
 }
 
-/* Cards */
+/* ========== Cards ========== */
 .card {
     background: white;
     border-radius: var(--radius-xl);
@@ -396,7 +399,7 @@ body.no-bottom-nav {
     margin: 0;
 }
 
-/* Responsive Grid Breakpoints */
+/* ========== Responsive ========== */
 @media (max-width: 639px) {
     .book-grid { 
         grid-template-columns: repeat(2, 1fr); 
@@ -420,7 +423,7 @@ body.no-bottom-nav {
     .book-grid { grid-template-columns: repeat(5, 1fr); }
 }
 
-/* Dark Mode Components Overrides */
+/* ========== Dark Mode Support ========== */
 [data-theme="dark"] .book-card { 
     background: #1e293b; 
     border-color: #334155; 
@@ -450,3 +453,4 @@ body.no-bottom-nav {
     background: #1e293b;
     border-color: #334155;
 }
+

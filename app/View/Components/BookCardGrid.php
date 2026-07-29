@@ -75,6 +75,8 @@ class BookCardGrid extends Component
         $data['rating_count'] = (int) ($data['rating_count'] ?? 0);
         $data['owner_name'] = $data['owner_name'] ?? 'Unknown Owner';
         $data['owner_avatar'] = $data['owner_avatar'] ?? '';
+        $data['owner_hall'] = $data['owner_hall'] ?? ($data['hall'] ?? '');
+        $data['display_hall'] = $data['display_hall'] ?? $this->resolveHallName($data['owner_hall'] ?? '');
         $data['cover_image'] = $data['cover_image'] ?? '';
         $data['cover_url'] = $this->resolveCoverUrl($data['cover_image'] ?? '');
         $data['owner_avatar_url'] = $this->resolveAvatarUrl($data['owner_avatar'] ?? '');
@@ -90,6 +92,40 @@ class BookCardGrid extends Component
     private function resolveAvatarUrl(string $ownerAvatar): string
     {
         return ImageUrl::avatar($ownerAvatar);
+    }
+
+    private function resolveHallName(string $hallValue): string
+    {
+        if (empty($hallValue)) {
+            return 'N/A';
+        }
+
+        if (! ctype_digit((string) $hallValue)) {
+            return $hallValue;
+        }
+
+        $halls = [
+            '1' => 'Amar Ekushey Hall',
+            '2' => 'Dr. Muhammad Shahidullah Hall',
+            '3' => 'Fazlul Huq Muslim Hall',
+            '4' => 'Salimullah Muslim Hall',
+            '5' => 'Shahid Sergeant Zahurul Haq Hall',
+            '6' => 'Haji Muhammad Mohsin Hall',
+            '7' => 'Sir A.F. Rahman Hall',
+            '8' => 'Masterda Surja Sen Hall',
+            '9' => 'Kobi Jashimuddin Hall',
+            '10' => 'Muktijoddha Ziaur Rahman Hall',
+            '11' => 'Shaheed Sharif Osman Hadi Hall',
+            '12' => 'Bijoy Ekattor Hall',
+            '13' => 'Jagannath Hall',
+            '14' => 'Ruqayyah Hall',
+            '15' => 'Shamsun Nahar Hall',
+            '16' => 'Bangladesh-Kuwait Maitree Hall',
+            '17' => 'Begum Fazilatunnesa Mujib Hall',
+            '18' => 'Kobi Sufiya Kamal Hall',
+        ];
+
+        return $halls[$hallValue] ?? 'N/A';
     }
 
     private function isAbsoluteUrl(string $value): bool
