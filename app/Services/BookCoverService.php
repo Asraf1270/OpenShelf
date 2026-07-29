@@ -19,8 +19,6 @@ class BookCoverService
 
     private const COVER_HEIGHT = 1200;
 
-    private const THUMBNAIL_SIZE = 300;
-
     private const COMPRESSION_QUALITY = 85;
 
     public function uploadPath(): string
@@ -75,37 +73,15 @@ class BookCoverService
 
         imagecopyresampled($resized, $image, 0, 0, 0, 0, (int) $newWidth, (int) $newHeight, $width, $height);
 
-        $thumb = imagecreatetruecolor(self::THUMBNAIL_SIZE, self::THUMBNAIL_SIZE);
-        $size = min($width, $height);
-        $x = ($width - $size) / 2;
-        $y = ($height - $size) / 2;
-
-        imagecopyresampled(
-            $thumb,
-            $image,
-            0,
-            0,
-            (int) $x,
-            (int) $y,
-            self::THUMBNAIL_SIZE,
-            self::THUMBNAIL_SIZE,
-            (int) $size,
-            (int) $size
-        );
-
         $tempResizedPath = tempnam(sys_get_temp_dir(), 'cover_');
-        $tempThumbPath = tempnam(sys_get_temp_dir(), 'cover_thumb_');
 
         $successResized = imagewebp($resized, $tempResizedPath, self::COMPRESSION_QUALITY);
-        $successThumb = imagewebp($thumb, $tempThumbPath, self::COMPRESSION_QUALITY);
 
         imagedestroy($image);
         imagedestroy($resized);
-        imagedestroy($thumb);
 
-        if (! $successResized || ! $successThumb) {
+        if (! $successResized) {
             @unlink($tempResizedPath);
-            @unlink($tempThumbPath);
             return ['error' => 'Failed to save processed image'];
         }
 
@@ -124,21 +100,9 @@ class BookCoverService
                 fclose($resizedStream);
             }
 
-            $thumbStream = fopen($tempThumbPath, 'r+');
-            \Illuminate\Support\Facades\Storage::disk($disk)->put(
-                'book_cover/thumb_' . $webpFilename,
-                $thumbStream,
-                $options
-            );
-            if (is_resource($thumbStream)) {
-                fclose($thumbStream);
-            }
-
             @unlink($tempResizedPath);
-            @unlink($tempThumbPath);
         } catch (\Throwable $e) {
             @unlink($tempResizedPath);
-            @unlink($tempThumbPath);
             return ['error' => 'Failed to upload book cover: ' . $e->getMessage()];
         }
 
