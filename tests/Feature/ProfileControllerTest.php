@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\BorrowRequest;
 use App\Models\User;
+use App\View\Components\BookCardGrid;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -12,6 +13,20 @@ use Tests\TestCase;
 class ProfileControllerTest extends TestCase
 {
     use RefreshDatabase;
+
+    public function test_book_card_grid_converts_hall_ids_to_names(): void
+    {
+        $component = new BookCardGrid([
+            ['owner_hall' => '2', 'owner_name' => 'Owner User'],
+        ]);
+
+        $method = new \ReflectionMethod($component, 'normalizeBook');
+        $method->setAccessible(true);
+
+        $normalizedBook = $method->invoke($component, ['owner_hall' => '2', 'owner_name' => 'Owner User']);
+
+        $this->assertSame('Dr. Muhammad Shahidullah Hall', $normalizedBook['display_hall']);
+    }
 
     public function test_profile_shows_borrower_and_lent_user_details(): void
     {
