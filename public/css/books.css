@@ -49,9 +49,9 @@
         }
 
         body {
-            background: var(--gray-50);
+            background: var(--bg-body, var(--bg, var(--gray-50)));
             font-family: 'Inter', system-ui, -apple-system, sans-serif;
-            color: var(--gray-800);
+            color: var(--text, var(--gray-800));
             margin: 0;
             padding: 0;
             overflow-x: hidden;
@@ -380,25 +380,20 @@
 
         :root[data-theme="dark"] body,
         [data-theme="dark"] body,
+        :root[data-theme="dark"] .main-wrapper,
+        [data-theme="dark"] .main-wrapper,
         :root[data-theme="dark"] .books-main,
         [data-theme="dark"] .books-main,
         :root[data-theme="dark"] .books-container,
-        [data-theme="dark"] .books-container,
-        :root[data-theme="dark"] .styled-select,
-        [data-theme="dark"] .styled-select,
-        :root[data-theme="dark"] .filter-btn,
-        [data-theme="dark"] .filter-btn,
-        :root[data-theme="dark"] .btn-clear,
-        [data-theme="dark"] .btn-clear,
-        :root[data-theme="dark"] .empty-glass,
-        [data-theme="dark"] .empty-glass {
+        [data-theme="dark"] .books-container {
             background-color: #020617 !important;
             color: #f8fafc;
         }
 
-        [data-theme="dark"] .minimal-top-bar {
-            background: var(--gray-100);
-            border-color: var(--gray-200);
+        [data-theme="dark"] .minimal-top-bar,
+        [data-theme="dark"] body.header-hidden .minimal-top-bar {
+            background: #0f172a !important;
+            border-color: #334155 !important;
         }
 
         [data-theme="dark"] .filter-by-label {
@@ -406,17 +401,20 @@
         }
 
         [data-theme="dark"] .chip {
-            background: var(--gray-100);
-            color: var(--gray-700);
+            background: #1e293b;
+            border: 1px solid #334155;
+            color: #cbd5e1;
         }
 
         [data-theme="dark"] .chip:hover {
-            background: var(--gray-200);
+            background: #334155;
+            color: #f8fafc;
         }
 
         [data-theme="dark"] .chip.active {
             background: var(--secondary);
             color: #ffffff;
+            border-color: var(--secondary);
         }
 
         [data-theme="dark"] .filter-panel {
@@ -434,22 +432,27 @@
 
         [data-theme="dark"] .styled-select,
         [data-theme="dark"] .filter-btn {
-            background: var(--gray-100);
-            border-color: var(--gray-200);
-            color: var(--gray-700);
+            background: #1e293b;
+            border-color: #334155;
+            color: #f8fafc;
+        }
+
+        [data-theme="dark"] .styled-select option {
+            background-color: #1e293b;
+            color: #f8fafc;
         }
 
         [data-theme="dark"] .filter-btn:hover,
         [data-theme="dark"] .filter-btn.active {
-            background: var(--gray-200);
-            border-color: var(--gray-300);
+            background: #334155;
+            border-color: var(--secondary);
             color: var(--secondary);
         }
 
         [data-theme="dark"] .btn-clear {
-            background: var(--gray-100);
-            border-color: var(--gray-200);
-            color: var(--gray-700);
+            background: #1e293b;
+            border-color: #334155;
+            color: #cbd5e1;
         }
 
         [data-theme="dark"] .btn-clear:hover {
@@ -458,19 +461,99 @@
         }
 
         [data-theme="dark"] .empty-glass {
-            background: var(--glass-bg);
-            border-color: var(--gray-200);
-            box-shadow: 0 16px 40px rgba(2, 6, 23, 0.24);
+            background: #1e293b !important;
+            border-color: #334155 !important;
+            box-shadow: 0 16px 40px rgba(2, 6, 23, 0.34) !important;
         }
 
         [data-theme="dark"] .empty-glass h3,
         [data-theme="dark"] .empty-glass p {
-            color: var(--gray-700);
+            color: #f8fafc !important;
         }
 
         [data-theme="dark"] .empty-icon-box {
-            background: var(--gray-100);
-            color: var(--gray-500);
+            background: #0f172a !important;
+            color: #4C9F8A !important;
+        }
+
+        /* Card components dark mode fallbacks */
+        [data-theme="dark"] .book-card {
+            background: #1e293b;
+            border-color: #334155;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        [data-theme="dark"] .book-card:hover {
+            box-shadow: 0 16px 36px rgba(0,0,0,0.4);
+        }
+        [data-theme="dark"] .book-card .book-title,
+        [data-theme="dark"] .book-card .book-title a {
+            color: #f8fafc !important;
+            text-decoration: none;
+        }
+        [data-theme="dark"] .book-card .book-title a:hover {
+            color: #4C9F8A !important;
+        }
+        [data-theme="dark"] .book-card .book-author {
+            color: #94a3b8;
+        }
+        [data-theme="dark"] .book-card .book-category-tag {
+            color: #4C9F8A;
+        }
+        [data-theme="dark"] .book-card .owner-name {
+            color: #cbd5e1;
+        }
+        [data-theme="dark"] .book-card .owner-hall {
+            color: #64748b;
+        }
+        [data-theme="dark"] .book-card .book-footer {
+            border-color: #334155;
+        }
+        [data-theme="dark"] .book-card .book-cover-container {
+            background: #0f172a;
+        }
+        [data-theme="dark"] .book-card-list {
+            background: #1e293b;
+            border-color: #334155;
+        }
+        [data-theme="dark"] .book-card-list .card-title,
+        [data-theme="dark"] .book-card-list .card-title a {
+            color: #f8fafc !important;
+            text-decoration: none;
+        }
+        [data-theme="dark"] .book-card-list .card-title a:hover {
+            color: #4C9F8A !important;
+        }
+        [data-theme="dark"] .book-card-list .card-author {
+            color: #94a3b8;
+        }
+        [data-theme="dark"] .book-card-list .category-label {
+            color: #64748b;
+        }
+        [data-theme="dark"] .book-card-list .rating-value {
+            color: #cbd5e1;
+        }
+        [data-theme="dark"] .book-card-list .rating-count {
+            color: #64748b;
+        }
+        [data-theme="dark"] .book-card-list .owner-name {
+            color: #f8fafc;
+        }
+        [data-theme="dark"] .book-card-list .owner-hall {
+            color: #64748b;
+        }
+        [data-theme="dark"] .book-card-list .owner-link-area {
+            border-top-color: #334155;
+        }
+        [data-theme="dark"] .book-card-list .owner-link-area:hover {
+            background: rgba(255,255,255,0.05);
+        }
+        [data-theme="dark"] .book-card-list .status-sign {
+            box-shadow: 0 0 0 3px #1e293b;
+        }
+        [data-theme="dark"] .book-card-list .extra-info-row {
+            background: #0f172a !important;
+            color: #cbd5e1 !important;
+            border-color: #334155 !important;
         }
 
 .empty-glass {

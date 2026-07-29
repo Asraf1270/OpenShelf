@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @push('styles')
-    <link rel="stylesheet" href="{{ asset('css/books.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/books.css') }}?v={{ filemtime(public_path('css/books.css')) }}">
 @endpush
 
 @section('content')
@@ -485,20 +485,26 @@ function createBookCardGrid(book) {
     const avatarUrl = book.owner_avatar_url || book.owner_avatar || '/images/avatars/default.jpg';
     
     div.innerHTML = `
-        <div class="book-cover-container">
-            <img src="${coverUrl}" alt="${book.title}" loading="lazy" onerror="this.onerror=null; this.src='/images/default-book-cover.jpg';">
-            <span class="book-badge badge-${status}">${status.charAt(0).toUpperCase() + status.slice(1)}</span>
-        </div>
+        <a href="/book?id=${book.id}" class="cover-link">
+            <div class="book-cover-container">
+                <img src="${coverUrl}" alt="${book.title}" loading="lazy" onerror="this.onerror=null; this.src='/images/default-book-cover.jpg';">
+                <span class="book-badge badge-${status}">${status.charAt(0).toUpperCase() + status.slice(1)}</span>
+            </div>
+        </a>
         <div class="book-info">
-            <div class="book-category-tag">${book.category || 'General'}</div>
-            <h3 class="book-title"><a href="/book?id=${book.id}">${book.title}</a></h3>
-            <p class="book-author">By ${book.author || 'Unknown'}</p>
-            ${getRatingHtml(book)}
+            <a href="/book?id=${book.id}" class="book-info-link">
+                <div class="book-category-tag">${book.category || 'General'}</div>
+                <h3 class="book-title">${book.title}</h3>
+                <p class="book-author">By ${book.author || 'Unknown'}</p>
+                ${getRatingHtml(book)}
+            </a>
             <div class="book-footer">
-                <div class="owner-info">
+                <a href="/profile?id=${book.owner_id || ''}" class="owner-link-area">
                     <img src="${avatarUrl}" alt="${book.owner_name}" class="owner-avatar" onerror="this.onerror=null; this.src='/images/avatars/default.jpg';">
-                    <span class="owner-name">${book.owner_name}</span>
-                </div>
+                    <div class="owner-details">
+                        <span class="owner-name">${book.owner_name}</span>
+                    </div>
+                </a>
             </div>
         </div>
     `;
