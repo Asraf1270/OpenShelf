@@ -37,6 +37,8 @@
     .owner-link-area { display: flex; align-items: center; gap: 0.5rem; text-decoration: none; color: inherit; width: fit-content; }
     .owner-avatar { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; background: #f3f4f6; }
     .owner-name { font-size: 0.82rem; font-weight: 600; color: #4b5563; transition: color 0.2s ease; }
+    .owner-details { display: flex; flex-direction: column; gap: 0.12rem; min-width: 0; }
+    .owner-hall { font-size: 0.72rem; color: #6b7280; line-height: 1.2; }
     .owner-link-area:hover .owner-name { color: #4C9F8A; }
 
     /* Skeleton */
@@ -56,6 +58,7 @@
     [data-theme="dark"] .book-rating .rating-val { color: #cbd5e1; }
     [data-theme="dark"] .book-rating .rating-count { color: #64748b; }
     [data-theme="dark"] .owner-name { color: #cbd5e1; }
+    [data-theme="dark"] .owner-hall { color: #64748b; }
     [data-theme="dark"] .book-footer { border-color: #334155; }
     [data-theme="dark"] .skeleton { background: #334155; }
     [data-theme="dark"] .skeleton-card { border-color: #334155; }
@@ -134,7 +137,13 @@
                         <div class="book-footer">
                             <a href="/profile/?id={{ $book['owner_id'] ?? '' }}" class="owner-link-area">
                                 <img src="{{ $avatarSrc }}" alt="{{ $book['owner_name'] ?? 'Owner' }}" class="owner-avatar" onerror="this.onerror=null; this.src='{{ $fallbackAvatar }}'">
-                                <span class="owner-name">{{ $book['owner_name'] ?? 'Owner' }}</span>
+                                <div class="owner-details">
+                                    <span class="owner-name">{{ $book['owner_name'] ?? 'Owner' }}</span>
+                                    @php($ownerHall = $book['display_hall'] ?? ($book['owner_hall'] ?? 'N/A'))
+                                    @if (! empty($ownerHall) && $ownerHall !== 'N/A')
+                                        <span class="owner-hall">{{ $ownerHall }}</span>
+                                    @endif
+                                </div>
                             </a>
                         </div>
                     @endif
