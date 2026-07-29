@@ -211,6 +211,79 @@
         border-color: var(--focus-color) !important;
         box-shadow: 0 0 0 4px color-mix(in srgb, var(--focus-color) 5%, transparent);
     }
+
+    [data-theme="dark"] .support-us-page {
+        background: linear-gradient(180deg, #020617 0%, #0f172a 100%);
+        color: #e2e8f0;
+    }
+
+    [data-theme="dark"] .support-us-page .bg-white,
+    [data-theme="dark"] .support-us-page form {
+        background: #111827;
+        border-color: #334155;
+        box-shadow: 0 16px 50px rgba(2, 6, 23, 0.35);
+    }
+
+    [data-theme="dark"] .support-us-page .bg-slate-50,
+    [data-theme="dark"] .support-us-page .bg-slate-100 {
+        background: #0f172a;
+        border-color: #334155;
+    }
+
+    [data-theme="dark"] .support-us-page .text-primary,
+    [data-theme="dark"] .support-us-page h1,
+    [data-theme="dark"] .support-us-page h3,
+    [data-theme="dark"] .support-us-page h4,
+    [data-theme="dark"] .support-us-page .text-slate-900,
+    [data-theme="dark"] .support-us-page .text-slate-700 {
+        color: #f8fafc;
+    }
+
+    [data-theme="dark"] .support-us-page .text-slate-600,
+    [data-theme="dark"] .support-us-page .text-slate-500,
+    [data-theme="dark"] .support-us-page .text-slate-400,
+    [data-theme="dark"] .support-us-page p {
+        color: #cbd5e1;
+    }
+
+    [data-theme="dark"] .support-us-page .support-input {
+        background: #0f172a;
+        border-color: #334155;
+        color: #f8fafc;
+    }
+
+    [data-theme="dark"] .support-us-page .support-input::placeholder {
+        color: #64748b;
+    }
+
+    [data-theme="dark"] .support-us-page .bg-teal-50,
+    [data-theme="dark"] .support-us-page .bg-emerald-50,
+    [data-theme="dark"] .support-us-page .bg-rose-50 {
+        background: rgba(15, 23, 42, 0.95);
+        border-color: #334155;
+        color: #f8fafc;
+    }
+
+    [data-theme="dark"] .support-us-page .bg-teal-100\/40,
+    [data-theme="dark"] .support-us-page .bg-primary\/10 {
+        opacity: 0.5;
+    }
+
+    [data-theme="dark"] .support-us-page .border-slate-200,
+    [data-theme="dark"] .support-us-page .border-slate-100 {
+        border-color: #334155;
+    }
+
+    [data-theme="dark"] .support-us-page a.px-8.py-4 {
+        background: #111827;
+        border-color: #334155;
+        color: #f8fafc;
+    }
+
+    [data-theme="dark"] .support-us-page a.px-8.py-4.bg-secondary {
+        background: var(--secondary);
+        color: #ffffff;
+    }
 </style>
 @endpush
 

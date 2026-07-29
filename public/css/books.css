@@ -29,6 +29,25 @@
             --transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
+        :root[data-theme="dark"],
+        [data-theme="dark"] {
+            --gray-50: #020617;
+            --gray-100: #0f172a;
+            --gray-200: #334155;
+            --gray-300: #475569;
+            --gray-400: #64748b;
+            --gray-500: #cbd5e1;
+            --gray-600: #e2e8f0;
+            --gray-700: #f8fafc;
+            --gray-800: #f8fafc;
+            --gray-900: #ffffff;
+            --glass-bg: rgba(15, 23, 42, 0.92);
+            --glass-border: rgba(148, 163, 184, 0.24);
+            --bg: #020617;
+            --text: #f8fafc;
+            --text-secondary: #cbd5e1;
+        }
+
         body {
             background: var(--gray-50);
             font-family: 'Inter', system-ui, -apple-system, sans-serif;
@@ -354,20 +373,105 @@
         .btn-cancel-filters:hover { background: var(--gray-200); }
 
         /* Dark mode support */
-        [data-theme="dark"] .filter-panel {
-            background: #1e293b;
-            border-color: #334155;
+        :root[data-theme="dark"],
+        [data-theme="dark"] {
+            background-color: #020617;
         }
+
+        :root[data-theme="dark"] body,
+        [data-theme="dark"] body,
+        :root[data-theme="dark"] .books-main,
+        [data-theme="dark"] .books-main,
+        :root[data-theme="dark"] .books-container,
+        [data-theme="dark"] .books-container,
+        :root[data-theme="dark"] .styled-select,
+        [data-theme="dark"] .styled-select,
+        :root[data-theme="dark"] .filter-btn,
+        [data-theme="dark"] .filter-btn,
+        :root[data-theme="dark"] .btn-clear,
+        [data-theme="dark"] .btn-clear,
+        :root[data-theme="dark"] .empty-glass,
+        [data-theme="dark"] .empty-glass {
+            background-color: #020617 !important;
+            color: #f8fafc;
+        }
+
+        [data-theme="dark"] .minimal-top-bar {
+            background: var(--gray-100);
+            border-color: var(--gray-200);
+        }
+
+        [data-theme="dark"] .filter-by-label {
+            color: var(--gray-500);
+        }
+
+        [data-theme="dark"] .chip {
+            background: var(--gray-100);
+            color: var(--gray-700);
+        }
+
+        [data-theme="dark"] .chip:hover {
+            background: var(--gray-200);
+        }
+
+        [data-theme="dark"] .chip.active {
+            background: var(--secondary);
+            color: #ffffff;
+        }
+
+        [data-theme="dark"] .filter-panel {
+            background: #111827;
+            border-color: #334155;
+            box-shadow: 0 14px 36px rgba(2, 6, 23, 0.4);
+        }
+
+        [data-theme="dark"] .filter-panel-title,
+        [data-theme="dark"] .filter-section-label,
+        [data-theme="dark"] .filter-option,
+        [data-theme="dark"] .btn-cancel-filters {
+            color: var(--gray-700);
+        }
+
         [data-theme="dark"] .styled-select,
         [data-theme="dark"] .filter-btn {
-            background: #1e293b;
-            border-color: #334155;
-            color: #cbd5e1;
+            background: var(--gray-100);
+            border-color: var(--gray-200);
+            color: var(--gray-700);
         }
 
+        [data-theme="dark"] .filter-btn:hover,
+        [data-theme="dark"] .filter-btn.active {
+            background: var(--gray-200);
+            border-color: var(--gray-300);
+            color: var(--secondary);
+        }
 
-[data-theme="dark"] .empty-glass { background: #1e293b; border-color: #334155; }
-[data-theme="dark"] .empty-glass h3 { color: #f8fafc; }
+        [data-theme="dark"] .btn-clear {
+            background: var(--gray-100);
+            border-color: var(--gray-200);
+            color: var(--gray-700);
+        }
+
+        [data-theme="dark"] .btn-clear:hover {
+            background: var(--secondary);
+            color: #ffffff;
+        }
+
+        [data-theme="dark"] .empty-glass {
+            background: var(--glass-bg);
+            border-color: var(--gray-200);
+            box-shadow: 0 16px 40px rgba(2, 6, 23, 0.24);
+        }
+
+        [data-theme="dark"] .empty-glass h3,
+        [data-theme="dark"] .empty-glass p {
+            color: var(--gray-700);
+        }
+
+        [data-theme="dark"] .empty-icon-box {
+            background: var(--gray-100);
+            color: var(--gray-500);
+        }
 
 .empty-glass {
     text-align: center;
