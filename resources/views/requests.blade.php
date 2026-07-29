@@ -29,6 +29,59 @@
     .requests-page .status-badge.approved { background: rgba(16, 185, 129, 0.12); color: #047857; }
     .requests-page .status-badge.rejected { background: rgba(239, 68, 68, 0.12); color: #b91c1c; }
     .requests-page .status-badge.pending_return { background: rgba(76, 159, 138, 0.12); color: #2d5d7a; }
+
+    /* Dark Mode Overrides */
+    [data-theme="dark"] .requests-page .bg-white { background-color: #1e293b; border-color: #334155; }
+    [data-theme="dark"] .requests-page .border-slate-200 { border-color: #334155; }
+    [data-theme="dark"] .requests-page .text-slate-900 { color: #f8fafc; }
+    [data-theme="dark"] .requests-page .text-slate-700 { color: #cbd5e1; }
+    [data-theme="dark"] .requests-page .text-slate-600 { color: #94a3b8; }
+    [data-theme="dark"] .requests-page .text-slate-500 { color: #64748b; }
+    [data-theme="dark"] .requests-page .text-slate-400 { color: #94a3b8; }
+    
+    [data-theme="dark"] .requests-page .bg-slate-50\/80 { background-color: #0f172a; border-color: #334155; }
+    [data-theme="dark"] .requests-page .bg-amber-50 { background-color: #451a03; border-color: #78350f; }
+    [data-theme="dark"] .requests-page .border-amber-100 { border-color: #78350f; }
+    [data-theme="dark"] .requests-page .text-amber-700 { color: #fcd34d; }
+    [data-theme="dark"] .requests-page .bg-emerald-50 { background-color: #022c22; border-color: #064e3b; }
+    [data-theme="dark"] .requests-page .border-emerald-200 { border-color: #064e3b; }
+    [data-theme="dark"] .requests-page .text-emerald-700 { color: #6ee7b7; }
+    [data-theme="dark"] .requests-page .bg-rose-50 { background-color: #4c0519; border-color: #881337; }
+    [data-theme="dark"] .requests-page .border-rose-100 { border-color: #881337; }
+    [data-theme="dark"] .requests-page .border-rose-200 { border-color: #881337; }
+    [data-theme="dark"] .requests-page .text-rose-700 { color: #fda4af; }
+
+    [data-theme="dark"] .requests-page .bg-amber-100 { background-color: #78350f; color: #fcd34d; }
+    [data-theme="dark"] .requests-page .bg-emerald-100 { background-color: #022c22; color: #6ee7b7; }
+    [data-theme="dark"] .requests-page .bg-rose-100 { background-color: #4c0519; color: #fda4af; }
+    [data-theme="dark"] .requests-page .bg-sky-100 { background-color: #082f49; color: #7dd3fc; }
+    
+    [data-theme="dark"] .requests-page .text-amber-600 { color: #fcd34d; }
+    [data-theme="dark"] .requests-page .text-emerald-600 { color: #6ee7b7; }
+    [data-theme="dark"] .requests-page .text-rose-600 { color: #fda4af; }
+    [data-theme="dark"] .requests-page .text-sky-600 { color: #7dd3fc; }
+
+    [data-theme="dark"] .requests-page .modal-content { background-color: #1e293b; border-color: #334155; color: #f8fafc; }
+    [data-theme="dark"] .requests-page .modal-header { border-bottom-color: #334155; }
+    [data-theme="dark"] .requests-page .modal-header h3 { color: #f8fafc; }
+    [data-theme="dark"] .requests-page .modal-footer { border-top-color: #334155; }
+    [data-theme="dark"] .requests-page .form-control { background-color: #0f172a; border-color: #334155; color: #f8fafc; }
+    [data-theme="dark"] .requests-page .form-group label { color: #cbd5e1; }
+    [data-theme="dark"] .requests-page .btn-outline { background-color: #1e293b; border-color: #334155; color: #cbd5e1; }
+    [data-theme="dark"] .requests-page .btn-outline:hover { background-color: #334155; color: #f8fafc; }
+    [data-theme="dark"] .requests-page .btn-danger { background-color: #b91c1c; color: #fff; }
+    [data-theme="dark"] .requests-page .btn-danger:hover { background-color: #991b1b; }
+    [data-theme="dark"] .requests-page .modal-header button { color: #f8fafc; }
+    
+    [data-theme="dark"] .requests-page .status-badge.pending { background: rgba(245, 158, 11, 0.2); color: #fcd34d; }
+    [data-theme="dark"] .requests-page .status-badge.approved { background: rgba(16, 185, 129, 0.2); color: #6ee7b7; }
+    [data-theme="dark"] .requests-page .status-badge.rejected { background: rgba(239, 68, 68, 0.2); color: #fda4af; }
+    [data-theme="dark"] .requests-page .status-badge.pending_return { background: rgba(76, 159, 138, 0.2); color: #94a3b8; }
+    
+    [data-theme="dark"] .requests-page .empty-state { background-color: #1e293b; border-color: #334155; }
+    [data-theme="dark"] .requests-page .empty-state h3 { color: #f8fafc; }
+    [data-theme="dark"] .requests-page .empty-state p { color: #94a3b8; }
+    [data-theme="dark"] .requests-page .empty-state i { color: #4c9f8a; }
 </style>
 @endpush
 
