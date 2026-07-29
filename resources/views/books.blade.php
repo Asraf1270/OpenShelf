@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @push('styles')
-    <link rel="stylesheet" href="{{ asset('css/books.css') }}?v={{ filemtime(public_path('css/books.css')) }}">
+    <link rel="stylesheet" href="{{ asset('css/books.css') }}?v={{ file_exists(public_path('css/books.css')) ? filemtime(public_path('css/books.css')) : '1' }}">
 @endpush
 
 @section('content')
