@@ -117,7 +117,7 @@
     @endif
 
     <!-- Favicon & PWA Icons -->
-    <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
+    <link rel="icon" type="image/png" href="{{ asset('favicon.png') }}">
     <link rel="apple-touch-icon" href="{{ asset('images/pwa/icon-192x192.png') }}">
     <link rel="manifest" href="{{ route('pwa.manifest') }}">
 
