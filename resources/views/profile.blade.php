@@ -70,13 +70,7 @@
                 </div>
                 <div class="info-content">
                     <span class="info-label">Room</span>
-                    <span class="info-value">
-                        @if ($showSensitiveInfo)
-                            {{ $user->room_number ?? 'N/A' }}
-                        @else
-                            <span class="locked-text"><i class="fas fa-lock"></i> Private</span>
-                        @endif
-                    </span>
+                    <span class="info-value">{{ $user->room_number ?? 'N/A' }}</span>
                 </div>
             </div>
         </div>
