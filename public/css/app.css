@@ -116,9 +116,19 @@
 /* Dark Theme Overrides */
 :root[data-theme="dark"],
 [data-theme="dark"] {
+    --gray-50: #020617;
+    --gray-100: #0f172a;
+    --gray-200: #334155;
+    --gray-300: #475569;
+    --gray-400: #64748b;
+    --gray-500: #cbd5e1;
+    --gray-600: #e2e8f0;
+    --gray-700: #f8fafc;
+    --gray-800: #f8fafc;
+    --gray-900: #ffffff;
     --bg: var(--bg-dark);
     --bg-secondary: var(--bg-dark-secondary);
-    --bg-body: #0b1120;
+    --bg-body: #020617;
     --bg-card: #1e293b;
     --text: var(--text-dark);
     --text-primary: var(--text-dark);

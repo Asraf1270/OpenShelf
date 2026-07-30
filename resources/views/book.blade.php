@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @push('styles')
-    <link rel="stylesheet" href="{{ asset('css/book.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/book.css') }}?v={{ file_exists(public_path('css/book.css')) ? filemtime(public_path('css/book.css')) : '1' }}">
 @endpush
 
 @section('content')
@@ -353,7 +353,7 @@
 
 @push('scripts')
 <script>
-        const bookActionUrl = @json(route('book.show', ['id' => $book->id]));
+        const bookActionUrl = {{ json_encode(route('book.show', ['id' => $book->id])) }};
         const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
 
         function postBookAction(params) {
