@@ -43,4 +43,12 @@ class StaticPageController extends Controller
             'seoDesc' => 'Community guidelines for respectful book sharing on OpenShelf.',
         ]);
     }
+
+    public function help()
+    {
+        return view('pages.help-support', [
+            'seoTitle' => 'Help & Support - OpenShelf',
+            'seoDesc' => 'Browse FAQ, borrowing rules, support contact links, and community help resources on OpenShelf.',
+        ]);
+    }
 }

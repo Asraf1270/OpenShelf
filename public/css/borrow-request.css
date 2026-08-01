@@ -1,12 +1,257 @@
-        .borrow-container { max-width: 600px; margin: 2rem auto; padding: 0 1rem; }
-        .borrow-card { background: white; border-radius: 1rem; padding: 2rem; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1); }
-        .book-summary { display: flex; gap: 1rem; background: #f8fafc; padding: 1rem; border-radius: 0.75rem; margin-bottom: 1.5rem; }
-        .book-summary img { width: 80px; height: 100px; object-fit: cover; border-radius: 0.5rem; }
-        .form-group { margin-bottom: 1rem; }
-        .form-label { display: block; margin-bottom: 0.5rem; font-weight: 500; }
-        .form-control, .form-select { width: 100%; padding: 0.75rem; border: 1px solid #e2e8f0; border-radius: 0.5rem; font-size: 0.9rem; }
-        .btn-primary { width: 100%; padding: 0.75rem; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; border: none; border-radius: 0.5rem; font-weight: 600; cursor: pointer; transition: all 0.2s; }
-        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(44,62,80,0.3); }
-        .btn-secondary { display: block; text-align: center; margin-top: 1rem; color: #64748b; text-decoration: none; }
-        .info-box { background: #e3f2fd; border-radius: 0.5rem; padding: 0.75rem; margin-bottom: 1rem; font-size: 0.85rem; display: flex; align-items: center; gap: 0.5rem; }
-        @media (max-width: 640px) { .borrow-card { padding: 1.5rem; } .book-summary { flex-direction: column; align-items: center; text-align: center; } }
+.borrow-container {
+    width: 100%;
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 1rem 0.75rem 2rem;
+}
+
+.borrow-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    padding: 1rem;
+    box-shadow: var(--shadow-md);
+}
+
+.borrow-card h1 {
+    margin: 0 0 1rem;
+    font-size: 1.5rem;
+    line-height: 1.2;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+}
+
+.borrow-error {
+    background: rgba(239, 68, 68, 0.12);
+    color: var(--danger);
+    border: 1px solid rgba(239, 68, 68, 0.22);
+    padding: 0.85rem 1rem;
+    border-radius: var(--radius-md);
+    margin-bottom: 1rem;
+}
+
+.info-box {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    background: rgba(59, 130, 246, 0.1);
+    border: 1px solid rgba(59, 130, 246, 0.18);
+    color: var(--text-secondary);
+    border-radius: var(--radius-md);
+    padding: 0.8rem 0.9rem;
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+}
+
+.info-box i {
+    color: var(--primary);
+    flex-shrink: 0;
+}
+
+.book-summary {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.9rem;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 1rem;
+    margin-bottom: 1.2rem;
+    text-align: center;
+}
+
+.book-summary img {
+    width: 88px;
+    height: 112px;
+    object-fit: cover;
+    border-radius: 0.7rem;
+    box-shadow: var(--shadow-sm);
+    flex-shrink: 0;
+}
+
+.book-summary-meta {
+    width: 100%;
+}
+
+.book-summary-meta h3 {
+    margin: 0 0 0.35rem;
+    font-size: 1.05rem;
+    line-height: 1.4;
+}
+
+.book-summary-meta p {
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: 0.92rem;
+}
+
+.book-owner {
+    margin-top: 0.35rem !important;
+    font-size: 0.82rem !important;
+}
+
+.borrow-form {
+    display: grid;
+    gap: 1rem;
+}
+
+.form-group {
+    margin: 0;
+}
+
+.form-label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 700;
+    font-size: 0.88rem;
+    color: var(--text-secondary);
+}
+
+.form-control,
+.form-select {
+    width: 100%;
+    padding: 0.9rem 0.95rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background: var(--bg);
+    color: var(--text);
+    font-size: 0.95rem;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+}
+
+.form-control:focus,
+.form-select:focus {
+    outline: none;
+    border-color: rgba(44, 62, 80, 0.55);
+    box-shadow: 0 0 0 3px rgba(44, 62, 80, 0.12);
+}
+
+.form-control {
+    min-height: 120px;
+    resize: vertical;
+}
+
+.form-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.btn-primary,
+.btn-secondary {
+    width: 100%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border-radius: var(--radius-md);
+    font-weight: 700;
+    text-decoration: none;
+    transition: transform 0.18s ease, box-shadow 0.18s ease, opacity 0.18s ease;
+}
+
+.btn-primary {
+    padding: 0.9rem 1rem;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    color: #fff;
+    border: none;
+    cursor: pointer;
+}
+
+.btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 10px 20px -12px rgba(44, 62, 80, 0.7);
+}
+
+.btn-secondary {
+    padding: 0.85rem 1rem;
+    background: transparent;
+    color: var(--text-secondary);
+    border: 1px solid var(--border);
+}
+
+.btn-secondary:hover {
+    background: var(--surface-hover);
+    color: var(--text);
+}
+
+@media (min-width: 768px) {
+    .borrow-container {
+        padding: 2rem 1rem 3rem;
+    }
+
+    .borrow-card {
+        padding: 1.5rem;
+    }
+
+    .borrow-card h1 {
+        font-size: 1.8rem;
+    }
+
+    .book-summary {
+        flex-direction: row;
+        align-items: center;
+        text-align: left;
+        padding: 1.15rem;
+    }
+
+    .book-summary-meta {
+        width: auto;
+    }
+
+    .form-actions {
+        flex-direction: row;
+        align-items: center;
+    }
+
+    .btn-primary,
+    .btn-secondary {
+        width: auto;
+        flex: 1;
+    }
+
+    .btn-secondary {
+        margin-top: 0;
+    }
+}
+
+:root[data-theme="dark"],
+[data-theme="dark"] {
+    .borrow-card {
+        background: var(--bg-card);
+        border-color: var(--border);
+        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+    }
+
+    .borrow-error {
+        background: rgba(239, 68, 68, 0.18);
+    }
+
+    .info-box {
+        background: rgba(59, 130, 246, 0.14);
+        border-color: rgba(59, 130, 246, 0.24);
+    }
+
+    .book-summary {
+        background: rgba(148, 163, 184, 0.08);
+        border-color: var(--border);
+    }
+
+    .form-control,
+    .form-select {
+        background: rgba(15, 23, 42, 0.65);
+        border-color: var(--border);
+        color: var(--text);
+    }
+
+    .form-control:focus,
+    .form-select:focus {
+        border-color: rgba(76, 159, 138, 0.7);
+        box-shadow: 0 0 0 3px rgba(76, 159, 138, 0.18);
+    }
+
+    .btn-secondary {
+        background: rgba(148, 163, 184, 0.06);
+    }
+}

@@ -1,31 +1,35 @@
 @extends('layouts.app')
 
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('css/borrow-request.css') }}?v={{ file_exists(public_path('css/borrow-request.css')) ? filemtime(public_path('css/borrow-request.css')) : '1' }}">
+@endpush
+
 @section('content')
 <div class="borrow-container">
     <div class="borrow-card">
-        <h1 style="margin-bottom: 1rem;">📖 Request to Borrow</h1>
+        <h1>📖 Request to Borrow</h1>
 
         @if ($error)
-            <div class="alert alert-danger" style="background:rgba(239,68,68,0.1); color:#ef4444; padding:0.75rem; border-radius:0.5rem; margin-bottom:1rem;">
+            <div class="alert alert-danger borrow-error">
                 {{ $error }}
             </div>
         @endif
 
         <div class="info-box">
-            <i class="fas fa-envelope" style="color: var(--primary);"></i>
+            <i class="fas fa-envelope"></i>
             <span>The owner will be notified about your request.</span>
         </div>
 
         <div class="book-summary">
             <img src="{{ $coverImage }}" alt="{{ $book->title }}">
-            <div>
+            <div class="book-summary-meta">
                 <h3>{{ $book->title }}</h3>
                 <p>by {{ $book->author }}</p>
-                <p style="color: #64748b; font-size: 0.85rem;">Owner: {{ $owner?->name ?? 'Unknown' }}</p>
+                <p class="book-owner">Owner: {{ $owner?->name ?? 'Unknown' }}</p>
             </div>
         </div>
 
-        <form method="POST" action="{{ route('borrow-request', ['book_id' => $book->id]) }}">
+        <form method="POST" action="{{ route('borrow-request', ['book_id' => $book->id]) }}" class="borrow-form">
             @csrf
             <div class="form-group">
                 <label class="form-label">📅 Borrow Duration</label>
@@ -43,11 +47,13 @@
                           placeholder="Introduce yourself and explain why you'd like to borrow this book..."></textarea>
             </div>
 
-            <button type="submit" class="btn-primary">
-                <i class="fas fa-paper-plane"></i> Send Request
-            </button>
+            <div class="form-actions">
+                <button type="submit" class="btn-primary">
+                    <i class="fas fa-paper-plane"></i> Send Request
+                </button>
 
-            <a href="{{ route('book.show', ['id' => $book->id]) }}" class="btn-secondary">Cancel</a>
+                <a href="{{ route('book.show', ['id' => $book->id]) }}" class="btn-secondary">Cancel</a>
+            </div>
         </form>
     </div>
 </div>
