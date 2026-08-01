@@ -115,6 +115,7 @@ Route::prefix('admin')->group(function () {
 Route::get('/profile', [ProfileController::class, 'index'])->name('profile');
 
 Route::get('/settings', [SettingsController::class, 'index'])->name('settings');
+Route::get('/settings/help', [StaticPageController::class, 'help'])->name('settings.help');
 Route::get('/settings/edit-profile', [EditProfileController::class, 'show'])->name('settings.edit-profile');
 Route::post('/settings/edit-profile', [EditProfileController::class, 'update'])->name('settings.edit-profile.update');
 Route::get('/settings/change-password', [ChangePasswordController::class, 'show'])->name('settings.change-password');
