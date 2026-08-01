@@ -36,8 +36,12 @@
     .users-table th { font-size:0.75rem; text-transform:uppercase; color:var(--text-muted); letter-spacing:1px; }
     .user-info { display:flex; align-items:center; gap:1rem; }
     .user-avatar {
-        width:46px; height:46px; border-radius:14px; background:linear-gradient(135deg, #2C3E50, #4C9F8A);
-        color:white; display:flex; align-items:center; justify-content:center; font-weight:800;
+        width:46px; height:46px; border-radius:14px; overflow:hidden; flex-shrink:0;
+        background:linear-gradient(135deg, #2C3E50, #4C9F8A);
+        display:flex; align-items:center; justify-content:center;
+    }
+    .user-avatar img {
+        width:100%; height:100%; object-fit:cover; display:block;
     }
     .user-name { font-weight:700; }
     .user-email { color:var(--text-muted); font-size:0.85rem; }
@@ -117,7 +121,9 @@
                         <td><input type="checkbox" class="user-checkbox" value="{{ $user->id }}"></td>
                         <td>
                             <div class="user-info">
-                                <div class="user-avatar">{{ strtoupper(substr($user->name ?? 'U', 0, 1)) }}</div>
+                                <div class="user-avatar">
+                                    <img src="{{ $user->profile_image_url }}" alt="{{ $user->name ?? 'User' }}" loading="lazy">
+                                </div>
                                 <div>
                                     <div class="user-name">{{ $user->name ?? 'Unknown' }}</div>
                                     <div class="user-email">{{ $user->email }}</div>
