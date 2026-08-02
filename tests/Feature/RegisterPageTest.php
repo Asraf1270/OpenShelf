@@ -27,6 +27,7 @@ class RegisterPageTest extends TestCase
             'phone' => '01712345678',
             'roomNumber' => 'A-101',
             'hall' => '1',
+            'gender' => 'male',
             'password' => 'StrongPass123',
             'password_confirmation' => 'StrongPass123',
             'terms' => 'on',
@@ -36,7 +37,31 @@ class RegisterPageTest extends TestCase
         $this->assertDatabaseHas('users', [
             'email' => 'aisha@example.com',
             'department' => 'CSE',
+            'gender' => 'male',
             'status' => 'unverified',
+        ]);
+    }
+
+    public function test_gender_must_match_the_selected_hall_group(): void
+    {
+        $response = $this->from('/register')->post('/register', [
+            'name' => 'Aisha Rahman',
+            'email' => 'aisha2@example.com',
+            'department' => 'CSE',
+            'session' => '2021-22',
+            'phone' => '01712345679',
+            'roomNumber' => 'A-102',
+            'hall' => '1',
+            'gender' => 'female',
+            'password' => 'StrongPass123',
+            'password_confirmation' => 'StrongPass123',
+            'terms' => 'on',
+        ]);
+
+        $response->assertRedirect('/register');
+        $response->assertSessionHasErrors('gender');
+        $this->assertDatabaseMissing('users', [
+            'email' => 'aisha2@example.com',
         ]);
     }
 }
