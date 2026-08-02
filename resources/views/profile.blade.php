@@ -15,10 +15,10 @@
                  class="profile-avatar">
         </div>
 
-        <h1 class="profile-name">
+        <h1 class="profile-name" style="display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
             {{ $user->name }}
-            @if($user->boipoka_badge)
-                <span class="boipoka-badge" title="Monthly Boipoka Winner" style="color: #FFD700; font-size: 1.2rem; margin-left: 0.5rem; vertical-align: middle;">
+            @if((bool)$user->boipoka_badge)
+                <span class="boipoka-badge" title="Monthly Boipoka Winner" style="color: #FFD700; font-size: 1.4rem; display: flex; align-items: center;">
                     <i class="fas fa-certificate"></i>
                 </span>
             @endif
