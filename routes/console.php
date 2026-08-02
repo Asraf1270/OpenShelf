@@ -13,4 +13,4 @@ Schedule::command('app:notify-wishlist-availability')->everyTenMinutes();
 Schedule::command('app:remove-old-notifications')->daily();
 Schedule::command('app:remove-old-borrow-requests')->daily();
 Schedule::command('sitemap:generate')->dailyAt('02:00');
-
+Schedule::command('app:calculate-boipoka-winner')->monthlyOn(1, '00:00');

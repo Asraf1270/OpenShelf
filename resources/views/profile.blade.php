@@ -15,8 +15,14 @@
                  class="profile-avatar">
         </div>
 
-        <h1 class="profile-name">{{ $user->name }}</h1>
-
+        <h1 class="profile-name">
+            {{ $user->name }}
+            @if($user->boipoka_badge)
+                <span class="boipoka-badge" title="Monthly Boipoka Winner" style="color: #FFD700; font-size: 1.2rem; margin-left: 0.5rem; vertical-align: middle;">
+                    <i class="fas fa-certificate"></i>
+                </span>
+            @endif
+        </h1>
         <div class="profile-subtitle">
             <i class="fas fa-graduation-cap"></i> {{ $user->department ?? 'N/A' }}
         </div>

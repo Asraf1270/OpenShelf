@@ -21,6 +21,7 @@ use App\Http\Controllers\ContactController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\StaticPageController;
+use App\Http\Controllers\LeaderboardController;
 use App\Http\Controllers\PwaController;
 use App\Http\Controllers\Api\BookApiController;
 use App\Http\Controllers\Api\NotificationApiController;
@@ -58,6 +59,7 @@ Route::get('/offline', [PwaController::class, 'offline'])->name('pwa.offline');
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
 Route::get('/faq', [StaticPageController::class, 'faq'])->name('faq');
+Route::get('/leaderboard', [LeaderboardController::class, 'index'])->name('leaderboard');
 Route::get('/about', [StaticPageController::class, 'about'])->name('about');
 Route::get('/terms', [StaticPageController::class, 'terms'])->name('terms');
 Route::get('/privacy', [StaticPageController::class, 'privacy'])->name('privacy');
