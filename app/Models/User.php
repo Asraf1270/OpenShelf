@@ -19,7 +19,7 @@ class User extends Authenticatable
     protected $casts = [
         'verified' => 'boolean',
         'otp_expiry' => 'datetime',
-        'boipoka_badge' => 'boolean',
+        'boipoka_badge' => 'integer',
     ];
 
     public function getAuthPassword(): string

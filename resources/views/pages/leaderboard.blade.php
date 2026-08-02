@@ -78,6 +78,9 @@
         position: relative;
         box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.1);
         transition: transform 0.3s ease, box-shadow 0.3s ease;
+        text-decoration: none;
+        color: inherit;
+        cursor: pointer;
     }
 
     [data-theme="dark"] .podium-item {
@@ -186,6 +189,9 @@
         border-bottom: 1px solid var(--border);
         align-items: center;
         transition: background 0.2s ease;
+        text-decoration: none;
+        color: inherit;
+        cursor: pointer;
     }
 
     .list-item:hover {
@@ -292,18 +298,18 @@
             @endphp
 
             @if($rank2)
-            <div class="podium-item rank-2">
+            <a href="{{ route('profile', ['id' => $rank2->id]) }}" class="podium-item rank-2">
                 <div class="rank-badge">2</div>
                 <img src="{{ $rank2->profile_image_url }}" alt="{{ $rank2->name }}" class="podium-avatar">
                 <div class="podium-info">
                     <div class="podium-name">{{ $rank2->name }}</div>
                     <div class="podium-points">{{ $rank2->boipoka_points }} pts</div>
                 </div>
-            </div>
+            </a>
             @endif
 
             @if($rank1)
-            <div class="podium-item rank-1">
+            <a href="{{ route('profile', ['id' => $rank1->id]) }}" class="podium-item rank-1">
                 <div class="rank-badge">1</div>
                 <img src="{{ $rank1->profile_image_url }}" alt="{{ $rank1->name }}" class="podium-avatar">
                 <div class="podium-info">
@@ -315,18 +321,18 @@
                     </div>
                     <div class="podium-points">{{ $rank1->boipoka_points }} pts</div>
                 </div>
-            </div>
+            </a>
             @endif
 
             @if($rank3)
-            <div class="podium-item rank-3">
+            <a href="{{ route('profile', ['id' => $rank3->id]) }}" class="podium-item rank-3">
                 <div class="rank-badge">3</div>
                 <img src="{{ $rank3->profile_image_url }}" alt="{{ $rank3->name }}" class="podium-avatar">
                 <div class="podium-info">
                     <div class="podium-name">{{ $rank3->name }}</div>
                     <div class="podium-points">{{ $rank3->boipoka_points }} pts</div>
                 </div>
-            </div>
+            </a>
             @endif
         </div>
 
@@ -338,14 +344,14 @@
                 <div style="text-align: right;">Points</div>
             </div>
             @foreach($topUsers->skip(3) as $index => $user)
-            <div class="list-item">
+            <a href="{{ route('profile', ['id' => $user->id]) }}" class="list-item">
                 <div class="list-rank">#{{ $index + 4 }}</div>
                 <div class="list-user">
                     <img src="{{ $user->profile_image_url }}" alt="{{ $user->name }}" class="list-avatar">
                     <span class="list-name">{{ $user->name }}</span>
                 </div>
                 <div class="list-points">{{ $user->boipoka_points }}</div>
-            </div>
+            </a>
             @endforeach
         </div>
         @endif

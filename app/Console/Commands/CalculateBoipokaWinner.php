@@ -108,13 +108,25 @@ class CalculateBoipokaWinner extends Command
             }
         }
 
-        // Assign Badge to the top user(s)
-        $topScore = User::max('boipoka_points');
-        if ($topScore > 0) {
-            User::where('boipoka_points', $topScore)->update(['boipoka_badge' => true]);
-            $this->info("Badge assigned to user(s) with score: $topScore");
-        } else {
+        // Assign Badge to the top users
+        $topUsers = User::where('boipoka_points', '>', 0)
+            ->orderBy('boipoka_points', 'desc')
+            ->limit(10)
+            ->get();
+
+        if ($topUsers->isEmpty()) {
             $this->info("No points awarded this month.");
+        } else {
+            $rank = 1;
+            foreach ($topUsers as $topUser) {
+                if ($rank <= 3) {
+                    $topUser->update(['boipoka_badge' => $rank]);
+                } else {
+                    $topUser->update(['boipoka_badge' => 4]); // 4 represents Top 10
+                }
+                $rank++;
+            }
+            $this->info("Badges assigned to top {$topUsers->count()} users.");
         }
     }
 }
