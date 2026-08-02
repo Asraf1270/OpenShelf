@@ -32,6 +32,9 @@
             <a href="{{ route('announcements.index') }}" class="header-nav-link {{ request()->routeIs('announcements.*') ? 'active' : '' }}">
                 <i class="fas fa-bullhorn"></i> Announcements
             </a>
+            <a href="{{ route('leaderboard') }}" class="header-nav-link {{ request()->routeIs('leaderboard') ? 'active' : '' }}">
+                <i class="fas fa-trophy"></i> Boipoka
+            </a>
             @if ($isLoggedIn)
                 <a href="{{ route('requests.index') }}" class="header-nav-link {{ request()->routeIs('requests.*') ? 'active' : '' }}">
                     <i class="fas fa-paper-plane"></i> Requests
@@ -172,6 +175,9 @@
         </a>
         <a href="{{ route('announcements.index') }}" class="mobile-nav-link {{ request()->routeIs('announcements.*') ? 'active' : '' }}">
             <i class="fas fa-bullhorn"></i> Announcements
+        </a>
+        <a href="{{ route('leaderboard') }}" class="mobile-nav-link {{ request()->routeIs('leaderboard') ? 'active' : '' }}">
+            <i class="fas fa-trophy"></i> Boipoka
         </a>
         <a href="{{ route('about') }}" class="mobile-nav-link {{ request()->routeIs('about') ? 'active' : '' }}">
             <i class="fas fa-info-circle"></i> About
