@@ -150,11 +150,11 @@
                 <!-- 3. The Tab-Container -->
                 <div class="tabs-container">
                     <div class="tabs" role="tablist" aria-label="Book details tabs">
-                        <button type="button" class="tab active" data-tab="description" aria-selected="true" role="tab" aria-controls="description-tab">Description</button>
-                        <button type="button" class="tab" data-tab="details" aria-selected="false" role="tab" aria-controls="details-tab">Details</button>
-                        <button type="button" class="tab" data-tab="reviews" aria-selected="false" role="tab" aria-controls="reviews-tab">Reviews <span style="font-size:0.85rem;opacity:0.6">({{ $reviews->count() }})</span></button>
-                        <button type="button" class="tab" data-tab="comments" aria-selected="false" role="tab" aria-controls="comments-tab">Comments <span style="font-size:0.85rem;opacity:0.6">({{ $comments->count() }})</span></button>
-                        <button type="button" class="tab" data-tab="history" aria-selected="false" role="tab" aria-controls="history-tab">History</button>
+                        <button type="button" class="tab active" data-tab="description" aria-selected="true">Description</button>
+                        <button type="button" class="tab" data-tab="details" aria-selected="false">Details</button>
+                        <button type="button" class="tab" data-tab="reviews" aria-selected="false">Reviews <span style="font-size:0.85rem;opacity:0.6">({{ $reviews->count() }})</span></button>
+                        <button type="button" class="tab" data-tab="comments" aria-selected="false">Comments <span style="font-size:0.85rem;opacity:0.6">({{ $comments->count() }})</span></button>
+                        <button type="button" class="tab" data-tab="history" aria-selected="false">History</button>
                     </div>
                     
                     <!-- Description -->
@@ -317,7 +317,7 @@
 
 @push('scripts')
 <script>
-        const bookActionUrl = {{ json_encode(route('book.show', ['id' => $book->id])) }};
+        const bookActionUrl = @json(route('book.show', ['id' => $book->id]));
         const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
 
         function postBookAction(params) {
@@ -356,8 +356,7 @@
         // Rating stars
         let currentRating = 0;
         document.addEventListener('DOMContentLoaded', () => {
-            const tabButtons = document.querySelectorAll('.tabs-container .tab');
-            tabButtons.forEach(button => {
+            document.querySelectorAll('.tabs-container .tab').forEach(button => {
                 button.addEventListener('click', () => switchTab(button.getAttribute('data-tab')));
             });
 
