@@ -155,11 +155,11 @@
                 <!-- 3. The Tab-Container -->
                 <div class="tabs-container">
                     <div class="tabs" role="tablist" aria-label="Book details tabs">
-                        <button type="button" class="tab active" data-tab="description" aria-selected="true">Description</button>
-                        <button type="button" class="tab" data-tab="details" aria-selected="false">Details</button>
-                        <button type="button" class="tab" data-tab="reviews" aria-selected="false">Reviews <span style="font-size:0.85rem;opacity:0.6">({{ $reviews->count() }})</span></button>
-                        <button type="button" class="tab" data-tab="comments" aria-selected="false">Comments <span style="font-size:0.85rem;opacity:0.6">({{ $comments->count() }})</span></button>
-                        <button type="button" class="tab" data-tab="history" aria-selected="false">History</button>
+                        <button type="button" class="tab active" data-tab="description" aria-selected="true" role="tab" aria-controls="description-tab">Description</button>
+                        <button type="button" class="tab" data-tab="details" aria-selected="false" role="tab" aria-controls="details-tab">Details</button>
+                        <button type="button" class="tab" data-tab="reviews" aria-selected="false" role="tab" aria-controls="reviews-tab">Reviews <span style="font-size:0.85rem;opacity:0.6">({{ $reviews->count() }})</span></button>
+                        <button type="button" class="tab" data-tab="comments" aria-selected="false" role="tab" aria-controls="comments-tab">Comments <span style="font-size:0.85rem;opacity:0.6">({{ $comments->count() }})</span></button>
+                        <button type="button" class="tab" data-tab="history" aria-selected="false" role="tab" aria-controls="history-tab">History</button>
                     </div>
                     
                     <!-- Description -->
@@ -170,7 +170,7 @@
                     </div>
                     
                     <!-- Details -->
-                    <div id="details-tab" class="tab-content">
+                    <div id="details-tab" class="tab-content" hidden>
                         <div class="detail-grid">
                             <div class="detail-item"><label>ISBN</label><span>{{ $book->isbn ?? 'N/A' }}</span></div>
                             <div class="detail-item"><label>Publisher</label><span>{{ $book->publisher ?? 'N/A' }}</span></div>
@@ -182,7 +182,7 @@
                     </div>
                     
                     <!-- Reviews -->
-                    <div id="reviews-tab" class="tab-content">
+                    <div id="reviews-tab" class="tab-content" hidden>
                         @if ($isLoggedIn && !$isOwner)
                             <div class="form-dark">
                                 <h4 style="margin-bottom:1rem;font-weight:700">Write a Review</h4>
@@ -227,7 +227,7 @@
                     </div>
                     
                     <!-- Comments -->
-                    <div id="comments-tab" class="tab-content">
+                    <div id="comments-tab" class="tab-content" hidden>
                         @if ($isLoggedIn)
                             <div class="form-dark">
                                 <h4 style="margin-bottom:1rem;font-weight:700">Add a Comment</h4>
@@ -262,7 +262,7 @@
                     </div>
                     
                     <!-- History -->
-                    <div id="history-tab" class="tab-content">
+                    <div id="history-tab" class="tab-content" hidden>
                         @if ($borrowRequests->isEmpty())
                             <div class="empty-state"><i class="fas fa-history"></i><p>No borrow history yet.</p></div>
                         @else
@@ -396,7 +396,8 @@
         // Rating stars
         let currentRating = 0;
         document.addEventListener('DOMContentLoaded', () => {
-            document.querySelectorAll('.tabs-container .tab').forEach(button => {
+            const tabButtons = document.querySelectorAll('.tabs-container .tab');
+            tabButtons.forEach(button => {
                 button.addEventListener('click', () => switchTab(button.getAttribute('data-tab')));
             });
 
