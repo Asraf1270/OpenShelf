@@ -109,11 +109,6 @@
                             <a href="{{ route('borrow-request', ['book_id' => $book->id]) }}" class="btn btn-primary">
                                 <i class="fas fa-handshake"></i> Request to Borrow
                             </a>
-                            @if ($whatsappLink)
-                                <a href="{{ $whatsappLink }}" target="_blank" class="btn btn-whatsapp">
-                                    <i class="fab fa-whatsapp"></i> Chat with Owner
-                                </a>
-                            @endif
                         @elseif ($hasRequested)
                             <button class="btn btn-secondary" disabled style="background:#f1f5f9; color:#94a3b8; border:1px solid #e2e8f0; cursor: not-allowed; flex:1;">
                                 <i class="fas fa-clock"></i> Request Pending

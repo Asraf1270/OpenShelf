@@ -234,6 +234,46 @@
 .requests-page .btn-outline { background: transparent; border: 1px solid #e2e8f0; color: #334155; }
 .requests-page .btn-outline:hover { border-color: #4C9F8A; color: #4C9F8A; }
 .requests-page .btn-whatsapp { border-color: #25D366; color: #25D366; }
+.requests-page .request-card-actions { display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 1rem; }
+.requests-page .request-card-actions > a { flex: 1 1 0; min-width: 0; }
+.requests-page .request-contact-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border-radius: 0.9rem;
+    padding: 0.72rem 1rem;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: #2d5d7a;
+    background: #eef8f6;
+    border: 1px solid #cfe7df;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+.requests-page .request-contact-link:hover {
+    background: #dff2ee;
+    color: #234c63;
+    transform: translateY(-1px);
+}
+.requests-page .request-book-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border-radius: 0.9rem;
+    padding: 0.72rem 1rem;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: #fff;
+    background: #0f172a;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+.requests-page .request-book-link:hover {
+    background: #1e293b;
+    transform: translateY(-1px);
+}
 
 .requests-page .empty-state {
     text-align: center;
@@ -412,6 +452,22 @@
 
 [data-theme="dark"] .requests-page .request-meta {
     background: #0F172A;
+}
+
+[data-theme="dark"] .requests-page .request-contact-link {
+    background: rgba(76, 159, 138, 0.14);
+    border-color: rgba(76, 159, 138, 0.35);
+    color: #c7f9ea;
+}
+[data-theme="dark"] .requests-page .request-contact-link:hover {
+    background: rgba(76, 159, 138, 0.24);
+    color: #f8fafc;
+}
+[data-theme="dark"] .requests-page .request-book-link {
+    background: #1e293b;
+}
+[data-theme="dark"] .requests-page .request-book-link:hover {
+    background: #334155;
 }
 
 [data-theme="dark"] .requests-page .meta-item {
