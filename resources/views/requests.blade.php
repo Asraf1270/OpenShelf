@@ -245,11 +245,15 @@
             @foreach ($receivedRequests as $request)
                 @php
                     $borrower = $request->borrower;
+                    $owner = $request->owner;
                     $statusLabel = ucwords(str_replace('_', ' ', $request->status));
                     $borrowerPhone = $borrower?->phone ? preg_replace('/[^0-9]/', '', $borrower->phone) : '';
                     if (strlen($borrowerPhone) === 11) {
                         $borrowerPhone = '88' . $borrowerPhone;
                     }
+                    $borrowerGender = strtolower($borrower?->gender ?? '');
+                    $ownerGender = strtolower($owner?->gender ?? '');
+                    $canShowBorrowerContact = $borrowerGender !== '' && $ownerGender !== '' && $borrowerGender === $ownerGender;
                     $borrowerContactMessage = 'Hello ' . rawurlencode($request->borrower_name ?? 'Borrower') . '%0A%0A'
                         . 'I am following up on your request for "%22' . rawurlencode($request->book_title ?? 'this book') . '%22" on OpenShelf.%0A%0A'
                         . 'Please let me know the best time to coordinate the borrowing details.';
@@ -314,7 +318,7 @@
                             </div>
                         @endif
                         <div class="request-card-actions">
-                            @if ($borrowerPhone)
+                            @if ($canShowBorrowerContact && $borrowerPhone)
                                 <a href="https://wa.me/{{ $borrowerPhone }}?text={{ $borrowerContactMessage }}" target="_blank" rel="noopener" class="request-contact-link">
                                     <i class="fab fa-whatsapp"></i> Contact
                                 </a>
@@ -340,12 +344,16 @@
         @else
             @foreach ($sentRequests as $request)
                 @php
+                    $borrower = $request->borrower;
                     $owner = $request->owner;
                     $statusLabel = ucwords(str_replace('_', ' ', $request->status));
                     $ownerPhone = $owner?->phone ? preg_replace('/[^0-9]/', '', $owner->phone) : '';
                     if (strlen($ownerPhone) === 11) {
                         $ownerPhone = '88' . $ownerPhone;
                     }
+                    $borrowerGender = strtolower($borrower?->gender ?? '');
+                    $ownerGender = strtolower($owner?->gender ?? '');
+                    $canShowOwnerContact = $borrowerGender !== '' && $ownerGender !== '' && $borrowerGender === $ownerGender;
                     $ownerContactMessage = 'Hello ' . rawurlencode($request->owner_name ?? 'Owner') . '%0A%0A'
                         . 'I am following up on the request for "%22' . rawurlencode($request->book_title ?? 'this book') . '%22" on OpenShelf.%0A%0A'
                         . 'Please confirm the next step so I can complete the borrowing process.';
@@ -413,7 +421,7 @@
                             </div>
                         @endif
                         <div class="request-card-actions">
-                            @if ($ownerPhone)
+                            @if ($canShowOwnerContact && $ownerPhone)
                                 <a href="https://wa.me/{{ $ownerPhone }}?text={{ $ownerContactMessage }}" target="_blank" rel="noopener" class="request-contact-link">
                                     <i class="fab fa-whatsapp"></i> Contact
                                 </a>

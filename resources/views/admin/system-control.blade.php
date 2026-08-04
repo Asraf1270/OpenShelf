@@ -226,6 +226,23 @@
             <i class="fas fa-play"></i> Run View Cache
         </button>
     </div>
+
+    <!-- Database Migration -->
+    <div class="command-card">
+        <div class="command-header">
+            <div class="command-icon icon-green" style="background: linear-gradient(135deg, #14b8a6, #0f766e);"><i class="fas fa-database"></i></div>
+            <div>
+                <h3 class="command-title">Database Migration</h3>
+                <span class="command-command">php artisan migrate</span>
+            </div>
+        </div>
+        <div class="command-desc">
+            Runs pending Laravel database migrations to apply the latest schema changes safely from the admin panel.
+        </div>
+        <button class="command-btn btn-green" style="color: #0f766e; background: rgba(20, 184, 166, 0.12);" onclick="runCommand('migrate', this)">
+            <i class="fas fa-play"></i> Run Migration
+        </button>
+    </div>
 </div>
 
 <!-- Modal for Output -->
