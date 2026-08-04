@@ -135,6 +135,306 @@
         opacity: 0.55;
         transform: none;
     }
+
+    /* Reject request popup */
+    .reject-popup-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        z-index: 50;
+        background: rgba(15, 23, 42, 0.65);
+        backdrop-filter: blur(4px);
+        align-items: center;
+        justify-content: center;
+        padding: 1.5rem;
+        overflow-y: auto;
+    }
+
+    .reject-popup-overlay.active {
+        display: flex;
+    }
+
+    .reject-popup {
+        width: min(100%, 560px);
+        background: #ffffff;
+        border-radius: 1.25rem;
+        box-shadow: 0 30px 80px rgba(15, 23, 42, 0.18);
+        padding: 1.75rem;
+        position: relative;
+        transform: translateY(20px);
+        opacity: 0;
+        transition: opacity 180ms ease, transform 180ms ease;
+    }
+
+    .reject-popup-overlay.active .reject-popup {
+        transform: translateY(0);
+        opacity: 1;
+    }
+
+    .reject-popup__close {
+        position: absolute;
+        right: 1rem;
+        top: 1rem;
+        border: none;
+        background: transparent;
+        color: #475569;
+        font-size: 1rem;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 2.5rem;
+        height: 2.5rem;
+        border-radius: 9999px;
+        transition: background 150ms ease, color 150ms ease;
+    }
+
+    .reject-popup__close:hover {
+        background: rgba(15, 23, 42, 0.06);
+        color: #0f172a;
+    }
+
+    .reject-popup__hero {
+        display: grid;
+        gap: 1rem;
+        text-align: center;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid #e2e8f0;
+        margin-bottom: 1.25rem;
+    }
+
+    .reject-popup__icon-ring {
+        width: 3.5rem;
+        height: 3.5rem;
+        margin-inline: auto;
+        display: grid;
+        place-items: center;
+        border-radius: 9999px;
+        background: linear-gradient(135deg, rgba(239, 68, 68, 0.16), rgba(245, 158, 11, 0.14));
+        color: #f43f5e;
+        font-size: 1.25rem;
+    }
+
+    .reject-popup__title {
+        margin: 0;
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #0f172a;
+    }
+
+    .reject-popup__desc {
+        margin: 0;
+        color: #64748b;
+        line-height: 1.7;
+    }
+
+    .reject-chips {
+        display: grid;
+        gap: 0.75rem;
+    }
+
+    .reject-chips__label {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.82rem;
+        font-weight: 700;
+        color: #334155;
+    }
+
+    .reject-chips__list {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+        gap: 0.75rem;
+    }
+
+    .reject-chip {
+        border: 1px solid #d1d5db;
+        background: #f8fafc;
+        color: #0f172a;
+        border-radius: 9999px;
+        padding: 0.75rem 0.9rem;
+        font-size: 0.84rem;
+        text-align: left;
+        cursor: pointer;
+        transition: border-color 150ms ease, background 150ms ease, transform 150ms ease;
+    }
+
+    .reject-chip:hover,
+    .reject-chip--active {
+        border-color: #4c9f8a;
+        background: #e6fffa;
+        transform: translateY(-1px);
+    }
+
+    .reject-popup__divider {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 1rem;
+        margin: 1.25rem 0;
+        color: #94a3b8;
+        font-size: 0.85rem;
+    }
+
+    .reject-popup__divider::before,
+    .reject-popup__divider::after {
+        content: '';
+        flex: 1;
+        height: 1px;
+        background: #e2e8f0;
+    }
+
+    .reject-field__label {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        font-size: 0.88rem;
+        font-weight: 700;
+        color: #0f172a;
+        margin-bottom: 0.75rem;
+    }
+
+    .reject-field__badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.25rem 0.6rem;
+        border-radius: 9999px;
+        background: #f8fafc;
+        color: #475569;
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+    }
+
+    .reject-field__input-box {
+        position: relative;
+        border: 1px solid #cbd5e1;
+        border-radius: 1rem;
+        padding: 0.75rem;
+        transition: border-color 150ms ease, box-shadow 150ms ease;
+        background: #f8fafc;
+    }
+
+    .reject-field__input-box--warn {
+        border-color: #f59e0b;
+    }
+
+    .reject-field__input-box--danger {
+        border-color: #ef4444;
+    }
+
+    .reject-field__textarea {
+        width: 100%;
+        min-height: 120px;
+        border: none;
+        outline: none;
+        resize: vertical;
+        background: transparent;
+        font-size: 0.95rem;
+        line-height: 1.7;
+        color: #0f172a;
+        font-family: inherit;
+    }
+
+    .reject-field__progress-track {
+        height: 0.35rem;
+        background: #e2e8f0;
+        border-radius: 9999px;
+        overflow: hidden;
+        margin: 0.85rem 0 0.5rem;
+    }
+
+    .reject-field__progress-bar {
+        width: 0;
+        height: 100%;
+        background: #4c9f8a;
+        border-radius: 9999px;
+        transition: width 150ms ease, background 150ms ease;
+    }
+
+    .reject-field__progress-bar--warn {
+        background: #f59e0b;
+    }
+
+    .reject-field__progress-bar--danger {
+        background: #ef4444;
+    }
+
+    .reject-field__meta {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.75rem;
+        font-size: 0.82rem;
+        color: #64748b;
+    }
+
+    .reject-field__hint {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+    }
+
+    .reject-field__counter {
+        font-weight: 700;
+        color: #334155;
+    }
+
+    .reject-popup__actions {
+        display: flex;
+        gap: 0.75rem;
+        margin-top: 1.5rem;
+        flex-wrap: wrap;
+    }
+
+    .reject-action {
+        min-width: 0;
+        flex: 1 1 0;
+        border-radius: 9999px;
+        padding: 0.95rem 1.1rem;
+        font-weight: 700;
+        border: 1px solid transparent;
+        cursor: pointer;
+        transition: transform 150ms ease, background 150ms ease, border-color 150ms ease;
+    }
+
+    .reject-action:hover {
+        transform: translateY(-1px);
+    }
+
+    .reject-action--cancel {
+        background: #f8fafc;
+        color: #334155;
+        border-color: #cbd5e1;
+    }
+
+    .reject-action--confirm {
+        background: #ef4444;
+        color: #ffffff;
+        border-color: #ef4444;
+    }
+
+    .reject-action--confirm:disabled {
+        background: #fca5a5;
+        border-color: #fca5a5;
+        cursor: not-allowed;
+        transform: none;
+    }
+
+    @media (max-width: 640px) {
+        .reject-popup {
+            padding: 1.25rem;
+        }
+
+        .reject-popup__hero {
+            padding-bottom: 0.75rem;
+            margin-bottom: 1rem;
+        }
+    }
 </style>
 @endpush
 
@@ -433,26 +733,21 @@
         @endif
     </div>
 
-    {{-- Reject Request Bottom Sheet / Modal --}}
-    <div id="rejectModal" class="reject-overlay" role="dialog" aria-modal="true" aria-labelledby="rejectModalTitle">
-        <div class="reject-sheet">
-            {{-- Drag handle for mobile --}}
-            <div class="reject-sheet__handle" aria-hidden="true"><span></span></div>
+    {{-- ═══ Reject Request Popup ═══ --}}
+    <div id="rejectModal" class="reject-popup-overlay" role="dialog" aria-modal="true" aria-labelledby="rejectModalTitle">
+        <div class="reject-popup">
+            {{-- Close button --}}
+            <button type="button" class="reject-popup__close" onclick="closeModal('rejectModal')" aria-label="Close">
+                <i class="fas fa-times"></i>
+            </button>
 
-            {{-- Header --}}
-            <div class="reject-sheet__header">
-                <div class="reject-sheet__icon-wrap">
-                    <div class="reject-sheet__icon">
-                        <i class="fas fa-hand-paper"></i>
-                    </div>
-                </div>
-                <div class="reject-sheet__titles">
-                    <h3 id="rejectModalTitle" class="reject-sheet__title">Reject Request</h3>
-                    <p class="reject-sheet__subtitle">Let the borrower know why this time.</p>
-                </div>
-                <button type="button" class="reject-sheet__close" onclick="closeModal('rejectModal')" aria-label="Close">
+            {{-- Visual header --}}
+            <div class="reject-popup__hero">
+                <div class="reject-popup__icon-ring">
                     <i class="fas fa-times"></i>
-                </button>
+                </div>
+                <h3 id="rejectModalTitle" class="reject-popup__title">Reject this request?</h3>
+                <p class="reject-popup__desc">Please share a reason so the borrower understands.</p>
             </div>
 
             <form id="rejectRequestForm" method="POST" action="{{ route('requests.index') }}">
@@ -460,10 +755,12 @@
                 <input type="hidden" name="action" value="reject">
                 <input type="hidden" name="request_id" id="rejectRequestId">
 
-                <div class="reject-sheet__body">
+                <div class="reject-popup__body">
                     {{-- Quick-pick chips --}}
                     <div class="reject-chips">
-                        <span class="reject-chips__label">Quick pick a reason</span>
+                        <span class="reject-chips__label">
+                            <i class="fas fa-bolt"></i> Quick reasons
+                        </span>
                         <div class="reject-chips__list">
                             <button type="button" class="reject-chip" data-reason="The book is currently lent to someone else.">📚 Already lent</button>
                             <button type="button" class="reject-chip" data-reason="I need the book myself right now.">🙋 Need it myself</button>
@@ -472,40 +769,51 @@
                         </div>
                     </div>
 
+                    {{-- Divider --}}
+                    <div class="reject-popup__divider">
+                        <span>or write your own</span>
+                    </div>
+
                     {{-- Textarea --}}
                     <div class="reject-field">
                         <label for="rejectRequestReason" class="reject-field__label">
-                            Reason for rejection
-                            <span class="reject-field__required">Required</span>
+                            Rejection reason
+                            <span class="reject-field__badge">Required</span>
                         </label>
-                        <div class="reject-field__textarea-wrap" id="rejectTextareaWrap">
+                        <div class="reject-field__input-box" id="rejectTextareaWrap">
                             <textarea
                                 id="rejectRequestReason"
                                 name="rejection_reason"
                                 class="reject-field__textarea"
-                                rows="4"
+                                rows="3"
                                 maxlength="500"
                                 required
-                                placeholder="Describe why you're declining this request…"
+                                placeholder="e.g. I'll be using it for the next couple of weeks…"
                                 aria-label="Reason for rejection"
                             ></textarea>
-                            <div class="reject-field__counter">
-                                <span id="rejectReasonCount">0</span><span class="reject-field__counter-max"> / 500</span>
+                            {{-- Progress bar --}}
+                            <div class="reject-field__progress-track">
+                                <div class="reject-field__progress-bar" id="rejectProgressBar"></div>
+                            </div>
+                            <div class="reject-field__meta">
+                                <span class="reject-field__hint">
+                                    <i class="fas fa-info-circle"></i>
+                                    This will be visible to the borrower.
+                                </span>
+                                <span class="reject-field__counter" id="rejectReasonCount">0<span class="reject-field__counter-sep">/</span>500</span>
                             </div>
                         </div>
-                        <p class="reject-field__hint">
-                            <i class="fas fa-lightbulb"></i>
-                            A clear reason helps the borrower understand and try again later.
-                        </p>
                     </div>
                 </div>
 
-                {{-- Footer --}}
-                <div class="reject-sheet__footer">
-                    <button type="button" class="reject-btn reject-btn--cancel" onclick="closeModal('rejectModal')">Cancel</button>
-                    <button id="rejectRequestSubmit" type="submit" class="reject-btn reject-btn--submit" disabled>
-                        <i class="fas fa-times-circle"></i>
-                        <span>Reject Request</span>
+                {{-- Actions --}}
+                <div class="reject-popup__actions">
+                    <button type="button" class="reject-action reject-action--cancel" onclick="closeModal('rejectModal')">
+                        Cancel
+                    </button>
+                    <button id="rejectRequestSubmit" type="submit" class="reject-action reject-action--confirm" disabled>
+                        <i class="fas fa-ban"></i>
+                        Reject Request
                     </button>
                 </div>
             </form>
@@ -525,37 +833,57 @@
             const tab = this.dataset.tab;
             document.querySelectorAll('.requests-page .tab-btn').forEach(b => b.classList.remove('active'));
             this.classList.add('active');
-            document.querySelectorAll('.requests-page .tab-content').forEach(content => content.classList.remove('active'));
+            document.querySelectorAll('.requests-page .tab-content').forEach(c => c.classList.remove('active'));
             document.getElementById(tab + '-tab').classList.add('active');
         });
     });
 
-    /* ── Reject Modal ── */
-    const rejectReasonField = document.getElementById('rejectRequestReason');
-    const rejectReasonCount = document.getElementById('rejectReasonCount');
-    const rejectSubmitButton = document.getElementById('rejectRequestSubmit');
+    /* ── Reject Popup State ── */
+    const rejectReasonField  = document.getElementById('rejectRequestReason');
+    const rejectReasonCount  = document.getElementById('rejectReasonCount');
+    const rejectSubmitBtn    = document.getElementById('rejectRequestSubmit');
     const rejectTextareaWrap = document.getElementById('rejectTextareaWrap');
+    const rejectProgressBar  = document.getElementById('rejectProgressBar');
+    const MAX_CHARS = 500;
 
-    function updateRejectReasonState() {
-        if (!rejectReasonField || !rejectReasonCount || !rejectSubmitButton) return;
+    function updateRejectState() {
+        if (!rejectReasonField || !rejectSubmitBtn) return;
 
-        const length = rejectReasonField.value.trim().length;
-        rejectReasonCount.textContent = length;
-        rejectSubmitButton.disabled = length < 3;
+        const len = rejectReasonField.value.trim().length;
 
-        // Color-coded counter feedback
+        // Counter text
+        if (rejectReasonCount) {
+            rejectReasonCount.firstChild.textContent = len;
+        }
+
+        // Submit button
+        rejectSubmitBtn.disabled = len < 3;
+
+        // Progress bar width + color
+        if (rejectProgressBar) {
+            const pct = Math.min((len / MAX_CHARS) * 100, 100);
+            rejectProgressBar.style.width = pct + '%';
+            rejectProgressBar.classList.remove('reject-field__progress-bar--warn', 'reject-field__progress-bar--danger');
+            if (pct >= 90) {
+                rejectProgressBar.classList.add('reject-field__progress-bar--danger');
+            } else if (pct >= 70) {
+                rejectProgressBar.classList.add('reject-field__progress-bar--warn');
+            }
+        }
+
+        // Input box border color feedback
         if (rejectTextareaWrap) {
-            rejectTextareaWrap.classList.remove('reject-field__textarea-wrap--warn', 'reject-field__textarea-wrap--danger');
-            if (length >= 450) {
-                rejectTextareaWrap.classList.add('reject-field__textarea-wrap--danger');
-            } else if (length >= 350) {
-                rejectTextareaWrap.classList.add('reject-field__textarea-wrap--warn');
+            rejectTextareaWrap.classList.remove('reject-field__input-box--warn', 'reject-field__input-box--danger');
+            if (len >= 450) {
+                rejectTextareaWrap.classList.add('reject-field__input-box--danger');
+            } else if (len >= 350) {
+                rejectTextareaWrap.classList.add('reject-field__input-box--warn');
             }
         }
     }
 
     if (rejectReasonField) {
-        rejectReasonField.addEventListener('input', updateRejectReasonState);
+        rejectReasonField.addEventListener('input', updateRejectState);
     }
 
     /* ── Quick-pick chips ── */
@@ -563,22 +891,20 @@
         chip.addEventListener('click', function () {
             if (!rejectReasonField) return;
             rejectReasonField.value = this.dataset.reason;
-            // Deselect all, select clicked
             document.querySelectorAll('.reject-chip').forEach(c => c.classList.remove('reject-chip--active'));
             this.classList.add('reject-chip--active');
-            updateRejectReasonState();
+            updateRejectState();
             rejectReasonField.focus();
         });
     });
 
-    // If user types, deselect chips
     if (rejectReasonField) {
-        rejectReasonField.addEventListener('keydown', function () {
+        rejectReasonField.addEventListener('keydown', () => {
             document.querySelectorAll('.reject-chip').forEach(c => c.classList.remove('reject-chip--active'));
         });
     }
 
-    /* ── Reject button click ── */
+    /* ── Reject button triggers ── */
     document.querySelectorAll('.reject-request-btn').forEach(btn => {
         btn.addEventListener('click', function () {
             showRejectModal(this.dataset.requestId);
@@ -593,11 +919,7 @@
         form.method = 'POST';
         form.action = "{{ route('requests.index') }}";
 
-        const fields = {
-            _token: csrfToken,
-            action: 'approve',
-            request_id: requestId,
-        };
+        const fields = { _token: csrfToken, action: 'approve', request_id: requestId };
 
         Object.entries(fields).forEach(([name, value]) => {
             const input = document.createElement('input');
@@ -611,7 +933,7 @@
         form.submit();
     }
 
-    /* ── Modal Open / Close ── */
+    /* ── Popup Open / Close ── */
     function showRejectModal(requestId) {
         const rejectInput = document.getElementById('rejectRequestId');
         const rejectModal = document.getElementById('rejectModal');
@@ -624,10 +946,9 @@
         document.querySelectorAll('.reject-chip').forEach(c => c.classList.remove('reject-chip--active'));
         rejectModal.classList.add('active');
         document.body.style.overflow = 'hidden';
-        updateRejectReasonState();
+        updateRejectState();
 
-        // Slight delay so the slide animation finishes before focusing
-        setTimeout(() => rejectReason.focus(), 320);
+        setTimeout(() => rejectReason.focus(), 300);
     }
 
     function closeModal(modalId) {
@@ -638,15 +959,17 @@
         }
     }
 
+    // Close on overlay click
     window.addEventListener('click', function (e) {
-        if (e.target.classList.contains('reject-overlay')) {
+        if (e.target.classList.contains('reject-popup-overlay')) {
             closeModal(e.target.id);
         }
     });
 
+    // Close on Escape
     document.addEventListener('keydown', function (e) {
         if (e.key === 'Escape') {
-            document.querySelectorAll('.reject-overlay.active').forEach(m => closeModal(m.id));
+            document.querySelectorAll('.reject-popup-overlay.active').forEach(m => closeModal(m.id));
         }
     });
 </script>
