@@ -69,20 +69,6 @@ class BookController extends Controller
             ->values();
         $participants = User::whereIn('id', $participantIds)->get()->keyBy('id');
 
-        $whatsappLink = '';
-        if ($isLoggedIn && ! $isOwner && $owner && ! empty($owner->phone)) {
-            $phone = preg_replace('/[^0-9]/', '', $owner->phone);
-            if (strlen($phone) === 11) {
-                $phone = '88' . $phone;
-            }
-            $message = 'Hello ' . rawurlencode($owner->name) . '%0A%0A';
-            $message .= 'I am ' . rawurlencode($currentUserName) . '%0A';
-            $message .= 'I am interested in borrowing your book:%0A';
-            $message .= '*' . rawurlencode($book->title) . '* by ' . rawurlencode($book->author) . '%0A%0A';
-            $message .= 'Is it still available?%0A%0AThanks!';
-            $whatsappLink = "https://wa.me/{$phone}?text={$message}";
-        }
-
         return view('book', [
             'seoTitle' => ($book->title ?? 'Book Detail') . ' by ' . ($book->author ?? 'Unknown Author') . ' - OpenShelf',
             'seoDesc' => \Illuminate\Support\Str::limit(strip_tags($book->description ?? 'Borrow ' . ($book->title ?? 'this book') . ' on OpenShelf campus book sharing platform for free.'), 155),
@@ -107,7 +93,6 @@ class BookController extends Controller
             'avgRating' => number_format((float) ($book->rating ?? 0), 1),
             'ratingCount' => $book->rating_count ?? 0,
             'coverImage' => $book->detail_cover_url,
-            'whatsappLink' => $whatsappLink,
             'borrowMessage' => $request->session()->get('borrow_message'),
             'borrowError' => $request->session()->get('borrow_error'),
             'formatDate' => fn (?string $date) => RelativeTime::format($date),

@@ -20,7 +20,7 @@ return new class extends Migration
                 $table->string('session', 50)->nullable();
                 $table->string('phone', 20);
                 $table->string('room_number', 50)->nullable();
-                $table->char('hall')->nullable();
+                $table->string('hall', 10)->nullable();
                 $table->string('password_hash', 255);
                 $table->string('otp_code', 6)->nullable();
                 $table->timestamp('otp_expiry')->nullable();

@@ -15,8 +15,30 @@
                  class="profile-avatar">
         </div>
 
-        <h1 class="profile-name">{{ $user->name }}</h1>
-
+        <h1 class="profile-name" style="display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+            {{ $user->name }}
+            @if($user->boipoka_badge > 0)
+                @php
+                    $badgeColors = [1 => '#FFD700', 2 => '#C0C0C0', 3 => '#CD7F32', 4 => '#4C9F8A'];
+                    $badgeColor = $badgeColors[$user->boipoka_badge] ?? '#4C9F8A';
+                    
+                    if ($user->boipoka_badge == 1) $badgeText = '1st';
+                    elseif ($user->boipoka_badge == 2) $badgeText = '2nd';
+                    elseif ($user->boipoka_badge == 3) $badgeText = '3rd';
+                    else $badgeText = 'Top 10';
+                    
+                    $badgeTitle = $user->boipoka_badge <= 3 ? 'Boipoka Rank ' . $user->boipoka_badge : 'Boipoka Top 10';
+                @endphp
+                <span class="boipoka-badge" title="{{ $badgeTitle }}" style="color: {{ $badgeColor }}; font-size: 1.6rem; display: flex; align-items: center; position: relative; justify-content: center;">
+                    <i class="fas fa-certificate"></i>
+                    @if($user->boipoka_badge <= 3)
+                        <span style="position: absolute; font-size: 0.55rem; color: #fff; font-weight: 900; top: 50%; left: 50%; transform: translate(-50%, -50%); text-shadow: 0 1px 2px rgba(0,0,0,0.3);">{{ $badgeText }}</span>
+                    @else
+                        <span style="position: absolute; font-size: 0.45rem; color: #fff; font-weight: 900; top: 50%; left: 50%; transform: translate(-50%, -50%); text-shadow: 0 1px 2px rgba(0,0,0,0.3);">{{ $badgeText }}</span>
+                    @endif
+                </span>
+            @endif
+        </h1>
         <div class="profile-subtitle">
             <i class="fas fa-graduation-cap"></i> {{ $user->department ?? 'N/A' }}
         </div>

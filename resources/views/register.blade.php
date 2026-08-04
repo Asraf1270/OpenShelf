@@ -236,6 +236,20 @@
 
                     <div class="form-group">
                         <div class="input-group">
+                            <i class="fas fa-venus-mars"></i>
+                            <select name="gender" id="gender" required>
+                                <option value="" disabled {{ old('gender') ? '' : 'selected' }}>Select Gender</option>
+                                <option value="male" {{ old('gender') == 'male' ? 'selected' : '' }}>Male</option>
+                                <option value="female" {{ old('gender') == 'female' ? 'selected' : '' }}>Female</option>
+                            </select>
+                        </div>
+                        @error('gender')
+                            <div class="error-message"><i class="fas fa-circle-exclamation"></i> {{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <div class="form-group">
+                        <div class="input-group">
                             <i class="fas fa-door-open"></i>
                             <input type="text" name="roomNumber" id="roomNumber" placeholder="Room/Hostel Info" value="{{ old('roomNumber') }}" required>
                         </div>

@@ -41,6 +41,7 @@ class AdminSystemController extends AdminController
             'view:clear'     => 'View cache cleared successfully.',
             'route:clear'    => 'Route cache cleared successfully.',
             'config:clear'   => 'Config cache cleared successfully.',
+            'migrate'        => 'Database migrations completed successfully.',
         ];
 
         if (!array_key_exists($command, $allowedCommands)) {

@@ -106,14 +106,9 @@
                                 <i class="fas fa-share-alt"></i> Share Listing
                             </button>
                         @elseif ($canBorrow)
-                            <button onclick="showBorrowModal()" class="btn btn-primary">
+                            <a href="{{ route('borrow-request', ['book_id' => $book->id]) }}" class="btn btn-primary">
                                 <i class="fas fa-handshake"></i> Request to Borrow
-                            </button>
-                            @if ($whatsappLink)
-                                <a href="{{ $whatsappLink }}" target="_blank" class="btn btn-whatsapp">
-                                    <i class="fab fa-whatsapp"></i> Chat with Owner
-                                </a>
-                            @endif
+                            </a>
                         @elseif ($hasRequested)
                             <button class="btn btn-secondary" disabled style="background:#f1f5f9; color:#94a3b8; border:1px solid #e2e8f0; cursor: not-allowed; flex:1;">
                                 <i class="fas fa-clock"></i> Request Pending
@@ -170,7 +165,7 @@
                     </div>
                     
                     <!-- Details -->
-                    <div id="details-tab" class="tab-content">
+                    <div id="details-tab" class="tab-content" hidden>
                         <div class="detail-grid">
                             <div class="detail-item"><label>ISBN</label><span>{{ $book->isbn ?? 'N/A' }}</span></div>
                             <div class="detail-item"><label>Publisher</label><span>{{ $book->publisher ?? 'N/A' }}</span></div>
@@ -182,7 +177,7 @@
                     </div>
                     
                     <!-- Reviews -->
-                    <div id="reviews-tab" class="tab-content">
+                    <div id="reviews-tab" class="tab-content" hidden>
                         @if ($isLoggedIn && !$isOwner)
                             <div class="form-dark">
                                 <h4 style="margin-bottom:1rem;font-weight:700">Write a Review</h4>
@@ -227,7 +222,7 @@
                     </div>
                     
                     <!-- Comments -->
-                    <div id="comments-tab" class="tab-content">
+                    <div id="comments-tab" class="tab-content" hidden>
                         @if ($isLoggedIn)
                             <div class="form-dark">
                                 <h4 style="margin-bottom:1rem;font-weight:700">Add a Comment</h4>
@@ -262,7 +257,7 @@
                     </div>
                     
                     <!-- History -->
-                    <div id="history-tab" class="tab-content">
+                    <div id="history-tab" class="tab-content" hidden>
                         @if ($borrowRequests->isEmpty())
                             <div class="empty-state"><i class="fas fa-history"></i><p>No borrow history yet.</p></div>
                         @else
@@ -298,37 +293,6 @@
         </div>
     </div>{{-- close outer .book-detail --}}
 
-    <!-- Borrow Modal -->
-    <div id="borrowModal" class="modal">
-        <div class="modal-card">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2rem">
-                <h3 style="margin:0;font-size:1.6rem;font-weight:800;letter-spacing:-0.5px">Request to Borrow</h3>
-                <button onclick="closeModal('borrowModal')" style="background:var(--bg);border:none;width:36px;height:36px;border-radius:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1.2rem">&times;</button>
-            </div>
-            <form method="POST" action="{{ route('book.show', ['id' => $book->id]) }}">
-                @csrf
-                <input type="hidden" name="action" value="borrow">
-                <div style="margin-bottom:1.5rem">
-                    <label style="display:block;margin-bottom:0.75rem;font-weight:600;font-size:0.9rem;color:var(--text-muted)">BORROW DURATION</label>
-                    <select name="duration" class="form-control duration-select">
-                        <option value="7">7 days</option>
-                        <option value="14" selected>14 days</option>
-                        <option value="21">21 days</option>
-                        <option value="30">30 days</option>
-                    </select>
-                </div>
-                <div style="margin-bottom:2.5rem">
-                    <label style="display:block;margin-bottom:0.75rem;font-weight:600;font-size:0.9rem;color:var(--text-muted)">MESSAGE TO OWNER <span style="font-weight:400;opacity:0.6">(OPTIONAL)</span></label>
-                    <textarea name="message" class="form-control" rows="4" placeholder="Hi! I'd love to read this book..."></textarea>
-                </div>
-                <div style="display:flex;gap:1rem">
-                    <button type="button" onclick="closeModal('borrowModal')" class="btn btn-outline" style="flex:1">Cancel</button>
-                    <button type="submit" class="btn btn-primary" style="flex:2">Send Request</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
     <!-- Related Books Section -->
     @if ($relatedBooks->isNotEmpty())
     <div class="book-detail">
@@ -353,7 +317,7 @@
 
 @push('scripts')
 <script>
-        const bookActionUrl = {{ json_encode(route('book.show', ['id' => $book->id])) }};
+        const bookActionUrl = @json(route('book.show', ['id' => $book->id]));
         const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
 
         function postBookAction(params) {
@@ -388,10 +352,6 @@
         }
 
         window.switchTab = switchTab;
-        
-        // Modal
-        function showBorrowModal() { document.getElementById('borrowModal').classList.add('active'); }
-        function closeModal(id) { document.getElementById(id).classList.remove('active'); }
         
         // Rating stars
         let currentRating = 0;
@@ -506,17 +466,6 @@
             }
         }
         
-        // Close modal on outside click
-        document.addEventListener('click', function(e) {
-            const modal = document.getElementById('borrowModal');
-            if (e.target === modal) closeModal('borrowModal');
-        });
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') {
-                const modal = document.getElementById('borrowModal');
-                if (modal && modal.classList.contains('active')) closeModal('borrowModal');
-            }
-        });
     
 </script>
 @endpush

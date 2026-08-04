@@ -73,10 +73,66 @@
     [data-theme="dark"] .requests-page .btn-danger:hover { background-color: #991b1b; }
     [data-theme="dark"] .requests-page .modal-header button { color: #f8fafc; }
     
+    .requests-page .request-card-actions { display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 1rem; }
+    .requests-page .request-card-actions > a { flex: 1 1 0; min-width: 0; }
+    .requests-page .request-contact-link {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        border-radius: 0.9rem;
+        padding: 0.72rem 1rem;
+        font-size: 0.82rem;
+        font-weight: 700;
+        color: #2d5d7a;
+        background: #eef8f6;
+        border: 1px solid #cfe7df;
+        text-decoration: none;
+        transition: all 0.2s ease;
+    }
+    .requests-page .request-contact-link:hover {
+        background: #dff2ee;
+        color: #234c63;
+        transform: translateY(-1px);
+    }
+    .requests-page .request-book-link {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        border-radius: 0.9rem;
+        padding: 0.72rem 1rem;
+        font-size: 0.82rem;
+        font-weight: 700;
+        color: #fff;
+        background: #0f172a;
+        text-decoration: none;
+        transition: all 0.2s ease;
+    }
+    .requests-page .request-book-link:hover {
+        background: #1e293b;
+        transform: translateY(-1px);
+    }
+
     [data-theme="dark"] .requests-page .status-badge.pending { background: rgba(245, 158, 11, 0.2); color: #fcd34d; }
     [data-theme="dark"] .requests-page .status-badge.approved { background: rgba(16, 185, 129, 0.2); color: #6ee7b7; }
     [data-theme="dark"] .requests-page .status-badge.rejected { background: rgba(239, 68, 68, 0.2); color: #fda4af; }
     [data-theme="dark"] .requests-page .status-badge.pending_return { background: rgba(76, 159, 138, 0.2); color: #94a3b8; }
+    [data-theme="dark"] .requests-page .request-contact-link {
+        background: rgba(76, 159, 138, 0.14);
+        border-color: rgba(76, 159, 138, 0.35);
+        color: #c7f9ea;
+    }
+    [data-theme="dark"] .requests-page .request-contact-link:hover {
+        background: rgba(76, 159, 138, 0.24);
+        color: #f8fafc;
+    }
+    [data-theme="dark"] .requests-page .request-book-link {
+        background: #1e293b;
+    }
+    [data-theme="dark"] .requests-page .request-book-link:hover {
+        background: #334155;
+    }
     
     [data-theme="dark"] .requests-page .empty-state { background-color: #1e293b; border-color: #334155; }
     [data-theme="dark"] .requests-page .empty-state h3 { color: #f8fafc; }
@@ -189,7 +245,18 @@
             @foreach ($receivedRequests as $request)
                 @php
                     $borrower = $request->borrower;
+                    $owner = $request->owner;
                     $statusLabel = ucwords(str_replace('_', ' ', $request->status));
+                    $borrowerPhone = $borrower?->phone ? preg_replace('/[^0-9]/', '', $borrower->phone) : '';
+                    if (strlen($borrowerPhone) === 11) {
+                        $borrowerPhone = '88' . $borrowerPhone;
+                    }
+                    $borrowerGender = strtolower($borrower?->gender ?? '');
+                    $ownerGender = strtolower($owner?->gender ?? '');
+                    $canShowBorrowerContact = $borrowerGender !== '' && $ownerGender !== '' && $borrowerGender === $ownerGender;
+                    $borrowerContactMessage = 'Hello ' . rawurlencode($request->borrower_name ?? 'Borrower') . '%0A%0A'
+                        . 'I am following up on your request for "%22' . rawurlencode($request->book_title ?? 'this book') . '%22" on OpenShelf.%0A%0A'
+                        . 'Please let me know the best time to coordinate the borrowing details.';
                 @endphp
                 <div class="overflow-hidden rounded-[22px] border border-slate-200 bg-white p-4 shadow-[0_10px_24px_rgba(15,23,42,0.05)] sm:p-5">
                     <div class="mb-3 flex items-start justify-between gap-3">
@@ -249,18 +316,17 @@
                                     <i class="fas fa-times mr-2"></i> Reject
                                 </button>
                             </div>
-                        @elseif ($request->status === 'approved')
-                            <div class="flex flex-wrap gap-2">
-                                @if ($borrower?->phone)
-                                    <a href="https://wa.me/88{{ preg_replace('/[^0-9]/', '', $borrower->phone) }}" target="_blank" rel="noopener" class="inline-flex flex-1 items-center justify-center rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-2.5 text-sm font-semibold text-emerald-700 shadow-sm transition hover:bg-emerald-100">
-                                        <i class="fab fa-whatsapp mr-2"></i> Contact
-                                    </a>
-                                @endif
-                            </div>
                         @endif
-                        <a href="{{ route('book.show', ['id' => $request->book_id]) }}" class="inline-flex w-full items-center justify-center rounded-xl bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-slate-800">
-                            <i class="fas fa-book mr-2"></i> View Book
-                        </a>
+                        <div class="request-card-actions">
+                            @if ($canShowBorrowerContact && $borrowerPhone)
+                                <a href="https://wa.me/{{ $borrowerPhone }}?text={{ $borrowerContactMessage }}" target="_blank" rel="noopener" class="request-contact-link">
+                                    <i class="fab fa-whatsapp"></i> Contact
+                                </a>
+                            @endif
+                            <a href="{{ route('book.show', ['id' => $request->book_id]) }}" class="request-book-link">
+                                <i class="fas fa-book"></i> View Book
+                            </a>
+                        </div>
                     </div>
                 </div>
             @endforeach
@@ -278,8 +344,19 @@
         @else
             @foreach ($sentRequests as $request)
                 @php
+                    $borrower = $request->borrower;
                     $owner = $request->owner;
                     $statusLabel = ucwords(str_replace('_', ' ', $request->status));
+                    $ownerPhone = $owner?->phone ? preg_replace('/[^0-9]/', '', $owner->phone) : '';
+                    if (strlen($ownerPhone) === 11) {
+                        $ownerPhone = '88' . $ownerPhone;
+                    }
+                    $borrowerGender = strtolower($borrower?->gender ?? '');
+                    $ownerGender = strtolower($owner?->gender ?? '');
+                    $canShowOwnerContact = $borrowerGender !== '' && $ownerGender !== '' && $borrowerGender === $ownerGender;
+                    $ownerContactMessage = 'Hello ' . rawurlencode($request->owner_name ?? 'Owner') . '%0A%0A'
+                        . 'I am following up on the request for "%22' . rawurlencode($request->book_title ?? 'this book') . '%22" on OpenShelf.%0A%0A'
+                        . 'Please confirm the next step so I can complete the borrowing process.';
                 @endphp
                 <div class="overflow-hidden rounded-[22px] border border-slate-200 bg-white p-4 shadow-[0_10px_24px_rgba(15,23,42,0.05)] sm:p-5">
                     <div class="mb-3 flex items-start justify-between gap-3">
@@ -341,16 +418,18 @@
                                 <a href="{{ route('return-book', ['id' => $request->id]) }}" class="inline-flex flex-1 items-center justify-center rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-700">
                                     <i class="fas fa-undo-alt mr-2"></i> Return Book
                                 </a>
-                                @if ($owner?->phone)
-                                    <a href="https://wa.me/88{{ preg_replace('/[^0-9]/', '', $owner->phone) }}" target="_blank" rel="noopener" class="inline-flex items-center justify-center rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-2.5 text-sm font-semibold text-emerald-700 shadow-sm transition hover:bg-emerald-100">
-                                        <i class="fab fa-whatsapp mr-2"></i> Contact Owner
-                                    </a>
-                                @endif
                             </div>
                         @endif
-                        <a href="{{ route('book.show', ['id' => $request->book_id]) }}" class="inline-flex w-full items-center justify-center rounded-xl bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-slate-800">
-                            <i class="fas fa-book mr-2"></i> View Book
-                        </a>
+                        <div class="request-card-actions">
+                            @if ($canShowOwnerContact && $ownerPhone)
+                                <a href="https://wa.me/{{ $ownerPhone }}?text={{ $ownerContactMessage }}" target="_blank" rel="noopener" class="request-contact-link">
+                                    <i class="fab fa-whatsapp"></i> Contact
+                                </a>
+                            @endif
+                            <a href="{{ route('book.show', ['id' => $request->book_id]) }}" class="request-book-link">
+                                <i class="fas fa-book"></i> View Book
+                            </a>
+                        </div>
                     </div>
                 </div>
             @endforeach
