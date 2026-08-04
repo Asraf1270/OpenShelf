@@ -109,11 +109,6 @@
                             <a href="{{ route('borrow-request', ['book_id' => $book->id]) }}" class="btn btn-primary">
                                 <i class="fas fa-handshake"></i> Request to Borrow
                             </a>
-                            @if ($whatsappLink)
-                                <a href="{{ $whatsappLink }}" target="_blank" class="btn btn-whatsapp">
-                                    <i class="fab fa-whatsapp"></i> Chat with Owner
-                                </a>
-                            @endif
                         @elseif ($hasRequested)
                             <button class="btn btn-secondary" disabled style="background:#f1f5f9; color:#94a3b8; border:1px solid #e2e8f0; cursor: not-allowed; flex:1;">
                                 <i class="fas fa-clock"></i> Request Pending
@@ -170,7 +165,7 @@
                     </div>
                     
                     <!-- Details -->
-                    <div id="details-tab" class="tab-content">
+                    <div id="details-tab" class="tab-content" hidden>
                         <div class="detail-grid">
                             <div class="detail-item"><label>ISBN</label><span>{{ $book->isbn ?? 'N/A' }}</span></div>
                             <div class="detail-item"><label>Publisher</label><span>{{ $book->publisher ?? 'N/A' }}</span></div>
@@ -182,7 +177,7 @@
                     </div>
                     
                     <!-- Reviews -->
-                    <div id="reviews-tab" class="tab-content">
+                    <div id="reviews-tab" class="tab-content" hidden>
                         @if ($isLoggedIn && !$isOwner)
                             <div class="form-dark">
                                 <h4 style="margin-bottom:1rem;font-weight:700">Write a Review</h4>
@@ -227,7 +222,7 @@
                     </div>
                     
                     <!-- Comments -->
-                    <div id="comments-tab" class="tab-content">
+                    <div id="comments-tab" class="tab-content" hidden>
                         @if ($isLoggedIn)
                             <div class="form-dark">
                                 <h4 style="margin-bottom:1rem;font-weight:700">Add a Comment</h4>
@@ -262,7 +257,7 @@
                     </div>
                     
                     <!-- History -->
-                    <div id="history-tab" class="tab-content">
+                    <div id="history-tab" class="tab-content" hidden>
                         @if ($borrowRequests->isEmpty())
                             <div class="empty-state"><i class="fas fa-history"></i><p>No borrow history yet.</p></div>
                         @else
@@ -322,7 +317,7 @@
 
 @push('scripts')
 <script>
-        const bookActionUrl = {{ json_encode(route('book.show', ['id' => $book->id])) }};
+        const bookActionUrl = @json(route('book.show', ['id' => $book->id]));
         const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
 
         function postBookAction(params) {

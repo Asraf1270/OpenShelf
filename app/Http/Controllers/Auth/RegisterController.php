@@ -31,13 +31,22 @@ class RegisterController extends Controller
             'phone' => ['required', 'regex:/^01[3-9]\d{8}$/', Rule::unique('users', 'phone')],
             'roomNumber' => ['required', 'string', 'max:50'],
             'hall' => ['required', 'in:1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18'],
+            'gender' => ['required', 'string', 'in:male,female'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
             'terms' => ['accepted'],
         ], [
             'session.regex' => 'Session must be in format YYYY-YY.',
             'phone.regex' => 'Please enter a valid Bangladeshi phone number.',
+            'gender.required' => 'Gender selection is required.',
+            'gender.in' => 'Please select a valid gender.',
             'terms.accepted' => 'You must accept the terms and privacy policy.',
         ]);
+
+        $genderError = $this->validateGenderForHall((int) $validated['hall'], $validated['gender']);
+
+        if ($genderError !== null) {
+            return back()->withInput()->withErrors(['gender' => $genderError]);
+        }
 
         $user = new User();
         $user->id = $this->generateUserId();
@@ -48,6 +57,7 @@ class RegisterController extends Controller
         $user->phone = trim($validated['phone']);
         $user->room_number = trim($validated['roomNumber']);
         $user->hall = $validated['hall'];
+        $user->gender = $validated['gender'];
         $user->password_hash = Hash::make($validated['password']);
         $user->otp_code = str_pad((string) random_int(0, 999999), 6, '0', STR_PAD_LEFT);
         $user->otp_expiry = now()->addMinutes(15);
@@ -122,6 +132,19 @@ class RegisterController extends Controller
         $request->session()->forget('verify_email');
 
         return redirect()->route('login')->with('success', 'Your account is verified. You may now sign in.');
+    }
+
+    private function validateGenderForHall(int $hall, string $gender): ?string
+    {
+        if ($hall >= 1 && $hall <= 13 && $gender !== 'male') {
+            return 'Male gender is invalid for you.';
+        }
+
+        if ($hall >= 14 && $hall <= 18 && $gender !== 'female') {
+            return 'Female gender is invalid for you.';
+        }
+
+        return null;
     }
 
     private function generateUserId(): string
