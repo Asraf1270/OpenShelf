@@ -61,17 +61,8 @@
     [data-theme="dark"] .requests-page .text-rose-600 { color: #fda4af; }
     [data-theme="dark"] .requests-page .text-sky-600 { color: #7dd3fc; }
 
-    [data-theme="dark"] .requests-page .modal-content { background-color: #1e293b; border-color: #334155; color: #f8fafc; }
-    [data-theme="dark"] .requests-page .modal-header { border-bottom-color: #334155; }
-    [data-theme="dark"] .requests-page .modal-header h3 { color: #f8fafc; }
-    [data-theme="dark"] .requests-page .modal-footer { border-top-color: #334155; }
-    [data-theme="dark"] .requests-page .form-control { background-color: #0f172a; border-color: #334155; color: #f8fafc; }
-    [data-theme="dark"] .requests-page .form-group label { color: #cbd5e1; }
-    [data-theme="dark"] .requests-page .btn-outline { background-color: #1e293b; border-color: #334155; color: #cbd5e1; }
-    [data-theme="dark"] .requests-page .btn-outline:hover { background-color: #334155; color: #f8fafc; }
-    [data-theme="dark"] .requests-page .btn-danger { background-color: #b91c1c; color: #fff; }
-    [data-theme="dark"] .requests-page .btn-danger:hover { background-color: #991b1b; }
-    [data-theme="dark"] .requests-page .modal-header button { color: #f8fafc; }
+
+
     
     .requests-page .request-card-actions { display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 1rem; }
     .requests-page .request-card-actions > a { flex: 1 1 0; min-width: 0; }
@@ -138,6 +129,12 @@
     [data-theme="dark"] .requests-page .empty-state h3 { color: #f8fafc; }
     [data-theme="dark"] .requests-page .empty-state p { color: #94a3b8; }
     [data-theme="dark"] .requests-page .empty-state i { color: #4c9f8a; }
+
+    .requests-page .btn:disabled {
+        cursor: not-allowed;
+        opacity: 0.55;
+        transform: none;
+    }
 </style>
 @endpush
 
@@ -312,7 +309,7 @@
                                 <button type="button" class="inline-flex flex-1 items-center justify-center rounded-xl bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-emerald-700" onclick="approveRequest('{{ $request->id }}')">
                                     <i class="fas fa-check mr-2"></i> Approve
                                 </button>
-                                <button type="button" class="inline-flex items-center justify-center rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 shadow-sm transition hover:bg-slate-50" onclick="showRejectModal('{{ $request->id }}')">
+                                <button type="button" class="reject-request-btn inline-flex items-center justify-center rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 shadow-sm transition hover:bg-slate-50" data-request-id="{{ $request->id }}">
                                     <i class="fas fa-times mr-2"></i> Reject
                                 </button>
                             </div>
@@ -436,25 +433,80 @@
         @endif
     </div>
 
-    <div id="rejectModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3><i class="fas fa-times-circle" style="color:#f59e0b;"></i> Reject Request</h3>
-                <button type="button" onclick="closeModal('rejectModal')">&times;</button>
-            </div>
-            <form method="POST" action="{{ route('requests.index') }}">
-                @csrf
-                <div class="modal-body">
-                    <input type="hidden" name="action" value="reject">
-                    <input type="hidden" name="request_id" id="rejectRequestId">
-                    <div class="form-group">
-                        <label style="display:block;margin-bottom:0.5rem;font-weight:500;">Reason for Rejection</label>
-                        <textarea name="rejection_reason" class="form-control" rows="4" required placeholder="Please provide a reason..."></textarea>
+    {{-- Reject Request Bottom Sheet / Modal --}}
+    <div id="rejectModal" class="reject-overlay" role="dialog" aria-modal="true" aria-labelledby="rejectModalTitle">
+        <div class="reject-sheet">
+            {{-- Drag handle for mobile --}}
+            <div class="reject-sheet__handle" aria-hidden="true"><span></span></div>
+
+            {{-- Header --}}
+            <div class="reject-sheet__header">
+                <div class="reject-sheet__icon-wrap">
+                    <div class="reject-sheet__icon">
+                        <i class="fas fa-hand-paper"></i>
                     </div>
                 </div>
-                <div class="modal-footer">
-                    <button type="submit" class="btn btn-danger">Reject Request</button>
-                    <button type="button" class="btn btn-outline" onclick="closeModal('rejectModal')">Cancel</button>
+                <div class="reject-sheet__titles">
+                    <h3 id="rejectModalTitle" class="reject-sheet__title">Reject Request</h3>
+                    <p class="reject-sheet__subtitle">Let the borrower know why this time.</p>
+                </div>
+                <button type="button" class="reject-sheet__close" onclick="closeModal('rejectModal')" aria-label="Close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <form id="rejectRequestForm" method="POST" action="{{ route('requests.index') }}">
+                @csrf
+                <input type="hidden" name="action" value="reject">
+                <input type="hidden" name="request_id" id="rejectRequestId">
+
+                <div class="reject-sheet__body">
+                    {{-- Quick-pick chips --}}
+                    <div class="reject-chips">
+                        <span class="reject-chips__label">Quick pick a reason</span>
+                        <div class="reject-chips__list">
+                            <button type="button" class="reject-chip" data-reason="The book is currently lent to someone else.">📚 Already lent</button>
+                            <button type="button" class="reject-chip" data-reason="I need the book myself right now.">🙋 Need it myself</button>
+                            <button type="button" class="reject-chip" data-reason="The book is not available at the moment.">⏳ Not available</button>
+                            <button type="button" class="reject-chip" data-reason="Sorry, I no longer have this book.">🚫 No longer own</button>
+                        </div>
+                    </div>
+
+                    {{-- Textarea --}}
+                    <div class="reject-field">
+                        <label for="rejectRequestReason" class="reject-field__label">
+                            Reason for rejection
+                            <span class="reject-field__required">Required</span>
+                        </label>
+                        <div class="reject-field__textarea-wrap" id="rejectTextareaWrap">
+                            <textarea
+                                id="rejectRequestReason"
+                                name="rejection_reason"
+                                class="reject-field__textarea"
+                                rows="4"
+                                maxlength="500"
+                                required
+                                placeholder="Describe why you're declining this request…"
+                                aria-label="Reason for rejection"
+                            ></textarea>
+                            <div class="reject-field__counter">
+                                <span id="rejectReasonCount">0</span><span class="reject-field__counter-max"> / 500</span>
+                            </div>
+                        </div>
+                        <p class="reject-field__hint">
+                            <i class="fas fa-lightbulb"></i>
+                            A clear reason helps the borrower understand and try again later.
+                        </p>
+                    </div>
+                </div>
+
+                {{-- Footer --}}
+                <div class="reject-sheet__footer">
+                    <button type="button" class="reject-btn reject-btn--cancel" onclick="closeModal('rejectModal')">Cancel</button>
+                    <button id="rejectRequestSubmit" type="submit" class="reject-btn reject-btn--submit" disabled>
+                        <i class="fas fa-times-circle"></i>
+                        <span>Reject Request</span>
+                    </button>
                 </div>
             </form>
         </div>
@@ -467,6 +519,7 @@
 <script>
     const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
 
+    /* ── Tab Switching ── */
     document.querySelectorAll('.requests-page .tab-btn').forEach(btn => {
         btn.addEventListener('click', function () {
             const tab = this.dataset.tab;
@@ -477,10 +530,64 @@
         });
     });
 
-    function approveRequest(requestId) {
-        if (!confirm('Approve this borrow request?')) {
-            return;
+    /* ── Reject Modal ── */
+    const rejectReasonField = document.getElementById('rejectRequestReason');
+    const rejectReasonCount = document.getElementById('rejectReasonCount');
+    const rejectSubmitButton = document.getElementById('rejectRequestSubmit');
+    const rejectTextareaWrap = document.getElementById('rejectTextareaWrap');
+
+    function updateRejectReasonState() {
+        if (!rejectReasonField || !rejectReasonCount || !rejectSubmitButton) return;
+
+        const length = rejectReasonField.value.trim().length;
+        rejectReasonCount.textContent = length;
+        rejectSubmitButton.disabled = length < 3;
+
+        // Color-coded counter feedback
+        if (rejectTextareaWrap) {
+            rejectTextareaWrap.classList.remove('reject-field__textarea-wrap--warn', 'reject-field__textarea-wrap--danger');
+            if (length >= 450) {
+                rejectTextareaWrap.classList.add('reject-field__textarea-wrap--danger');
+            } else if (length >= 350) {
+                rejectTextareaWrap.classList.add('reject-field__textarea-wrap--warn');
+            }
         }
+    }
+
+    if (rejectReasonField) {
+        rejectReasonField.addEventListener('input', updateRejectReasonState);
+    }
+
+    /* ── Quick-pick chips ── */
+    document.querySelectorAll('.reject-chip').forEach(chip => {
+        chip.addEventListener('click', function () {
+            if (!rejectReasonField) return;
+            rejectReasonField.value = this.dataset.reason;
+            // Deselect all, select clicked
+            document.querySelectorAll('.reject-chip').forEach(c => c.classList.remove('reject-chip--active'));
+            this.classList.add('reject-chip--active');
+            updateRejectReasonState();
+            rejectReasonField.focus();
+        });
+    });
+
+    // If user types, deselect chips
+    if (rejectReasonField) {
+        rejectReasonField.addEventListener('keydown', function () {
+            document.querySelectorAll('.reject-chip').forEach(c => c.classList.remove('reject-chip--active'));
+        });
+    }
+
+    /* ── Reject button click ── */
+    document.querySelectorAll('.reject-request-btn').forEach(btn => {
+        btn.addEventListener('click', function () {
+            showRejectModal(this.dataset.requestId);
+        });
+    });
+
+    /* ── Approve flow ── */
+    function approveRequest(requestId) {
+        if (!confirm('Approve this borrow request?')) return;
 
         const form = document.createElement('form');
         form.method = 'POST';
@@ -504,24 +611,42 @@
         form.submit();
     }
 
+    /* ── Modal Open / Close ── */
     function showRejectModal(requestId) {
-        document.getElementById('rejectRequestId').value = requestId;
-        document.getElementById('rejectModal').classList.add('active');
+        const rejectInput = document.getElementById('rejectRequestId');
+        const rejectModal = document.getElementById('rejectModal');
+        const rejectReason = document.getElementById('rejectRequestReason');
+
+        if (!rejectInput || !rejectModal || !rejectReason) return;
+
+        rejectInput.value = requestId;
+        rejectReason.value = '';
+        document.querySelectorAll('.reject-chip').forEach(c => c.classList.remove('reject-chip--active'));
+        rejectModal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+        updateRejectReasonState();
+
+        // Slight delay so the slide animation finishes before focusing
+        setTimeout(() => rejectReason.focus(), 320);
     }
 
     function closeModal(modalId) {
-        document.getElementById(modalId).classList.remove('active');
+        const modal = document.getElementById(modalId);
+        if (modal) {
+            modal.classList.remove('active');
+            document.body.style.overflow = '';
+        }
     }
 
     window.addEventListener('click', function (e) {
-        if (e.target.classList.contains('modal')) {
-            e.target.classList.remove('active');
+        if (e.target.classList.contains('reject-overlay')) {
+            closeModal(e.target.id);
         }
     });
 
     document.addEventListener('keydown', function (e) {
         if (e.key === 'Escape') {
-            document.querySelectorAll('.modal.active').forEach(m => m.classList.remove('active'));
+            document.querySelectorAll('.reject-overlay.active').forEach(m => closeModal(m.id));
         }
     });
 </script>
