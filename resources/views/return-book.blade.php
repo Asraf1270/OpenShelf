@@ -10,10 +10,10 @@
 
     .return-page-header {
         background: linear-gradient(135deg, #4c9f8a 0%, #2d5d7a 100%);
-        border-radius: 22px;
-        padding: 1.2rem 1rem;
+        border-radius: 24px;
+        padding: 1.5rem 1.6rem;
         color: #fff;
-        box-shadow: 0 16px 36px rgba(45, 93, 122, 0.16);
+        box-shadow: 0 22px 45px rgba(45, 93, 122, 0.16);
         position: relative;
         overflow: hidden;
     }
@@ -21,17 +21,17 @@
     .return-page-header::after {
         content: "";
         position: absolute;
-        inset: auto -36px -52px auto;
-        width: 180px;
-        height: 180px;
+        inset: auto -40px -60px auto;
+        width: 220px;
+        height: 220px;
         background: rgba(255,255,255,0.12);
         border-radius: 50%;
         pointer-events: none;
     }
 
     .return-page-header h1 {
-        margin: 0.3rem 0 0.35rem;
-        font-size: clamp(1.35rem, 5vw, 1.8rem);
+        margin: 0.2rem 0 0.35rem;
+        font-size: clamp(1.35rem, 2vw, 1.8rem);
         display: flex;
         align-items: center;
         gap: 0.65rem;
@@ -41,14 +41,13 @@
         margin: 0;
         color: rgba(255,255,255,0.9);
         max-width: 700px;
-        font-size: 0.95rem;
     }
 
     .return-timeline {
         display: grid;
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(7, minmax(0, 1fr));
         gap: 0.6rem;
-        margin: 1rem 0 1.15rem;
+        margin: 1.2rem 0 1.4rem;
         align-items: center;
     }
 
@@ -56,7 +55,7 @@
         background: var(--surface, #fff);
         border: 1px solid var(--border, #e5e7eb);
         border-radius: 999px;
-        padding: 0.7rem 1rem;
+        padding: 0.7rem 0.85rem;
         text-align: center;
         font-weight: 700;
         color: var(--text-secondary, #64748b);
@@ -76,44 +75,39 @@
     }
 
     .timeline-line {
-        display: none;
+        height: 2px;
+        background: linear-gradient(90deg, rgba(76, 159, 138, 0.2), rgba(76, 159, 138, 0.6));
+    }
+
+    .timeline-line.active {
+        background: linear-gradient(90deg, rgba(76, 159, 138, 0.8), rgba(76, 159, 138, 0.2));
     }
 
     .return-content-layout {
         display: grid;
-        grid-template-columns: 1fr;
-        gap: 1rem;
+        grid-template-columns: 340px 1fr;
+        gap: 1.15rem;
     }
 
     .return-sidebar,
     .form-card {
         display: flex;
         flex-direction: column;
-        gap: 0.9rem;
+        gap: 1rem;
     }
 
     .return-card,
     .form-card {
         background: var(--surface, #fff);
         border: 1px solid var(--border, #e5e7eb);
-        border-radius: 20px;
-        padding: 1rem;
+        border-radius: 22px;
+        padding: 1.15rem;
         box-shadow: 0 12px 28px rgba(15, 23, 42, 0.05);
     }
 
     .book-preview-card .book-cover-container img {
-        width: 100%;
-        max-width: 260px;
-        margin: 0 auto 1rem;
-        display: block;
         border-radius: 16px;
         box-shadow: 0 6px 20px rgba(15, 23, 42, 0.12);
-    }
-
-    .condition-grid {
-        display: grid;
-        grid-template-columns: 1fr;
-        gap: 0.8rem;
     }
 
     .condition-card {
@@ -141,54 +135,25 @@
         padding: 0.85rem 0.95rem;
         background: #fff;
         box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.04);
-        width: 100%;
-    }
-
-    .form-actions {
-        display: flex;
-        flex-direction: column;
-        gap: 0.75rem;
     }
 
     .btn,
     .btn-cancel {
         border-radius: 999px;
         padding: 0.8rem 1.1rem;
-        width: 100%;
-        justify-content: center;
     }
 
-    @media (min-width: 700px) {
-        .condition-grid {
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-        }
-
-        .form-actions {
-            flex-direction: row;
-        }
-    }
-
-    @media (min-width: 900px) {
-        .return-page-header {
-            padding: 1.5rem 1.6rem;
-        }
-
+    @media (max-width: 900px) {
         .return-content-layout {
-            grid-template-columns: 340px 1fr;
+            grid-template-columns: 1fr;
         }
 
         .return-timeline {
-            grid-template-columns: repeat(7, minmax(0, 1fr));
+            grid-template-columns: 1fr;
         }
 
         .timeline-line {
-            display: block;
-            height: 2px;
-            background: linear-gradient(90deg, rgba(76, 159, 138, 0.2), rgba(76, 159, 138, 0.6));
-        }
-
-        .timeline-line.active {
-            background: linear-gradient(90deg, rgba(76, 159, 138, 0.8), rgba(76, 159, 138, 0.2));
+            display: none;
         }
     }
 </style>
