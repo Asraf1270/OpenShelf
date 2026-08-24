@@ -129,6 +129,17 @@ class RegisterController extends Controller
         $user->otp_expiry = null;
         $user->save();
 
+        $this->mailer->sendTemplate(
+            $user->email,
+            $user->name,
+            'welcome',
+            [
+                'subject' => 'Welcome to OpenShelf!',
+                'user_name' => $user->name,
+            ],
+            $user->id
+        );
+
         $request->session()->forget('verify_email');
 
         return redirect()->route('login')->with('success', 'Your account is verified. You may now sign in.');
