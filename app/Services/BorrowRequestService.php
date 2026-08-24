@@ -12,6 +12,7 @@ class BorrowRequestService
     public function __construct(
         private BookQueryService $bookQueryService,
         private NotificationService $notificationService,
+        private MailerService $mailerService,
     ) {
     }
 
@@ -65,6 +66,25 @@ class BorrowRequestService
             'New Borrow Request',
             "{$borrowerName} wants to borrow \"{$book->title}\"",
             '/requests/?id=' . $requestId,
+        );
+
+        $this->mailerService->sendTemplate(
+            $owner->email,
+            $owner->name,
+            'borrow_request',
+            [
+                'subject' => 'New Borrow Request for "' . $book->title . '"',
+                'owner_name' => $owner->name,
+                'book_title' => $book->title,
+                'book_author' => $book->author,
+                'borrower_name' => $borrowerName,
+                'borrower_email' => $borrower->email,
+                'borrower_department' => $borrower->department,
+                'duration_days' => $duration,
+                'borrower_phone' => $borrower->phone,
+                'message' => $message,
+            ],
+            $owner->id
         );
 
         return $borrowRequest;
@@ -274,6 +294,27 @@ class BorrowRequestService
             '/requests/?id=' . $borrowRequest->id,
         );
 
+        $borrower = User::find($borrowRequest->borrower_id);
+        $owner = User::find($ownerId);
+
+        if ($borrower && $owner) {
+            $this->mailerService->sendTemplate(
+                $borrower->email,
+                $borrower->name,
+                'request_approved',
+                [
+                    'subject' => 'Request Approved for "' . $borrowRequest->book_title . '"',
+                    'borrower_name' => $borrower->name,
+                    'book_title' => $borrowRequest->book_title,
+                    'owner_name' => $owner->name,
+                    'owner_room' => $owner->room_number . ' (' . $owner->hall_name . ')',
+                    'owner_phone' => $owner->phone,
+                    'expected_return' => $borrowRequest->expected_return_date,
+                ],
+                $borrower->id
+            );
+        }
+
         return true;
     }
 
@@ -308,6 +349,23 @@ class BorrowRequestService
             $message,
             '/requests/?id=' . $borrowRequest->id,
         );
+
+        $borrower = User::find($borrowRequest->borrower_id);
+
+        if ($borrower) {
+            $this->mailerService->sendTemplate(
+                $borrower->email,
+                $borrower->name,
+                'request_rejected',
+                [
+                    'subject' => 'Request Rejected for "' . $borrowRequest->book_title . '"',
+                    'borrower_name' => $borrower->name,
+                    'book_title' => $borrowRequest->book_title,
+                    'rejection_reason' => $reason,
+                ],
+                $borrower->id
+            );
+        }
 
         return true;
     }
