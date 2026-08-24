@@ -447,8 +447,24 @@
         border-radius: 12px;
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
         margin-top: 0.5rem;
-        min-width: 280px;
+        width: 340px;
+        max-width: calc(100vw - 2rem);
         z-index: 1000;
+    }
+
+    @media (max-width: 768px) {
+        .notification-bell,
+        .user-menu {
+            position: static;
+        }
+        
+        .notification-dropdown,
+        .user-dropdown {
+            left: 1rem;
+            right: 1rem;
+            width: auto;
+            max-width: none;
+        }
     }
 
     [data-theme="dark"] .notification-dropdown,

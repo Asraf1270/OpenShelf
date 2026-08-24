@@ -12,6 +12,7 @@ class BorrowRequestService
     public function __construct(
         private BookQueryService $bookQueryService,
         private NotificationService $notificationService,
+        private MailerService $mailerService,
     ) {
     }
 
@@ -67,6 +68,25 @@ class BorrowRequestService
             '/requests/?id=' . $requestId,
         );
 
+        $this->mailerService->sendTemplate(
+            $owner->email,
+            $owner->name,
+            'borrow_request',
+            [
+                'subject' => 'New Borrow Request for "' . $book->title . '"',
+                'owner_name' => $owner->name,
+                'book_title' => $book->title,
+                'book_author' => $book->author,
+                'borrower_name' => $borrowerName,
+                'borrower_email' => $borrower->email,
+                'borrower_department' => $borrower->department,
+                'duration_days' => $duration,
+                'borrower_phone' => $borrower->phone,
+                'message' => $message,
+            ],
+            $owner->id
+        );
+
         return $borrowRequest;
     }
 
@@ -108,6 +128,27 @@ class BorrowRequestService
             $userName . ' has filed a return for "' . $borrowRequest->book_title . '". Please confirm physical receipt.',
             '/confirm-return/?token=' . $confirmationToken,
         );
+
+        $owner = User::find($borrowRequest->owner_id);
+        if ($owner) {
+            $this->mailerService->sendTemplate(
+                $owner->email,
+                $owner->name,
+                'book_returned_owner',
+                [
+                    'subject' => 'Please confirm return of "' . $borrowRequest->book_title . '"',
+                    'owner_name' => $owner->name,
+                    'borrower_name' => $userName,
+                    'book_title' => $borrowRequest->book_title,
+                    'return_date' => now()->toDateString(),
+                    'return_condition' => $data['return_condition'] ?? 'same',
+                    'return_notes' => $data['notes'] ?? '',
+                    'confirm_url' => config('app.url') . '/confirm-return/?token=' . $confirmationToken,
+                    'reject_url' => config('app.url') . '/confirm-return/?token=' . $confirmationToken . '&action=reject',
+                ],
+                $owner->id
+            );
+        }
 
         return true;
     }
@@ -159,6 +200,23 @@ class BorrowRequestService
                 '/requests/?id=' . $borrowRequest->id,
             );
 
+            $borrower = User::find($borrowRequest->borrower_id);
+            if ($borrower) {
+                $this->mailerService->sendTemplate(
+                    $borrower->email,
+                    $borrower->name,
+                    'return_confirmed_borrower',
+                    [
+                        'subject' => 'Return Confirmed for "' . $borrowRequest->book_title . '"',
+                        'borrower_name' => $borrower->name,
+                        'owner_name' => $borrowRequest->owner_name,
+                        'book_title' => $borrowRequest->book_title,
+                        'confirm_date' => now()->toDateString(),
+                    ],
+                    $borrower->id
+                );
+            }
+
             return 'confirmed';
         }
 
@@ -188,6 +246,23 @@ class BorrowRequestService
             'The owner of "' . $borrowRequest->book_title . '" has not received the book. Please contact them.',
             '/requests/?id=' . $borrowRequest->id,
         );
+
+        $borrower = User::find($borrowRequest->borrower_id);
+        if ($borrower) {
+            $this->mailerService->sendTemplate(
+                $borrower->email,
+                $borrower->name,
+                'return_rejected_borrower',
+                [
+                    'subject' => 'Return Rejected for "' . $borrowRequest->book_title . '"',
+                    'borrower_name' => $borrower->name,
+                    'owner_name' => $borrowRequest->owner_name,
+                    'book_title' => $borrowRequest->book_title,
+                    'reject_reason' => $rejectReason,
+                ],
+                $borrower->id
+            );
+        }
 
         return 'rejected';
     }
@@ -274,6 +349,27 @@ class BorrowRequestService
             '/requests/?id=' . $borrowRequest->id,
         );
 
+        $borrower = User::find($borrowRequest->borrower_id);
+        $owner = User::find($ownerId);
+
+        if ($borrower && $owner) {
+            $this->mailerService->sendTemplate(
+                $borrower->email,
+                $borrower->name,
+                'request_approved',
+                [
+                    'subject' => 'Request Approved for "' . $borrowRequest->book_title . '"',
+                    'borrower_name' => $borrower->name,
+                    'book_title' => $borrowRequest->book_title,
+                    'owner_name' => $owner->name,
+                    'owner_room' => $owner->room_number . ' (' . $owner->hall_name . ')',
+                    'owner_phone' => $owner->phone,
+                    'expected_return' => $borrowRequest->expected_return_date,
+                ],
+                $borrower->id
+            );
+        }
+
         return true;
     }
 
@@ -308,6 +404,23 @@ class BorrowRequestService
             $message,
             '/requests/?id=' . $borrowRequest->id,
         );
+
+        $borrower = User::find($borrowRequest->borrower_id);
+
+        if ($borrower) {
+            $this->mailerService->sendTemplate(
+                $borrower->email,
+                $borrower->name,
+                'request_rejected',
+                [
+                    'subject' => 'Request Rejected for "' . $borrowRequest->book_title . '"',
+                    'borrower_name' => $borrower->name,
+                    'book_title' => $borrowRequest->book_title,
+                    'rejection_reason' => $reason,
+                ],
+                $borrower->id
+            );
+        }
 
         return true;
     }
