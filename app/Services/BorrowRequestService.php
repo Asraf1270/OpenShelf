@@ -231,6 +231,8 @@ class BorrowRequestService
 
         $borrowRequest->update([
             'status' => 'approved',
+            'returned_at' => null,
+            'actual_return_date' => null,
             'return_confirmation_status' => 'rejected',
             'return_rejected_at' => now(),
             'return_reject_reason' => $rejectReason,
@@ -243,7 +245,7 @@ class BorrowRequestService
             $borrowRequest->borrower_id,
             'return_rejected',
             'Return Not Confirmed',
-            'The owner of "' . $borrowRequest->book_title . '" has not received the book. Please contact them.',
+            'The owner of "' . $borrowRequest->book_title . '" has not received the book. It is marked as borrowed again.',
             '/requests/?id=' . $borrowRequest->id,
         );
 

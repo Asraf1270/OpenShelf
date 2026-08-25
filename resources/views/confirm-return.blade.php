@@ -195,7 +195,7 @@
             <div class="cr-result-msg">
                 You have indicated that you have <strong>not</strong> received
                 <strong>"{{ $borrowRequest->book_title }}"</strong>.
-                The borrower has been notified to contact you.
+                The borrower has been notified and the book has been marked as borrowed again.
             </div>
             <div style="text-align:center">
                 <a href="/requests/" class="btn btn-outline" style="display:inline-flex;align-items:center;gap:.5rem;padding:.75rem 2rem;border-radius:12px;text-decoration:none;">
