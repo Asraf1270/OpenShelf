@@ -6,12 +6,15 @@
 <header class="app-header">
     @if (request()->routeIs('books'))
     <div class="header-search-overlay" id="headerSearchOverlay">
-        <div class="header-container">
-            <form action="{{ route('books') }}" method="GET" class="search-form-overlay">
+        <div class="header-container" style="position: relative;">
+            <form action="{{ route('books') }}" method="GET" class="search-form-overlay" autocomplete="off">
                 <i class="fas fa-search search-icon-overlay"></i>
-                <input type="text" name="q" placeholder="Search books, authors, categories..." class="search-input-overlay" value="{{ request('q', '') }}" id="headerSearchInput">
+                <input type="text" name="q" placeholder="Search books, authors, categories..." class="search-input-overlay" value="{{ request('q', '') }}" id="headerSearchInput" autocomplete="off">
+                <span class="suggest-spinner" id="suggestSpinner"></span>
                 <button type="button" class="close-search-btn" id="closeSearchBtn"><i class="fas fa-times"></i></button>
             </form>
+            {{-- Search suggestions dropdown --}}
+            <div class="search-suggest-dropdown" id="searchSuggestDropdown"></div>
         </div>
     </div>
     @endif
@@ -903,6 +906,161 @@
         padding: 0 0.5rem;
     }
     .close-search-btn:hover { color: #ef4444; }
+
+    /* ── Search Suggest Spinner ──────────────────────── */
+    .suggest-spinner {
+        display: none;
+        width: 16px;
+        height: 16px;
+        border: 2px solid rgba(76,159,138,0.25);
+        border-top-color: #4C9F8A;
+        border-radius: 50%;
+        animation: suggestSpin 0.6s linear infinite;
+        flex-shrink: 0;
+        margin-right: 0.25rem;
+    }
+    .suggest-spinner.active { display: inline-block; }
+    @keyframes suggestSpin { to { transform: rotate(360deg); } }
+
+    /* ── Search Suggestions Dropdown ─────────────────── */
+    .search-suggest-dropdown {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        margin-top: 0.35rem;
+        background: #ffffff;
+        border: 1px solid rgba(0,0,0,0.08);
+        border-radius: 14px;
+        box-shadow: 0 16px 48px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.06);
+        overflow: hidden;
+        z-index: 500;
+        max-height: 420px;
+        overflow-y: auto;
+        scrollbar-width: thin;
+    }
+    .search-suggest-dropdown.active { display: block; }
+
+    .suggest-item {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.65rem 1rem;
+        text-decoration: none;
+        color: inherit;
+        transition: background 0.15s ease;
+        cursor: pointer;
+        border-bottom: 1px solid rgba(0,0,0,0.04);
+    }
+    .suggest-item:last-child { border-bottom: none; }
+    .suggest-item:hover,
+    .suggest-item.active {
+        background: rgba(76,159,138,0.07);
+    }
+
+    .suggest-cover {
+        width: 36px;
+        height: 50px;
+        border-radius: 5px;
+        object-fit: cover;
+        flex-shrink: 0;
+        background: #f1f5f9;
+    }
+
+    .suggest-info {
+        flex: 1;
+        min-width: 0;
+    }
+    .suggest-title {
+        font-size: 0.875rem;
+        font-weight: 650;
+        color: #1e293b;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .suggest-author {
+        font-size: 0.78rem;
+        color: #64748b;
+        margin-top: 0.1rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .suggest-meta {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        margin-top: 0.15rem;
+    }
+    .suggest-category {
+        font-size: 0.7rem;
+        font-weight: 600;
+        color: #4C9F8A;
+    }
+    .suggest-status {
+        font-size: 0.62rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        padding: 0.1rem 0.35rem;
+        border-radius: 4px;
+    }
+    .suggest-status.available {
+        background: rgba(46,139,87,0.1);
+        color: #2E8B57;
+    }
+    .suggest-status.borrowed {
+        background: rgba(198,93,93,0.1);
+        color: #C65D5D;
+    }
+
+    .suggest-footer {
+        padding: 0.55rem 1rem;
+        text-align: center;
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: #4C9F8A;
+        border-top: 1px solid rgba(0,0,0,0.06);
+        cursor: pointer;
+        transition: background 0.15s ease;
+    }
+    .suggest-footer:hover { background: rgba(76,159,138,0.06); }
+    .suggest-footer i { margin-right: 0.3rem; }
+
+    .suggest-empty {
+        padding: 1.5rem 1rem;
+        text-align: center;
+        color: #94a3b8;
+        font-size: 0.85rem;
+    }
+    .suggest-empty i {
+        display: block;
+        font-size: 1.4rem;
+        margin-bottom: 0.4rem;
+        opacity: 0.5;
+    }
+
+    /* Dark mode */
+    [data-theme="dark"] .search-suggest-dropdown {
+        background: #1e293b;
+        border-color: #334155;
+        box-shadow: 0 16px 48px rgba(0,0,0,0.35), 0 2px 8px rgba(0,0,0,0.2);
+    }
+    [data-theme="dark"] .suggest-item:hover,
+    [data-theme="dark"] .suggest-item.active {
+        background: rgba(76,159,138,0.12);
+    }
+    [data-theme="dark"] .suggest-item {
+        border-bottom-color: rgba(255,255,255,0.05);
+    }
+    [data-theme="dark"] .suggest-title { color: #f1f5f9; }
+    [data-theme="dark"] .suggest-author { color: #94a3b8; }
+    [data-theme="dark"] .suggest-cover { background: #0f172a; }
+    [data-theme="dark"] .suggest-footer {
+        border-top-color: rgba(255,255,255,0.06);
+    }
 </style>
 
 <script>
@@ -1058,6 +1216,179 @@ document.addEventListener('DOMContentLoaded', function() {
     const closeSearchBtn = document.getElementById('closeSearchBtn');
     const searchInput = document.getElementById('headerSearchInput');
     const mainHeaderContainer = document.getElementById('mainHeaderContainer');
+    const suggestDropdown = document.getElementById('searchSuggestDropdown');
+    const suggestSpinner = document.getElementById('suggestSpinner');
+
+    // ── Search suggestions with debounce ────────────────────────
+    let suggestTimer = null;
+    let suggestAbort = null;
+    let suggestActiveIdx = -1;
+
+    function suggestDebounce(fn, ms) {
+        return function (...args) {
+            clearTimeout(suggestTimer);
+            suggestTimer = setTimeout(() => fn.apply(this, args), ms);
+        };
+    }
+
+    function closeSuggestions() {
+        if (suggestDropdown) suggestDropdown.classList.remove('active');
+        suggestActiveIdx = -1;
+    }
+
+    function renderSuggestions(suggestions, query, profiles = []) {
+        if (!suggestDropdown) return;
+
+        if ((!suggestions || suggestions.length === 0) && (!profiles || profiles.length === 0)) {
+            suggestDropdown.innerHTML = `
+                <div class="suggest-empty">
+                    <i class="fas fa-search"></i>
+                    No results for "${query.replace(/</g, '&lt;')}"
+                </div>
+            `;
+            suggestDropdown.classList.add('active');
+            return;
+        }
+
+        // Render books first (if any), then profiles
+        let html = '';
+        if (suggestions && suggestions.length) {
+            html += `<div class="suggest-section-label">Books</div>`;
+            html += suggestions.map((s, i) => `
+                <a href="/book?id=${s.id}" class="suggest-item" data-index="${i}">
+                    <img src="${s.cover_url}" alt="" class="suggest-cover" loading="lazy" onerror="this.onerror=null; this.src='/images/default-book-cover.jpg';">
+                    <div class="suggest-info">
+                        <div class="suggest-title">${highlightMatch(s.title, query)}</div>
+                        <div class="suggest-author">${highlightMatch(s.author || 'Unknown', query)}</div>
+                        <div class="suggest-meta">
+                            <span class="suggest-category">${s.category || 'General'}</span>
+                            <span class="suggest-status ${s.status}">${s.status}</span>
+                        </div>
+                    </div>
+                </a>
+            `).join('');
+        }
+
+        if (profiles && profiles.length) {
+            if (suggestions && suggestions.length) html += `<div class="suggest-section-label">People</div>`;
+            html += profiles.map((p, i) => `
+                <a href="/profile?id=${p.id}" class="suggest-item suggest-profile" data-index="profile-${i}">
+                    <img src="${p.avatar_url}" alt="" class="suggest-cover suggest-avatar" loading="lazy" onerror="this.onerror=null; this.src='/images/default-avatar.jpg';">
+                    <div class="suggest-info">
+                        <div class="suggest-title">${highlightMatch(p.name, query)}</div>
+                        <div class="suggest-author">${p.email || ''}</div>
+                    </div>
+                </a>
+            `).join('');
+        }
+
+        // "View all results" footer
+        html += `<div class="suggest-footer" id="suggestViewAll"><i class="fas fa-arrow-right"></i>View all results</div>`;
+
+        suggestDropdown.innerHTML = html;
+        suggestDropdown.classList.add('active');
+        suggestActiveIdx = -1;
+
+        // "View all" triggers full search
+            document.getElementById('suggestViewAll')?.addEventListener('click', () => {
+            closeSuggestions();
+            // Trigger the books page search
+            if (typeof currentFilters !== 'undefined') {
+                currentFilters.search = searchInput.value.trim();
+                refreshBooks();
+            }
+        });
+    }
+
+    function highlightMatch(text, query) {
+        if (!text || !query) return text || '';
+        const escaped = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        return text.replace(new RegExp(`(${escaped})`, 'gi'), '<strong style="color:#4C9F8A">$1</strong>');
+    }
+
+    async function fetchSuggestions(query) {
+        if (suggestAbort) suggestAbort.abort();
+        suggestAbort = new AbortController();
+
+        if (suggestSpinner) suggestSpinner.classList.add('active');
+
+        try {
+            const res = await fetch(`/api/books/suggest?q=${encodeURIComponent(query)}`, {
+                signal: suggestAbort.signal,
+                headers: { 'Accept': 'application/json' }
+            });
+            const data = await res.json();
+            renderSuggestions(data.suggestions || [], query, data.profiles || []);
+        } catch (err) {
+            if (err.name !== 'AbortError') {
+                closeSuggestions();
+            }
+        } finally {
+            if (suggestSpinner) suggestSpinner.classList.remove('active');
+        }
+    }
+
+    const debouncedFetch = suggestDebounce(fetchSuggestions, 500);
+
+    // Prevent submitting the search form with an empty query (avoids server 500)
+    const searchForm = document.querySelector('.search-form-overlay');
+    if (searchForm) {
+        searchForm.addEventListener('submit', (e) => {
+            const val = searchInput?.value?.trim() || '';
+            if (val.length === 0) {
+                e.preventDefault();
+                closeSuggestions();
+                // Close overlay to provide feedback
+                if (searchOverlay) {
+                    searchOverlay.classList.remove('active');
+                    if (mainHeaderContainer) mainHeaderContainer.style.opacity = '1';
+                }
+            }
+        });
+    }
+
+    if (searchInput) {
+        searchInput.addEventListener('input', (e) => {
+            const val = e.target.value.trim();
+            if (val.length < 2) {
+                closeSuggestions();
+                return;
+            }
+            debouncedFetch(val);
+        });
+
+        // Keyboard navigation
+        searchInput.addEventListener('keydown', (e) => {
+            if (!suggestDropdown || !suggestDropdown.classList.contains('active')) return;
+            const items = suggestDropdown.querySelectorAll('.suggest-item');
+            if (!items.length) return;
+
+            if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                suggestActiveIdx = Math.min(suggestActiveIdx + 1, items.length - 1);
+                items.forEach((el, i) => el.classList.toggle('active', i === suggestActiveIdx));
+                items[suggestActiveIdx]?.scrollIntoView({ block: 'nearest' });
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                suggestActiveIdx = Math.max(suggestActiveIdx - 1, 0);
+                items.forEach((el, i) => el.classList.toggle('active', i === suggestActiveIdx));
+                items[suggestActiveIdx]?.scrollIntoView({ block: 'nearest' });
+            } else if (e.key === 'Enter' && suggestActiveIdx >= 0) {
+                e.preventDefault();
+                const link = items[suggestActiveIdx]?.getAttribute('href');
+                if (link) window.location.href = link;
+            } else if (e.key === 'Escape') {
+                closeSuggestions();
+            }
+        });
+    }
+
+    // Close suggestions when clicking outside
+    document.addEventListener('click', (e) => {
+        if (suggestDropdown && !suggestDropdown.contains(e.target) && e.target !== searchInput) {
+            closeSuggestions();
+        }
+    });
 
     if (searchToggleBtn && searchOverlay) {
         searchToggleBtn.addEventListener('click', () => {
@@ -1069,6 +1400,7 @@ document.addEventListener('DOMContentLoaded', function() {
         closeSearchBtn?.addEventListener('click', () => {
             searchOverlay.classList.remove('active');
             if(mainHeaderContainer) mainHeaderContainer.style.opacity = '1';
+            closeSuggestions();
         });
     }
 
