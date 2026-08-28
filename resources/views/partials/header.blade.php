@@ -1330,6 +1330,23 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const debouncedFetch = suggestDebounce(fetchSuggestions, 500);
 
+    // Prevent submitting the search form with an empty query (avoids server 500)
+    const searchForm = document.querySelector('.search-form-overlay');
+    if (searchForm) {
+        searchForm.addEventListener('submit', (e) => {
+            const val = searchInput?.value?.trim() || '';
+            if (val.length === 0) {
+                e.preventDefault();
+                closeSuggestions();
+                // Close overlay to provide feedback
+                if (searchOverlay) {
+                    searchOverlay.classList.remove('active');
+                    if (mainHeaderContainer) mainHeaderContainer.style.opacity = '1';
+                }
+            }
+        });
+    }
+
     if (searchInput) {
         searchInput.addEventListener('input', (e) => {
             const val = e.target.value.trim();
