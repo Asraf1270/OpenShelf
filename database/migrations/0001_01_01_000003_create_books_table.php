@@ -18,7 +18,7 @@ return new class extends Migration
                 $table->string('condition', 50)->nullable();
                 $table->string('cover_image', 255)->nullable();
                 $table->string('owner_id', 16);
-                $table->char('hall')->nullable();
+                $table->string('hall', 10)->nullable();
                 $table->string('owner_name', 255)->nullable();
                 $table->string('status', 20)->default('available');
                 $table->integer('views')->default(0);
