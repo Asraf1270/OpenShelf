@@ -4,9 +4,11 @@ namespace App\Models;
 
 use App\Support\ImageUrl;
 use Illuminate\Database\Eloquent\Model;
+use Laravel\Scout\Searchable;
 
 class Book extends Model
 {
+    use Searchable;
     protected $keyType = 'string';
 
     public $incrementing = false;
@@ -22,6 +24,22 @@ class Book extends Model
         'reviews' => 'array',
         'comments' => 'array',
     ];
+
+    /**
+     * Get the indexable data array for the model.
+     *
+     * @return array<string, mixed>
+     */
+    public function toSearchableArray(): array
+    {
+        return [
+            'id' => $this->id,
+            'title' => $this->title,
+            'author' => $this->author,
+            'publisher' => $this->publisher,
+            'category' => $this->category,
+        ];
+    }
 
     public static function generateUniqueId(): string
     {

@@ -20,7 +20,21 @@ class BookQueryService
         ?string $cursorId = null,
         string $sort = 'newest',
     ): Collection {
-        $query = $this->buildBooksQuery($search, $selectedCategories, $availability, $hall);
+        $hasSearch = trim($search) !== '';
+
+        // When searching, use Scout to find matching IDs first
+        $scoutIds = [];
+        if ($hasSearch) {
+            $scoutIds = $this->getScoutMatchingIds($search);
+
+            // No Scout matches → return empty early (skip the related-books fallback below)
+            if (empty($scoutIds)) {
+                // Fall back to related books logic when Scout finds nothing
+                return $this->getRelatedBooksForSearch($search, [], min(8, $limit));
+            }
+        }
+
+        $query = $this->buildBooksQuery($scoutIds, $selectedCategories, $availability, $hall);
 
         if ($cursorDate && $cursorId) {
             if ($sort === 'oldest') {
@@ -42,7 +56,12 @@ class BookQueryService
             }
         }
 
-        if ($sort === 'oldest') {
+        // When searching, preserve Scout relevance order; otherwise sort by date
+        if ($hasSearch && ! $cursorDate) {
+            // Order by the position in the Scout results array (relevance)
+            $ids = implode(',', array_map(fn ($id) => DB::getPdo()->quote($id), $scoutIds));
+            $query->orderByRaw("FIELD(b.id, {$ids})");
+        } elseif ($sort === 'oldest') {
             $query->orderBy('b.created_at')->orderBy('b.id');
         } else {
             $query->orderByDesc('b.created_at')->orderByDesc('b.id');
@@ -50,7 +69,7 @@ class BookQueryService
 
         $books = $query->limit($limit)->get();
 
-        if (! empty($search) && $books->count() < 4 && ! $cursorDate) {
+        if ($hasSearch && $books->count() < 4 && ! $cursorDate) {
             $related = $this->getRelatedBooksForSearch(
                 $search,
                 $books->pluck('id')->all(),
@@ -63,8 +82,18 @@ class BookQueryService
         return $books;
     }
 
+    /**
+     * Use Laravel Scout to find book IDs matching the search term.
+     *
+     * @return array<int, string>  Ordered list of matching book IDs (by relevance)
+     */
+    private function getScoutMatchingIds(string $search): array
+    {
+        return Book::search(trim($search))->keys()->all();
+    }
+
     public function buildBooksQuery(
-        string $search = '',
+        array $scoutIds = [],
         array $selectedCategories = [],
         string $availability = '',
         string $hall = '',
@@ -101,14 +130,9 @@ class BookQueryService
             $query->whereIn('b.category', $selectedCategories);
         }
 
-        if (trim($search) !== '') {
-            $searchVal = '%' . trim($search) . '%';
-            $query->where(function (Builder $builder) use ($searchVal) {
-                $builder->where('b.title', 'like', $searchVal)
-                    ->orWhere('b.author', 'like', $searchVal)
-                    ->orWhere('b.publisher', 'like', $searchVal)
-                    ->orWhere('u.name', 'like', $searchVal);
-            });
+        // Constrain to Scout-matched IDs when searching
+        if (! empty($scoutIds)) {
+            $query->whereIn('b.id', $scoutIds);
         }
 
         return $query;
