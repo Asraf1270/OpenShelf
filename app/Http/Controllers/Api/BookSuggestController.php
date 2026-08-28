@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Book;
 use App\Support\ImageUrl;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 /**
@@ -56,7 +57,26 @@ class BookSuggestController extends Controller
                 'status'    => strtolower($book->status ?? 'available'),
             ])->values();
 
-            return response()->json(['suggestions' => $suggestions]);
+            // Also search user profiles (name, email) for suggestions
+            $profiles = User::query()
+                ->select(['id', 'name', 'profile_pic', 'email'])
+                ->where(function ($q) use ($query) {
+                    $q->where('name', 'like', "%{$query}%")
+                      ->orWhere('email', 'like', "%{$query}%");
+                })
+                ->limit(6)
+                ->get()
+                ->map(fn (User $user) => [
+                    'id'         => $user->id,
+                    'name'       => $user->name,
+                    'email'      => $user->email,
+                    'avatar_url' => ImageUrl::avatar($user->profile_pic),
+                ])->values();
+
+            return response()->json([
+                'suggestions' => $suggestions,
+                'profiles'    => $profiles,
+            ]);
         } catch (\Throwable $e) {
             return response()->json(['suggestions' => []], 500);
         }

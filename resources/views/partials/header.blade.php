@@ -1236,10 +1236,10 @@ document.addEventListener('DOMContentLoaded', function() {
         suggestActiveIdx = -1;
     }
 
-    function renderSuggestions(suggestions, query) {
+    function renderSuggestions(suggestions, query, profiles = []) {
         if (!suggestDropdown) return;
 
-        if (!suggestions || suggestions.length === 0) {
+        if ((!suggestions || suggestions.length === 0) && (!profiles || profiles.length === 0)) {
             suggestDropdown.innerHTML = `
                 <div class="suggest-empty">
                     <i class="fas fa-search"></i>
@@ -1250,19 +1250,37 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
-        let html = suggestions.map((s, i) => `
-            <a href="/book?id=${s.id}" class="suggest-item" data-index="${i}">
-                <img src="${s.cover_url}" alt="" class="suggest-cover" loading="lazy" onerror="this.onerror=null; this.src='/images/default-book-cover.jpg';">
-                <div class="suggest-info">
-                    <div class="suggest-title">${highlightMatch(s.title, query)}</div>
-                    <div class="suggest-author">${highlightMatch(s.author || 'Unknown', query)}</div>
-                    <div class="suggest-meta">
-                        <span class="suggest-category">${s.category || 'General'}</span>
-                        <span class="suggest-status ${s.status}">${s.status}</span>
+        // Render profiles first (if any)
+        let html = '';
+        if (profiles && profiles.length) {
+            html += `<div class="suggest-section-label">People</div>`;
+            html += profiles.map((p, i) => `
+                <a href="/profile?id=${p.id}" class="suggest-item suggest-profile" data-index="profile-${i}">
+                    <img src="${p.avatar_url}" alt="" class="suggest-cover suggest-avatar" loading="lazy" onerror="this.onerror=null; this.src='/images/default-avatar.jpg';">
+                    <div class="suggest-info">
+                        <div class="suggest-title">${highlightMatch(p.name, query)}</div>
+                        <div class="suggest-author">${p.email || ''}</div>
                     </div>
-                </div>
-            </a>
-        `).join('');
+                </a>
+            `).join('');
+        }
+
+        if (suggestions && suggestions.length) {
+            if (profiles && profiles.length) html += `<div class="suggest-section-label">Books</div>`;
+            html += suggestions.map((s, i) => `
+                <a href="/book?id=${s.id}" class="suggest-item" data-index="${i}">
+                    <img src="${s.cover_url}" alt="" class="suggest-cover" loading="lazy" onerror="this.onerror=null; this.src='/images/default-book-cover.jpg';">
+                    <div class="suggest-info">
+                        <div class="suggest-title">${highlightMatch(s.title, query)}</div>
+                        <div class="suggest-author">${highlightMatch(s.author || 'Unknown', query)}</div>
+                        <div class="suggest-meta">
+                            <span class="suggest-category">${s.category || 'General'}</span>
+                            <span class="suggest-status ${s.status}">${s.status}</span>
+                        </div>
+                    </div>
+                </a>
+            `).join('');
+        }
 
         // "View all results" footer
         html += `<div class="suggest-footer" id="suggestViewAll"><i class="fas fa-arrow-right"></i>View all results</div>`;
@@ -1272,7 +1290,7 @@ document.addEventListener('DOMContentLoaded', function() {
         suggestActiveIdx = -1;
 
         // "View all" triggers full search
-        document.getElementById('suggestViewAll')?.addEventListener('click', () => {
+            document.getElementById('suggestViewAll')?.addEventListener('click', () => {
             closeSuggestions();
             // Trigger the books page search
             if (typeof currentFilters !== 'undefined') {
@@ -1300,7 +1318,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 headers: { 'Accept': 'application/json' }
             });
             const data = await res.json();
-            renderSuggestions(data.suggestions || [], query);
+            renderSuggestions(data.suggestions || [], query, data.profiles || []);
         } catch (err) {
             if (err.name !== 'AbortError') {
                 closeSuggestions();
