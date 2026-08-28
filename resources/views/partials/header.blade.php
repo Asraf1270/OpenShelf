@@ -1250,23 +1250,10 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
-        // Render profiles first (if any)
+        // Render books first (if any), then profiles
         let html = '';
-        if (profiles && profiles.length) {
-            html += `<div class="suggest-section-label">People</div>`;
-            html += profiles.map((p, i) => `
-                <a href="/profile?id=${p.id}" class="suggest-item suggest-profile" data-index="profile-${i}">
-                    <img src="${p.avatar_url}" alt="" class="suggest-cover suggest-avatar" loading="lazy" onerror="this.onerror=null; this.src='/images/default-avatar.jpg';">
-                    <div class="suggest-info">
-                        <div class="suggest-title">${highlightMatch(p.name, query)}</div>
-                        <div class="suggest-author">${p.email || ''}</div>
-                    </div>
-                </a>
-            `).join('');
-        }
-
         if (suggestions && suggestions.length) {
-            if (profiles && profiles.length) html += `<div class="suggest-section-label">Books</div>`;
+            html += `<div class="suggest-section-label">Books</div>`;
             html += suggestions.map((s, i) => `
                 <a href="/book?id=${s.id}" class="suggest-item" data-index="${i}">
                     <img src="${s.cover_url}" alt="" class="suggest-cover" loading="lazy" onerror="this.onerror=null; this.src='/images/default-book-cover.jpg';">
@@ -1277,6 +1264,19 @@ document.addEventListener('DOMContentLoaded', function() {
                             <span class="suggest-category">${s.category || 'General'}</span>
                             <span class="suggest-status ${s.status}">${s.status}</span>
                         </div>
+                    </div>
+                </a>
+            `).join('');
+        }
+
+        if (profiles && profiles.length) {
+            if (suggestions && suggestions.length) html += `<div class="suggest-section-label">People</div>`;
+            html += profiles.map((p, i) => `
+                <a href="/profile?id=${p.id}" class="suggest-item suggest-profile" data-index="profile-${i}">
+                    <img src="${p.avatar_url}" alt="" class="suggest-cover suggest-avatar" loading="lazy" onerror="this.onerror=null; this.src='/images/default-avatar.jpg';">
+                    <div class="suggest-info">
+                        <div class="suggest-title">${highlightMatch(p.name, query)}</div>
+                        <div class="suggest-author">${p.email || ''}</div>
                     </div>
                 </a>
             `).join('');
