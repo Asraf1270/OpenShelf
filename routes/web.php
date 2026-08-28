@@ -24,6 +24,7 @@ use App\Http\Controllers\StaticPageController;
 use App\Http\Controllers\LeaderboardController;
 use App\Http\Controllers\PwaController;
 use App\Http\Controllers\Api\BookApiController;
+use App\Http\Controllers\Api\BookSuggestController;
 use App\Http\Controllers\Api\NotificationApiController;
 use App\Http\Controllers\Api\SettingsApiController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
@@ -132,6 +133,7 @@ Route::post('/edit-book', [EditBookController::class, 'update'])->name('books.up
 
 Route::get('/books', [BooksController::class, 'index'])->name('books');
 Route::get('/api/books', [BookApiController::class, 'index']);
+Route::get('/api/books/suggest', BookSuggestController::class);
 Route::match(['get', 'post'], '/book', [BookController::class, 'show'])->name('book.show');
 
 Route::match(['get', 'post'], '/borrow-request', [BorrowRequestPageController::class, 'show'])->name('borrow-request');
