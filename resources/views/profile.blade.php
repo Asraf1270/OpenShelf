@@ -17,7 +17,7 @@
 
         <h1 class="profile-name" style="display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
             {{ $user->name }}
-            @if($user->boipoka_badge > 0)
+            @if($user->boipoka_badge > 0 && $user->boipoka_badge <= 10)
                 @php
                     $badgeColors = [1 => '#FFD700', 2 => '#C0C0C0', 3 => '#CD7F32', 4 => '#4C9F8A'];
                     $badgeColor = $badgeColors[$user->boipoka_badge] ?? '#4C9F8A';

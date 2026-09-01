@@ -299,7 +299,7 @@
 
             @if($rank2)
             <a href="{{ route('profile', ['id' => $rank2->id]) }}" class="podium-item rank-2">
-                <div class="rank-badge">2</div>
+                <div class="rank-badge" style="font-size: 0.95rem;">2nd</div>
                 <img src="{{ $rank2->profile_image_url }}" alt="{{ $rank2->name }}" class="podium-avatar">
                 <div class="podium-info">
                     <div class="podium-name">{{ $rank2->name }}</div>
@@ -310,7 +310,7 @@
 
             @if($rank1)
             <a href="{{ route('profile', ['id' => $rank1->id]) }}" class="podium-item rank-1">
-                <div class="rank-badge">1</div>
+                <div class="rank-badge" style="font-size: 0.95rem;">1st</div>
                 <img src="{{ $rank1->profile_image_url }}" alt="{{ $rank1->name }}" class="podium-avatar">
                 <div class="podium-info">
                     <div class="podium-name">
@@ -326,7 +326,7 @@
 
             @if($rank3)
             <a href="{{ route('profile', ['id' => $rank3->id]) }}" class="podium-item rank-3">
-                <div class="rank-badge">3</div>
+                <div class="rank-badge" style="font-size: 0.95rem;">3rd</div>
                 <img src="{{ $rank3->profile_image_url }}" alt="{{ $rank3->name }}" class="podium-avatar">
                 <div class="podium-info">
                     <div class="podium-name">{{ $rank3->name }}</div>
@@ -344,8 +344,17 @@
                 <div style="text-align: right;">Points</div>
             </div>
             @foreach($topUsers->skip(3) as $index => $user)
+            @php
+                $rank = $index + 4;
+                $ends = ['th','st','nd','rd','th','th','th','th','th','th'];
+                if ((($rank % 100) >= 11) && (($rank % 100) <= 13)) {
+                    $suffix = 'th';
+                } else {
+                    $suffix = $ends[$rank % 10];
+                }
+            @endphp
             <a href="{{ route('profile', ['id' => $user->id]) }}" class="list-item">
-                <div class="list-rank">#{{ $index + 4 }}</div>
+                <div class="list-rank">{{ $rank }}{{ $suffix }}</div>
                 <div class="list-user">
                     <img src="{{ $user->profile_image_url }}" alt="{{ $user->name }}" class="list-avatar">
                     <span class="list-name">{{ $user->name }}</span>
