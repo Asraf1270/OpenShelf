@@ -68,6 +68,27 @@ class BorrowRequestService
             '/requests/?id=' . $requestId,
         );
 
+        if (! empty($owner->email)) {
+            $this->mailerService->sendTemplate(
+                $owner->email,
+                $owner->name,
+                'borrow_request',
+                [
+                    'subject' => 'New Borrow Request for "' . $book->title . '"',
+                    'owner_name' => $owner->name,
+                    'book_title' => $book->title,
+                    'book_author' => $book->author,
+                    'borrower_name' => $borrowerName,
+                    'borrower_email' => $borrower->email,
+                    'borrower_department' => $borrower->department,
+                    'duration_days' => $duration,
+                    'borrower_phone' => $borrower->phone,
+                    'message' => $message,
+                ],
+                $owner->id,
+            );
+        }
+
         return $borrowRequest;
     }
 

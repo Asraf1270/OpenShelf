@@ -7,6 +7,7 @@ use App\Models\BorrowRequest;
 use App\Models\User;
 use App\Models\Wishlist;
 use App\Services\BookQueryService;
+use App\Services\BorrowRequestService;
 use App\Services\NotificationService;
 use App\Support\RelativeTime;
 use Illuminate\Http\Request;
@@ -15,6 +16,7 @@ class BookController extends Controller
 {
     public function __construct(
         private BookQueryService $bookQueryService,
+        private BorrowRequestService $borrowRequestService,
         private NotificationService $notificationService,
     ) {
     }
@@ -150,41 +152,21 @@ class BookController extends Controller
 
         $borrower = User::find($currentUserId);
         $owner = User::find($book->owner_id);
-        $requestId = 'REQ' . time() . bin2hex(random_bytes(4));
         $duration = (int) $request->input('duration', 14);
         $message = trim($request->input('message', ''));
 
-        BorrowRequest::create([
-            'id' => $requestId,
-            'book_id' => $book->id,
-            'book_title' => $book->title,
-            'book_author' => $book->author,
-            'book_cover' => $book->cover_image,
-            'owner_id' => $book->owner_id,
-            'owner_name' => $owner?->name ?? 'Unknown',
-            'owner_email' => $owner?->email,
-            'borrower_id' => $currentUserId,
-            'borrower_name' => $currentUserName,
-            'borrower_email' => $borrower?->email,
-            'status' => 'pending',
-            'request_date' => now(),
-            'expected_return_date' => now()->addDays($duration),
-            'duration_days' => $duration,
-            'message' => $message,
-            'updated_at' => now(),
-        ]);
+        if (! $borrower || ! $owner) {
+            return redirect()->route('book.show', ['id' => $book->id])
+                ->with('borrow_error', 'Failed to send request');
+        }
 
-        $book->update([
-            'status' => 'reserved',
-            'updated_at' => now(),
-        ]);
-
-        $this->notificationService->create(
-            $book->owner_id,
-            'borrow_request',
-            'New Borrow Request',
-            $currentUserName . ' wants to borrow "' . $book->title . '"',
-            '/requests/?id=' . $requestId,
+        $this->borrowRequestService->createRequest(
+            $book,
+            $borrower,
+            $owner,
+            $currentUserName,
+            $duration,
+            $message,
         );
 
         return redirect()->route('book.show', ['id' => $book->id])

@@ -17,13 +17,31 @@ class BorrowRequestServiceTest extends TestCase
     use RefreshDatabase;
     use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 
-    public function test_create_request_sends_notification_without_email(): void
+    public function test_create_request_sends_notification_and_owner_email(): void
     {
         $bookQueryService = Mockery::mock(BookQueryService::class);
         $mailerService = Mockery::mock(MailerService::class);
         $notificationService = Mockery::mock(NotificationService::class);
 
-        $mailerService->shouldNotReceive('sendTemplate');
+        $mailerService->shouldReceive('sendTemplate')
+            ->once()
+            ->withArgs(function (string $to, string $toName, string $template, array $data, string $userId): bool {
+                return $to === 'owner@example.com'
+                    && $toName === 'Owner One'
+                    && $template === 'borrow_request'
+                    && $userId === 'owner-001'
+                    && ($data['subject'] ?? null) === 'New Borrow Request for "Clean Code"'
+                    && ($data['owner_name'] ?? null) === 'Owner One'
+                    && ($data['book_title'] ?? null) === 'Clean Code'
+                    && ($data['borrower_name'] ?? null) === 'Alex Borrower'
+                    && ($data['borrower_email'] ?? null) === 'alex@example.com'
+                    && ($data['borrower_department'] ?? null) === 'CSE'
+                    && ($data['duration_days'] ?? null) === 14
+                    && ($data['borrower_phone'] ?? null) === '0987654321'
+                    && ($data['message'] ?? null) === 'Please lend it to me.';
+            })
+            ->andReturnTrue();
+
         $notificationService->shouldReceive('create')
             ->once()
             ->withArgs(function (string $userId, string $type, string $title, string $message, string $link): bool {
