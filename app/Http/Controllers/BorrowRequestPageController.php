@@ -69,7 +69,7 @@ class BorrowRequestPageController extends Controller
                 );
 
                 return redirect('/requests')
-                    ->with('success', 'Request sent successfully! The owner has been notified.');
+                    ->with('success', 'Request sent successfully!');
             }
 
             $error = 'Failed to create borrow request';
