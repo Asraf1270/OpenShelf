@@ -21,7 +21,7 @@ const PRE_CACHE_ASSETS = [
     '/offline',
     '/css/app.css',
     '/images/logo-icon.svg',
-    '/images/logo-full.svg',
+    '/images/logo-wordmark.svg',
     '/images/default-book-cover.jpg',
     '/manifest.json'
 ];
