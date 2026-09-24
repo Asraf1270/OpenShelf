@@ -283,7 +283,7 @@
     .logo-link {
         display: inline-flex;
         align-items: center;
-        gap: 0.7rem;
+        gap: 0.01rem;
         text-decoration: none;
         line-height: 1;
     }
@@ -294,7 +294,7 @@
         flex-shrink: 0;
     }
     .logo-wordmark {
-        height: 25px;
+        height: 30px;
         width: auto;
         display: block;
         flex-shrink: 0;
@@ -705,7 +705,7 @@
     .mobile-nav-brand {
         display: inline-flex;
         align-items: center;
-        gap: 0.55rem;
+        gap: 0.05rem;
         line-height: 1;
     }
     .mobile-logo-icon {
@@ -715,7 +715,7 @@
         flex-shrink: 0;
     }
     .mobile-logo-wordmark {
-        height: 19px;
+        height: 25px;
         width: auto;
         display: block;
         flex-shrink: 0;
