@@ -13,6 +13,8 @@
         .wrapper { width: 100%; background-color: #f8fafc; padding: 40px 0; }
         .container { max-width: 720px; margin: 0 auto; background: #ffffff; border-radius: 20px; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
         .header { background: {{ $theme['bg'] }}; padding: 32px 20px 28px; text-align: center; }
+        /* lighter header option for dark icons (email-safe tint) */
+        .header.light-bg { background: linear-gradient(135deg, rgba(76,159,138,0.12) 0%, rgba(76,159,138,0.08) 100%); }
         .brand-wordmark { display: block; margin: 0 auto; max-width: 260px; width: 100%; height: auto; }
         .content { padding: 48px 40px; color: #1e293b; }
         .button { display: inline-block; padding: 14px 35px; background-color: {{ $theme['btn'] }}; color: #ffffff !important; text-decoration: none; border-radius: 12px; font-weight: 600; margin-top: 20px; }
@@ -56,8 +58,8 @@
 <body>
     <div class="wrapper">
         <div class="container">
-            <div class="header">
-                <img src="{{ asset('images/logo-wordmark.svg') }}" alt="OpenShelf" class="brand-wordmark" style="filter: brightness(0) invert(1);">
+            <div class="header light-bg">
+                <img src="{{ asset('images/logo-wordmark.svg') }}" alt="OpenShelf" class="brand-wordmark">
             </div>
             <div class="content">
                 @yield('content')
