@@ -49,6 +49,8 @@
         .footer-meta a { color: #4C9F8A; text-decoration: none; }
         .footer-copy { margin: 0; font-size: 12px; color: #94a3b8; }
         .footer-note { margin: 10px 0 0; font-size: 11px; color: #94a3b8; }
+        .footer-links-row { margin: 6px 0 10px; font-size: 12px; color: #64748b; }
+        .footer-links-row a { color: #4C9F8A; text-decoration: none; margin: 0 6px; }
     </style>
 </head>
 <body>
@@ -84,6 +86,11 @@
                         <a href="mailto:support@duopenshelf.top">support@duopenshelf.top</a>
                         &nbsp;·&nbsp;
                         <a href="tel:+8801987971270">+880 1987 971270</a>
+                    </p>
+                    <p class="footer-links-row">
+                        <a href="{{ route('terms') }}">Terms of Service</a>
+                        &middot;
+                        <a href="{{ route('privacy') }}">Privacy Policy</a>
                     </p>
                     <p class="footer-copy">&copy; {{ $year }} OpenShelf. All rights reserved.</p>
                     <p class="footer-note">This is an automated message, please do not reply.</p>
