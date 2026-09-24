@@ -104,7 +104,7 @@
             '@type' => 'Organization',
             'name' => 'OpenShelf',
             'url' => url('/'),
-            'logo' => asset('images/logo-full.svg'),
+            'logo' => asset('images/logo-wordmark.svg'),
             'description' => 'A student-led, peer-to-peer book sharing platform'
         ];
     @endphp

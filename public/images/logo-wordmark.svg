@@ -1,5 +1,53 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 50" width="240" height="50">
-  <text x="0" y="38" font-family="'Inter', system-ui, sans-serif" font-weight="800" font-size="40" letter-spacing="-1">
-    <tspan fill="#2C3E50">Open</tspan><tspan fill="#4C9F8A">Shelf</tspan>
+<svg xmlns="http://www.w3.org/2000/svg"
+     viewBox="0 0 850 280"
+     width="100%"
+     height="100%">
+
+  <defs>
+    <linearGradient id="underlineGradient"
+                    x1="0%"
+                    y1="0%"
+                    x2="100%"
+                    y2="0%">
+      <stop offset="0%" stop-color="#1B365D"/>
+      <stop offset="100%" stop-color="#2EBFA5"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Open -->
+  <text
+    x="55"
+    y="180"
+    font-family="Poppins, Inter, Arial, Helvetica, sans-serif"
+    font-weight="700"
+    font-size="150"
+    letter-spacing="-4"
+    fill="#1B365D">
+    Open
   </text>
+
+  <!-- Shelf -->
+  <text
+    x="440"
+    y="180"
+    font-family="Poppins, Inter, Arial, Helvetica, sans-serif"
+    font-weight="700"
+    font-size="150"
+    letter-spacing="-4"
+    fill="#2EBFA5">
+    Shelf
+  </text>
+
+  <!-- Shelf -->
+  <!-- Shelf -->
+<path
+  d="M 188 205
+     L 750 205
+     C 760 205 768 200 768 175"
+  fill="none"
+  stroke="url(#underlineGradient)"
+  stroke-width="19"
+  stroke-linecap="round"
+  stroke-linejoin="round"/>
+
 </svg>

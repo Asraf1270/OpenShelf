@@ -20,8 +20,9 @@
     @endif
     <div class="header-container" id="mainHeaderContainer">
         <div class="header-logo">
-            <a href="{{ route('home') }}" class="logo-link">
-                <img src="{{ asset('images/logo-full.svg') }}" alt="OpenShelf" class="logo-image">
+            <a href="{{ route('home') }}" class="logo-link" aria-label="OpenShelf home">
+                <img src="{{ asset('images/logo-icon.svg') }}" alt="" class="logo-icon" aria-hidden="true">
+                <img src="{{ asset('images/logo-wordmark.svg') }}" alt="OpenShelf" class="logo-wordmark">
             </a>
         </div>
 
@@ -144,7 +145,10 @@
 
 <div class="mobile-nav-panel" id="mobileNavPanel" role="dialog" aria-label="Navigation menu">
     <div class="mobile-nav-header">
-        <img src="{{ asset('images/logo-full.svg') }}" alt="OpenShelf" style="height: 30px;">
+        <div class="mobile-nav-brand">
+            <img src="{{ asset('images/logo-icon.svg') }}" alt="" class="mobile-logo-icon" aria-hidden="true">
+            <img src="{{ asset('images/logo-wordmark.svg') }}" alt="OpenShelf" class="mobile-logo-wordmark">
+        </div>
         <button class="mobile-nav-close" id="mobileNavClose" type="button" aria-label="Close menu">
             <i class="fas fa-times"></i>
         </button>
@@ -276,8 +280,25 @@
     }
 
     .header-logo { flex-shrink: 0; }
-    .logo-link { display: flex; align-items: center; text-decoration: none; }
-    .logo-image { height: 36px; width: auto; }
+    .logo-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.01rem;
+        text-decoration: none;
+        line-height: 1;
+    }
+    .logo-icon {
+        height: 28px;
+        width: auto;
+        display: block;
+        flex-shrink: 0;
+    }
+    .logo-wordmark {
+        height: 30px;
+        width: auto;
+        display: block;
+        flex-shrink: 0;
+    }
 
     .header-nav-desktop {
         display: flex;
@@ -679,6 +700,25 @@
         top: 0;
         background: inherit;
         z-index: 1;
+    }
+
+    .mobile-nav-brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.05rem;
+        line-height: 1;
+    }
+    .mobile-logo-icon {
+        height: 24px;
+        width: auto;
+        display: block;
+        flex-shrink: 0;
+    }
+    .mobile-logo-wordmark {
+        height: 25px;
+        width: auto;
+        display: block;
+        flex-shrink: 0;
     }
 
     [data-theme="dark"] .mobile-nav-header { border-bottom-color: rgba(255, 255, 255, 0.06); }
