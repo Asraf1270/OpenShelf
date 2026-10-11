@@ -20,6 +20,7 @@ class User extends Authenticatable
         'verified' => 'boolean',
         'otp_expiry' => 'datetime',
         'boipoka_badge' => 'integer',
+        'boipoka_position' => 'integer',
     ];
 
     public function getAuthPassword(): string
