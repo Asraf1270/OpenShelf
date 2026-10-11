@@ -44,7 +44,7 @@ class Markdown
         $previousUseInternalErrors = libxml_use_internal_errors(true);
 
         $document->loadHTML(
-            '<div id="markdown-root">' . $html . '</div>',
+            '<?xml encoding="UTF-8"><div id="markdown-root">' . $html . '</div>',
             LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD
         );
 
@@ -64,6 +64,8 @@ class Markdown
         foreach (iterator_to_array($root->childNodes) as $childNode) {
             $output .= $document->saveHTML($childNode);
         }
+
+        $output = preg_replace('/^<\?xml.*?\?>/i', '', $output) ?? $output;
 
         return trim($output);
     }
