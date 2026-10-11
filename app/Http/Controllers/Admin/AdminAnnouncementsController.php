@@ -193,6 +193,8 @@ class AdminAnnouncementsController extends AdminController
                         'user_name' => $user->name,
                         'announcement_title' => $announcement->title,
                         'announcement_content' => $announcement->content,
+                            'announcement_content_html' => $announcement->content_html,
+                            'announcement_content_plain' => $announcement->content_plain,
                         'announcement_priority' => $announcement->priority,
                         'announcement_link' => route('announcements.index', ['id' => $announcement->id]),
                         'base_url' => config('app.url'),

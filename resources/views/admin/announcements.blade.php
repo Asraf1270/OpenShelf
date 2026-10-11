@@ -18,6 +18,41 @@
     .form-label { display: block; margin-bottom: 0.5rem; font-weight: 500; }
     .form-control { width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: 0.75rem; font-size: 0.9rem; background: var(--surface); color: var(--text-main); font: inherit; }
     textarea.form-control { min-height: 150px; resize: vertical; }
+    .editor-wrapper { display: flex; flex-direction: column; gap: 0.75rem; }
+    .toolbar-row { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+    .tool-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        padding: 0.45rem 0.7rem;
+        border: 1px solid var(--border);
+        background: var(--bg-body);
+        color: var(--text-main);
+        border-radius: 0.65rem;
+        font-size: 0.8rem;
+        cursor: pointer;
+        transition: var(--transition);
+    }
+    .tool-btn:hover { border-color: var(--primary); color: var(--primary); background: var(--surface); }
+    .tool-btn.compact { padding: 0.45rem 0.55rem; }
+    .tool-divider { width: 1px; height: 26px; background: var(--border); align-self: center; margin: 0 0.15rem; }
+    .editor-note { font-size: 0.8rem; color: var(--text-muted); margin-top: -0.25rem; }
+    .preview-box {
+        background: var(--bg-body);
+        border: 1px solid var(--border);
+        border-radius: 0.9rem;
+        padding: 1rem;
+        display: none;
+        line-height: 1.7;
+    }
+    .preview-box.active { display: block; }
+    .preview-box h1, .preview-box h2, .preview-box h3, .preview-box h4, .preview-box h5, .preview-box h6 { margin: 0.8rem 0 0.5rem; line-height: 1.3; }
+    .preview-box p, .preview-box ul, .preview-box ol, .preview-box blockquote, .preview-box pre { margin: 0 0 0.8rem; }
+    .preview-box ul, .preview-box ol { padding-left: 1.3rem; }
+    .preview-box blockquote { border-left: 4px solid var(--primary); padding-left: 0.85rem; color: var(--text-muted); font-style: italic; }
+    .preview-box a { color: var(--primary); text-decoration: underline; }
+    .preview-box code { background: rgba(15,23,42,0.08); padding: 0.12rem 0.3rem; border-radius: 0.4rem; }
+    .preview-box pre { overflow-x: auto; background: rgba(15,23,42,0.05); padding: 0.9rem 1rem; border-radius: 0.75rem; }
     .checkbox-group { display: flex; gap: 1rem; flex-wrap: wrap; }
     .checkbox-label { display: flex; align-items: center; gap: 0.5rem; cursor: pointer; }
     .announcement-list { display: flex; flex-direction: column; gap: 1rem; }
@@ -78,7 +113,26 @@
 
             <div class="form-group">
                 <label class="form-label"><i class="fas fa-align-left"></i> Content</label>
-                <textarea name="content" class="form-control" rows="8" required placeholder="Write your announcement content here...">{{ old('content', $editingAnnouncement->content ?? '') }}</textarea>
+                <div class="editor-wrapper">
+                    <div class="toolbar-row">
+                        <button type="button" class="tool-btn compact" onclick="wrapSelection('**', '**')" title="Bold"><i class="fas fa-bold"></i></button>
+                        <button type="button" class="tool-btn compact" onclick="wrapSelection('*', '*')" title="Italic"><i class="fas fa-italic"></i></button>
+                        <button type="button" class="tool-btn compact" onclick="wrapSelection('<u>', '</u>')" title="Underline"><i class="fas fa-underline"></i></button>
+                        <div class="tool-divider"></div>
+                        <button type="button" class="tool-btn compact" onclick="formatHeading(1)" title="Heading 1">H1</button>
+                        <button type="button" class="tool-btn compact" onclick="formatHeading(2)" title="Heading 2">H2</button>
+                        <button type="button" class="tool-btn compact" onclick="toggleList('- ')" title="Bullet list"><i class="fas fa-list-ul"></i></button>
+                        <button type="button" class="tool-btn compact" onclick="toggleList('1. ')" title="Numbered list"><i class="fas fa-list-ol"></i></button>
+                        <button type="button" class="tool-btn compact" onclick="wrapSelection('> ', '')" title="Quote"><i class="fas fa-quote-right"></i></button>
+                        <button type="button" class="tool-btn compact" onclick="insertLink()" title="Link"><i class="fas fa-link"></i></button>
+                        <button type="button" class="tool-btn compact" onclick="wrapSelection('`', '`')" title="Code"><i class="fas fa-code"></i></button>
+                        <button type="button" class="tool-btn compact" onclick="togglePreview()" title="Toggle preview"><i class="fas fa-eye"></i> Preview</button>
+                        <button type="button" class="tool-btn compact" onclick="clearContent()" title="Clear"><i class="fas fa-trash"></i> Clear</button>
+                    </div>
+                    <textarea name="content" id="announcementContent" class="form-control" rows="8" required placeholder="Write your announcement in Markdown...">{{ old('content', $editingAnnouncement->content ?? '') }}</textarea>
+                    <div class="editor-note">Markdown is supported. Use the buttons above to insert formatting.</div>
+                    <div class="preview-box" id="announcementPreview"></div>
+                </div>
             </div>
 
             <div class="form-row">
@@ -175,7 +229,7 @@
                             <span><i class="fas fa-check-circle"></i> {{ $announcement->stats['read'] ?? 0 }} read</span>
                         </div>
                     </div>
-                    <div class="announcement-content">{{ \Illuminate\Support\Str::limit($announcement->content, 300) }}</div>
+                    <div class="announcement-content">{{ \Illuminate\Support\Str::limit($announcement->content_preview, 300) }}</div>
                     <div class="announcement-actions">
                         @if ($isScheduled)
                             <form method="POST" style="display:inline;" onsubmit="return confirm('Send this announcement now?')">
@@ -199,3 +253,216 @@
     @endif
 </div>
 @endsection
+
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        updateAnnouncementPreview();
+        const textarea = getAnnouncementTextarea();
+        if (textarea) {
+            textarea.addEventListener('input', updateAnnouncementPreview);
+        }
+    });
+
+    function getAnnouncementTextarea() {
+        return document.getElementById('announcementContent');
+    }
+
+    function escapeHtml(text) {
+        return text
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;');
+    }
+
+    function wrapSelection(before, after) {
+        const textarea = getAnnouncementTextarea();
+        if (!textarea) return;
+
+        const start = textarea.selectionStart;
+        const end = textarea.selectionEnd;
+        const selected = textarea.value.substring(start, end);
+        const replacement = before + (selected || 'text') + after;
+
+        textarea.value = textarea.value.substring(0, start) + replacement + textarea.value.substring(end);
+        textarea.focus();
+        textarea.setSelectionRange(start + before.length, start + before.length + (selected.length || 4));
+        updateAnnouncementPreview();
+    }
+
+    function formatHeading(level) {
+        const textarea = getAnnouncementTextarea();
+        if (!textarea) return;
+
+        const value = textarea.value;
+        const start = textarea.selectionStart;
+        const end = textarea.selectionEnd;
+        const startOfLine = value.lastIndexOf('\n', start - 1) + 1;
+        const endOfLine = value.indexOf('\n', end);
+        const lineEnd = endOfLine === -1 ? value.length : endOfLine;
+        const lines = value.substring(startOfLine, lineEnd).split('\n');
+        const prefix = '#'.repeat(Math.max(1, Math.min(level, 6))) + ' ';
+
+        const replacement = lines.map(line => {
+            const trimmed = line.trim();
+            if (trimmed === '') {
+                return line;
+            }
+
+            return prefix + line.replace(/^#{1,6}\s+/, '');
+        }).join('\n');
+
+        textarea.value = value.substring(0, startOfLine) + replacement + value.substring(lineEnd);
+        textarea.focus();
+        textarea.setSelectionRange(startOfLine, startOfLine + replacement.length);
+        updateAnnouncementPreview();
+    }
+
+    function toggleList(marker) {
+        const textarea = getAnnouncementTextarea();
+        if (!textarea) return;
+
+        const value = textarea.value;
+        const start = textarea.selectionStart;
+        const end = textarea.selectionEnd;
+        const startOfLine = value.lastIndexOf('\n', start - 1) + 1;
+        const endOfLine = value.indexOf('\n', end);
+        const lineEnd = endOfLine === -1 ? value.length : endOfLine;
+        const lines = value.substring(startOfLine, lineEnd).split('\n');
+
+        const replacement = lines.map((line, index) => {
+            const trimmed = line.trim();
+            if (trimmed === '') {
+                return line;
+            }
+
+            const stripped = line.replace(/^([-*+]\s+|\d+\.\s+)/, '');
+
+            if (marker === '- ') {
+                return '- ' + stripped;
+            }
+
+            return `${index + 1}. ${stripped}`;
+        }).join('\n');
+
+        textarea.value = value.substring(0, startOfLine) + replacement + value.substring(lineEnd);
+        textarea.focus();
+        textarea.setSelectionRange(startOfLine, startOfLine + replacement.length);
+        updateAnnouncementPreview();
+    }
+
+    function insertLink() {
+        const textarea = getAnnouncementTextarea();
+        if (!textarea) return;
+
+        const url = prompt('Enter the link URL');
+        if (!url) return;
+
+        const start = textarea.selectionStart;
+        const end = textarea.selectionEnd;
+        const selected = textarea.value.substring(start, end) || 'link text';
+        const replacement = `[${selected}](${url})`;
+
+        textarea.value = textarea.value.substring(0, start) + replacement + textarea.value.substring(end);
+        textarea.focus();
+        textarea.setSelectionRange(start + 1, start + 1 + selected.length);
+        updateAnnouncementPreview();
+    }
+
+    function renderAnnouncementMarkdown(text) {
+        const codeBlocks = [];
+        let prepared = text.replace(/```([\s\S]*?)```/g, (_, code) => {
+            const placeholder = `__ANN_CODE_${codeBlocks.length}__`;
+            codeBlocks.push(`<pre><code>${escapeHtml(code.trim())}</code></pre>`);
+            return placeholder;
+        });
+
+        prepared = escapeHtml(prepared)
+            .replace(/(^|\n)######\s+(.*)/g, '$1<h6>$2</h6>')
+            .replace(/(^|\n)#####\s+(.*)/g, '$1<h5>$2</h5>')
+            .replace(/(^|\n)####\s+(.*)/g, '$1<h4>$2</h4>')
+            .replace(/(^|\n)###\s+(.*)/g, '$1<h3>$2</h3>')
+            .replace(/(^|\n)##\s+(.*)/g, '$1<h2>$2</h2>')
+            .replace(/(^|\n)#\s+(.*)/g, '$1<h1>$2</h1>')
+            .replace(/(^|\n)&gt;\s+(.*)/g, '$1<blockquote>$2</blockquote>')
+            .replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+|\/[^\s)]*|#[^\s)]*|mailto:[^\s)]+|tel:[^\s)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>')
+            .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+            .replace(/\*(?!\s)([^*\n]+?)(?<!\s)\*/g, '<em>$1</em>')
+            .replace(/&lt;u&gt;(.*?)&lt;\/u&gt;/g, '<u>$1</u>')
+            .replace(/`([^`\n]+)`/g, '<code>$1</code>');
+
+        const blocks = prepared
+            .split(/\n\s*\n/)
+            .map(block => {
+                const trimmed = block.trim();
+
+                if (trimmed === '') {
+                    return '';
+                }
+
+                if (/^__ANN_CODE_\d+__$/.test(trimmed)) {
+                    return trimmed;
+                }
+
+                if (/^<(h[1-6]|blockquote|pre|ul|ol|li|p)/.test(trimmed)) {
+                    return trimmed;
+                }
+
+                const lines = trimmed.split('\n');
+                const isBulleted = lines.every(line => /^[-*+]\s+/.test(line));
+                const isNumbered = lines.every(line => /^\d+\.\s+/.test(line));
+
+                if (isBulleted) {
+                    return `<ul>${lines.map(line => `<li>${line.replace(/^[-*+]\s+/, '')}</li>`).join('')}</ul>`;
+                }
+
+                if (isNumbered) {
+                    return `<ol>${lines.map(line => `<li>${line.replace(/^\d+\.\s+/, '')}</li>`).join('')}</ol>`;
+                }
+
+                return `<p>${trimmed.replace(/\n/g, '<br>')}</p>`;
+            })
+            .filter(Boolean)
+            .join('');
+
+        return blocks.replace(/__ANN_CODE_(\d+)__/g, (_, index) => codeBlocks[Number(index)] ?? '');
+    }
+
+    function updateAnnouncementPreview() {
+        const textarea = getAnnouncementTextarea();
+        const preview = document.getElementById('announcementPreview');
+        if (!textarea || !preview) return;
+
+        if (!textarea.value.trim()) {
+            preview.classList.remove('active');
+            preview.innerHTML = '';
+            return;
+        }
+
+        preview.innerHTML = renderAnnouncementMarkdown(textarea.value);
+        if (preview.classList.contains('active')) {
+            preview.scrollTop = 0;
+        }
+    }
+
+    function togglePreview() {
+        const preview = document.getElementById('announcementPreview');
+        if (!preview) return;
+
+        preview.classList.toggle('active');
+        if (preview.classList.contains('active')) {
+            updateAnnouncementPreview();
+        }
+    }
+
+    function clearContent() {
+        const textarea = getAnnouncementTextarea();
+        if (!textarea) return;
+
+        if (textarea.value && confirm('Clear the announcement content?')) {
+            textarea.value = '';
+            updateAnnouncementPreview();
+        }
+    }
+</script>
+@endpush
