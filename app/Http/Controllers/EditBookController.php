@@ -92,7 +92,7 @@ class EditBookController extends Controller
         $validator = Validator::make($request->all(), [
             'title' => ['required', 'string', 'min:2', 'max:200'],
             'author' => ['required', 'string', 'min:2', 'max:100'],
-            'description' => ['required', 'string', 'min:20', 'max:5000'],
+            'description' => ['nullable', 'string', 'min:20', 'max:5000'],
             'category' => ['required', 'string', 'in:' . implode(',', $this->categories())],
             'condition' => ['required', 'string', 'in:' . implode(',', array_keys($this->conditions()))],
             'cover_image' => ['nullable', 'file', 'image', 'mimes:jpeg,png,gif,webp', 'max:10240'],
@@ -104,7 +104,6 @@ class EditBookController extends Controller
             'author.required' => 'Author name is required',
             'author.min' => 'Author name must be at least 2 characters',
             'author.max' => 'Author name must be less than 100 characters',
-            'description.required' => 'Description is required',
             'description.min' => 'Description must be at least 20 characters',
             'description.max' => 'Description must be less than 5000 characters',
             'category.required' => 'Please select a category',

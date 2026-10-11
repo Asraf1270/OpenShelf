@@ -85,8 +85,20 @@
 
             <div class="form-group">
                 <label class="form-label">Description <span class="text-muted">(Optional)</span></label>
-                <textarea name="description" class="form-textarea" rows="6" maxlength="5000" oninput="updateCharCount(this)">{{ old('description') }}</textarea>
-                <div class="char-counter" id="charCount">0/5000 characters</div>
+                <div class="editor-shell">
+                    <div class="editor-toolbar">
+                        <button type="button" class="tool-btn compact" onclick="wrapSelection('**', '**')" title="Bold"><i class="fas fa-bold"></i></button>
+                        <button type="button" class="tool-btn compact" onclick="wrapSelection('*', '*')" title="Italic"><i class="fas fa-italic"></i></button>
+                        <button type="button" class="tool-btn compact" onclick="formatHeading(1)" title="Heading 1">H1</button>
+                        <button type="button" class="tool-btn compact" onclick="formatHeading(2)" title="Heading 2">H2</button>
+                        <button type="button" class="tool-btn compact" onclick="wrapSelection('> ', '')" title="Quote"><i class="fas fa-quote-right"></i></button>
+                        <button type="button" class="tool-btn compact" onclick="togglePreview()" title="Preview"><i class="fas fa-eye"></i> Preview</button>
+                        <button type="button" class="tool-btn compact" onclick="clearDescription()" title="Clear"><i class="fas fa-trash"></i> Clear</button>
+                    </div>
+                    <textarea name="description" id="bookDescription" class="form-textarea" rows="6" maxlength="5000" oninput="updateCharCount(this)">{{ old('description') }}</textarea>
+                    <div class="char-counter" id="charCount">0/5000 characters</div>
+                    <div class="editor-preview" id="descriptionPreview"></div>
+                </div>
                 @error('description')
                     <div class="text-danger small">{{ $message }}</div>
                 @enderror
@@ -144,6 +156,10 @@
 
 @push('scripts')
 <script>
+    function getDescriptionField() {
+        return document.getElementById('bookDescription');
+    }
+
     function previewCover(input) {
         const preview = document.getElementById('coverPreview');
         if (input.files && input.files[0]) {
@@ -165,6 +181,109 @@
         if (count > max * 0.9) counter.classList.add('danger'), counter.classList.remove('warning');
         else if (count > max * 0.75) counter.classList.add('warning'), counter.classList.remove('danger');
         else counter.classList.remove('warning', 'danger');
+        updateDescriptionPreview();
+    }
+
+    function escapeHtml(text) {
+        return text
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;');
+    }
+
+    function wrapSelection(before, after) {
+        const textarea = getDescriptionField();
+        if (!textarea) return;
+
+        const start = textarea.selectionStart;
+        const end = textarea.selectionEnd;
+        const selected = textarea.value.substring(start, end);
+        const replacement = before + (selected || 'text') + after;
+
+        textarea.value = textarea.value.substring(0, start) + replacement + textarea.value.substring(end);
+        textarea.focus();
+        textarea.setSelectionRange(start + before.length, start + before.length + (selected.length || 4));
+        updateCharCount(textarea);
+    }
+
+    function formatHeading(level) {
+        const textarea = getDescriptionField();
+        if (!textarea) return;
+
+        const value = textarea.value;
+        const start = textarea.selectionStart;
+        const end = textarea.selectionEnd;
+        const startOfLine = value.lastIndexOf('\n', start - 1) + 1;
+        const endOfLine = value.indexOf('\n', end);
+        const lineEnd = endOfLine === -1 ? value.length : endOfLine;
+        const lines = value.substring(startOfLine, lineEnd).split('\n');
+        const prefix = '#'.repeat(Math.max(1, Math.min(level, 6))) + ' ';
+
+        const replacement = lines.map(line => {
+            const trimmed = line.trim();
+            if (trimmed === '') {
+                return line;
+            }
+
+            return prefix + line.replace(/^#{1,6}\s+/, '');
+        }).join('\n');
+
+        textarea.value = value.substring(0, startOfLine) + replacement + value.substring(lineEnd);
+        textarea.focus();
+        textarea.setSelectionRange(startOfLine, startOfLine + replacement.length);
+        updateCharCount(textarea);
+    }
+
+    function renderMarkdown(text) {
+        if (!text.trim()) {
+            return '<div class="empty-preview">Preview will appear here.</div>';
+        }
+
+        const prepared = escapeHtml(text)
+            .replace(/(^|\n)##\s+(.*)/g, '$1<h2>$2</h2>')
+            .replace(/(^|\n)#\s+(.*)/g, '$1<h1>$2</h1>')
+            .replace(/(^|\n)&gt;\s+(.*)/g, '$1<blockquote>$2</blockquote>')
+            .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+            .replace(/\*(?!\s)([^*\n]+?)(?<!\s)\*/g, '<em>$1</em>');
+
+        return prepared
+            .split(/\n\s*\n/)
+            .map(block => {
+                const trimmed = block.trim();
+                if (!trimmed) return '';
+                if (/^<(h[12]|blockquote)/.test(trimmed)) return trimmed;
+                return `<p>${trimmed.replace(/\n/g, '<br>')}</p>`;
+            })
+            .filter(Boolean)
+            .join('');
+    }
+
+    function updateDescriptionPreview() {
+        const textarea = getDescriptionField();
+        const preview = document.getElementById('descriptionPreview');
+        if (!textarea || !preview) return;
+
+        preview.innerHTML = renderMarkdown(textarea.value);
+    }
+
+    function togglePreview() {
+        const preview = document.getElementById('descriptionPreview');
+        if (!preview) return;
+
+        preview.classList.toggle('active');
+        if (preview.classList.contains('active')) {
+            updateDescriptionPreview();
+        }
+    }
+
+    function clearDescription() {
+        const textarea = getDescriptionField();
+        if (!textarea) return;
+
+        if (textarea.value && confirm('Clear the description?')) {
+            textarea.value = '';
+            updateCharCount(textarea);
+        }
     }
 
     function toggleMoreInfo(event) {
@@ -177,6 +296,8 @@
     }
 
     const desc = document.querySelector('textarea[name="description"]');
-    if (desc) updateCharCount(desc);
+    if (desc) {
+        updateCharCount(desc);
+    }
 </script>
 @endpush
