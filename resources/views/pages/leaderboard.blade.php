@@ -343,9 +343,9 @@
                 <div>User</div>
                 <div style="text-align: right;">Points</div>
             </div>
-            @foreach($topUsers->skip(3) as $index => $user)
+            @foreach($topUsers->skip(3) as $user)
             <a href="{{ route('profile', ['id' => $user->id]) }}" class="list-item">
-                <div class="list-rank">#{{ $index + 4 }}</div>
+                <div class="list-rank">#{{ $user->boipoka_position ?? '—' }}</div>
                 <div class="list-user">
                     <img src="{{ $user->profile_image_url }}" alt="{{ $user->name }}" class="list-avatar">
                     <span class="list-name">{{ $user->name }}</span>

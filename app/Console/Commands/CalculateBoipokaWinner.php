@@ -26,6 +26,45 @@ class CalculateBoipokaWinner extends Command
      */
     protected $description = 'Calculate monthly Boipoka (Winner) points and assign badge';
 
+    public static function sortLeaderboardEntries(array $entries): array
+    {
+        usort($entries, function (array $left, array $right): int {
+            $comparison = ($right['boipoka_points'] ?? 0) <=> ($left['boipoka_points'] ?? 0);
+            if ($comparison !== 0) {
+                return $comparison;
+            }
+
+            $comparison = ($right['added_books'] ?? 0) <=> ($left['added_books'] ?? 0);
+            if ($comparison !== 0) {
+                return $comparison;
+            }
+
+            $comparison = ($right['lent_books'] ?? 0) <=> ($left['lent_books'] ?? 0);
+            if ($comparison !== 0) {
+                return $comparison;
+            }
+
+            $comparison = ($right['on_time_returns'] ?? 0) <=> ($left['on_time_returns'] ?? 0);
+            if ($comparison !== 0) {
+                return $comparison;
+            }
+
+            $comparison = ($right['review_count'] ?? 0) <=> ($left['review_count'] ?? 0);
+            if ($comparison !== 0) {
+                return $comparison;
+            }
+
+            $sessionComparison = strcasecmp((string) ($left['session'] ?? ''), (string) ($right['session'] ?? ''));
+            if ($sessionComparison !== 0) {
+                return $sessionComparison;
+            }
+
+            return strcasecmp((string) ($left['name'] ?? ''), (string) ($right['name'] ?? ''));
+        });
+
+        return $entries;
+    }
+
     /**
      * Execute the console command.
      */
@@ -36,11 +75,15 @@ class CalculateBoipokaWinner extends Command
 
         $this->info("Calculating Boipoka points for " . $start->format('F Y'));
 
-        // Reset points and badges
-        User::query()->update(['boipoka_points' => 0, 'boipoka_badge' => false]);
+        User::query()->update([
+            'boipoka_points' => 0,
+            'boipoka_badge' => false,
+            'boipoka_position' => null,
+        ]);
 
         $users = User::all();
         $allBooks = Book::whereNotNull('reviews')->get();
+        $leaderboardEntries = [];
 
         foreach ($users as $user) {
             $points = 0;
@@ -52,7 +95,6 @@ class CalculateBoipokaWinner extends Command
             $points += $addedBooksCount * 15;
 
             // 2. Borrow Book = 25 points
-            // Find requests where user is borrower, created last month, and got approved/returned
             $borrowedRequests = BorrowRequest::where('borrower_id', $user->id)
                 ->whereBetween('request_date', [$start, $end])
                 ->whereIn('status', ['approved', 'returned'])
@@ -60,23 +102,21 @@ class CalculateBoipokaWinner extends Command
             $points += $borrowedRequests->count() * 25;
 
             // 3. Lending Book = 50 points
-            // Find requests where user is owner, created last month, and got approved/returned
             $lentRequests = BorrowRequest::where('owner_id', $user->id)
                 ->whereBetween('request_date', [$start, $end])
                 ->whereIn('status', ['approved', 'returned'])
                 ->get();
             $points += $lentRequests->count() * 50;
 
-            // 4. Lending book on time (Borrower returned on time = 15 points)
-            // 5. Lending book overdue (Borrower returned late = -2 per day)
-            // Apply this to the borrower
+            $onTimeReturnCount = 0;
             foreach ($borrowedRequests as $req) {
                 if ($req->actual_return_date && $req->expected_return_date) {
                     $actual = Carbon::parse($req->actual_return_date);
                     $expected = Carbon::parse($req->expected_return_date);
-                    
+
                     if ($actual->lessThanOrEqualTo($expected)) {
                         $points += 15;
+                        $onTimeReturnCount++;
                     } else {
                         $daysOverdue = $expected->diffInDays($actual);
                         $points -= ($daysOverdue * 2);
@@ -84,7 +124,6 @@ class CalculateBoipokaWinner extends Command
                 }
             }
 
-            // 6. Review and rating = 2 points per review
             $reviewCount = 0;
             foreach ($allBooks as $book) {
                 $reviews = is_string($book->reviews) ? json_decode($book->reviews, true) : $book->reviews;
@@ -104,29 +143,29 @@ class CalculateBoipokaWinner extends Command
             $points += $reviewCount * 2;
 
             if ($points > 0) {
-                $user->update(['boipoka_points' => $points]);
+                $leaderboardEntries[] = [
+                    'user' => $user,
+                    'boipoka_points' => $points,
+                    'added_books' => $addedBooksCount,
+                    'lent_books' => $lentRequests->count(),
+                    'on_time_returns' => $onTimeReturnCount,
+                    'review_count' => $reviewCount,
+                    'session' => (string) ($user->session ?? ''),
+                    'name' => (string) $user->name,
+                ];
             }
         }
 
-        // Assign Badge to the top users
-        $topUsers = User::where('boipoka_points', '>', 0)
-            ->orderBy('boipoka_points', 'desc')
-            ->limit(10)
-            ->get();
+        $leaderboardEntries = self::sortLeaderboardEntries($leaderboardEntries);
 
-        if ($topUsers->isEmpty()) {
-            $this->info("No points awarded this month.");
-        } else {
-            $rank = 1;
-            foreach ($topUsers as $topUser) {
-                if ($rank <= 3) {
-                    $topUser->update(['boipoka_badge' => $rank]);
-                } else {
-                    $topUser->update(['boipoka_badge' => 4]); // 4 represents Top 10
-                }
-                $rank++;
-            }
-            $this->info("Badges assigned to top {$topUsers->count()} users.");
+        foreach ($leaderboardEntries as $index => $entry) {
+            $entry['user']->update([
+                'boipoka_points' => $entry['boipoka_points'],
+                'boipoka_position' => $index + 1,
+                'boipoka_badge' => $index < 3 ? $index + 1 : 4,
+            ]);
         }
+
+        $this->info('Leaderboard updated for ' . count($leaderboardEntries) . ' users.');
     }
 }

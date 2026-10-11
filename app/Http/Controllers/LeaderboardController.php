@@ -10,7 +10,8 @@ class LeaderboardController extends Controller
     public function index(Request $request)
     {
         $topUsers = User::where('boipoka_points', '>', 0)
-            ->orderBy('boipoka_points', 'desc')
+            ->orderBy('boipoka_position', 'asc')
+            ->orderBy('name', 'asc')
             ->limit(50)
             ->get();
 
