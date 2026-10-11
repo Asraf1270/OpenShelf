@@ -183,6 +183,11 @@
         flex-direction: column;
         gap: 0.75rem;
     }
+    .toolbar-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.4rem;
+    }
     .editor-textarea {
         width: 100%;
         min-height: 220px;
@@ -226,6 +231,21 @@
         background: var(--surface);
         border-color: var(--secondary);
         color: var(--secondary);
+    }
+    .tool-btn.active {
+        background: rgba(76, 159, 138, 0.12);
+        border-color: var(--secondary);
+        color: var(--secondary);
+    }
+    .tool-btn.compact {
+        padding: 0.4rem 0.55rem;
+    }
+    .tool-divider {
+        width: 1px;
+        height: 24px;
+        background: var(--border);
+        margin: 0 0.2rem;
+        align-self: center;
     }
     .char-counter {
         font-size: 0.8rem;
@@ -334,6 +354,48 @@
     }
     .preview-box.active {
         display: block;
+    }
+    .preview-box h1,
+    .preview-box h2,
+    .preview-box h3,
+    .preview-box h4,
+    .preview-box h5,
+    .preview-box h6 {
+        margin: 0.85rem 0 0.55rem;
+        line-height: 1.3;
+    }
+    .preview-box p,
+    .preview-box ul,
+    .preview-box ol,
+    .preview-box blockquote,
+    .preview-box pre {
+        margin: 0 0 0.85rem;
+    }
+    .preview-box ul,
+    .preview-box ol {
+        padding-left: 1.4rem;
+    }
+    .preview-box blockquote {
+        border-left: 4px solid var(--secondary);
+        padding-left: 0.9rem;
+        color: var(--text-muted);
+        font-style: italic;
+    }
+    .preview-box code {
+        background: rgba(15, 23, 42, 0.08);
+        padding: 0.12rem 0.3rem;
+        border-radius: 5px;
+    }
+    .preview-box pre {
+        white-space: pre-wrap;
+        background: rgba(15, 23, 42, 0.05);
+        padding: 0.85rem 1rem;
+        border-radius: 10px;
+        overflow-x: auto;
+    }
+    .preview-box a {
+        color: var(--secondary);
+        text-decoration: underline;
     }
 </style>
 @endpush
@@ -479,17 +541,38 @@
 
                         <div class="editor-wrapper">
                             <div class="editor-tools">
-                                <div style="display: flex; gap: 0.4rem;">
-                                    <button type="button" class="tool-btn" onclick="wrapText('**', '**')" title="Bold">
+                                <div class="toolbar-row">
+                                    <button type="button" class="tool-btn compact" onclick="wrapSelection('**', '**')" title="Bold">
                                         <i class="fas fa-bold"></i>
                                     </button>
-                                    <button type="button" class="tool-btn" onclick="wrapText('*', '*')" title="Italic">
+                                    <button type="button" class="tool-btn compact" onclick="wrapSelection('*', '*')" title="Italic">
                                         <i class="fas fa-italic"></i>
                                     </button>
-                                    <button type="button" class="tool-btn" onclick="formatParagraphs()" title="Format Paragraphs">
+                                    <button type="button" class="tool-btn compact" onclick="wrapSelection('<u>', '</u>')" title="Underline">
+                                        <i class="fas fa-underline"></i>
+                                    </button>
+                                    <div class="tool-divider"></div>
+                                    <button type="button" class="tool-btn compact" onclick="formatHeading(1)" title="Heading 1">H1</button>
+                                    <button type="button" class="tool-btn compact" onclick="formatHeading(2)" title="Heading 2">H2</button>
+                                    <button type="button" class="tool-btn compact" onclick="toggleList('- ')" title="Bullet list">
+                                        <i class="fas fa-list-ul"></i>
+                                    </button>
+                                    <button type="button" class="tool-btn compact" onclick="toggleList('1. ')" title="Numbered list">
+                                        <i class="fas fa-list-ol"></i>
+                                    </button>
+                                    <button type="button" class="tool-btn compact" onclick="wrapSelection('> ', '')" title="Quote">
+                                        <i class="fas fa-quote-right"></i>
+                                    </button>
+                                    <button type="button" class="tool-btn compact" onclick="insertLink()" title="Link">
+                                        <i class="fas fa-link"></i>
+                                    </button>
+                                    <button type="button" class="tool-btn compact" onclick="wrapSelection('`', '`')" title="Inline code">
+                                        <i class="fas fa-code"></i>
+                                    </button>
+                                    <button type="button" class="tool-btn compact" onclick="formatParagraphs()" title="Normalize spacing">
                                         <i class="fas fa-paragraph"></i> Auto-Paragraph
                                     </button>
-                                    <button type="button" class="tool-btn" onclick="clearText()" title="Clear Text">
+                                    <button type="button" class="tool-btn compact" onclick="clearText()" title="Clear Text">
                                         <i class="fas fa-trash-alt"></i> Clear
                                     </button>
                                 </div>
@@ -503,7 +586,7 @@
                                 placeholder="Paste the generated Bengali summary here... (Markdown & standard line breaks supported)" 
                                 required
                                 oninput="updateCounts()"
-                            >{{ old('description') }}</textarea>
+                            >{{ old('description', $currentBook->description ?? '') }}</textarea>
 
                             <div class="preview-box" id="previewBox">
                                 <div style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); margin-bottom: 0.5rem; text-transform: uppercase;">Rendered Preview</div>
@@ -625,7 +708,7 @@
     }
 
     function updateCounts() {
-        const textarea = document.getElementById('descriptionTextarea');
+        const textarea = getTextarea();
         const counter = document.getElementById('charCounter');
         if (!textarea || !counter) return;
 
@@ -645,7 +728,7 @@
         const previewBox = document.getElementById('previewBox');
         const label = document.getElementById('previewBtnLabel');
         const icon = document.getElementById('previewIcon');
-        const textarea = document.getElementById('descriptionTextarea');
+        const textarea = getTextarea();
 
         if (!previewBox) return;
 
@@ -667,21 +750,24 @@
             return;
         }
 
-        const formatted = text
-            .replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
-            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-            .replace(/\*(.*?)\*/g, '<em>$1</em>')
-            .split(/\n\s*\n/)
-            .map(p => `<p style="margin-bottom: 0.85rem;">${p.replace(/\n/g, '<br>')}</p>`)
-            .join('');
+        const formatted = renderMarkdownPreview(text);
 
         previewContent.innerHTML = formatted;
     }
 
-    function wrapText(before, after) {
-        const textarea = document.getElementById('descriptionTextarea');
+    function getTextarea() {
+        return document.getElementById('descriptionTextarea');
+    }
+
+    function escapeHtml(text) {
+        return text
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;');
+    }
+
+    function wrapSelection(before, after) {
+        const textarea = getTextarea();
         if (!textarea) return;
 
         const start = textarea.selectionStart;
@@ -695,8 +781,146 @@
         updateCounts();
     }
 
+    function formatHeading(level) {
+        const textarea = getTextarea();
+        if (!textarea) return;
+
+        const value = textarea.value;
+        const start = textarea.selectionStart;
+        const end = textarea.selectionEnd;
+        const startOfLine = value.lastIndexOf('\n', start - 1) + 1;
+        const endOfLine = value.indexOf('\n', end);
+        const lineEnd = endOfLine === -1 ? value.length : endOfLine;
+        const lines = value.substring(startOfLine, lineEnd).split('\n');
+        const prefix = '#'.repeat(Math.max(1, Math.min(level, 6))) + ' ';
+
+        const replacement = lines.map(line => {
+            const trimmed = line.trim();
+            if (trimmed === '') {
+                return line;
+            }
+
+            return prefix + line.replace(/^#{1,6}\s+/, '');
+        }).join('\n');
+
+        textarea.value = value.substring(0, startOfLine) + replacement + value.substring(lineEnd);
+        textarea.focus();
+        textarea.setSelectionRange(startOfLine, startOfLine + replacement.length);
+        updateCounts();
+    }
+
+    function toggleList(marker) {
+        const textarea = getTextarea();
+        if (!textarea) return;
+
+        const value = textarea.value;
+        const start = textarea.selectionStart;
+        const end = textarea.selectionEnd;
+        const startOfLine = value.lastIndexOf('\n', start - 1) + 1;
+        const endOfLine = value.indexOf('\n', end);
+        const lineEnd = endOfLine === -1 ? value.length : endOfLine;
+        const lines = value.substring(startOfLine, lineEnd).split('\n');
+
+        const replacement = lines.map((line, index) => {
+            const trimmed = line.trim();
+            if (trimmed === '') {
+                return line;
+            }
+
+            const stripped = line.replace(/^([-*+]\s+|\d+\.\s+)/, '');
+
+            if (marker === '- ') {
+                return '- ' + stripped;
+            }
+
+            return `${index + 1}. ${stripped}`;
+        }).join('\n');
+
+        textarea.value = value.substring(0, startOfLine) + replacement + value.substring(lineEnd);
+        textarea.focus();
+        textarea.setSelectionRange(startOfLine, startOfLine + replacement.length);
+        updateCounts();
+    }
+
+    function insertLink() {
+        const textarea = getTextarea();
+        if (!textarea) return;
+
+        const url = prompt('Enter the link URL');
+        if (!url) return;
+
+        const start = textarea.selectionStart;
+        const end = textarea.selectionEnd;
+        const selected = textarea.value.substring(start, end) || 'link text';
+        const replacement = `[${selected}](${url})`;
+
+        textarea.value = textarea.value.substring(0, start) + replacement + textarea.value.substring(end);
+        textarea.focus();
+        textarea.setSelectionRange(start + 1, start + 1 + selected.length);
+        updateCounts();
+    }
+
+    function renderMarkdownPreview(text) {
+        const codeBlocks = [];
+        let prepared = text.replace(/```([\s\S]*?)```/g, (_, code) => {
+            const placeholder = `__CODE_BLOCK_${codeBlocks.length}__`;
+            codeBlocks.push(`<pre><code>${escapeHtml(code.trim())}</code></pre>`);
+            return placeholder;
+        });
+
+        prepared = escapeHtml(prepared)
+            .replace(/(^|\n)######\s+(.*)/g, '$1<h6>$2</h6>')
+            .replace(/(^|\n)#####\s+(.*)/g, '$1<h5>$2</h5>')
+            .replace(/(^|\n)####\s+(.*)/g, '$1<h4>$2</h4>')
+            .replace(/(^|\n)###\s+(.*)/g, '$1<h3>$2</h3>')
+            .replace(/(^|\n)##\s+(.*)/g, '$1<h2>$2</h2>')
+            .replace(/(^|\n)#\s+(.*)/g, '$1<h1>$2</h1>')
+            .replace(/(^|\n)&gt;\s+(.*)/g, '$1<blockquote>$2</blockquote>')
+            .replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+|\/[^\s)]*|#[^\s)]*|mailto:[^\s)]+|tel:[^\s)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>')
+            .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+            .replace(/\*(?!\s)([^*\n]+?)(?<!\s)\*/g, '<em>$1</em>')
+            .replace(/&lt;u&gt;(.*?)&lt;\/u&gt;/g, '<u>$1</u>')
+            .replace(/`([^`\n]+)`/g, '<code>$1</code>');
+
+        const blocks = prepared
+            .split(/\n\s*\n/)
+            .map(block => {
+                const trimmed = block.trim();
+
+                if (trimmed === '') {
+                    return '';
+                }
+
+                if (/^__CODE_BLOCK_\d+__$/.test(trimmed)) {
+                    return trimmed;
+                }
+
+                if (/^<(h[1-6]|blockquote|pre|ul|ol|li|p)/.test(trimmed)) {
+                    return trimmed;
+                }
+
+                const lines = trimmed.split('\n');
+                const isBulleted = lines.every(line => /^[-*+]\s+/.test(line));
+                const isNumbered = lines.every(line => /^\d+\.\s+/.test(line));
+
+                if (isBulleted) {
+                    return `<ul>${lines.map(line => `<li>${line.replace(/^[-*+]\s+/, '')}</li>`).join('')}</ul>`;
+                }
+
+                if (isNumbered) {
+                    return `<ol>${lines.map(line => `<li>${line.replace(/^\d+\.\s+/, '')}</li>`).join('')}</ol>`;
+                }
+
+                return `<p>${trimmed.replace(/\n/g, '<br>')}</p>`;
+            })
+            .filter(Boolean)
+            .join('');
+
+        return blocks.replace(/__CODE_BLOCK_(\d+)__/g, (_, index) => codeBlocks[Number(index)] ?? '');
+    }
+
     function formatParagraphs() {
-        const textarea = document.getElementById('descriptionTextarea');
+        const textarea = getTextarea();
         if (!textarea || !textarea.value) return;
 
         let text = textarea.value.trim();
@@ -707,7 +931,7 @@
     }
 
     function clearText() {
-        const textarea = document.getElementById('descriptionTextarea');
+        const textarea = getTextarea();
         if (!textarea) return;
         if (textarea.value && confirm('Are you sure you want to clear the description textarea?')) {
             textarea.value = '';

@@ -2,6 +2,90 @@
 
 @push('styles')
     <link rel="stylesheet" href="{{ asset('css/book.css') }}?v={{ file_exists(public_path('css/book.css')) ? filemtime(public_path('css/book.css')) : '1' }}">
+    <style>
+        .book-description-markdown {
+            color: var(--text-main);
+            font-size: 1.05rem;
+            line-height: 1.8;
+            white-space: normal;
+        }
+
+        .book-description-markdown > :first-child {
+            margin-top: 0;
+        }
+
+        .book-description-markdown > :last-child {
+            margin-bottom: 0;
+        }
+
+        .book-description-markdown p,
+        .book-description-markdown ul,
+        .book-description-markdown ol,
+        .book-description-markdown blockquote,
+        .book-description-markdown pre,
+        .book-description-markdown table {
+            margin: 0 0 1rem;
+        }
+
+        .book-description-markdown h1,
+        .book-description-markdown h2,
+        .book-description-markdown h3,
+        .book-description-markdown h4,
+        .book-description-markdown h5,
+        .book-description-markdown h6 {
+            margin: 1.25rem 0 0.75rem;
+            line-height: 1.3;
+            font-weight: 800;
+        }
+
+        .book-description-markdown h1 { font-size: 1.7rem; }
+        .book-description-markdown h2 { font-size: 1.45rem; }
+        .book-description-markdown h3 { font-size: 1.25rem; }
+        .book-description-markdown h4 { font-size: 1.1rem; }
+        .book-description-markdown h5 { font-size: 1rem; }
+        .book-description-markdown h6 { font-size: 0.95rem; }
+
+        .book-description-markdown ul,
+        .book-description-markdown ol {
+            padding-left: 1.4rem;
+        }
+
+        .book-description-markdown li + li {
+            margin-top: 0.35rem;
+        }
+
+        .book-description-markdown blockquote {
+            padding: 0.2rem 0 0.2rem 1rem;
+            border-left: 4px solid var(--secondary);
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        .book-description-markdown a {
+            color: var(--secondary);
+            text-decoration: underline;
+            text-underline-offset: 0.14em;
+        }
+
+        .book-description-markdown code {
+            background: rgba(15, 23, 42, 0.08);
+            padding: 0.12rem 0.35rem;
+            border-radius: 6px;
+            font-size: 0.92em;
+        }
+
+        .book-description-markdown pre {
+            overflow-x: auto;
+            padding: 1rem 1.1rem;
+            border-radius: 12px;
+            background: rgba(15, 23, 42, 0.05);
+        }
+
+        .book-description-markdown pre code {
+            background: transparent;
+            padding: 0;
+        }
+    </style>
 @endpush
 
 @section('content')
@@ -159,9 +243,9 @@
                     
                     <!-- Description -->
                     <div id="description-tab" class="tab-content active">
-                        <p style="font-size:1.05rem;line-height:1.75;color:var(--text-main);opacity:0.95;white-space:pre-line">
-                            {!! nl2br(e($book->description ?? 'No description available.')) !!}
-                        </p>
+                        <div class="book-description-markdown">
+                            {!! $descriptionHtml !== '' ? $descriptionHtml : '<p>No description available.</p>' !!}
+                        </div>
                     </div>
                     
                     <!-- Details -->
