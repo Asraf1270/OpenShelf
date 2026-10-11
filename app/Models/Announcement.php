@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Support\Markdown;
 use Illuminate\Database\Eloquent\Model;
 
 class Announcement extends Model
@@ -53,5 +54,20 @@ class Announcement extends Model
     public function getPriorityLabelAttribute(): string
     {
         return strtoupper($this->priority ?? 'INFO');
+    }
+
+    public function getContentHtmlAttribute(): string
+    {
+        return Markdown::toHtml($this->content ?? '');
+    }
+
+    public function getContentPlainAttribute(): string
+    {
+        return Markdown::toPlainText($this->content ?? '');
+    }
+
+    public function getContentPreviewAttribute(): string
+    {
+        return \Illuminate\Support\Str::limit($this->content_plain, 180);
     }
 }

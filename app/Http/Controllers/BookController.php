@@ -9,6 +9,7 @@ use App\Models\Wishlist;
 use App\Services\BookQueryService;
 use App\Services\BorrowRequestService;
 use App\Services\NotificationService;
+use App\Support\Markdown;
 use App\Support\RelativeTime;
 use Illuminate\Http\Request;
 
@@ -73,7 +74,7 @@ class BookController extends Controller
 
         return view('book', [
             'seoTitle' => ($book->title ?? 'Book Detail') . ' by ' . ($book->author ?? 'Unknown Author') . ' - OpenShelf',
-            'seoDesc' => \Illuminate\Support\Str::limit(strip_tags($book->description ?? 'Borrow ' . ($book->title ?? 'this book') . ' on OpenShelf campus book sharing platform for free.'), 155),
+            'seoDesc' => \Illuminate\Support\Str::limit(Markdown::toPlainText($book->description ?? 'Borrow ' . ($book->title ?? 'this book') . ' on OpenShelf campus book sharing platform for free.'), 155),
             'seoImage' => $book->detail_cover_url,
             'seoOgType' => 'book',
             'book' => $book,
@@ -95,6 +96,7 @@ class BookController extends Controller
             'avgRating' => number_format((float) ($book->rating ?? 0), 1),
             'ratingCount' => $book->rating_count ?? 0,
             'coverImage' => $book->detail_cover_url,
+            'descriptionHtml' => Markdown::toHtml($book->description ?? ''),
             'borrowMessage' => $request->session()->get('borrow_message'),
             'borrowError' => $request->session()->get('borrow_error'),
             'formatDate' => fn (?string $date) => RelativeTime::format($date),

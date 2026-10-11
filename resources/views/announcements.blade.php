@@ -166,6 +166,65 @@
     line-height: 1.85;
     color: var(--text-secondary, #475569);
 }
+.ann-markdown {
+    color: var(--text-secondary, #475569);
+    line-height: 1.85;
+    font-size: 0.98rem;
+}
+.ann-markdown > :first-child { margin-top: 0; }
+.ann-markdown > :last-child { margin-bottom: 0; }
+.ann-markdown p,
+.ann-markdown ul,
+.ann-markdown ol,
+.ann-markdown blockquote,
+.ann-markdown pre,
+.ann-markdown table {
+    margin: 0 0 1rem;
+}
+.ann-markdown h1,
+.ann-markdown h2,
+.ann-markdown h3,
+.ann-markdown h4,
+.ann-markdown h5,
+.ann-markdown h6 {
+    margin: 1.15rem 0 0.65rem;
+    line-height: 1.3;
+    color: var(--text, #0f172a);
+    font-weight: 800;
+}
+.ann-markdown h1 { font-size: 1.6rem; }
+.ann-markdown h2 { font-size: 1.4rem; }
+.ann-markdown h3 { font-size: 1.2rem; }
+.ann-markdown h4 { font-size: 1.05rem; }
+.ann-markdown h5 { font-size: 0.98rem; }
+.ann-markdown h6 { font-size: 0.92rem; }
+.ann-markdown ul,
+.ann-markdown ol { padding-left: 1.35rem; }
+.ann-markdown li + li { margin-top: 0.3rem; }
+.ann-markdown blockquote {
+    border-left: 4px solid #4c9f8a;
+    padding-left: 0.9rem;
+    color: var(--text-muted, #94a3b8);
+    font-style: italic;
+}
+.ann-markdown a {
+    color: #4c9f8a;
+    text-decoration: underline;
+    text-underline-offset: 0.14em;
+}
+.ann-markdown code {
+    background: rgba(15,23,42,0.08);
+    padding: 0.12rem 0.35rem;
+    border-radius: 6px;
+    font-size: 0.92em;
+}
+.ann-markdown pre {
+    overflow-x: auto;
+    padding: 1rem 1.1rem;
+    border-radius: 12px;
+    background: rgba(15,23,42,0.05);
+}
+.ann-markdown pre code { background: transparent; padding: 0; }
 
 /* ── List card ── */
 .ann-list-card {
@@ -461,7 +520,9 @@
                     </div>
                 </div>
                 <div class="ann-detail-body">
-                    {!! nl2br(e($selectedAnnouncement->content)) !!}
+                    <div class="ann-markdown">
+                        {!! $selectedAnnouncement->content_html ?: '<p>No content available.</p>' !!}
+                    </div>
                 </div>
             </div>
 
@@ -523,7 +584,7 @@
                             </div>
 
                             <div class="ann-card-preview">
-                                {{ Str::limit($announcement->content, 160, '') }}
+                                {{ $announcement->content_preview }}
                             </div>
 
                             <div class="ann-card-footer">
