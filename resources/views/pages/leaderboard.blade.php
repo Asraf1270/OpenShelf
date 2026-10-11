@@ -299,7 +299,7 @@
 
             @if($rank2)
             <a href="{{ route('profile', ['id' => $rank2->id]) }}" class="podium-item rank-2">
-                <div class="rank-badge">2</div>
+                <div class="rank-badge">#{{ $rank2->boipoka_position ?? 2 }}</div>
                 <img src="{{ $rank2->profile_image_url }}" alt="{{ $rank2->name }}" class="podium-avatar">
                 <div class="podium-info">
                     <div class="podium-name">{{ $rank2->name }}</div>
@@ -310,7 +310,7 @@
 
             @if($rank1)
             <a href="{{ route('profile', ['id' => $rank1->id]) }}" class="podium-item rank-1">
-                <div class="rank-badge">1</div>
+                <div class="rank-badge">#{{ $rank1->boipoka_position ?? 1 }}</div>
                 <img src="{{ $rank1->profile_image_url }}" alt="{{ $rank1->name }}" class="podium-avatar">
                 <div class="podium-info">
                     <div class="podium-name">
@@ -326,7 +326,7 @@
 
             @if($rank3)
             <a href="{{ route('profile', ['id' => $rank3->id]) }}" class="podium-item rank-3">
-                <div class="rank-badge">3</div>
+                <div class="rank-badge">#{{ $rank3->boipoka_position ?? 3 }}</div>
                 <img src="{{ $rank3->profile_image_url }}" alt="{{ $rank3->name }}" class="podium-avatar">
                 <div class="podium-info">
                     <div class="podium-name">{{ $rank3->name }}</div>
@@ -345,7 +345,7 @@
             </div>
             @foreach($topUsers->skip(3) as $user)
             <a href="{{ route('profile', ['id' => $user->id]) }}" class="list-item">
-                <div class="list-rank">#{{ $user->boipoka_position ?? '—' }}</div>
+                <div class="list-rank">#{{ $user->boipoka_position }}</div>
                 <div class="list-user">
                     <img src="{{ $user->profile_image_url }}" alt="{{ $user->name }}" class="list-avatar">
                     <span class="list-name">{{ $user->name }}</span>

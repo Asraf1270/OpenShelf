@@ -9,9 +9,8 @@ class LeaderboardController extends Controller
 {
     public function index(Request $request)
     {
-        $topUsers = User::where('boipoka_points', '>', 0)
+        $topUsers = User::whereNotNull('boipoka_position')
             ->orderBy('boipoka_position', 'asc')
-            ->orderBy('name', 'asc')
             ->limit(50)
             ->get();
 
