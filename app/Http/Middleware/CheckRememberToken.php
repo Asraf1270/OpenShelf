@@ -17,30 +17,48 @@ class CheckRememberToken
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (!$request->session()->has('user_id') && $request->cookie('remember_token')) {
-            $token = $request->cookie('remember_token');
-            
-            if (str_contains($token, ':')) {
-                [$tokenUserId, $tokenValue] = explode(':', $token, 2);
-                
-                $rememberToken = RememberToken::query()
-                    ->where('user_id', $tokenUserId)
-                    ->where('token', hash('sha256', $tokenValue))
-                    ->where('expiry', '>', time())
-                    ->first();
-                    
-                if ($rememberToken) {
-                    $user = User::find($tokenUserId);
-                    if ($user && $user->status === 'active') {
-                        $request->session()->put([
-                            'user_id' => $user->id,
-                            'user_name' => $user->name,
-                            'user_role' => $user->role,
-                            'user_hall' => $user->hall,
-                            'login_time' => time(),
-                        ]);
-                        // Don't call regenerate here as it might conflict with other session operations in middleware
-                        // Let the framework handle it naturally
+        if ($request->hasSession() && ! $request->session()->has('user_id')) {
+            $token = $request->bearerToken()
+                ?? $request->header('X-Auth-Token')
+                ?? $request->cookie('remember_token');
+
+            if ($token) {
+                $tokenUserId = null;
+                $tokenValue = null;
+
+                if (str_contains($token, ':')) {
+                    [$tokenUserId, $tokenValue] = explode(':', $token, 2);
+                } else {
+                    $record = RememberToken::query()
+                        ->where('token', hash('sha256', $token))
+                        ->where('expiry', '>', time())
+                        ->first();
+
+                    if ($record) {
+                        $tokenUserId = $record->user_id;
+                        $tokenValue = $token;
+                    }
+                }
+
+                if ($tokenUserId && $tokenValue) {
+                    $rememberToken = RememberToken::query()
+                        ->where('user_id', $tokenUserId)
+                        ->where('token', hash('sha256', $tokenValue))
+                        ->where('expiry', '>', time())
+                        ->first();
+
+                    if ($rememberToken) {
+                        $user = User::find($tokenUserId);
+                        if ($user && $user->status === 'active') {
+                            $request->session()->put([
+                                'user_id' => $user->id,
+                                'user_name' => $user->name,
+                                'user_role' => $user->role,
+                                'user_hall' => $user->hall,
+                                'login_time' => time(),
+                            ]);
+                            $request->setUserResolver(fn () => $user);
+                        }
                     }
                 }
             }

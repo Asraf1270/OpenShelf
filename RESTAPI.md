@@ -15,12 +15,12 @@ Legend:
 
 ## 2. Authentication
 
-- [ ] `POST /api/auth/register` - Create a new user account
-- [ ] `POST /api/auth/login` - Log in and create a mobile session/token
-- [ ] `POST /api/auth/logout` - Log out the current user
-- [ ] `POST /api/auth/forgot-password` - Request password reset
-- [ ] `POST /api/auth/reset-password` - Reset password with token/OTP
-- [ ] `POST /api/auth/verify-otp` - Verify signup or password reset OTP
+- [x] `POST /api/auth/register` - Create a new user account
+- [x] `POST /api/auth/login` - Log in and create a mobile session/token
+- [x] `POST /api/auth/logout` - Log out the current user
+- [x] `POST /api/auth/forgot-password` - Request password reset
+- [x] `POST /api/auth/reset-password` - Reset password with token/OTP
+- [x] `POST /api/auth/verify-otp` - Verify signup or password reset OTP
 
 ## 3. Profile & Account
 

@@ -23,6 +23,7 @@ use App\Http\Controllers\ReportController;
 use App\Http\Controllers\StaticPageController;
 use App\Http\Controllers\LeaderboardController;
 use App\Http\Controllers\PwaController;
+use App\Http\Controllers\Api\AuthApiController;
 use App\Http\Controllers\Api\BookApiController;
 use App\Http\Controllers\Api\BookSuggestController;
 use App\Http\Controllers\Api\NotificationApiController;
@@ -145,6 +146,18 @@ Route::match(['get', 'post'], '/requests', [RequestsController::class, 'index'])
 
 Route::match(['get', 'post'], '/notifications', [NotificationsController::class, 'index'])->name('notifications.index');
 Route::match(['get', 'post'], '/api/notifications', [NotificationApiController::class, 'index']);
+
+// ========================================
+// Authentication API (Mobile REST API)
+// ========================================
+Route::prefix('api/auth')->group(function () {
+    Route::post('/register', [AuthApiController::class, 'register']);
+    Route::post('/login', [AuthApiController::class, 'login']);
+    Route::post('/logout', [AuthApiController::class, 'logout']);
+    Route::post('/forgot-password', [AuthApiController::class, 'forgotPassword']);
+    Route::post('/reset-password', [AuthApiController::class, 'resetPassword']);
+    Route::post('/verify-otp', [AuthApiController::class, 'verifyOtp']);
+});
 
 Route::get('/announcements', [AnnouncementsController::class, 'index'])->name('announcements.index');
 
