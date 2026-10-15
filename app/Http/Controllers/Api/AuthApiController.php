@@ -10,6 +10,7 @@ use App\Services\MailerService;
 use App\Services\PasswordResetService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
@@ -94,7 +95,7 @@ class AuthApiController extends Controller
         $user->gender = $gender;
         $user->password_hash = Hash::make($input['password']);
         $user->otp_code = str_pad((string) random_int(0, 999999), 6, '0', STR_PAD_LEFT);
-        $user->otp_expiry = now()->addMinutes(15);
+        $user->otp_expiry = Carbon::now()->addMinutes(15);
         $user->verified = false;
         $user->role = 'user';
         $user->profile_pic = 'default-avatar.jpg';
