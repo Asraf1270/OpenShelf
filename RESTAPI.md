@@ -24,11 +24,11 @@ Legend:
 
 ## 3. Profile & Account
 
-- [ ] `GET /api/profile/me` - Get the current user profile
-- [ ] `GET /api/profile/{id}` - Get a public user profile
-- [ ] `PUT /api/profile/me` - Update profile data
-- [ ] `POST /api/profile/me/avatar` - Upload or change profile picture
-- [ ] `POST /api/profile/me/password` - Change password
+- [x] `GET /api/profile/me` - Get the current user profile
+- [x] `GET /api/profile/{id}` - Get a public user profile
+- [x] `PUT /api/profile/me` - Update profile data
+- [x] `POST /api/profile/me/avatar` - Upload or change profile picture
+- [x] `POST /api/profile/me/password` - Change password
 
 ## 4. Books
 

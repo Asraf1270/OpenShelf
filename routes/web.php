@@ -26,6 +26,7 @@ use App\Http\Controllers\PwaController;
 use App\Http\Controllers\Api\AuthApiController;
 use App\Http\Controllers\Api\BookApiController;
 use App\Http\Controllers\Api\BookSuggestController;
+use App\Http\Controllers\Api\ProfileApiController;
 use App\Http\Controllers\Api\NotificationApiController;
 use App\Http\Controllers\Api\SettingsApiController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
@@ -125,6 +126,12 @@ Route::post('/settings/edit-profile', [EditProfileController::class, 'update'])-
 Route::get('/settings/change-password', [ChangePasswordController::class, 'show'])->name('settings.change-password');
 Route::post('/settings/change-password', [ChangePasswordController::class, 'update'])->name('settings.change-password.update');
 Route::match(['get', 'post'], '/api/settings', [SettingsApiController::class, 'handle']);
+
+Route::get('/api/profile/me', [ProfileApiController::class, 'me']);
+Route::get('/api/profile/{id}', [ProfileApiController::class, 'show']);
+Route::put('/api/profile/me', [ProfileApiController::class, 'update']);
+Route::post('/api/profile/me/avatar', [ProfileApiController::class, 'updateAvatar']);
+Route::post('/api/profile/me/password', [ProfileApiController::class, 'updatePassword']);
 
 Route::get('/add-book', [AddBookController::class, 'create'])->name('books.create');
 Route::post('/add-book', [AddBookController::class, 'store'])->name('books.store');
