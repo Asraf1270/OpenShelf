@@ -34,14 +34,14 @@ Legend:
 
 - [x] `GET /api/books` - Get the main book list
 - [x] `GET /api/books/suggest` - Search suggestions for books and profiles
-- [ ] `GET /api/books/{id}` - Get full book details
-- [ ] `POST /api/books` - Create a new book listing
-- [ ] `PUT /api/books/{id}` - Update a book listing
-- [ ] `DELETE /api/books/{id}` - Delete a book listing
-- [ ] `GET /api/books/my` - Get books listed by the current user
-- [ ] `GET /api/books/newest` - Get newest books for the home feed
-- [ ] `GET /api/books/available` - Get currently available books
-- [ ] `GET /api/categories` - Get all book categories
+- [x] `GET /api/books/{id}` - Get full book details
+- [x] `POST /api/books` - Create a new book listing
+- [x] `PUT /api/books/{id}` - Update a book listing
+- [x] `DELETE /api/books/{id}` - Delete a book listing
+- [x] `GET /api/books/my` - Get books listed by the current user
+- [x] `GET /api/books/newest` - Get newest books for the home feed
+- [x] `GET /api/books/available` - Get currently available books
+- [x] `GET /api/categories` - Get all book categories
 
 ## 5. Borrowing
 

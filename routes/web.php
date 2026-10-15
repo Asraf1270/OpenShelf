@@ -142,6 +142,14 @@ Route::post('/edit-book', [EditBookController::class, 'update'])->name('books.up
 Route::get('/books', [BooksController::class, 'index'])->name('books');
 Route::get('/api/books', [BookApiController::class, 'index']);
 Route::get('/api/books/suggest', BookSuggestController::class);
+Route::get('/api/books/newest', [BookApiController::class, 'newest']);
+Route::get('/api/books/available', [BookApiController::class, 'available']);
+Route::get('/api/books/my', [BookApiController::class, 'my']);
+Route::get('/api/categories', [BookApiController::class, 'categoriesList']);
+Route::get('/api/books/{id}', [BookApiController::class, 'show']);
+Route::post('/api/books', [BookApiController::class, 'store']);
+Route::put('/api/books/{id}', [BookApiController::class, 'update']);
+Route::delete('/api/books/{id}', [BookApiController::class, 'destroy']);
 Route::match(['get', 'post'], '/book', [BookController::class, 'show'])->name('book.show');
 
 Route::match(['get', 'post'], '/borrow-request', [BorrowRequestPageController::class, 'show'])->name('borrow-request');
