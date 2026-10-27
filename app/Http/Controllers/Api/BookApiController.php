@@ -29,7 +29,9 @@ class BookApiController extends Controller
 
     public function show(Request $request, string $id): JsonResponse
     {
-        $book = Book::with('owner')->find($id);
+        $book = Book::with(['owner' => function ($query) {
+            $query->select(['id', 'name', 'department', 'session', 'room_number', 'hall', 'profile_pic']);
+        }])->find($id);
 
         if (! $book) {
             return response()->json([
@@ -440,25 +442,16 @@ class BookApiController extends Controller
         $data['detail_cover_url'] = $book->detail_cover_url;
         $data['display_status'] = $book->display_status;
 
+        if (array_key_exists('owner', $data)) {
+            $data['owner'] = $this->ownerPayload($book->owner);
+        }
+
         return $data;
     }
 
     private function ownerPayload(?User $owner): ?array
     {
-        if (! $owner) {
-            return null;
-        }
-
-        return [
-            'id' => $owner->id,
-            'name' => $owner->name,
-            'department' => $owner->department,
-            'session' => $owner->session,
-            'hall' => (string) $owner->hall,
-            'hall_name' => $owner->hall_name,
-            'profile_pic' => $owner->profile_pic,
-            'profile_image_url' => $owner->profile_image_url,
-        ];
+        return $this->bookQueryService->formatOwnerForApi($owner);
     }
 
     private function bookCategories(): array

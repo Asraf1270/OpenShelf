@@ -16,6 +16,16 @@ class User extends Authenticatable
     public $incrementing = false;
     protected $guarded = [];
 
+    protected $hidden = [
+        'password_hash',
+        'otp_code',
+        'otp_expiry',
+        'fcm_token',
+        'rejection_reason',
+        'verified_by',
+        'remember_token',
+    ];
+
     protected $casts = [
         'verified' => 'boolean',
         'otp_expiry' => 'datetime',

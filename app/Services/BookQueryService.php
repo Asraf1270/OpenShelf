@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Book;
+use App\Models\User;
 use App\Support\ImageUrl;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Collection;
@@ -269,7 +270,30 @@ class BookQueryService
         $data['owner_avatar']      = $resolvedAvatar;
         $data['owner_avatar_url']  = $resolvedAvatar;
 
+        if (array_key_exists('owner', $data)) {
+            $data['owner'] = $this->formatOwnerForApi($book->owner);
+        }
+
         return $data;
+    }
+
+    public function formatOwnerForApi(?User $owner): ?array
+    {
+        if (! $owner) {
+            return null;
+        }
+
+        return [
+            'id' => $owner->id,
+            'name' => $owner->name,
+            'department' => $owner->department,
+            'session' => $owner->session,
+            'room_number' => $owner->room_number,
+            'hall' => (string) $owner->hall,
+            'hall_name' => $owner->hall_name,
+            'profile_pic' => $owner->profile_pic,
+            'profile_image_url' => $owner->profile_image_url,
+        ];
     }
 
     public function resolveCoverPath(?string $coverImage): string
