@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Models\Admin;
+use App\Rules\Turnstile;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -24,6 +25,9 @@ class AdminAuthController extends AdminController
         $validated = $request->validate([
             'email' => ['required', 'email'],
             'password' => ['required', 'string'],
+            'cf-turnstile-response' => ['required', new Turnstile()],
+        ], [
+            'cf-turnstile-response.required' => 'Please complete the security verification.',
         ]);
 
         $admin = Admin::query()

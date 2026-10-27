@@ -106,6 +106,8 @@
                 <input id="password" type="password" name="password" placeholder="••••••••" required>
             </div>
 
+            <x-turnstile theme="light" action="admin-login" />
+
             <button type="submit">Sign In</button>
         </form>
 

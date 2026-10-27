@@ -159,6 +159,12 @@
         </div>
     @endif
 
+    @if($errors->any())
+        <div class="alert alert-error">
+            <i class="fas fa-exclamation-circle"></i> {{ $errors->first() }}
+        </div>
+    @endif
+
     <div class="report-card">
         <form method="POST" action="{{ route('report.store') }}">
                 @csrf
@@ -175,23 +181,25 @@
             <div class="form-group">
                 <label for="type">রিপোর্টের ধরন</label>
                 <select id="type" name="type" class="form-control" required>
-                    <option value="bug">টেকনিক্যাল বাগ / ত্রুটি</option>
-                    <option value="user">ব্যবহারকারীর অসদাচরণ / হয়রানি</option>
-                    <option value="book">ভুল বইয়ের তথ্য</option>
-                    <option value="suggestion">ফিচার সাজেশন</option>
-                    <option value="other">অন্যান্য সমস্যা</option>
+                    <option value="bug" {{ old('type') == 'bug' ? 'selected' : '' }}>টেকনিক্যাল বাগ / ত্রুটি</option>
+                    <option value="user" {{ old('type') == 'user' ? 'selected' : '' }}>ব্যবহারকারীর অসদাচরণ / হয়রানি</option>
+                    <option value="book" {{ old('type') == 'book' ? 'selected' : '' }}>ভুল বইয়ের তথ্য</option>
+                    <option value="suggestion" {{ old('type') == 'suggestion' ? 'selected' : '' }}>ফিচার সাজেশন</option>
+                    <option value="other" {{ old('type') == 'other' ? 'selected' : '' }}>অন্যান্য সমস্যা</option>
                 </select>
             </div>
 
             <div class="form-group">
                 <label for="subject">বিষয়</label>
-                <input type="text" id="subject" name="subject" class="form-control" placeholder="সমস্যাটির সংক্ষিপ্ত বর্ণনা দিন" required>
+                <input type="text" id="subject" name="subject" class="form-control" placeholder="সমস্যাটির সংক্ষিপ্ত বর্ণনা দিন" value="{{ old('subject') }}" required>
             </div>
 
             <div class="form-group">
                 <label for="message">বিস্তারিত বর্ণনা</label>
-                <textarea id="message" name="message" class="form-control" rows="5" placeholder="যতটা সম্ভব বিস্তারিত লিখুন..." required></textarea>
+                <textarea id="message" name="message" class="form-control" rows="5" placeholder="যতটা সম্ভব বিস্তারিত লিখুন..." required>{{ old('message') }}</textarea>
             </div>
+
+            <x-turnstile theme="auto" action="report" />
 
             <button type="submit" class="btn-submit">রিপোর্ট জমা দিন</button>
         </form>

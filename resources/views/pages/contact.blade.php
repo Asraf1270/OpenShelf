@@ -242,6 +242,9 @@
             @if($error)
                 <div class="alert alert-error"><i class="fas fa-exclamation-circle"></i> {{ $error }}</div>
             @endif
+            @if($errors->any())
+                <div class="alert alert-error"><i class="fas fa-exclamation-circle"></i> {{ $errors->first() }}</div>
+            @endif
 
             <form method="POST" action="{{ route('contact.store') }}">
                 @csrf
@@ -255,12 +258,13 @@
                 </div>
                 <div class="form-group">
                     <label>বিষয়</label>
-                    <input type="text" name="subject" class="form-control" required>
+                    <input type="text" name="subject" class="form-control" value="{{ old('subject') }}" required>
                 </div>
                 <div class="form-group">
                     <label>মেসেজ</label>
-                    <textarea name="message" class="form-control" rows="5" required></textarea>
+                    <textarea name="message" class="form-control" rows="5" required>{{ old('message') }}</textarea>
                 </div>
+                <x-turnstile theme="auto" action="contact" />
                 <button type="submit" class="btn-submit">মেসেজ পাঠান</button>
             </form>
         </div>

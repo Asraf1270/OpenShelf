@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\RememberToken;
 use App\Models\User;
+use App\Rules\Turnstile;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -31,8 +32,10 @@ class LoginController extends Controller
         $validated = $request->validate([
             'phone' => ['required', 'regex:/^01[3-9]\d{8}$/'],
             'password' => ['required', 'string'],
+            'cf-turnstile-response' => ['required', new Turnstile()],
         ], [
             'phone.regex' => 'Please enter a valid Bangladeshi phone number (11 digits starting with 01).',
+            'cf-turnstile-response.required' => 'Please complete the security verification.',
         ]);
 
         $user = User::where('phone', trim($validated['phone']))->first();
