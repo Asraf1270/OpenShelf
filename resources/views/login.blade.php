@@ -107,6 +107,8 @@
                     <a href="{{ route('password.forgot') }}" class="forgot-password">Forgot password?</a>
                 </div>
 
+                <x-turnstile theme="dark" action="login" />
+
                 <button type="submit" class="btn-login" id="loginBtn">
                     <span class="btn-text">Sign In</span>
                     <i class="fas fa-arrow-right"></i>

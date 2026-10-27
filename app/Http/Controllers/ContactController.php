@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\ContactMessage;
 use App\Models\User;
+use App\Rules\Turnstile;
 use Illuminate\Http\Request;
 
 class ContactController extends Controller
@@ -32,6 +33,9 @@ class ContactController extends Controller
             'email' => ['required', 'email', 'max:255'],
             'subject' => ['required', 'string', 'max:255'],
             'message' => ['required', 'string'],
+            'cf-turnstile-response' => ['required', new Turnstile('নিরাপত্তা যাচাইকরণ ব্যর্থ হয়েছে। অনুগ্রহ করে আবার চেষ্টা করুন।')],
+        ], [
+            'cf-turnstile-response.required' => 'অনুগ্রহ করে নিরাপত্তা যাচাইকরণ সম্পন্ন করুন।',
         ]);
 
         try {

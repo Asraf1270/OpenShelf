@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\SupportUs;
 use App\Models\User;
+use App\Rules\Turnstile;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -59,6 +60,9 @@ class SupportUsController extends Controller
             'provider' => ['required', 'in:'.implode(',', array_keys(self::ACCOUNT_NUMBERS))],
             'amount' => ['required', 'string'],
             'transaction_id' => ['required', 'string', 'max:100'],
+            'cf-turnstile-response' => ['required', new Turnstile('নিরাপত্তা যাচাইকরণ ব্যর্থ হয়েছে। অনুগ্রহ করে আবার চেষ্টা করুন।')],
+        ], [
+            'cf-turnstile-response.required' => 'অনুগ্রহ করে নিরাপত্তা যাচাইকরণ সম্পন্ন করুন।',
         ]);
 
         $amount = str_replace(',', '', $validated['amount']);

@@ -129,6 +129,7 @@
                                 <i class="fas fa-receipt absolute left-5 top-1/2 -translate-y-1/2 text-slate-300 transition-colors duration-300"></i>
                             </div>
                         </div>
+                        <x-turnstile theme="auto" action="support-us-{{ $key }}" />
                         <button type="submit" class="w-full inline-flex items-center justify-center gap-2 rounded-2xl text-white font-bold py-4 px-5 shadow-lg border transition-all duration-300" style="background: {{ $provider['hex'] }}; border-color: {{ $provider['hex'] }};" onmouseover="this.style.background='{{ $provider['hover'] }}';" onmouseout="this.style.background='{{ $provider['hex'] }}';">
                             <i class="fas fa-heart"></i>
                             {{ $provider['submit'] }}
