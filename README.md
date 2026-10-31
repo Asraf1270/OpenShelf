@@ -1,7 +1,7 @@
 # 📚 OpenShelf — Community Library Management System
 
 [![Version](https://img.shields.io/badge/version-4.0.0-blue.svg)](https://github.com/Asraf1270/OpenShelf/releases/tag/v4.0.0)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Laravel](https://img.shields.io/badge/Laravel-13.x-FF2D20.svg)](https://laravel.com/)
 [![PHP](https://img.shields.io/badge/PHP-8.3%2B-777bb4.svg)](https://www.php.net/)
 
